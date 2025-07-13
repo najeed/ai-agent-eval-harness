@@ -1,0 +1,66 @@
+{
+  "scenario_id": "consulting-mc-161",
+  "title": "Check Proposal for Plagiarism",
+  "description": "Before submission, an agent must check a draft proposal against previous company proposals and public sources to avoid self-plagiarism or plagiarism.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the draft proposal.",
+      "expected_outcome": "Agent ingests the document text.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare text sections against a database of past proposals.",
+      "expected_outcome": "Agent identifies sections with high similarity to previous work.",
+      "required_tools": [
+        "check_internal_plagiarism"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare text sections against public web sources.",
+      "expected_outcome": "Agent identifies any text that matches public sources.",
+      "required_tools": [
+        "check_external_plagiarism"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a report highlighting all sections with potential plagiarism issues.",
+      "expected_outcome": "Agent produces a clear report for a human to review.",
+      "required_tools": [
+        "generate_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

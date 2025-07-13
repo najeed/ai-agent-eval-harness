@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-101",
+  "title": "Draft Project Proposal from Client Brief",
+  "description": "An agent must draft a project proposal based on a client's initial project brief document.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the provided client brief to extract key objectives, scope, and constraints.",
+      "expected_outcome": "Agent correctly identifies the client's main goals (e.g., 'reduce operational costs by 15%') and constraints (e.g., '6-month timeline').",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the 'Our Understanding' and 'Proposed Scope' sections of the proposal.",
+      "expected_outcome": "Agent generates well-structured text that accurately reflects the client's needs and defines clear project boundaries.",
+      "required_tools": [
+        "draft_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a high-level project timeline with key phases (e.g., Discovery, Analysis, Recommendation, Implementation).",
+      "expected_outcome": "Agent generates a logical timeline with estimated durations for each phase.",
+      "required_tools": [
+        "create_project_timeline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "scenario_id": "consulting-mc-190",
+  "title": "Create Project Timeline from Email",
+  "description": "An agent must parse an unstructured email from a client and turn it into a structured project timeline.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the email text to extract key tasks and their deadlines.",
+      "expected_outcome": "Agent correctly identifies tasks like 'Finish the design by next Friday' and 'Launch the site by the end of the month'.",
+      "required_tools": [
+        "analyze_document",
+        "extract_key_dates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Format the extracted tasks and dates into a structured list.",
+      "expected_outcome": "Agent creates a clean, structured list of tasks and deadlines.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a simple timeline visualization based on the list.",
+      "expected_outcome": "Agent produces a visual timeline of the project.",
+      "required_tools": [
+        "create_project_timeline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "consulting-mc-182",
+  "title": "Identify Key Opinion Leaders (KOLs)",
+  "description": "An agent must identify key opinion leaders in a specific medical field by analyzing publication databases.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search PubMed and other medical publication databases for authors who have published frequently on a specific topic (e.g., 'CAR-T cell therapy').",
+      "expected_outcome": "Agent executes targeted searches and retrieves a list of authors.",
+      "required_tools": [
+        "search_pubmed"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Rank the authors by number of publications and citation count to identify the top 5 KOLs.",
+      "expected_outcome": "Agent produces a correctly ranked list of the most influential experts.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a profile for each KOL, including their current institution and most cited work.",
+      "expected_outcome": "Agent compiles a concise profile for each identified expert.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-138",
+  "title": "Cost-Benefit Analysis",
+  "description": "An agent must perform a cost-benefit analysis for a proposed IT project.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "List all the one-time costs associated with the project (e.g., 'software licenses', 'implementation services').",
+      "expected_outcome": "Agent correctly identifies all costs.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "List all the expected annual benefits (e.g., 'reduced manual effort in hours', 'lower maintenance fees').",
+      "expected_outcome": "Agent correctly identifies all benefits.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Convert all benefits to a monetary value and calculate the payback period for the project.",
+      "expected_outcome": "Agent correctly calculates the payback period in years.",
+      "required_tools": [
+        "calculate_payback_period"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

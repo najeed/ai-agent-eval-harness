@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-80",
+  "title": "Investigate Unauthorized Device on Network",
+  "description": "The security system detects an unknown device connected to a corporate network port. The agent must investigate.",
+  "use_case": "Network Operations",
+  "core_function": "Security Operations",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the alert and identify the switch port the device is connected to.",
+      "expected_outcome": "Agent identifies the specific switch and port from the alert.",
+      "required_tools": [
+        "get_security_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Remotely disable the switch port to disconnect the device from the network.",
+      "expected_outcome": "Agent successfully shuts down the port.",
+      "required_tools": [
+        "disable_switch_port"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a security incident report and assign it to the physical security team to investigate the location.",
+      "expected_outcome": "Agent creates a detailed security report for further investigation.",
+      "required_tools": [
+        "create_security_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

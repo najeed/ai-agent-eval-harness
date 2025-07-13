@@ -1,0 +1,36 @@
+{
+  "scenario_id": "consulting-mc-165",
+  "title": "Create a Project Organization Chart",
+  "description": "An agent must create an organization chart based on a list of project roles and their reporting structure.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a list of roles and who they report to (e.g., 'Analyst A reports to Manager B').",
+      "expected_outcome": "Agent successfully ingests the hierarchical data.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a visual organization chart (e.g., using Mermaid syntax) that accurately reflects the reporting structure.",
+      "expected_outcome": "Agent produces a valid and correct organizational chart diagram.",
+      "required_tools": [
+        "create_org_chart_diagram"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

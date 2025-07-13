@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-175",
+  "title": "Create a Project Wiki Page",
+  "description": "An agent must create a new page in a project wiki (e.g., Confluence) summarizing a key project deliverable.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the deliverable document to extract its purpose, key findings, and final output.",
+      "expected_outcome": "Agent successfully summarizes the deliverable.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summarization_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the content for the wiki page using markdown formatting, including headings, bullet points, and links.",
+      "expected_outcome": "Agent generates well-formatted content for the wiki.",
+      "required_tools": [
+        "draft_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use a tool to publish the content to the project wiki under the correct parent page.",
+      "expected_outcome": "Agent successfully creates the new wiki page.",
+      "required_tools": [
+        "publish_to_wiki"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

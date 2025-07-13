@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-152",
+  "title": "Transcribe Audio Meeting",
+  "description": "An agent must transcribe an audio file of a client workshop.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process the provided audio file.",
+      "expected_outcome": "Agent successfully ingests the audio file.",
+      "required_tools": [
+        "load_audio_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Transcribe the audio to text.",
+      "expected_outcome": "Agent produces a text transcript of the meeting.",
+      "required_tools": [
+        "transcribe_audio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "transcription_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Optionally, identify different speakers in the transcript.",
+      "expected_outcome": "Agent labels the text with 'Speaker 1', 'Speaker 2', etc.",
+      "required_tools": [
+        "identify_speakers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "consulting-mc-136",
+  "title": "Estimate Project Timeline",
+  "description": "Given a list of high-level tasks, an agent must provide a rough time estimate for a project.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the list of project tasks.",
+      "expected_outcome": "Agent ingests the task list.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each task, provide a time estimate (in days) based on historical data from similar projects.",
+      "expected_outcome": "Agent assigns a reasonable duration to each task.",
+      "required_tools": [
+        "estimate_task_duration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Sum the task durations and add a 20% buffer to calculate the total estimated project timeline.",
+      "expected_outcome": "Agent provides a final timeline estimate in weeks.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

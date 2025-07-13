@@ -1,0 +1,48 @@
+{
+  "scenario_id": "consulting-mc-185",
+  "title": "Create a Dashboard Mockup",
+  "description": "An agent must create a text-based mockup of a web dashboard for a client.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Based on a list of required KPIs, define the widgets needed for the dashboard (e.g., 'Revenue Trend Line Chart', 'Top 5 Products Bar Chart').",
+      "expected_outcome": "Agent lists all the required visual components.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Arrange the widgets into a 2x2 grid layout, describing the position of each widget.",
+      "expected_outcome": "Agent describes a balanced and logical layout.",
+      "required_tools": [
+        "design_dashboard_layout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each widget, describe its appearance and the data it would show.",
+      "expected_outcome": "Agent provides a detailed text description of the full dashboard mockup.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

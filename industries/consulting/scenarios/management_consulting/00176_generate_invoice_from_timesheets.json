@@ -1,0 +1,53 @@
+{
+  "scenario_id": "consulting-mc-176",
+  "title": "Generate Invoice from Timesheets",
+  "description": "An agent must generate a client invoice based on project timesheet data and approved expenses.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all billable hours and expenses for a specific project for the last month.",
+      "expected_outcome": "Agent successfully pulls the correct billing data.",
+      "required_tools": [
+        "get_timesheet_data",
+        "get_expense_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total fees based on the hours and roles, and add the total expenses.",
+      "expected_outcome": "Agent correctly calculates the total amount due.",
+      "required_tools": [
+        "calculate_invoice_total"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Populate a standard invoice template with the client details, line items, and total amount.",
+      "expected_outcome": "Agent generates a complete and accurate invoice.",
+      "required_tools": [
+        "populate_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

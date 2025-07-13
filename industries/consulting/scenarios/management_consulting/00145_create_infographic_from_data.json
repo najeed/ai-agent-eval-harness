@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-145",
+  "title": "Create an Infographic from Data",
+  "description": "An agent must take a set of key project findings and design a simple infographic to communicate them visually.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a list of 3-5 key data points (e.g., 'Reduced costs by 20%', 'Customer satisfaction up 15%').",
+      "expected_outcome": "Agent correctly ingests the key findings.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each data point, suggest a suitable icon or simple visual representation.",
+      "expected_outcome": "Agent suggests appropriate icons (e.g., a downward arrow for cost reduction, a smiley face for satisfaction).",
+      "required_tools": [
+        "suggest_icon"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange the data points and icons into a visually balanced layout description.",
+      "expected_outcome": "Agent generates a text-based description of a clean and simple infographic layout.",
+      "required_tools": [
+        "design_infographic_layout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "consulting-mc-112",
+  "title": "Market Sizing Research",
+  "description": "An agent must research and estimate the Total Addressable Market (TAM) for a new product, citing its sources.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for market research reports, industry analyses, and government statistics related to the product's category.",
+      "expected_outcome": "Agent finds at least three credible sources for market size data.",
+      "required_tools": [
+        "web_search",
+        "document_finder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Synthesize the data from the different sources to arrive at a defensible TAM estimate.",
+      "expected_outcome": "Agent provides a final TAM estimate (e.g., '$5 billion') and explains the methodology used to reach it.",
+      "required_tools": [
+        "synthesize_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile a summary slide with the TAM estimate and a list of the sources used.",
+      "expected_outcome": "Agent creates a clear summary with proper citations.",
+      "required_tools": [
+        "create_summary_slide"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

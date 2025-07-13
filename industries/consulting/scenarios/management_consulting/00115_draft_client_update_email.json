@@ -1,0 +1,48 @@
+{
+  "scenario_id": "consulting-mc-115",
+  "title": "Draft Weekly Client Update Email",
+  "description": "An agent must draft a weekly status update email for a client based on a list of completed tasks and upcoming activities.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a list of tasks completed this week and tasks planned for next week.",
+      "expected_outcome": "Agent correctly ingests the lists.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a professional email with three sections: 'Progress This Week', 'Plan for Next Week', and 'Risks & Issues'.",
+      "expected_outcome": "Agent generates a well-structured and professionally toned email.",
+      "required_tools": [
+        "draft_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the email has a clear subject line (e.g., 'Project Phoenix - Weekly Status Update - July 12, 2025').",
+      "expected_outcome": "Agent creates a correctly formatted subject line.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

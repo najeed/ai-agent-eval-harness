@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-178",
+  "title": "Churn Prediction Analysis",
+  "description": "An agent must analyze customer data to identify the key factors that predict customer churn.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load customer data, including demographic info, usage data, and a 'Churned' flag (Yes/No).",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a logistic regression model to predict the 'Churned' flag based on the other variables.",
+      "expected_outcome": "Agent successfully builds the predictive model.",
+      "required_tools": [
+        "perform_logistic_regression"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the top 3 variables with the highest coefficients in the model as the strongest predictors of churn.",
+      "expected_outcome": "Agent correctly identifies the key drivers of churn (e.g., 'low usage', 'high price').",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

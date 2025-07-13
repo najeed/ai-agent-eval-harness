@@ -1,0 +1,13 @@
+[project]
+name = "eval-runner"
+version = "0.1.0"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["eval_runner"]
+
+[tool.setuptools.package-dir]
+eval_runner = "eval-runner"

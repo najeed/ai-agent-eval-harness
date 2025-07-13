@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-148",
+  "title": "Create a Decision Tree",
+  "description": "An agent must create a decision tree to help a client decide whether to launch a new product.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the key decision ('Launch' vs. 'Don't Launch') and the key uncertainties ('High Demand' vs. 'Low Demand') with their probabilities.",
+      "expected_outcome": "Agent correctly structures the initial nodes of the decision tree.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign financial outcomes (payoffs) to each final branch of the tree.",
+      "expected_outcome": "Agent correctly assigns the payoff values.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the Expected Monetary Value (EMV) for the 'Launch' decision.",
+      "expected_outcome": "Agent correctly calculates the EMV to help make the optimal decision.",
+      "required_tools": [
+        "calculate_emv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

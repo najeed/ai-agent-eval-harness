@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-189",
+  "title": "Pricing Strategy Recommendation",
+  "description": "An agent must recommend a pricing strategy for a new software product.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze competitor pricing data.",
+      "expected_outcome": "Agent summarizes the pricing models of key competitors (e.g., 'Competitor A uses a per-user subscription').",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the product's value proposition and target customer.",
+      "expected_outcome": "Agent identifies that the product offers high value to enterprise customers.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend a pricing strategy (e.g., 'Cost-Plus', 'Value-Based', 'Competitive').",
+      "expected_outcome": "Agent recommends a 'Value-Based' pricing strategy, arguing that the price should be based on the high value it provides to enterprises, rather than just competitor prices.",
+      "required_tools": [
+        "make_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

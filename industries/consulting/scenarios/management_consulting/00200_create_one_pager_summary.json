@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-200",
+  "title": "Create a One-Pager Project Summary",
+  "description": "An agent must create a visually appealing one-page summary of a complex project for an executive audience.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Distill a long project report down to its 3-4 most critical takeaways.",
+      "expected_outcome": "Agent correctly identifies the most important high-level findings.",
+      "required_tools": [
+        "summarize_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summarization_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select one key chart or data visualization from the report that best illustrates the project's success.",
+      "expected_outcome": "Agent chooses the most impactful visual.",
+      "required_tools": [
+        "select_key_visual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange the key takeaways and the selected visual into a clean, one-page layout description.",
+      "expected_outcome": "Agent describes a professional and uncluttered one-page summary.",
+      "required_tools": [
+        "design_one_pager_layout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

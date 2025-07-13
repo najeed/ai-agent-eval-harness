@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-154",
+  "title": "Develop a Market Entry Strategy",
+  "description": "For a client wanting to enter a new country, an agent must recommend a market entry strategy.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Research the target country's regulations, competition, and consumer behavior.",
+      "expected_outcome": "Agent gathers relevant data on the new market.",
+      "required_tools": [
+        "web_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze different market entry modes (e.g., 'Exporting', 'Joint Venture', 'Direct Investment').",
+      "expected_outcome": "Agent lists the pros and cons of each entry mode in the context of the target country.",
+      "required_tools": [
+        "analyze_market_entry_modes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the most suitable entry strategy based on the research and analysis.",
+      "expected_outcome": "Agent provides a clear recommendation (e.g., 'A joint venture is recommended to navigate local regulations').",
+      "required_tools": [
+        "make_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

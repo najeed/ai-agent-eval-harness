@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-131",
+  "title": "Resolve Staffing Conflict",
+  "description": "Two project proposals request the same lead data scientist. An agent must identify the conflict and propose a solution.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the resource plans for two new project proposals.",
+      "expected_outcome": "Agent successfully loads the two plans.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify that both plans have requested 'Dr. Eva Rostova' as the lead data scientist for overlapping time periods.",
+      "expected_outcome": "Agent correctly identifies the resource conflict.",
+      "required_tools": [
+        "identify_resource_conflict"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Propose a solution, such as suggesting an alternative data scientist for one project or adjusting the timelines so they don't overlap.",
+      "expected_outcome": "Agent provides at least one viable solution to the conflict.",
+      "required_tools": [
+        "propose_solution"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 0.85
+        }
+      ]
+    }
+  ]
+}

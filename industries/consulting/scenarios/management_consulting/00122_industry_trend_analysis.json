@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-122",
+  "title": "Industry Trend Analysis",
+  "description": "An agent must analyze a collection of recent news articles and reports to identify the top 3 emerging trends in the retail industry.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process a folder of 20 documents (news articles, reports).",
+      "expected_outcome": "Agent successfully reads all documents.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the most frequently mentioned concepts and technologies across all documents.",
+      "expected_outcome": "Agent identifies recurring keywords like 'AI', 'sustainability', and 'personalization'.",
+      "required_tools": [
+        "identify_common_themes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Summarize the top 3 trends and provide a brief explanation for each.",
+      "expected_outcome": "Agent generates a concise summary of the key industry trends.",
+      "required_tools": [
+        "draft_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

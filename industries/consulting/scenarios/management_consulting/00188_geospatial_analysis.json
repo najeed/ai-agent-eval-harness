@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-188",
+  "title": "Geospatial Analysis for Site Selection",
+  "description": "For a retail client, an agent must analyze demographic data to recommend the best city for a new store.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load a dataset of potential cities with demographic data (e.g., population, median income, age distribution).",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the list of cities to only include those that meet certain criteria (e.g., population > 500,000 and median income > $60,000).",
+      "expected_outcome": "Agent correctly filters the list down to a smaller set of candidate cities.",
+      "required_tools": [
+        "filter_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "From the filtered list, recommend the city with the highest median income.",
+      "expected_outcome": "Agent makes a final, data-driven recommendation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-141",
+  "title": "Create a Risk Assessment Matrix",
+  "description": "An agent must take a list of identified project risks and plot them on a likelihood/impact matrix.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For each risk in a given list, assign a 'Likelihood' score (1-5) and an 'Impact' score (1-5).",
+      "expected_outcome": "Agent provides a reasonable score for each risk.",
+      "required_tools": [
+        "score_list_items"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a 5x5 matrix and place each risk in the appropriate cell based on its scores.",
+      "expected_outcome": "Agent correctly plots all risks on the matrix.",
+      "required_tools": [
+        "create_risk_matrix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Highlight the risks in the top-right quadrant (High Likelihood, High Impact) as critical.",
+      "expected_outcome": "Agent correctly identifies and flags the most critical risks.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

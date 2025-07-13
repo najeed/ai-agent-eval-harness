@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-184",
+  "title": "Propose an Organizational Restructuring",
+  "description": "Based on an analysis showing redundant roles, an agent must propose a new, leaner organizational structure.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze a report that identifies several overlapping job functions in the 'Marketing' and 'Digital' departments.",
+      "expected_outcome": "Agent correctly identifies the redundant areas.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Propose a new structure where the 'Marketing' and 'Digital' teams are merged into a single 'Growth' department.",
+      "expected_outcome": "Agent provides a clear, logical recommendation for a new structure.",
+      "required_tools": [
+        "propose_solution"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a high-level organization chart for the new proposed 'Growth' department.",
+      "expected_outcome": "Agent generates a new org chart reflecting the merged teams.",
+      "required_tools": [
+        "create_org_chart_diagram"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

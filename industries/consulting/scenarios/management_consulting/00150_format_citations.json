@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-150",
+  "title": "Format Report Citations",
+  "description": "An agent must take a list of sources and format them into a consistent citation style (e.g., APA).",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a list of sources in various informal formats.",
+      "expected_outcome": "Agent ingests the list of sources.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each source, identify the author, year, title, and publication information.",
+      "expected_outcome": "Agent correctly extracts the metadata from each source string.",
+      "required_tools": [
+        "extract_citation_metadata"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Format each source into the APA citation style.",
+      "expected_outcome": "Agent produces a correctly formatted bibliography in APA style.",
+      "required_tools": [
+        "format_citation_apa"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

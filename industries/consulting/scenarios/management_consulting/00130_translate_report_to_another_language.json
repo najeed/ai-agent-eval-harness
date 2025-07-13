@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-130",
+  "title": "Translate Report for International Client",
+  "description": "An agent must translate a final report from English to Spanish for a client's international office.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ingest the final English report.",
+      "expected_outcome": "Agent successfully loads the document.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Translate the entire document text to Spanish.",
+      "expected_outcome": "Agent produces a translated version of the text.",
+      "required_tools": [
+        "translate_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "translation_quality",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Format the translated text into a new document, preserving the original structure and headings.",
+      "expected_outcome": "Agent creates a new, well-formatted document in Spanish.",
+      "required_tools": [
+        "create_document_from_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

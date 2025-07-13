@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-163",
+  "title": "Supply Chain Optimization",
+  "description": "An agent must analyze shipping data to recommend a more optimal distribution center location.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load a dataset of all shipment destinations (as lat/long coordinates) for the past year.",
+      "expected_outcome": "Agent successfully loads the location data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the geographic center of all shipment destinations (center of gravity analysis).",
+      "expected_outcome": "Agent correctly calculates the optimal coordinates for a new distribution center.",
+      "required_tools": [
+        "calculate_geographic_center"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the city closest to the calculated geographic center as the ideal location for the new distribution center.",
+      "expected_outcome": "Agent provides a clear and data-driven location recommendation.",
+      "required_tools": [
+        "find_closest_city"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

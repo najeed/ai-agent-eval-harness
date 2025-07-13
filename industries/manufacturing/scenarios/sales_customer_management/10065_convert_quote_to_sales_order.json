@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sc-10065",
+  "title": "Convert a Quote to a Sales Order",
+  "description": "A customer has accepted a quote and wants to proceed with the order.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Quoting & Ordering",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the existing quote using the quote number provided by the customer.",
+      "expected_outcome": "Agent locates the active quote in the system.",
+      "required_tools": [
+        "find_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the 'Convert to Order' function to automatically create a sales order from the quote details.",
+      "expected_outcome": "Agent successfully converts the quote into a new sales order.",
+      "required_tools": [
+        "convert_quote_to_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the new sales order number with the customer and send them an order acknowledgement.",
+      "expected_outcome": "Agent provides the SO number to the customer and emails the acknowledgement.",
+      "required_tools": [
+        "send_order_acknowledgement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

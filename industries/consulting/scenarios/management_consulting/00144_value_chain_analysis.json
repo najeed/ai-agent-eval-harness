@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-144",
+  "title": "Value Chain Analysis",
+  "description": "An agent must analyze a client's business processes to map them to Porter's Value Chain framework.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Given a list of client business processes, categorize each as either a 'Primary Activity' or a 'Support Activity'.",
+      "expected_outcome": "Agent correctly categorizes processes like 'Logistics' as Primary and 'Human Resources' as Support.",
+      "required_tools": [
+        "categorize_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For the Primary Activities, further categorize them into 'Inbound Logistics', 'Operations', 'Outbound Logistics', 'Marketing & Sales', and 'Service'.",
+      "expected_outcome": "Agent correctly sub-categorizes the primary activities.",
+      "required_tools": [
+        "categorize_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify one potential area for cost reduction or value creation within the mapped value chain.",
+      "expected_outcome": "Agent provides a reasonable strategic recommendation, e.g., 'Optimize outbound logistics by consolidating shipments'.",
+      "required_tools": [
+        "make_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    }
+  ]
+}

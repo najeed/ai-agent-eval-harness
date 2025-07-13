@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-157",
+  "title": "Social Media Listening",
+  "description": "An agent must monitor social media for mentions of a client's brand and classify the sentiment of those mentions.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search Twitter for recent mentions of the client's brand name.",
+      "expected_outcome": "Agent retrieves a list of recent tweets mentioning the brand.",
+      "required_tools": [
+        "search_twitter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each tweet, perform sentiment analysis.",
+      "expected_outcome": "Agent classifies each tweet as 'Positive', 'Negative', or 'Neutral'.",
+      "required_tools": [
+        "perform_sentiment_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report summarizing the sentiment and highlighting any significant negative tweets.",
+      "expected_outcome": "Agent produces a concise social media sentiment report.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

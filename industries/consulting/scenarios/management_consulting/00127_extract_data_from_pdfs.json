@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-127",
+  "title": "Extract Table Data from PDF Reports",
+  "description": "An agent must extract specific data tables from a collection of PDF market research reports.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For each PDF in a given folder, identify any pages that contain tables.",
+      "expected_outcome": "Agent correctly lists the page numbers containing tables for each PDF.",
+      "required_tools": [
+        "identify_tables_in_pdf"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Extract the identified tables into a structured format (e.g., CSV or JSON).",
+      "expected_outcome": "Agent successfully extracts all tables into separate CSV files.",
+      "required_tools": [
+        "extract_table_from_pdf"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Consolidate the data from all the extracted tables into a single master CSV file.",
+      "expected_outcome": "Agent merges all the individual CSVs into one file.",
+      "required_tools": [
+        "merge_csv_files"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

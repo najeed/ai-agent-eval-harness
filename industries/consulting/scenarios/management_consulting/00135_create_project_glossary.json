@@ -1,0 +1,66 @@
+{
+  "scenario_id": "consulting-mc-135",
+  "title": "Create a Project Glossary",
+  "description": "An agent must scan a collection of project documents and create a glossary of key terms and acronyms.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process all documents in a specified project folder.",
+      "expected_outcome": "Agent successfully reads all documents.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify all acronyms and technical terms used in the documents.",
+      "expected_outcome": "Agent extracts a list of potential glossary terms.",
+      "required_tools": [
+        "extract_key_terms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each term, find its definition or first usage context within the documents.",
+      "expected_outcome": "Agent provides a definition or context for each term.",
+      "required_tools": [
+        "find_definition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Format the findings into a two-column glossary table (Term | Definition).",
+      "expected_outcome": "Agent generates a well-structured glossary.",
+      "required_tools": [
+        "create_glossary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

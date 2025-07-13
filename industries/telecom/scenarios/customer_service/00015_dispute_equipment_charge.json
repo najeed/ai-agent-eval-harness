@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-cs-15",
+  "title": "Billing Dispute - Unreturned Equipment Charge",
+  "description": "A former customer is being charged for unreturned equipment they claim to have sent back.",
+  "use_case": "Customer Service",
+  "core_function": "Billing and Payments",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the former customer's account and the specific equipment charge.",
+      "expected_outcome": "Agent locates the closed account and the charge for a modem.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask the customer for the return tracking number and check it in the logistics system.",
+      "expected_outcome": "Agent takes the tracking number and uses a tool to verify it.",
+      "required_tools": [
+        "check_return_tracking_number"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The tracking number confirms the item was received. Remove the equipment charge from the final bill.",
+      "expected_outcome": "Agent finds the return was successful and credits the customer's account for the charge.",
+      "required_tools": [
+        "apply_manual_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

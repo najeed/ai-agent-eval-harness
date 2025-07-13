@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-104",
+  "title": "Create a SWOT Analysis",
+  "description": "Based on a set of internal documents and market research reports, an agent must create a SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis for the client.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the provided documents to identify internal factors (Strengths and Weaknesses).",
+      "expected_outcome": "Agent correctly categorizes internal factors, such as 'strong brand recognition' as a Strength and 'outdated IT infrastructure' as a Weakness.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the provided documents to identify external factors (Opportunities and Threats).",
+      "expected_outcome": "Agent correctly categorizes external factors, such as 'growing market in Asia' as an Opportunity and 'new disruptive competitor' as a Threat.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the findings into a standard 2x2 SWOT matrix format.",
+      "expected_outcome": "Agent generates a correctly formatted SWOT analysis with the identified points in the correct quadrants.",
+      "required_tools": [
+        "create_swot_matrix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

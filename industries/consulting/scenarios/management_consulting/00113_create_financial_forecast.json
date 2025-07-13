@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-113",
+  "title": "Create a Financial Forecast",
+  "description": "Using historical sales data and a set of growth assumptions, an agent must create a 5-year revenue forecast.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the historical sales data (CSV).",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the provided growth assumptions (e.g., '10% growth in Year 1, 8% in Year 2') to create the forecast.",
+      "expected_outcome": "Agent correctly calculates the revenue for each of the next five years.",
+      "required_tools": [
+        "create_financial_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a line chart visualizing the historical and forecasted revenue.",
+      "expected_outcome": "Agent produces a correctly labeled line chart.",
+      "required_tools": [
+        "generate_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

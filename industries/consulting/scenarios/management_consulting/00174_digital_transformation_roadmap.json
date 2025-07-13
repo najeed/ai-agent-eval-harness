@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-174",
+  "title": "Digital Transformation Roadmap",
+  "description": "An agent must create a high-level digital transformation roadmap for a traditional manufacturing client.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify key areas for digital transformation in manufacturing (e.g., 'Smart Factory (IoT)', 'Digital Supply Chain', 'E-commerce Platform').",
+      "expected_outcome": "Agent brainstorms relevant transformation initiatives.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Organize these initiatives into a phased roadmap (Phase 1: Foundational, Phase 2: Growth, Phase 3: Optimization).",
+      "expected_outcome": "Agent creates a logical, phased plan.",
+      "required_tools": [
+        "create_project_timeline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each initiative, list the key expected benefits.",
+      "expected_outcome": "Agent clearly articulates the value proposition of each part of the strategy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

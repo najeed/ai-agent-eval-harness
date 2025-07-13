@@ -1,0 +1,53 @@
+{
+  "scenario_id": "consulting-mc-102",
+  "title": "Conduct Competitor Analysis",
+  "description": "An agent must research and summarize the strengths and weaknesses of three key competitors identified by the client.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For each of the three competitors, find their latest annual report and Q2 earnings call transcript.",
+      "expected_outcome": "Agent successfully locates and retrieves the correct documents for all three competitors.",
+      "required_tools": [
+        "web_search",
+        "document_finder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Summarize the key strategic initiatives mentioned in the retrieved documents for each competitor.",
+      "expected_outcome": "Agent provides a concise summary of each competitor's strategy.",
+      "required_tools": [
+        "summarize_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summarization_quality",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the findings into a table comparing the competitors across key metrics like revenue, market share, and stated strategic goals.",
+      "expected_outcome": "Agent generates a correctly formatted table with accurate data.",
+      "required_tools": [
+        "create_comparison_table"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

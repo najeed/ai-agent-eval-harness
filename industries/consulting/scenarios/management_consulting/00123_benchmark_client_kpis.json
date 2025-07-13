@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-123",
+  "title": "Benchmark Client KPIs",
+  "description": "An agent must compare a client's Key Performance Indicators (KPIs) against industry benchmarks.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the client's KPI data and a separate file with industry benchmark data.",
+      "expected_outcome": "Agent successfully loads both datasets.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each KPI, calculate the variance between the client's performance and the industry benchmark.",
+      "expected_outcome": "Agent correctly calculates the percentage difference for each KPI.",
+      "required_tools": [
+        "calculate_variance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a table highlighting the KPIs where the client is underperforming the most.",
+      "expected_outcome": "Agent creates a sorted table that clearly shows the biggest performance gaps.",
+      "required_tools": [
+        "create_comparison_table"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

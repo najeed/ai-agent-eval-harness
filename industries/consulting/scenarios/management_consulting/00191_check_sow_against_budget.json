@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-191",
+  "title": "Check SOW Against Budget",
+  "description": "An agent must verify that the work described in a Statement of Work (SOW) can be completed within the allocated project budget.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Estimate the total effort (in days) required for the tasks listed in the SOW.",
+      "expected_outcome": "Agent provides a reasonable total effort estimate.",
+      "required_tools": [
+        "estimate_task_duration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total estimated cost based on the effort and standard day rates.",
+      "expected_outcome": "Agent correctly calculates the total estimated project cost.",
+      "required_tools": [
+        "calculate_project_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the estimated cost against the project budget and flag any discrepancy.",
+      "expected_outcome": "Agent reports that the estimated cost is 10% over the allocated budget.",
+      "required_tools": [
+        "calculate_variance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

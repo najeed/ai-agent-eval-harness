@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-164",
+  "title": "Product Portfolio Analysis (BCG Matrix)",
+  "description": "An agent must categorize a client's products into a BCG Matrix (Stars, Cash Cows, Question Marks, Dogs) based on market share and growth rate data.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load data for a list of products, including their market share and market growth rate.",
+      "expected_outcome": "Agent successfully loads the product data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Categorize each product into one of the four BCG Matrix quadrants based on standard thresholds (e.g., high/low share, high/low growth).",
+      "expected_outcome": "Agent correctly classifies each product (e.g., Product A is a 'Star').",
+      "required_tools": [
+        "categorize_by_matrix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a strategic recommendation for one product from each quadrant (e.g., 'Invest in the Star', 'Harvest the Cash Cow').",
+      "expected_outcome": "Agent provides a standard, appropriate strategic recommendation for each category.",
+      "required_tools": [
+        "make_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

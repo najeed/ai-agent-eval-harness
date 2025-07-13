@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-169",
+  "title": "Recommend KPIs for a New Strategy",
+  "description": "A client is launching a new strategy focused on 'customer centricity'. An agent must recommend relevant KPIs to track its success.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the 'customer centricity' strategy to understand its core goals.",
+      "expected_outcome": "Agent identifies goals like 'improve satisfaction' and 'reduce churn'.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Brainstorm a list of potential KPIs relevant to the strategy.",
+      "expected_outcome": "Agent generates a list of relevant KPIs.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the top 5 most impactful KPIs, such as 'Net Promoter Score (NPS)', 'Customer Lifetime Value (CLV)', and 'Churn Rate'.",
+      "expected_outcome": "Agent provides a concise and relevant list of recommended KPIs.",
+      "required_tools": [
+        "make_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

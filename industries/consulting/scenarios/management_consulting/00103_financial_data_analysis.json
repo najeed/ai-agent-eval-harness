@@ -1,0 +1,51 @@
+{
+  "scenario_id": "consulting-mc-103",
+  "title": "Analyze Client Financial Data",
+  "description": "An agent must analyze a client's financial statements (CSV) to identify trends in profitability and liquidity.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the provided CSV of financial data and calculate key financial ratios (e.g., Gross Profit Margin, Current Ratio) for the last 5 years.",
+      "expected_outcome": "Agent correctly calculates the financial ratios for each year.",
+      "required_tools": [
+        "load_csv",
+        "calculate_financial_ratios"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the year-over-year trend for each calculated ratio.",
+      "expected_outcome": "Agent correctly identifies trends, such as 'Gross Profit Margin has been decreasing since 2022'.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a summary report highlighting the key findings, such as declining profitability and improving liquidity.",
+      "expected_outcome": "Agent produces a concise text summary of the financial health trends.",
+      "required_tools": [
+        "draft_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

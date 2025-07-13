@@ -1,0 +1,53 @@
+{
+  "scenario_id": "consulting-mc-140",
+  "title": "Anonymize a Case Study",
+  "description": "An agent must take a completed project report and anonymize it so it can be used as a public case study.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Replace the client's name throughout the document with a generic descriptor like 'a leading retail company'.",
+      "expected_outcome": "Agent successfully replaces all instances of the client name.",
+      "required_tools": [
+        "find_and_replace"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Redact all specific financial figures by replacing them with descriptive phrases (e.g., 'significant revenue growth', 'multi-million dollar investment').",
+      "expected_outcome": "Agent correctly redacts all financial data.",
+      "required_tools": [
+        "redact_financial_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Remove all names of individual client employees.",
+      "expected_outcome": "Agent successfully removes all names.",
+      "required_tools": [
+        "identify_pii",
+        "redact_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

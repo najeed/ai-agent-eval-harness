@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-109",
+  "title": "Brainstorm Cost-Saving Initiatives",
+  "description": "Given a client's main expense categories, an agent must brainstorm a list of potential cost-saving initiatives.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the list of top expense categories (e.g., 'Logistics', 'Software Licensing', 'Travel').",
+      "expected_outcome": "Agent correctly ingests the input data.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each category, generate at least three potential cost-saving ideas.",
+      "expected_outcome": "Agent generates relevant ideas, such as 'renegotiate software contracts' or 'implement a stricter travel policy'.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Categorize the generated ideas by potential impact (High, Medium, Low) and implementation difficulty (High, Medium, Low).",
+      "expected_outcome": "Agent provides a reasonable categorization for each idea.",
+      "required_tools": [
+        "categorize_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    }
+  ]
+}

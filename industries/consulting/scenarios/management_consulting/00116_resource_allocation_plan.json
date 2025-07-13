@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-116",
+  "title": "Create a Resource Allocation Plan",
+  "description": "For a new project, an agent must create a resource plan, assigning consultants from a list based on their skills and availability.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the project requirements to determine the needed skill sets (e.g., 'Financial Analyst', 'Data Scientist').",
+      "expected_outcome": "Agent correctly identifies the required roles for the project.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review a list of available consultants, their skills, and their availability.",
+      "expected_outcome": "Agent correctly processes the list of available resources.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign specific consultants to the required roles, creating a staffed project team.",
+      "expected_outcome": "Agent creates a logical team structure, matching skills to roles.",
+      "required_tools": [
+        "create_resource_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

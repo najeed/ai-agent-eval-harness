@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-195",
+  "title": "Create Internal Training Material",
+  "description": "An agent must create training material for new analysts on how to perform a SWOT analysis.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft a section explaining what a SWOT analysis is and why it is used.",
+      "expected_outcome": "Agent provides a clear and accurate definition.",
+      "required_tools": [
+        "draft_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a simple, fictional example of a SWOT analysis for a well-known company (e.g., Coca-Cola).",
+      "expected_outcome": "Agent generates a clear and illustrative example.",
+      "required_tools": [
+        "create_swot_matrix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft a list of 'Do's and Don'ts' for conducting a good SWOT analysis.",
+      "expected_outcome": "Agent provides helpful, actionable tips.",
+      "required_tools": [
+        "draft_bullet_points"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

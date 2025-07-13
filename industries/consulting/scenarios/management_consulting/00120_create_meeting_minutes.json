@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-120",
+  "title": "Create Meeting Minutes from Transcript",
+  "description": "An agent must generate structured meeting minutes from a raw audio transcript of a client meeting.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the transcript to identify the attendees, agenda items discussed, and key decisions made.",
+      "expected_outcome": "Agent correctly extracts the key components of the meeting.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify all action items mentioned, including who is responsible and the due date.",
+      "expected_outcome": "Agent correctly identifies and assigns all action items.",
+      "required_tools": [
+        "extract_action_items"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Format the extracted information into a standard meeting minutes template.",
+      "expected_outcome": "Agent generates a well-structured document with sections for attendees, decisions, and action items.",
+      "required_tools": [
+        "populate_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

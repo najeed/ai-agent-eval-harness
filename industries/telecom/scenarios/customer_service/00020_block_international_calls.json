@@ -1,0 +1,50 @@
+{
+  "scenario_id": "telecom-cs-20",
+  "title": "Block International Calls",
+  "description": "A customer wants to block all outgoing international calls from their phone to prevent accidental charges.",
+  "use_case": "Customer Service",
+  "core_function": "Plan Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and verify their request.",
+      "expected_outcome": "Agent correctly identifies the account.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the service feature management tool and apply the 'International Call Block' feature.",
+      "expected_outcome": "Agent successfully adds the blocking feature to the customer's line.",
+      "required_tools": [
+        "update_service_features"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm with the customer that the block has been applied and is effective immediately.",
+      "expected_outcome": "Agent clearly confirms the action has been completed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "consulting-mc-187",
+  "title": "Create Voice of the Customer Report",
+  "description": "An agent must synthesize data from surveys, interviews, and support tickets to create a 'Voice of the Customer' report.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ingest data from three sources: a survey results CSV, interview transcripts, and a dump of support ticket subjects.",
+      "expected_outcome": "Agent successfully loads all three data sources.",
+      "required_tools": [
+        "load_csv",
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the top 3 positive themes and top 3 negative themes that appear across all data sources.",
+      "expected_outcome": "Agent correctly identifies common themes like 'Excellent Customer Service' (Positive) and 'Product is Buggy' (Negative).",
+      "required_tools": [
+        "identify_common_themes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft a report summarizing these themes, providing a supporting example for each from one of the sources.",
+      "expected_outcome": "Agent generates a comprehensive report with evidence-backed themes.",
+      "required_tools": [
+        "draft_text_section",
+        "find_supporting_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

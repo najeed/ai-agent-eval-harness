@@ -1,0 +1,56 @@
+{
+  "scenario_id": "telecom-cs-10082",
+  "title": "Customer Reports Service Outage",
+  "description": "A customer calls to report a total loss of mobile service. The agent must check for known outages and provide an estimated time for resolution.",
+  "use_case": "Customer Service",
+  "core_function": "Service Lifecycle",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and verify their service location using their address.",
+      "expected_outcome": "Agent correctly identifies the customer account and their primary service location.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the network status map for known outages affecting the customer's verified area.",
+      "expected_outcome": "Agent correctly uses the outage map tool to confirm a regional outage.",
+      "required_tools": [
+        "check_network_outage_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer about the known outage, provide the ETR, and offer to set up an SMS notification for when service is restored.",
+      "expected_outcome": "Agent clearly communicates the outage status and ETR and successfully sets up an alert.",
+      "required_tools": [
+        "create_service_alert_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        },
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

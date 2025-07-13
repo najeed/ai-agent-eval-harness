@@ -1,0 +1,49 @@
+{
+  "scenario_id": "telecom-sl-91",
+  "title": "New Customer Acquisition - Student Discount",
+  "description": "A student wants to sign up for a new plan and apply a student discount.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "New Customer Acquisition",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the student discount program and its verification requirements.",
+      "expected_outcome": "Agent clearly explains the need for a valid student ID or email.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the customer to the online student verification portal (e.g., UNiDAYS).",
+      "expected_outcome": "Agent provides the correct link and instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once verified, create the new account and apply the student discount promotion.",
+      "expected_outcome": "Agent successfully creates the account with the discount applied.",
+      "required_tools": [
+        "create_customer_account",
+        "apply_promotion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

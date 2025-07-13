@@ -1,0 +1,62 @@
+{
+  "scenario_id": "consulting-mc-183",
+  "title": "Pareto Analysis (80/20 Rule)",
+  "description": "An agent must perform a Pareto analysis on sales data to identify the top 20% of products that generate 80% of revenue.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load product sales data, including product ID and total revenue per product.",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Sort the products by revenue in descending order and calculate the cumulative revenue percentage.",
+      "expected_outcome": "Agent correctly calculates the cumulative revenue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the products that fall within the top 80% of cumulative revenue.",
+      "expected_outcome": "Agent generates a list of the most profitable products.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a report stating which products represent the 'vital few' according to the Pareto principle.",
+      "expected_outcome": "Agent produces a clear summary of the analysis.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

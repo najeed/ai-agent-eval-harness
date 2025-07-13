@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-108",
+  "title": "Create a Process Map",
+  "description": "Based on a workshop transcript describing a client's procurement process, an agent must create a visual process map.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the transcript to identify all the steps, decision points, and actors in the procurement process.",
+      "expected_outcome": "Agent correctly lists all process steps (e.g., 'Create PR', 'Manager Approval', 'Create PO') and who performs them.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Structure the identified steps and decision points into a logical sequence.",
+      "expected_outcome": "Agent correctly orders the process flow.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a process map diagram (e.g., using Mermaid syntax) representing the flow.",
+      "expected_outcome": "Agent produces a valid and logically correct process map diagram.",
+      "required_tools": [
+        "create_process_map_diagram"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

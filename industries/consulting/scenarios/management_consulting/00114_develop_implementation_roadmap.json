@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-114",
+  "title": "Develop Implementation Roadmap",
+  "description": "After a strategy has been decided, an agent must create a phased implementation roadmap.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Break down the main strategic initiative into smaller, actionable workstreams.",
+      "expected_outcome": "Agent identifies logical workstreams like 'Technology Upgrade', 'Employee Training', and 'Process Redesign'.",
+      "required_tools": [
+        "breakdown_initiative"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each workstream, define key milestones and estimated timelines.",
+      "expected_outcome": "Agent assigns realistic milestones and durations to each workstream.",
+      "required_tools": [
+        "define_milestones"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a Gantt chart visualizing the roadmap, showing dependencies between workstreams.",
+      "expected_outcome": "Agent generates a Gantt chart that clearly shows the project plan over time.",
+      "required_tools": [
+        "create_gantt_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

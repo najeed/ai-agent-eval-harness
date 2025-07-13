@@ -1,0 +1,53 @@
+{
+  "scenario_id": "telecom-ts-30",
+  "title": "Mobile Troubleshooting - Cannot Send MMS",
+  "description": "A customer can send SMS texts but cannot send or receive MMS (picture messages).",
+  "use_case": "Technical Support",
+  "core_function": "Mobile Device Troubleshooting",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the customer's device model and that their plan supports MMS.",
+      "expected_outcome": "Agent confirms the customer has a compatible device and plan.",
+      "required_tools": [
+        "get_customer_details",
+        "get_plan_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the APN (Access Point Name) settings on the customer's account.",
+      "expected_outcome": "Agent finds that the APN settings are outdated for the customer's device type.",
+      "required_tools": [
+        "get_apn_settings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send an SMS with the correct APN configuration settings to the customer's device.",
+      "expected_outcome": "Agent uses the tool to push the correct settings to the device.",
+      "required_tools": [
+        "push_apn_configuration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

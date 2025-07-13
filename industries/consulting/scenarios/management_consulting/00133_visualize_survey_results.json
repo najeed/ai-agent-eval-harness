@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-133",
+  "title": "Visualize Survey Results",
+  "description": "An agent must take raw survey result data (CSV) and create visualizations to highlight the findings.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the survey results data.",
+      "expected_outcome": "Agent successfully loads the CSV.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For multiple-choice questions, generate a bar chart showing the distribution of answers.",
+      "expected_outcome": "Agent creates a correct bar chart for a specified question.",
+      "required_tools": [
+        "generate_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For Likert scale questions (e.g., 'rate satisfaction 1-5'), calculate the average score and generate a summary statistic.",
+      "expected_outcome": "Agent correctly calculates the average satisfaction score.",
+      "required_tools": [
+        "generate_summary_statistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

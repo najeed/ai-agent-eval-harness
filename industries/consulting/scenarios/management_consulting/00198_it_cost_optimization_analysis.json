@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-198",
+  "title": "IT Cost Optimization Analysis",
+  "description": "An agent must analyze a client's IT spending to find opportunities for cost optimization.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load a dataset of IT expenditures, categorized by area (e.g., 'Hardware', 'Software Licenses', 'Cloud Services').",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the top 3 spending categories.",
+      "expected_outcome": "Agent correctly identifies the largest areas of IT spend.",
+      "required_tools": [
+        "generate_summary_statistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For the top category ('Cloud Services'), suggest specific optimization strategies (e.g., 'use reserved instances', 'identify and terminate unused resources').",
+      "expected_outcome": "Agent provides actionable and relevant cost-saving recommendations.",
+      "required_tools": [
+        "make_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

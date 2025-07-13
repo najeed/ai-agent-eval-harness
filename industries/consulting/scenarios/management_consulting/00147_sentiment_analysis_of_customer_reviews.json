@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-147",
+  "title": "Sentiment Analysis of Customer Reviews",
+  "description": "An agent must analyze a CSV of customer reviews to gauge overall sentiment.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the CSV file containing customer reviews.",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each review, perform sentiment analysis and classify it as 'Positive', 'Negative', or 'Neutral'.",
+      "expected_outcome": "Agent assigns a sentiment label to each review.",
+      "required_tools": [
+        "perform_sentiment_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the percentage of reviews in each sentiment category.",
+      "expected_outcome": "Agent provides an accurate summary of the overall sentiment distribution (e.g., '60% Positive, 30% Negative, 10% Neutral').",
+      "required_tools": [
+        "generate_summary_statistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

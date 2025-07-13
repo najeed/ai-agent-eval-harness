@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-134",
+  "title": "Develop a Change Management Plan",
+  "description": "For a major technology implementation project, an agent must draft a change management plan.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify key stakeholder groups that will be affected by the change (e.g., 'Sales Team', 'IT Department', 'Executives').",
+      "expected_outcome": "Agent lists the relevant stakeholder groups.",
+      "required_tools": [
+        "identify_stakeholders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a communication plan outlining what messages need to be sent to which groups and when.",
+      "expected_outcome": "Agent creates a structured communication plan.",
+      "required_tools": [
+        "create_communication_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Outline a training plan, including different training modules for different user groups.",
+      "expected_outcome": "Agent creates a high-level training plan.",
+      "required_tools": [
+        "create_training_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

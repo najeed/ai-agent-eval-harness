@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-196",
+  "title": "Final Project Billing and Archiving",
+  "description": "An agent must perform the final administrative tasks for a completed project.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate the final invoice for the project.",
+      "expected_outcome": "Agent successfully generates the final invoice.",
+      "required_tools": [
+        "generate_invoice_from_timesheets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Mark the project as 'Completed' in the project management system.",
+      "expected_outcome": "Agent updates the project status.",
+      "required_tools": [
+        "update_project_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Archive all project documents to the long-term storage server.",
+      "expected_outcome": "Agent successfully initiates the archival process.",
+      "required_tools": [
+        "archive_project_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

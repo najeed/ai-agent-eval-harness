@@ -1,0 +1,64 @@
+{
+  "scenario_id": "consulting-mc-158",
+  "title": "A/B Test Analysis",
+  "description": "An agent must analyze the results of an A/B test to determine if a new website design increased conversion rates.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the A/B test results, which include visitor counts and conversion counts for version A (control) and version B (treatment).",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the conversion rate for both version A and version B.",
+      "expected_outcome": "Agent correctly calculates the two conversion rates.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform a statistical significance test (e.g., chi-squared test) to determine if the difference in conversion rates is statistically significant.",
+      "expected_outcome": "Agent correctly performs the test and reports the p-value.",
+      "required_tools": [
+        "perform_significance_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Make a recommendation based on the results.",
+      "expected_outcome": "Agent recommends launching version B because it showed a statistically significant increase in conversions.",
+      "required_tools": [
+        "make_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

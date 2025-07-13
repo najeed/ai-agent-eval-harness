@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-167",
+  "title": "Create Expert Interview Briefing Document",
+  "description": "Before an expert interview, an agent must create a briefing document for the consultant conducting the interview.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Research the expert's background, recent publications, and company.",
+      "expected_outcome": "Agent compiles a concise background summary of the expert.",
+      "required_tools": [
+        "web_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summarization_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on the project's goals, draft a list of 5-7 key questions to ask the expert.",
+      "expected_outcome": "Agent generates a list of relevant and insightful questions.",
+      "required_tools": [
+        "draft_interview_questions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Combine the background summary and the questions into a single, well-structured briefing document.",
+      "expected_outcome": "Agent produces a complete and helpful briefing document.",
+      "required_tools": [
+        "create_document_from_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

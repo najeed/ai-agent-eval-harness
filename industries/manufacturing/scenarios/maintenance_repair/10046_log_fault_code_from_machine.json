@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-mr-10046",
+  "title": "Log a Fault Code from a Machine",
+  "description": "A machine has thrown a fault code. A technician needs to log this code in the maintenance ticket to aid in diagnosis.",
+  "use_case": "Maintenance & Repair",
+  "core_function": "Corrective Maintenance & Repair",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the open maintenance ticket for the faulted machine.",
+      "expected_outcome": "Agent finds the correct work order.",
+      "required_tools": [
+        "get_maintenance_work_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the fault code displayed on the machine's HMI into the work order log.",
+      "expected_outcome": "Agent accurately records the fault code in the ticket.",
+      "required_tools": [
+        "update_maintenance_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the fault code to look up potential causes in the knowledge base.",
+      "expected_outcome": "Agent searches the knowledge base with the code and finds articles related to sensor failures.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

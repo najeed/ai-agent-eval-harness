@@ -1,0 +1,53 @@
+{
+  "scenario_id": "consulting-mc-105",
+  "title": "Create Presentation from Final Report",
+  "description": "An agent must create a 10-slide executive presentation based on a detailed final report document.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Read the final report and extract the key findings from each major section.",
+      "expected_outcome": "Agent correctly identifies the most important conclusions from the report.",
+      "required_tools": [
+        "analyze_document",
+        "extract_key_findings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a slide outline with a title for each of the 10 slides.",
+      "expected_outcome": "Agent creates a logical flow for the presentation (e.g., Title, Agenda, Key Findings, Recommendations, Next Steps).",
+      "required_tools": [
+        "create_slide_outline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each slide in the outline, generate 3-5 bullet points summarizing the relevant information from the report.",
+      "expected_outcome": "Agent populates each slide with concise and relevant summary points.",
+      "required_tools": [
+        "draft_bullet_points"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summarization_quality",
+          "threshold": 0.85
+        }
+      ]
+    }
+  ]
+}

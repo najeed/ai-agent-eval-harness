@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-170",
+  "title": "Generate Weekly Timesheet Report",
+  "description": "An agent must pull timesheet data for a project and generate a summary report for the project manager.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all timesheet entries for a specific project code for the past week.",
+      "expected_outcome": "Agent successfully pulls the correct timesheet data.",
+      "required_tools": [
+        "get_timesheet_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Summarize the total hours logged by each team member.",
+      "expected_outcome": "Agent provides an accurate summary of hours per person.",
+      "required_tools": [
+        "generate_summary_statistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the total hours logged against the weekly budget and flag any overages.",
+      "expected_outcome": "Agent correctly calculates the variance against the budget.",
+      "required_tools": [
+        "calculate_variance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

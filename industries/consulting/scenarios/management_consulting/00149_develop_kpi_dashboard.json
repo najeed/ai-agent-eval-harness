@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-149",
+  "title": "Design a KPI Dashboard",
+  "description": "An agent must design the layout and content for a new executive KPI dashboard.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Based on a list of available metrics, select the top 5-7 most important KPIs for an executive audience.",
+      "expected_outcome": "Agent selects high-level metrics like 'Total Revenue', 'Net Profit Margin', and 'Customer Acquisition Cost'.",
+      "required_tools": [
+        "select_kpis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each selected KPI, suggest the best visualization type (e.g., 'Line Chart' for trends, 'Gauge' for current status, 'Bar Chart' for comparisons).",
+      "expected_outcome": "Agent recommends appropriate chart types for each KPI.",
+      "required_tools": [
+        "suggest_visualization"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a text-based description of the dashboard layout, arranging the visualizations in a logical grid.",
+      "expected_outcome": "Agent describes a clean and readable dashboard layout.",
+      "required_tools": [
+        "design_dashboard_layout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

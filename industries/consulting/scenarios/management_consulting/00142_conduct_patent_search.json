@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-142",
+  "title": "Conduct a Patent Search",
+  "description": "For a client developing a new product, an agent must conduct a preliminary patent search for similar inventions.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Based on a product description, identify key technical terms to use as search keywords.",
+      "expected_outcome": "Agent extracts relevant keywords like 'wearable', 'haptic feedback', 'navigation'.",
+      "required_tools": [
+        "extract_key_terms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search patent databases (e.g., USPTO, Google Patents) using the identified keywords.",
+      "expected_outcome": "Agent executes searches on patent databases.",
+      "required_tools": [
+        "search_patent_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Summarize the top 5 most relevant existing patents found, including their title, abstract, and assignee.",
+      "expected_outcome": "Agent produces a concise summary of potentially conflicting patents.",
+      "required_tools": [
+        "summarize_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summarization_quality",
+          "threshold": 0.85
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "consulting-mc-143",
+  "title": "Perform a Regression Analysis",
+  "description": "An agent must perform a simple linear regression to determine the relationship between marketing spend and sales revenue.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load a dataset containing monthly 'Marketing Spend' and 'Sales Revenue' for the past 3 years.",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a linear regression with 'Marketing Spend' as the independent variable and 'Sales Revenue' as the dependent variable.",
+      "expected_outcome": "Agent correctly runs the regression analysis.",
+      "required_tools": [
+        "perform_linear_regression"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Report the R-squared value and the coefficient for the 'Marketing Spend' variable, and explain their meaning in simple terms.",
+      "expected_outcome": "Agent provides the correct statistical outputs and a clear explanation (e.g., 'An R-squared of 0.75 means 75% of the variation in sales can be explained by marketing spend').",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        },
+        {
+          "metric": "communication_clarity",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "scenario_id": "consulting-mc-110",
+  "title": "Write an Executive Summary",
+  "description": "An agent must write a one-page executive summary of a 50-page detailed analysis report.",
+  "use_case": "Management Consulting",
+  "core_function": "Presentation & Reporting",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the full report to understand the problem statement, key findings, and final recommendations.",
+      "expected_outcome": "Agent correctly grasps the core message of the entire document.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the executive summary, ensuring it is concise and covers all critical elements.",
+      "expected_outcome": "Agent generates a well-written summary that is approximately one page long.",
+      "required_tools": [
+        "draft_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summarization_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

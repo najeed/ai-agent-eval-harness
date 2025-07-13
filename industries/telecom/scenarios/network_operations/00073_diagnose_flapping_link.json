@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-73",
+  "title": "Diagnose 'Flapping' Network Link",
+  "description": "A network link between two switches is repeatedly going up and down. The agent must stabilize it.",
+  "use_case": "Network Operations",
+  "core_function": "Fault Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the flapping link from the network monitoring system alerts.",
+      "expected_outcome": "Agent correctly identifies the two switches and the port numbers involved.",
+      "required_tools": [
+        "get_network_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the physical layer diagnostics for the ports (e.g., light levels for fiber, cable test for copper).",
+      "expected_outcome": "Agent finds that the fiber optic light levels are marginal, suggesting a dirty connector or failing transceiver.",
+      "required_tools": [
+        "get_physical_layer_diagnostics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a ticket for a data center technician to physically inspect and clean the fiber connection.",
+      "expected_outcome": "Agent creates a ticket with specific instructions for the technician.",
+      "required_tools": [
+        "create_trouble_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

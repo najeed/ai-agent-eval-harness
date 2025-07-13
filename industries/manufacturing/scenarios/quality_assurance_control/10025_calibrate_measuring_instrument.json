@@ -1,0 +1,51 @@
+{
+  "scenario_id": "mfg-qc-10025",
+  "title": "Calibrate a Measuring Instrument",
+  "description": "A quality technician needs to perform and log the calibration of a digital caliper.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Quality Inspection & Testing",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the calibration procedure and specifications for the digital caliper from the document management system.",
+      "expected_outcome": "Agent finds the standard operating procedure (SOP) for calibration.",
+      "required_tools": [
+        "get_document_by_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform the calibration using gauge blocks and record the 'as-found' and 'as-left' measurements.",
+      "expected_outcome": "Technician performs the physical procedure.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the calibration event in the asset management system, update the next calibration due date, and print a new calibration sticker.",
+      "expected_outcome": "Agent successfully logs the event, and the system shows the new due date.",
+      "required_tools": [
+        "log_calibration_event",
+        "print_calibration_sticker"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

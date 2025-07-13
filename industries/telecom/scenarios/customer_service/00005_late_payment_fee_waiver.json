@@ -1,0 +1,53 @@
+{
+  "scenario_id": "telecom-cs-5",
+  "title": "Request to Waive Late Payment Fee",
+  "description": "A long-time customer with a good payment history requests to have a late payment fee waived.",
+  "use_case": "Customer Service",
+  "core_function": "Billing and Payments",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the specific late fee on their account.",
+      "expected_outcome": "Agent correctly identifies the customer and the fee in question.",
+      "required_tools": [
+        "get_customer_details",
+        "get_billing_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the customer's account tenure and payment history for the last 24 months.",
+      "expected_outcome": "Agent confirms the customer has been with the company for 5+ years and has no other late payments in the last 2 years.",
+      "required_tools": [
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the positive history, waive the late fee as a one-time courtesy.",
+      "expected_outcome": "Agent successfully applies a credit to the account equivalent to the late fee.",
+      "required_tools": [
+        "apply_manual_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

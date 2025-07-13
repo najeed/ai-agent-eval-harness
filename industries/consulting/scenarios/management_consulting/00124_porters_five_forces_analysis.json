@@ -1,0 +1,68 @@
+{
+  "scenario_id": "consulting-mc-124",
+  "title": "Porter's Five Forces Analysis",
+  "description": "An agent must conduct a Porter's Five Forces analysis for a client in the airline industry based on provided research documents.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the documents to assess the 'Threat of New Entrants'.",
+      "expected_outcome": "Agent concludes the threat is 'Low' due to high capital costs and regulation, citing sources.",
+      "required_tools": [
+        "analyze_document",
+        "find_supporting_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the documents to assess the 'Bargaining Power of Buyers'.",
+      "expected_outcome": "Agent concludes the power is 'High' due to price comparison websites, citing sources.",
+      "required_tools": [
+        "analyze_document",
+        "find_supporting_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the documents to assess the 'Bargaining Power of Suppliers', 'Threat of Substitutes', and 'Industry Rivalry'.",
+      "expected_outcome": "Agent provides a reasonable assessment for the remaining three forces.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Compile the findings into a summary report, one section for each of the five forces.",
+      "expected_outcome": "Agent generates a well-structured report summarizing the complete analysis.",
+      "required_tools": [
+        "draft_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

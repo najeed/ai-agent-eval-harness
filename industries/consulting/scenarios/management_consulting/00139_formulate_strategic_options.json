@@ -1,0 +1,66 @@
+{
+  "scenario_id": "consulting-mc-139",
+  "title": "Formulate Strategic Options",
+  "description": "Based on a SWOT analysis, an agent must formulate three distinct strategic options for the client.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the provided SWOT analysis.",
+      "expected_outcome": "Agent correctly ingests the SWOT data.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Formulate a 'Growth' strategy that uses Strengths to capitalize on Opportunities.",
+      "expected_outcome": "Agent proposes a relevant growth strategy.",
+      "required_tools": [
+        "formulate_strategy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Formulate a 'Defensive' strategy that uses Strengths to mitigate Threats.",
+      "expected_outcome": "Agent proposes a relevant defensive strategy.",
+      "required_tools": [
+        "formulate_strategy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Formulate a 'Turnaround' strategy that addresses Weaknesses to mitigate Threats.",
+      "expected_outcome": "Agent proposes a relevant turnaround strategy.",
+      "required_tools": [
+        "formulate_strategy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    }
+  ]
+}

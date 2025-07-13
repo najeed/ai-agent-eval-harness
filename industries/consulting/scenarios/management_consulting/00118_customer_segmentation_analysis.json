@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-118",
+  "title": "Perform Customer Segmentation",
+  "description": "Using customer purchase data, an agent must perform a simple RFM (Recency, Frequency, Monetary) segmentation.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For each customer in the dataset, calculate their Recency, Frequency, and Monetary value.",
+      "expected_outcome": "Agent correctly calculates the three RFM metrics for each customer.",
+      "required_tools": [
+        "calculate_rfm_values"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign each customer to a segment (e.g., 'High-Value', 'At-Risk', 'New') based on their RFM scores.",
+      "expected_outcome": "Agent correctly applies the segmentation logic.",
+      "required_tools": [
+        "segment_customers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a summary showing the number of customers in each segment.",
+      "expected_outcome": "Agent produces an accurate count for each customer segment.",
+      "required_tools": [
+        "generate_summary_statistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

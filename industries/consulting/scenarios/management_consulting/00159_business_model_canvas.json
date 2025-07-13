@@ -1,0 +1,38 @@
+{
+  "scenario_id": "consulting-mc-159",
+  "title": "Create a Business Model Canvas",
+  "description": "An agent must populate a Business Model Canvas based on a client's business plan document.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the business plan to extract information for each of the 9 blocks of the canvas (e.g., 'Key Partners', 'Value Propositions', 'Customer Segments').",
+      "expected_outcome": "Agent successfully extracts relevant information for all 9 blocks.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Populate the Business Model Canvas template with the extracted information.",
+      "expected_outcome": "Agent generates a completed canvas.",
+      "required_tools": [
+        "populate_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

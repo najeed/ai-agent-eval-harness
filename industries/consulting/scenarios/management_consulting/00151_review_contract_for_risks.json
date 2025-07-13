@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-151",
+  "title": "Review Contract for Risks",
+  "description": "An agent must review a client contract to identify potential risks or unfavorable clauses.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the contract for specific keywords like 'indemnity', 'liability', 'termination', and 'exclusivity'.",
+      "expected_outcome": "Agent correctly identifies the clauses containing these keywords.",
+      "required_tools": [
+        "find_keywords"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the identified clauses to assess if they are standard or potentially risky.",
+      "expected_outcome": "Agent flags a clause with 'unlimited liability' as high-risk.",
+      "required_tools": [
+        "analyze_legal_clause"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a summary report of the identified risks for review by the legal team.",
+      "expected_outcome": "Agent creates a concise report highlighting the risky clauses.",
+      "required_tools": [
+        "generate_risk_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

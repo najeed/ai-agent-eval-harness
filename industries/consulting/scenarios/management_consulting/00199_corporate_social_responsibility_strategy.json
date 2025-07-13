@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-199",
+  "title": "Corporate Social Responsibility (CSR) Strategy",
+  "description": "An agent must draft a CSR strategy for a client that aligns with their brand values.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the client's brand values statement (e.g., 'Innovation', 'Community', 'Sustainability').",
+      "expected_outcome": "Agent correctly identifies the core brand values.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Brainstorm CSR initiatives that align with each brand value.",
+      "expected_outcome": "Agent suggests relevant initiatives, such as 'sponsoring a local STEM fair' to align with 'Community' and 'Innovation'.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Structure the initiatives into a formal CSR strategy document.",
+      "expected_outcome": "Agent produces a well-organized strategy document.",
+      "required_tools": [
+        "create_document_from_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

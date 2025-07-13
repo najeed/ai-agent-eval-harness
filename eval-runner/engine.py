@@ -1,6 +1,6 @@
 # eval-runner/engine.py
 
-import metrics
+from . import metrics
 
 def run_evaluation(scenario: dict) -> list:
     """
@@ -57,6 +57,8 @@ def run_evaluation(scenario: dict) -> list:
                 score = metrics.calculate_generic_accuracy() # Simulate
             elif metric_name == "root_cause_analysis_correctness":
                 score = metrics.calculate_generic_accuracy() # Simulate
+            elif metric_name == "communication_clarity":
+                score = metrics.calculate_communication_clarity() # Simulate
             else:
                 score = 0.0 # Unknown metric
 

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-162",
+  "title": "Research Regulatory Filings",
+  "description": "An agent must search SEC filings (e.g., 10-K, 8-K) for a specific company to find information about disclosed risks.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the SEC's EDGAR database and find all filings for a specific company in the last year.",
+      "expected_outcome": "Agent successfully retrieves a list of the company's recent filings.",
+      "required_tools": [
+        "search_edgar_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "In the latest 10-K filing, locate the 'Risk Factors' section.",
+      "expected_outcome": "Agent correctly navigates to the 'Risk Factors' section of the document.",
+      "required_tools": [
+        "find_document_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Summarize the top 5 risks disclosed by the company.",
+      "expected_outcome": "Agent provides a concise summary of the key risks.",
+      "required_tools": [
+        "summarize_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summarization_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

@@ -1,10 +1,11 @@
 # eval-runner/__main__.py
 
 import argparse
-import loader
-import engine
-import reporter
+from . import loader
+from . import engine
+from . import reporter
 from pathlib import Path
+import sys
 
 def main():
     """
@@ -23,42 +24,76 @@ def main():
     )
     parser.add_argument(
         "--scenario", 
-        type=str, 
+        type=str,
+        nargs='+', # Accept one or more file or directory paths
         required=True, 
-        help="The scenario file to run (e.g., 'customer_service/01_billing_dispute.json')."
+        help="One or more scenario files or directories to run (e.g., 'customer_service/01_billing_dispute.json' or 'customer_service')."
     )
     
     args = parser.parse_args()
     
-    print(f"🚀 Starting evaluation for industry '{args.industry}' with scenario '{args.scenario}'...")
+    print(f"🚀 Starting evaluation for industry '{args.industry}'...")
     
-    # Construct the path to the scenario file
+    # --- 1. Discover all scenario files ---
     base_path = Path(__file__).parent.parent / "industries"
-    scenario_path = base_path / args.industry / "scenarios" / args.scenario
+    scenarios_to_run = []
     
-    if not scenario_path.exists():
-        print(f"❌ Error: Scenario file not found at {scenario_path}")
-        return
+    for scenario_path_part in args.scenario:
+        # Construct the full path to the scenario file or directory
+        full_path = base_path / args.industry / "scenarios" / scenario_path_part
+        
+        if not full_path.exists():
+            print(f"⚠️ Warning: Path not found, skipping: {full_path}")
+            continue
+            
+        if full_path.is_dir():
+            # If it's a directory, find all .json files recursively
+            print(f"🔎 Found directory: {full_path}. Searching for scenarios...")
+            json_files = sorted(full_path.rglob('*.json'))
+            if not json_files:
+                print(f"   -> No .json scenarios found in {full_path}")
+            scenarios_to_run.extend(json_files)
+        elif full_path.is_file() and full_path.suffix == '.json':
+            # If it's a JSON file, add it directly
+            scenarios_to_run.append(full_path)
+        else:
+            print(f"⚠️ Warning: Path is not a valid .json file or directory, skipping: {full_path}")
 
-    # 1. Load the evaluation scenario
-    try:
-        scenario_data = loader.load_scenario(scenario_path)
-        print(f"✅ Successfully loaded scenario: {scenario_data.get('title')}")
-    except Exception as e:
-        print(f"❌ Error loading scenario: {e}")
-        return
+    # Remove duplicates that might occur if a file and its parent dir are both specified
+    scenarios_to_run = sorted(list(set(scenarios_to_run)))
 
-    # 2. Run the evaluation engine
-    # The engine will simulate the agent's interaction based on the scenario tasks
-    print("⚙️  Running evaluation engine...")
-    results = engine.run_evaluation(scenario_data)
-    print("✅ Engine run complete.")
+    if not scenarios_to_run:
+        print(f"❌ Error: No valid scenario files found to run.")
+        sys.exit(1)
 
-    # 3. Generate and display the report
-    print("📊 Generating report...")
-    reporter.generate_report(scenario_data, results)
-    print("✅ Evaluation finished.")
+    print(f"\n✅ Discovered {len(scenarios_to_run)} total scenario(s) to run.")
+    
+    # --- 2. Loop through and execute each scenario ---
+    for i, scenario_path in enumerate(scenarios_to_run):
+        print("\n" + "#"*80)
+        print(f"RUNNING SCENARIO {i+1}/{len(scenarios_to_run)}: {scenario_path.relative_to(base_path)}")
+        print("#"*80)
+
+        # 1. Load the evaluation scenario
+        try:
+            scenario_data = loader.load_scenario(scenario_path)
+            print(f"✅ Successfully loaded scenario: {scenario_data.get('title')}")
+        except Exception as e:
+            print(f"❌ Error loading scenario: {e}")
+            continue # Skip to the next scenario
+
+        # 2. Run the evaluation engine
+        print("⚙️  Running evaluation engine...")
+        results = engine.run_evaluation(scenario_data)
+        print("✅ Engine run complete.")
+
+        # 3. Generate and display the report
+        print("📊 Generating report...")
+        reporter.generate_report(scenario_data, results)
+
+    print("\n" + "="*80)
+    print("✅ ALL EVALUATIONS FINISHED.")
+    print("="*80 + "\n")
 
 if __name__ == "__main__":
     main()
-

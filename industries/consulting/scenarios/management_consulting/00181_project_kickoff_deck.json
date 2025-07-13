@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-181",
+  "title": "Create Project Kick-off Deck",
+  "description": "An agent must create a standard project kick-off presentation from an SOW.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Extract project scope, timeline, team members, and key deliverables from the SOW.",
+      "expected_outcome": "Agent accurately extracts all key information.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Populate a standard kick-off presentation template with the extracted information.",
+      "expected_outcome": "Agent correctly fills slides for 'Project Goals', 'Scope', 'Timeline', 'Team', and 'Ways of Working'.",
+      "required_tools": [
+        "populate_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a 'Next Steps' slide outlining the immediate activities for the first two weeks.",
+      "expected_outcome": "Agent creates a clear and actionable next steps slide.",
+      "required_tools": [
+        "draft_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

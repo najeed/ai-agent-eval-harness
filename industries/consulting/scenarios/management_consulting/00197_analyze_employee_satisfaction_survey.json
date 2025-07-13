@@ -1,0 +1,53 @@
+{
+  "scenario_id": "consulting-mc-197",
+  "title": "Analyze Employee Satisfaction Survey",
+  "description": "An agent must analyze open-ended feedback from an employee satisfaction survey to identify key themes.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the survey data, focusing on the column with open-ended text comments.",
+      "expected_outcome": "Agent successfully loads the text data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform topic modeling on the text comments to identify the main topics of discussion.",
+      "expected_outcome": "Agent identifies topics like 'Work-Life Balance', 'Compensation', and 'Management'.",
+      "required_tools": [
+        "perform_topic_modeling"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a summary report of the key topics and include an illustrative anonymous quote for each.",
+      "expected_outcome": "Agent produces a report that effectively summarizes the qualitative feedback.",
+      "required_tools": [
+        "generate_report",
+        "find_supporting_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

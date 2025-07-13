@@ -1,0 +1,48 @@
+{
+  "scenario_id": "consulting-mc-137",
+  "title": "Find an Expert for Interview",
+  "description": "An agent must find three potential industry experts on a niche topic ('cold chain logistics for pharmaceuticals') to be interviewed for a project.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search professional networks (like LinkedIn) and academic databases for experts on the specified topic.",
+      "expected_outcome": "Agent performs targeted searches.",
+      "required_tools": [
+        "web_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify three individuals who have published articles or have extensive experience in the field.",
+      "expected_outcome": "Agent provides a list of three relevant experts.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each expert, provide their name, current role, and a link to their profile or a relevant publication.",
+      "expected_outcome": "Agent compiles a brief profile for each potential interviewee.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

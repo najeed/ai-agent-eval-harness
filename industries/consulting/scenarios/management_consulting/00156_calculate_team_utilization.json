@@ -1,0 +1,50 @@
+{
+  "scenario_id": "consulting-mc-156",
+  "title": "Calculate Team Utilization Rates",
+  "description": "An agent must calculate the billable utilization rate for a team of consultants from timesheet data.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load timesheet data showing total hours and billable hours for each consultant.",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "load_csv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each consultant, calculate their utilization rate (Billable Hours / Total Hours).",
+      "expected_outcome": "Agent correctly calculates the rate for each person.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the average utilization rate for the entire team.",
+      "expected_outcome": "Agent provides the correct team average.",
+      "required_tools": [
+        "generate_summary_statistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

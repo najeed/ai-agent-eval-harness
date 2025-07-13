@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-177",
+  "title": "Company Info for Due Diligence",
+  "description": "For a due diligence project, an agent must compile a background report on a target company.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the company's official registration details, address, and list of directors.",
+      "expected_outcome": "Agent retrieves correct corporate information from official registries.",
+      "required_tools": [
+        "search_corporate_registry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for any recent negative news or litigation involving the company.",
+      "expected_outcome": "Agent finds and summarizes any relevant negative news.",
+      "required_tools": [
+        "web_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the information into a structured background report.",
+      "expected_outcome": "Agent produces a clean report with all the gathered information.",
+      "required_tools": [
+        "create_document_from_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

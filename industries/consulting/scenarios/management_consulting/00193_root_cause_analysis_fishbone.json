@@ -1,0 +1,66 @@
+{
+  "scenario_id": "consulting-mc-193",
+  "title": "Root Cause Analysis (Fishbone Diagram)",
+  "description": "For a stated problem ('Decline in Product Quality'), an agent must create a Fishbone (Ishikawa) diagram to brainstorm potential causes.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For the 'Manpower' category, brainstorm potential causes (e.g., 'insufficient training', 'low morale').",
+      "expected_outcome": "Agent generates relevant potential causes related to people.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For the 'Method' category, brainstorm potential causes (e.g., 'outdated procedures', 'no quality checks').",
+      "expected_outcome": "Agent generates relevant potential causes related to processes.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For the 'Machine' and 'Material' categories, brainstorm other potential causes.",
+      "expected_outcome": "Agent generates relevant potential causes for the remaining categories.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Assemble the brainstormed ideas into a structured Fishbone diagram.",
+      "expected_outcome": "Agent produces a correctly formatted diagram.",
+      "required_tools": [
+        "create_fishbone_diagram"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

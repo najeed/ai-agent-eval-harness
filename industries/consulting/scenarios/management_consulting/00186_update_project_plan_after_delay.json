@@ -1,0 +1,64 @@
+{
+  "scenario_id": "consulting-mc-186",
+  "title": "Update Project Plan After Delay",
+  "description": "A key milestone in a project was delayed by 2 weeks. An agent must update the project plan to reflect this.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the current project plan (Gantt chart).",
+      "expected_outcome": "Agent successfully loads the plan.",
+      "required_tools": [
+        "load_gantt_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the delayed milestone and all subsequent tasks that depend on it.",
+      "expected_outcome": "Agent correctly identifies all dependent tasks.",
+      "required_tools": [
+        "identify_task_dependencies"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Shift the start dates of all dependent tasks by 2 weeks.",
+      "expected_outcome": "Agent correctly updates the project plan.",
+      "required_tools": [
+        "update_project_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Recalculate the new project end date and report the total delay.",
+      "expected_outcome": "Agent provides the new end date and states the overall project is now delayed by 2 weeks.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

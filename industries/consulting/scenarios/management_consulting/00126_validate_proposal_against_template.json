@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-126",
+  "title": "Validate Proposal Against Template",
+  "description": "An agent must check a draft proposal to ensure all mandatory sections from the company's standard template are included.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the list of mandatory sections from the standard template (e.g., 'Scope', 'Deliverables', 'Fees', 'Assumptions').",
+      "expected_outcome": "Agent correctly retrieves the list of required sections.",
+      "required_tools": [
+        "get_template_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan the draft proposal to see which of the mandatory sections are present.",
+      "expected_outcome": "Agent checks the proposal's structure.",
+      "required_tools": [
+        "analyze_document_structure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report listing any missing sections.",
+      "expected_outcome": "Agent produces a report stating that the 'Assumptions' section is missing from the draft.",
+      "required_tools": [
+        "generate_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

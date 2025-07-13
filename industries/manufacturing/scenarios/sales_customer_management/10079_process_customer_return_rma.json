@@ -1,0 +1,50 @@
+{
+  "scenario_id": "mfg-sc-10079",
+  "title": "Process a Customer Return (RMA)",
+  "description": "A customer is returning a product they ordered by mistake. A customer service rep needs to process the return.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Customer Support & Issue Resolution",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the original sales order to verify the purchase.",
+      "expected_outcome": "Agent locates the customer's order.",
+      "required_tools": [
+        "find_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create an RMA for the return, noting the reason as 'Ordered in Error'.",
+      "expected_outcome": "Agent generates an RMA number and return instructions for the customer.",
+      "required_tools": [
+        "create_rma"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer that a credit will be issued once the returned item is received and inspected.",
+      "expected_outcome": "Agent clearly explains the return and credit process to the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

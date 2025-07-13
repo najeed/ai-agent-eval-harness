@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-194",
+  "title": "Blue Ocean Strategy Formulation",
+  "description": "An agent must analyze a competitive market and suggest a 'Blue Ocean' strategy to create uncontested market space.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze documents describing the current state of the 'fast food' industry, identifying the key factors of competition (e.g., 'price', 'speed', 'menu variety').",
+      "expected_outcome": "Agent correctly identifies the industry's standard competitive factors.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Using the Eliminate-Reduce-Raise-Create framework, propose changes to these factors. For example, 'Eliminate complex menus', 'Raise food quality'.",
+      "expected_outcome": "Agent applies the framework to suggest strategic shifts.",
+      "required_tools": [
+        "apply_strategic_framework"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Synthesize these changes into a new value proposition for a 'fast-casual, high-quality burger' restaurant, representing a new market space.",
+      "expected_outcome": "Agent describes a coherent new business concept.",
+      "required_tools": [
+        "draft_text_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

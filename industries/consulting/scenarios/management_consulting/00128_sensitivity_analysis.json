@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-128",
+  "title": "Perform Sensitivity Analysis",
+  "description": "Given a financial model, an agent must perform a sensitivity analysis by changing key input variables.",
+  "use_case": "Management Consulting",
+  "core_function": "Analysis & Modeling",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the financial model and identify the key input variables ('Growth Rate', 'Discount Rate') and the key output ('Net Present Value').",
+      "expected_outcome": "Agent correctly identifies the inputs and outputs of the model.",
+      "required_tools": [
+        "load_financial_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Re-run the model multiple times, adjusting the 'Growth Rate' by +/- 1% and +/- 2% while holding other variables constant.",
+      "expected_outcome": "Agent correctly calculates the NPV for each of the adjusted growth rates.",
+      "required_tools": [
+        "run_model_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a summary table showing how the NPV changes with each adjustment to the 'Growth Rate'.",
+      "expected_outcome": "Agent produces a clear sensitivity table.",
+      "required_tools": [
+        "create_summary_table"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

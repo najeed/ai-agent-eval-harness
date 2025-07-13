@@ -1,0 +1,66 @@
+{
+  "scenario_id": "consulting-mc-179",
+  "title": "Develop a Sustainability (ESG) Strategy",
+  "description": "An agent must draft a basic ESG (Environmental, Social, Governance) strategy for a client.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Brainstorm initiatives for the 'Environmental' pillar (e.g., 'reduce carbon footprint', 'implement recycling program').",
+      "expected_outcome": "Agent generates relevant environmental initiatives.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Brainstorm initiatives for the 'Social' pillar (e.g., 'improve employee diversity', 'community volunteering program').",
+      "expected_outcome": "Agent generates relevant social initiatives.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Brainstorm initiatives for the 'Governance' pillar (e.g., 'increase board transparency', 'implement ethics training').",
+      "expected_outcome": "Agent generates relevant governance initiatives.",
+      "required_tools": [
+        "brainstorm_ideas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Compile the brainstormed ideas into a structured ESG strategy document.",
+      "expected_outcome": "Agent creates a report outlining the proposed ESG strategy.",
+      "required_tools": [
+        "create_document_from_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

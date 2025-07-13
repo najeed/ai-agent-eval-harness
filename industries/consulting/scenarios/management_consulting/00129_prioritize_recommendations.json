@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-129",
+  "title": "Prioritize Recommendations",
+  "description": "Given a list of strategic recommendations, an agent must prioritize them using an Impact/Effort matrix.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For each recommendation, assign a score for 'Potential Impact' (1-5) and 'Implementation Effort' (1-5).",
+      "expected_outcome": "Agent assigns a reasonable score to each recommendation.",
+      "required_tools": [
+        "score_list_items"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Categorize each recommendation into one of four quadrants: 'Quick Wins' (High Impact, Low Effort), 'Major Projects' (High Impact, High Effort), 'Fill-ins' (Low Impact, Low Effort), and 'Thankless Tasks' (Low Impact, High Effort).",
+      "expected_outcome": "Agent correctly categorizes all recommendations based on their scores.",
+      "required_tools": [
+        "categorize_by_matrix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report listing the recommendations, starting with the 'Quick Wins'.",
+      "expected_outcome": "Agent produces a prioritized list.",
+      "required_tools": [
+        "generate_prioritized_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

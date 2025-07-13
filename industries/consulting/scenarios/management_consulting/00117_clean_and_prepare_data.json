@@ -1,0 +1,53 @@
+{
+  "scenario_id": "consulting-mc-117",
+  "title": "Clean and Prepare Client Data",
+  "description": "An agent must clean a raw client dataset (CSV) by handling missing values and removing duplicates before analysis.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the raw CSV data and generate a data quality report, identifying columns with missing values and the number of duplicate rows.",
+      "expected_outcome": "Agent produces a report stating there are 50 duplicate rows and missing values in the 'Region' column.",
+      "required_tools": [
+        "load_csv",
+        "generate_data_quality_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Remove all duplicate rows from the dataset.",
+      "expected_outcome": "Agent correctly removes the duplicate entries.",
+      "required_tools": [
+        "remove_duplicates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For the column with missing values, fill them with the mode (most frequent value).",
+      "expected_outcome": "Agent correctly imputes the missing data.",
+      "required_tools": [
+        "fill_missing_values"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "consulting-mc-119",
+  "title": "Build vs. Buy Analysis",
+  "description": "A client needs a new CRM system. An agent must create a simple build vs. buy analysis.",
+  "use_case": "Management Consulting",
+  "core_function": "Strategy & Recommendation",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Research and list the pros and cons of building a custom CRM system.",
+      "expected_outcome": "Agent lists relevant pros (e.g., 'custom features') and cons (e.g., 'high upfront cost', 'long development time').",
+      "required_tools": [
+        "web_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Research and list the pros and cons of buying an off-the-shelf CRM system (e.g., Salesforce).",
+      "expected_outcome": "Agent lists relevant pros (e.g., 'fast implementation') and cons (e.g., 'subscription fees', 'less customization').",
+      "required_tools": [
+        "web_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a summary table comparing the two options and provide a high-level recommendation based on the client's stated preference for speed.",
+      "expected_outcome": "Agent creates a comparison table and recommends the 'Buy' option due to the need for speed.",
+      "required_tools": [
+        "create_comparison_table",
+        "make_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

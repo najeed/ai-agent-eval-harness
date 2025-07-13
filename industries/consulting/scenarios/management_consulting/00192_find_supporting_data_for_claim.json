@@ -1,0 +1,53 @@
+{
+  "scenario_id": "consulting-mc-192",
+  "title": "Find Supporting Data for a Claim",
+  "description": "A consultant has made a claim in a report ('the market for electric vehicles will double by 2030'). An agent must find a credible source to support this claim.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for market research reports and government energy reports related to electric vehicle market growth.",
+      "expected_outcome": "Agent executes relevant web searches.",
+      "required_tools": [
+        "web_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find a specific report from a reputable source (e.g., BloombergNEF, IEA) that contains a forecast supporting the claim.",
+      "expected_outcome": "Agent locates a suitable report and the relevant chart or statement.",
+      "required_tools": [
+        "document_finder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a citation for the source and the specific quote or data point that supports the claim.",
+      "expected_outcome": "Agent provides a properly formatted citation and the supporting evidence.",
+      "required_tools": [
+        "format_citation_apa",
+        "find_supporting_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "telecom-mx-84",
+  "title": "Port-in Fails Due to Fraud Block",
+  "description": "A new customer's port-in request is failing. The agent discovers it's because the customer's old account has a fraud prevention block.",
+  "use_case": "Mixed",
+  "core_function": "Competitive Port-in",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the status of the port-in request and find the rejection reason: 'Port Out Prohibited'.",
+      "expected_outcome": "Agent correctly identifies the rejection reason.",
+      "required_tools": [
+        "check_port_in_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the inter-carrier knowledge base to understand what 'Port Out Prohibited' means for the source carrier.",
+      "expected_outcome": "Agent learns this code often means a fraud lock is on the account.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the customer to contact their old carrier to have the fraud prevention lock removed before the port can be resubmitted.",
+      "expected_outcome": "Agent provides clear and correct instructions to the customer to resolve the issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

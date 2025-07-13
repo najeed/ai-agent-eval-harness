@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-172",
+  "title": "Analyze Customer Feedback from Emails",
+  "description": "An agent must process a folder of customer feedback emails to identify the most common complaints.",
+  "use_case": "Management Consulting",
+  "core_function": "Data Collection & Research",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ingest all emails from a specified folder.",
+      "expected_outcome": "Agent successfully reads all email files.",
+      "required_tools": [
+        "load_email_folder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each email, classify the main topic of complaint (e.g., 'Product Bug', 'Slow Support', 'Billing Issue').",
+      "expected_outcome": "Agent assigns a correct category to each email.",
+      "required_tools": [
+        "classify_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Count the number of complaints in each category and report the top 3.",
+      "expected_outcome": "Agent provides an accurate summary of the most frequent complaints.",
+      "required_tools": [
+        "generate_summary_statistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

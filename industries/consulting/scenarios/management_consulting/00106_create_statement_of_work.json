@@ -1,0 +1,52 @@
+{
+  "scenario_id": "consulting-mc-106",
+  "title": "Create Statement of Work (SOW)",
+  "description": "Using an approved proposal and a standard SOW template, an agent must create a formal Statement of Work.",
+  "use_case": "Management Consulting",
+  "core_function": "Project Scoping & Proposal",
+  "industry": "Consulting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Extract the 'Scope', 'Deliverables', 'Timeline', and 'Fees' sections from the approved proposal.",
+      "expected_outcome": "Agent accurately extracts all the required information.",
+      "required_tools": [
+        "analyze_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Populate the standard SOW template with the extracted information.",
+      "expected_outcome": "Agent correctly fills in all the fields of the SOW template.",
+      "required_tools": [
+        "populate_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign a version number and set the status to 'Draft for Review'.",
+      "expected_outcome": "Agent correctly sets the document metadata.",
+      "required_tools": [
+        "set_document_metadata"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}
