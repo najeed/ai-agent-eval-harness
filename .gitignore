@@ -65,3 +65,11 @@ venv.bak/
 # IDEs
 .idea/
 .vscode/
+
+# --- Local Development Scripts and Sources ---
+
+# Ignore the scenario parsing script
+parse_scenarios.py
+
+# Ignore the folder containing raw scenario source files
+scenario_sources/
