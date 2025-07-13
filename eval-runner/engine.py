@@ -55,6 +55,8 @@ def run_evaluation(scenario: dict) -> list:
                 )
             elif metric_name == "information_retrieval_accuracy":
                 score = metrics.calculate_generic_accuracy() # Simulate
+            elif metric_name == "process_adherence":
+                score = metrics.calculate_generic_accuracy() # Simulate
             elif metric_name == "root_cause_analysis_correctness":
                 score = metrics.calculate_generic_accuracy() # Simulate
             elif metric_name == "communication_clarity":
