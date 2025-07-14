@@ -26,19 +26,19 @@ The harness is organized into two main parts:
 
 ### Running an Evaluation
 
-You can run an evaluation from the command line by specifying the industry and the scenario file.
+You can run an evaluation from the command line by specifying the industry and the scenario file or folder. If a folder is specified, it iterates over all the files in that folder.
 
-1.  Navigate to the `eval-runner` directory:
+1.  Navigate to the parent `ai-agent-eval-harness` directory:
     ```bash
-    cd eval-runner
+    cd .
     ```
 
 2.  Run the main script:
     ```bash
-    python . --industry telecom --scenario customer_service/01_billing_dispute.json
+    python -m eval_runner --industry manufacturing --scenario maintenance_repair
     ```
 
-This will load the specified scenario, run the evaluation engine against it, and print a detailed report to the console.
+This will load the specified scenario(s), run the evaluation engine against the criteria, and print a detailed report to the console.
 
 ## How to Contribute
 
