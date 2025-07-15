@@ -1,0 +1,52 @@
+{
+  "scenario_id": "pharma-rc-11249",
+  "title": "Process Adverse Event Report from HCP Email",
+  "description": "An agent must process an adverse event (AE) report received in an email from a healthcare professional (HCP).",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Pharmacovigilance & Safety Reporting",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Extract the key information from the unstructured text of the email (patient demographics, drug, event).",
+      "expected_outcome": "Agent correctly identifies and extracts all necessary data points for a valid case.",
+      "required_tools": [
+        "extract_entities_from_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new case in the safety database using the extracted information.",
+      "expected_outcome": "Agent successfully creates a new AE case.",
+      "required_tools": [
+        "create_adverse_event_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the original email as a source document and attach it to the case.",
+      "expected_outcome": "Agent attaches the source email to the newly created case record.",
+      "required_tools": [
+        "attach_source_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-cy-35",
+  "title": "Countering Social Media Disinformation",
+  "description": "An IO officer detects an adversary-controlled bot network spreading disinformation about troop movements on social media.",
+  "use_case": "Cybersecurity & Information Warfare",
+  "core_function": "Information Operations (IO) Planning",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the social media posts to identify the specific narratives and hashtags being used by the bot network.",
+      "expected_outcome": "Officer correctly identifies the key elements of the disinformation campaign.",
+      "required_tools": [
+        "analyze_social_media_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Develop a counter-messaging campaign using verified information and authentic military accounts to debunk the disinformation.",
+      "expected_outcome": "Officer creates a plan to release truthful counter-information.",
+      "required_tools": [
+        "develop_counter_messaging_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Report the bot network to the social media platform for takedown.",
+      "expected_outcome": "Officer submits a comprehensive report to the platform's trust and safety team.",
+      "required_tools": [
+        "report_to_platform"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

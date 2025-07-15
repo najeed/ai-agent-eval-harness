@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-ar-10876",
+  "title": "Validate Analytics Tracking Code Installation",
+  "description": "After a new website launch, an analyst needs to verify that the Google Analytics tracking code is installed and firing correctly on all pages.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Dashboarding & Visualization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use Google Tag Assistant or a similar browser extension to check the homepage for the GA tracking code.",
+      "expected_outcome": "The tool shows the tag is present and firing correctly.",
+      "required_tools": [
+        "browser_extension_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Navigate to several other key pages on the site (e.g., product page, contact page) and verify the tag is present on them as well.",
+      "expected_outcome": "Agent confirms the tag is installed site-wide.",
+      "required_tools": [
+        "browser_extension_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the real-time report in Google Analytics to see if your own visit is being recorded.",
+      "expected_outcome": "Agent sees 1 active user in the real-time report, confirming data is being collected.",
+      "required_tools": [
+        "google_analytics_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cm-10847",
+  "title": "Change an Ad's Destination URL",
+  "description": "A landing page URL has changed, and a manager needs to update a live ad to point to the new page.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Campaign Monitoring & Optimization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the specific ad that needs to be updated.",
+      "expected_outcome": "Agent finds the correct ad within the campaign.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the 'Final URL' field for the ad with the new landing page address.",
+      "expected_outcome": "Agent successfully changes the destination URL.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the ad, which may trigger a re-review by the platform.",
+      "expected_outcome": "The ad is saved with the new URL.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

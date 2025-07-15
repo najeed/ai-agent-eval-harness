@@ -1,0 +1,54 @@
+{
+  "scenario_id": "legal-pm-10549",
+  "title": "Create an Ethical Wall",
+  "description": "A firm takes on a new matter that is adverse to a former client. To avoid a conflict, the firm needs to create an 'ethical wall' to screen off the attorneys who worked on the former matter.",
+  "use_case": "Law Practice Management",
+  "core_function": "Conflicts & Ethics",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the attorneys and staff who worked on the previous, conflicting matter.",
+      "expected_outcome": "Agent generates a list of individuals to be screened.",
+      "required_tools": [
+        "case_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Restrict those individuals' access to the new matter in the document and case management systems.",
+      "expected_outcome": "Agent successfully updates system permissions to create the electronic wall.",
+      "required_tools": [
+        "document_management_system_api",
+        "case_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft and circulate a memo to all firm personnel notifying them of the ethical wall and the requirement not to discuss the new matter with the screened individuals.",
+      "expected_outcome": "Agent formally communicates the ethical wall requirements to the entire firm.",
+      "required_tools": [
+        "document_drafting_tool",
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

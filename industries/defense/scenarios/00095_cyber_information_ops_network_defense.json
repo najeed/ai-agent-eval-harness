@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-cy-95",
+  "title": "Defensive Information Operations",
+  "description": "An IO officer must protect a friendly unit's social media presence from being hijacked or spoofed by an adversary.",
+  "use_case": "Cybersecurity & Information Warfare",
+  "core_function": "Information Operations (IO) Planning",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Audit the security settings of the unit's official social media accounts.",
+      "expected_outcome": "Officer identifies weak passwords and a lack of two-factor authentication.",
+      "required_tools": [
+        "audit_social_media_security"
+      ],
+      "success_criteria": [
+        {
+          "metric": "audit_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Implement stronger security measures, including complex passwords and mandatory two-factor authentication.",
+      "expected_outcome": "Officer successfully hardens the security of the accounts.",
+      "required_tools": [
+        "update_account_security_settings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_improvement_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor for any unauthorized login attempts or spoofed accounts and report them for takedown.",
+      "expected_outcome": "Officer establishes a process for ongoing monitoring and defense of the accounts.",
+      "required_tools": [
+        "monitor_for_spoofing",
+        "report_to_platform"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

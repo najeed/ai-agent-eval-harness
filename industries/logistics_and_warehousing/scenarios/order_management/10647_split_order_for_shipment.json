@@ -1,0 +1,53 @@
+{
+  "scenario_id": "lw-om-10647",
+  "title": "Split an Order for Partial Shipment",
+  "description": "An order contains two items, but one is on backorder. The customer wants the in-stock item to ship now.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Order Processing",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the order and confirm one item is in stock and the other is on backorder.",
+      "expected_outcome": "Agent verifies the inventory status of the line items.",
+      "required_tools": [
+        "get_order_details",
+        "check_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Split the order line for the in-stock item into a new sales order.",
+      "expected_outcome": "A new order is created for the available item, and the original order is updated to only contain the backordered item.",
+      "required_tools": [
+        "split_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Release the new order to the warehouse for immediate shipment.",
+      "expected_outcome": "The new order is sent to the WMS for fulfillment.",
+      "required_tools": [
+        "release_order_to_warehouse"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

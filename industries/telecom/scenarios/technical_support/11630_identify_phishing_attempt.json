@@ -1,0 +1,48 @@
+{
+  "scenario_id": "telecom-ts-11630",
+  "title": "Security - Identify Phishing Attempt",
+  "description": "A customer reports receiving a suspicious text message claiming to be from the company, asking for personal details.",
+  "use_case": "Technical Support",
+  "core_function": "Advanced Diagnostics",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the customer for the content and sender of the text message.",
+      "expected_outcome": "Agent receives the details of the suspicious message.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the message content and sender number against a list of known phishing scams.",
+      "expected_outcome": "Agent confirms the message is a known phishing attempt.",
+      "required_tools": [
+        "search_phishing_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the customer to delete the message, not to click any links, and report the number.",
+      "expected_outcome": "Agent provides clear and accurate security advice.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

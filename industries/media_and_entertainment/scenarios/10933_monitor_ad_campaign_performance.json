@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-bo-10933",
+  "title": "Monitor Ad Campaign Performance",
+  "description": "A week after an ad campaign launch, an advertiser wants a performance report.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Ad Insertion & Management",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific ad campaign in the ad management system.",
+      "expected_outcome": "Agent locates the correct campaign.",
+      "required_tools": [
+        "find_ad_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the key performance metrics for the campaign (impressions, click-through rate, video completion rate).",
+      "expected_outcome": "Agent pulls a report with all the required metrics.",
+      "required_tools": [
+        "get_campaign_performance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Format the metrics into a clear, concise report and send it to the advertiser.",
+      "expected_outcome": "Agent generates and sends a well-formatted report.",
+      "required_tools": [
+        "generate_ad_performance_summary",
+        "send_report_to_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "scenario_id": "energy-pd-10145",
+  "title": "Wind Farm Decommissioning Cost Estimate",
+  "description": "As part of the initial planning, a developer needs to estimate the cost to decommission a wind farm at the end of its 25-year life.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Financial Modeling & Investment Analysis",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all required decommissioning activities, including turbine disassembly, foundation removal, and site restoration.",
+      "expected_outcome": "Agent produces a comprehensive list of decommissioning tasks.",
+      "required_tools": [
+        "get_decommissioning_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Estimate the cost for each activity based on industry benchmarks and the number of turbines.",
+      "expected_outcome": "Agent provides a line-item cost breakdown.",
+      "required_tools": [
+        "estimate_decommissioning_costs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Estimate the potential salvage value from recycling steel and other components.",
+      "expected_outcome": "Agent calculates a potential revenue offset from salvage.",
+      "required_tools": [
+        "estimate_salvage_value"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Calculate the net decommissioning cost and the amount that needs to be set aside in a bond or fund.",
+      "expected_outcome": "Agent provides the final net cost estimate.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

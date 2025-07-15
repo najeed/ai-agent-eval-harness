@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-om-10671",
+  "title": "Process a Drop-Ship Order",
+  "description": "A customer orders an item that is not stocked in the warehouse but is instead shipped directly from a supplier (drop-shipped).",
+  "use_case": "Order & Customer Management",
+  "core_function": "Order Processing",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When the order is placed, the system identifies the item as a drop-ship item.",
+      "expected_outcome": "The system correctly flags the order for drop-shipping.",
+      "required_tools": [
+        "get_product_fulfillment_type"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically generates a purchase order for the item and sends it to the designated supplier, including the customer's shipping address.",
+      "expected_outcome": "A PO is created and sent to the supplier with the correct shipping details.",
+      "required_tools": [
+        "create_drop_ship_po"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system waits for a shipping confirmation (ASN) from the supplier to update the customer's order status.",
+      "expected_outcome": "The order remains in 'Processing' status until the supplier provides a tracking number.",
+      "required_tools": [
+        "monitor_supplier_asn"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

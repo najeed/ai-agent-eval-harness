@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-11184",
+  "title": "Estimate Offshore Platform Decommissioning Costs",
+  "description": "An engineer creates a cost estimate for the future decommissioning of an offshore platform, as required for financial reporting.",
+  "use_case": "Upstream",
+  "core_function": "Asset & Maintenance Management",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all technical data for the platform, including its weight, number of wells, and water depth.",
+      "expected_outcome": "All necessary input data for the cost model is collected.",
+      "required_tools": [
+        "get_platform_specifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a cost estimation model to calculate the costs for well abandonment, topside removal, and jacket removal.",
+      "expected_outcome": "The model provides a detailed breakdown of decommissioning costs.",
+      "required_tools": [
+        "run_decommissioning_cost_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "estimation_accuracy",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an Asset Retirement Obligation (ARO) report for the finance department.",
+      "expected_outcome": "A formal report detailing the estimated future liability is created.",
+      "required_tools": [
+        "generate_aro_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-ms-11221",
+  "title": "Manage Raw Material Inventory and Release",
+  "description": "A supply chain coordinator must manage the inventory of an active pharmaceutical ingredient (API), including receiving, testing, and release for production.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Inventory & Cold Chain Logistics",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the receipt of a new shipment of API from a supplier.",
+      "expected_outcome": "Agent creates a new inventory record for the API lot, including quantity and supplier details, and assigns it a 'Quarantine' status.",
+      "required_tools": [
+        "receive_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request quality control testing for the new API lot.",
+      "expected_outcome": "Agent creates a sample and test request in the LIMS.",
+      "required_tools": [
+        "request_qc_testing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive the testing results from QC, confirming the API meets all specifications.",
+      "expected_outcome": "Agent retrieves the certificate of analysis from LIMS showing passing results.",
+      "required_tools": [
+        "get_lab_test_result"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Change the status of the API lot from 'Quarantine' to 'Released', making it available for use in manufacturing.",
+      "expected_outcome": "Agent successfully updates the inventory status.",
+      "required_tools": [
+        "update_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

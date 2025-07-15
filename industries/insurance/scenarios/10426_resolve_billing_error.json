@@ -1,0 +1,51 @@
+{
+  "scenario_id": "insurance-pc-10426",
+  "title": "Resolve a Billing Error",
+  "description": "A customer was double-billed for their premium this month due to a system error.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Billing & Collections",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and review their recent payment history.",
+      "expected_outcome": "Agent confirms that two identical payments were withdrawn this month.",
+      "required_tools": [
+        "get_billing_info",
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Acknowledge the error and apologize to the customer.",
+      "expected_outcome": "Agent provides good customer service by acknowledging the mistake.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process an immediate refund for the duplicate payment.",
+      "expected_outcome": "Agent successfully reverses the second charge and informs the customer the funds will be back in their account in 2-3 business days.",
+      "required_tools": [
+        "process_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-rc-11244",
+  "title": "Manage Change Control for an SOP",
+  "description": "A process owner needs to update a Standard Operating Procedure (SOP) and must manage the change through a formal change control process.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Quality Audits & Inspections",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Initiate a new change control record in the quality management system.",
+      "expected_outcome": "Agent creates a new change control record, describing the reason for the change.",
+      "required_tools": [
+        "create_change_control_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attach the redlined version of the SOP to the change control record.",
+      "expected_outcome": "Agent successfully uploads the revised SOP.",
+      "required_tools": [
+        "attach_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Route the change control record for review and approval by the required stakeholders (e.g., department head, QA).",
+      "expected_outcome": "Agent routes the record for electronic signature.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Once approved, make the new version of the SOP effective and obsolete the old version.",
+      "expected_outcome": "Agent updates the SOP status in the document management system and triggers retraining notifications.",
+      "required_tools": [
+        "update_document_status",
+        "trigger_training_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

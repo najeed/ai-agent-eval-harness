@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-rc-11375",
+  "title": "File a Campaign Finance Report",
+  "description": "The treasurer for a political campaign is filing a quarterly campaign finance disclosure report.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Compliance Reporting",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the political committee and the correct reporting period.",
+      "expected_outcome": "The treasurer selects their committee and the correct quarter.",
+      "required_tools": [
+        "get_committee_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Input all contributions and expenditures for the period.",
+      "expected_outcome": "The treasurer accurately enters all financial data into the online form.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the report to the state ethics commission.",
+      "expected_outcome": "The treasurer successfully files the report by the deadline.",
+      "required_tools": [
+        "submit_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

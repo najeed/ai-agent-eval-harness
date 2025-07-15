@@ -1,0 +1,55 @@
+{
+  "scenario_id": "mining-plan-11023",
+  "title": "Conduct Feasibility Study Economic Analysis",
+  "description": "A mining engineer performs an economic analysis for a new mine project, calculating its Net Present Value (NPV) to determine if it is financially viable.",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Long-Term Planning & Feasibility",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all inputs for the financial model: the LOM production schedule, commodity price forecast, and estimates for capital and operating costs.",
+      "expected_outcome": "All necessary data is compiled for the economic model.",
+      "required_tools": [
+        "get_lom_schedule",
+        "get_commodity_price_forecast",
+        "get_cost_estimates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Build a discounted cash flow (DCF) model for the project life.",
+      "expected_outcome": "A year-by-year cash flow model is created.",
+      "required_tools": [
+        "build_dcf_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the project's NPV and Internal Rate of Return (IRR) to support an investment decision.",
+      "expected_outcome": "The model calculates a positive NPV and an IRR above the company's hurdle rate, indicating a viable project.",
+      "required_tools": [
+        "calculate_npv",
+        "calculate_irr"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

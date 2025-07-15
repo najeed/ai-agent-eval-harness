@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-maint-11040",
+  "title": "Inspect Dragline Structural Integrity",
+  "description": "A reliability engineer plans and reviews the results of a non-destructive testing (NDT) inspection on a dragline boom to check for cracks.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Reliability & Condition Monitoring",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule a third-party NDT contractor to perform an ultrasonic inspection on the critical welds of the dragline boom.",
+      "expected_outcome": "The inspection is scheduled in the maintenance plan.",
+      "required_tools": [
+        "schedule_third_party_inspector"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the inspection report from the contractor.",
+      "expected_outcome": "The NDT report is received and uploaded into the CMMS.",
+      "required_tools": [
+        "upload_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the report, which indicates a small crack has been found. Create a high-priority work order for a certified welder to grind out and repair the crack.",
+      "expected_outcome": "The report is reviewed, and a repair work order is created to address the defect before it can grow.",
+      "required_tools": [
+        "review_inspection_report",
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_management_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

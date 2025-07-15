@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-po-10702",
+  "title": "Report Material Scrap",
+  "description": "A machine operator needs to report a quantity of raw material that was scrapped during a production run due to a defect.",
+  "use_case": "Production & Operations",
+  "core_function": "Material & Inventory Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the work order and the specific material part number being scrapped.",
+      "expected_outcome": "Agent correctly identifies the active work order and the material from the BOM.",
+      "required_tools": [
+        "get_work_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Record the quantity of scrapped material and select a reason code for the scrap.",
+      "expected_outcome": "Agent enters the correct quantity and selects 'Material Defect' as the reason.",
+      "required_tools": [
+        "report_material_scrap"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm that the inventory levels for the material have been updated.",
+      "expected_outcome": "Agent verifies that the system shows the reduced quantity of the material.",
+      "required_tools": [
+        "check_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

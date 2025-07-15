@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-11135",
+  "title": "Manage Production Chemical Injection",
+  "description": "A production technician manages the injection of corrosion inhibitor into a subsea pipeline.",
+  "use_case": "Upstream",
+  "core_function": "Production Operations",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current inventory level of the corrosion inhibitor in the topside chemical tank.",
+      "expected_outcome": "The system reports the tank level is at 25%, nearing the reorder point.",
+      "required_tools": [
+        "get_chemical_tank_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the chemical injection pump is operating correctly and at the desired rate.",
+      "expected_outcome": "The pump's status and injection rate are confirmed to be normal.",
+      "required_tools": [
+        "get_pump_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a purchase requisition for a new supply of corrosion inhibitor.",
+      "expected_outcome": "A purchase request is submitted to the procurement system.",
+      "required_tools": [
+        "create_purchase_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "scenario_id": "tr-rs-11773",
+  "title": "Verify Driver Identity with Selfie Check",
+  "description": "To prevent account sharing, a driver is randomly prompted to take a selfie to verify it matches their profile picture before they can go online.",
+  "use_case": "Ride-Sharing & On-Demand Mobility",
+  "core_function": "Safety & Incident Response",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When a driver attempts to go online, the system randomly triggers an identity check.",
+      "expected_outcome": "The driver is prompted to take a selfie.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The driver takes a selfie using the app.",
+      "expected_outcome": "The image is captured.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system uses facial recognition to compare the selfie with the driver's stored profile photo.",
+      "expected_outcome": "The system calculates a match score.",
+      "required_tools": [
+        "compare_facial_images"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The match score is high, the identity is verified, and the driver is allowed to go online.",
+      "expected_outcome": "The driver successfully passes the check and can start working.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

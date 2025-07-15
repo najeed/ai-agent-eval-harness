@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-10563",
+  "title": "Request Documents from a Client",
+  "description": "To respond to discovery, a paralegal needs to request a specific set of documents from the client.",
+  "use_case": "Law Practice Management",
+  "core_function": "Client Communication & Reporting",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the opposing party's document requests to determine what documents are needed from the client.",
+      "expected_outcome": "Agent creates a list of required documents.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a clear and organized request letter to the client, listing the specific documents needed.",
+      "expected_outcome": "Agent writes a letter that is easy for the client to understand and act on.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up a secure portal for the client to upload the requested documents.",
+      "expected_outcome": "Agent provides a secure and convenient way for the client to transfer files.",
+      "required_tools": [
+        "secure_file_transfer_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

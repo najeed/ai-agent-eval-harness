@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-bm-11547",
+  "title": "Fulfill Sponsorship Contract Obligations",
+  "description": "A team needs to provide a sponsor with a report detailing all the times their logo was shown during last month's broadcasts, as required by their contract.",
+  "use_case": "Broadcasting & Media",
+  "core_function": "Sponsorship & Advertising",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the sponsorship contract to understand the reporting requirements.",
+      "expected_outcome": "Agent confirms the contract requires a monthly fulfillment report.",
+      "required_tools": [
+        "get_sponsorship_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the broadcast logs from the last month to find all instances where the sponsor's logo was displayed.",
+      "expected_outcome": "Agent generates a list of all timestamps when the logo appeared.",
+      "required_tools": [
+        "analyze_broadcast_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a formal sponsorship fulfillment report with the collected data.",
+      "expected_outcome": "Agent produces a detailed report for the sponsor.",
+      "required_tools": [
+        "generate_sponsorship_fulfillment_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send the report to the sponsor.",
+      "expected_outcome": "Agent successfully delivers the report.",
+      "required_tools": [
+        "send_report_to_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

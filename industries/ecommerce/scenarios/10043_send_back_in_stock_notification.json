@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-mce-10043",
+  "title": "Send Back-in-Stock Notification",
+  "description": "A previously out-of-stock item is now back in stock. The system needs to notify all customers who signed up for an alert.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Campaign Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify a product whose inventory has just been restocked.",
+      "expected_outcome": "System detects a stock level change from 0 to a positive number.",
+      "required_tools": [
+        "monitor_inventory_changes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the list of all customers who requested a back-in-stock notification for that product.",
+      "expected_outcome": "System generates a list of email addresses.",
+      "required_tools": [
+        "get_stock_notification_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send an automated email to the notification list informing them the item is available again.",
+      "expected_outcome": "System successfully sends all notification emails.",
+      "required_tools": [
+        "send_email_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

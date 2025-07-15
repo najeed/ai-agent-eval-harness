@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-op-10139",
+  "title": "Analyze Drone Inspection Imagery of Wind Turbine Blades",
+  "description": "An asset inspector is reviewing high-resolution images from a drone inspection of a wind turbine blade to identify and classify defects.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Asset Performance Monitoring",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process and stitch together the thousands of images from the drone flight to create a complete 3D model of the blade.",
+      "expected_outcome": "Agent successfully generates the 3D model.",
+      "required_tools": [
+        "process_drone_imagery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically scan the imagery for common defects like cracks, erosion, and lightning damage using a computer vision model.",
+      "expected_outcome": "The AI model flags three potential areas of concern.",
+      "required_tools": [
+        "run_defect_detection_ai"
+      ],
+      "success_criteria": [
+        {
+          "metric": "image_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Classify the severity of the identified defects according to industry standards and recommend whether immediate repair is needed.",
+      "expected_outcome": "Agent classifies two defects as minor erosion but one as a Category 3 crack requiring repair within 6 months.",
+      "required_tools": [
+        "classify_blade_defect"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

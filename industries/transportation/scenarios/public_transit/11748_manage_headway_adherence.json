@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-pt-11748",
+  "title": "Manage Headway Adherence",
+  "description": "On a high-frequency bus route, two buses get too close together (bus bunching). A dispatcher must intervene to even out the spacing.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Real-time Operations & Control",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system alerts the dispatcher that the headway between two buses on a route has fallen below the 3-minute minimum.",
+      "expected_outcome": "The dispatcher is alerted to the bus bunching issue.",
+      "required_tools": [
+        "get_headway_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The dispatcher contacts the driver of the first bus via radio.",
+      "expected_outcome": "Communication is established with the lead bus.",
+      "required_tools": [
+        "contact_driver"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the driver of the first bus to not pick up passengers at the next two stops to create space behind them.",
+      "expected_outcome": "The driver receives and acknowledges the instruction.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Monitor the route's headway in real-time until the spacing returns to the desired level.",
+      "expected_outcome": "The dispatcher confirms that the intervention was successful and the headway is restored.",
+      "required_tools": [
+        "view_route_headway_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-om-10607",
+  "title": "Handle Shipping Address Change Request",
+  "description": "A customer calls to change the shipping address for an order that has not yet been shipped.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Customer Support",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's order and verify its current status.",
+      "expected_outcome": "Agent confirms the order status is 'Processing' and not yet 'Shipped'.",
+      "required_tools": [
+        "get_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the shipping address on the order.",
+      "expected_outcome": "Agent successfully enters the new shipping address.",
+      "required_tools": [
+        "update_order_address"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recalculate shipping costs for the new address and inform the customer if there is a difference.",
+      "expected_outcome": "Agent informs the customer of a small increase in shipping cost due to the new address.",
+      "required_tools": [
+        "recalculate_shipping_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

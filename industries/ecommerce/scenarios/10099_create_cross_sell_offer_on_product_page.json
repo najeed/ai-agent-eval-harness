@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ecommerce-mce-10099",
+  "title": "Create a Cross-Sell Offer on Product Page",
+  "description": "On the product page for a digital camera, the system should display a 'Frequently Bought Together' section with a memory card and a camera bag.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Personalization & Recommendations",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When a customer visits the digital camera product page, identify the product.",
+      "expected_outcome": "System identifies the primary product.",
+      "required_tools": [
+        "get_current_product"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the list of manually curated or automatically generated cross-sell items for that camera.",
+      "expected_outcome": "System retrieves the SKUs for the appropriate memory card and camera bag.",
+      "required_tools": [
+        "get_cross_sell_products"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Display these items on the page, allowing the customer to add all three to the cart with one click.",
+      "expected_outcome": "The UI correctly displays the cross-sell items with a bundle-add option.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "scenario_id": "media-ae-10900",
+  "title": "Streaming Subscriber Billing Dispute",
+  "description": "A subscriber claims they were incorrectly billed after downgrading their streaming plan.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Subscriber Lifecycle Management",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the subscriber's account and billing history.",
+      "expected_outcome": "Agent correctly identifies the subscriber and the disputed charge.",
+      "required_tools": [
+        "get_subscriber_details",
+        "get_billing_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the date of the plan change and the billing cycle dates.",
+      "expected_outcome": "Agent confirms the plan was changed mid-cycle, resulting in prorated charges.",
+      "required_tools": [
+        "get_account_event_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the prorated charges and apply a small courtesy credit to resolve the complaint.",
+      "expected_outcome": "Agent clearly explains the bill and successfully applies a credit.",
+      "required_tools": [
+        "apply_goodwill_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        },
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

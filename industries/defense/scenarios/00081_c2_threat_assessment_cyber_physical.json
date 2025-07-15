@@ -1,0 +1,54 @@
+{
+  "scenario_id": "defense-c2-81",
+  "title": "Cyber-Physical Threat Assessment",
+  "description": "An operator sees a cyberattack on a power grid control system occur simultaneously with drone attacks on substations.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Threat Assessment & Prioritization",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Fuse the cyber alert from the network sensors with the physical alerts from radar tracking the drones.",
+      "expected_outcome": "Operator correctly identifies that the cyber and physical attacks are part of a single, coordinated operation.",
+      "required_tools": [
+        "fuse_cyber_physical_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_correlation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assess the adversary's objective: to cause a widespread, prolonged power outage.",
+      "expected_outcome": "Operator correctly determines the strategic intent behind the coordinated attack.",
+      "required_tools": [
+        "assess_adversary_intent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "intent_assessment_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prioritize the physical drone threats to prevent further damage while simultaneously tasking cyber defense teams to restore the grid control system.",
+      "expected_outcome": "Operator makes a correct decision to address both threats concurrently.",
+      "required_tools": [
+        "prioritize_threats",
+        "task_air_defense_assets",
+        "task_cyber_defense_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

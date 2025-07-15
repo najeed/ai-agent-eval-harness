@@ -1,0 +1,67 @@
+{
+  "scenario_id": "sports-lm-11515",
+  "title": "Review Player Misconduct for Disciplinary Action",
+  "description": "A player received a red card for a dangerous tackle. The league's disciplinary committee must review the incident to determine the length of the suspension.",
+  "use_case": "League & Competition Management",
+  "core_function": "Disciplinary Actions",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the official referee's report and video of the incident.",
+      "expected_outcome": "Agent gathers the primary evidence for the case.",
+      "required_tools": [
+        "get_referee_report",
+        "get_incident_video"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the league's disciplinary code for precedents involving similar offenses.",
+      "expected_outcome": "Agent finds that similar tackles have typically resulted in a 3-game suspension.",
+      "required_tools": [
+        "search_disciplinary_precedents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the evidence and precedents, issue a 3-game suspension to the player.",
+      "expected_outcome": "Agent formally issues the suspension.",
+      "required_tools": [
+        "issue_player_suspension"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Notify the player's team of the disciplinary action.",
+      "expected_outcome": "Agent sends a formal notification to the team.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

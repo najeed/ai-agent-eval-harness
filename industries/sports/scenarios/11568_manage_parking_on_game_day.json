@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-vo-11568",
+  "title": "Manage Parking on Game Day",
+  "description": "A venue operator needs to monitor parking lot capacity in real time and direct fans to available lots.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Event Day Operations",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the real-time capacity of all stadium parking lots.",
+      "expected_outcome": "Agent gets data showing that Lot A and Lot B are full.",
+      "required_tools": [
+        "get_parking_lot_capacity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the digital signs on the roads leading to the stadium to direct new arrivals to Lot C and Lot D.",
+      "expected_outcome": "Agent successfully updates the text on the digital signs.",
+      "required_tools": [
+        "update_digital_road_sign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a push notification to the team's mobile app with parking updates.",
+      "expected_outcome": "Agent successfully sends the parking update to fans.",
+      "required_tools": [
+        "send_push_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-css-10031",
+  "title": "Merge Duplicate Customer Accounts",
+  "description": "A system audit reveals a customer has two accounts under slightly different email addresses. An agent needs to merge them.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Account Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the two duplicate customer accounts and their associated order histories.",
+      "expected_outcome": "Agent retrieves the details for both accounts.",
+      "required_tools": [
+        "find_duplicate_accounts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the primary account and merge the order history from the secondary account into it.",
+      "expected_outcome": "Agent successfully merges the data.",
+      "required_tools": [
+        "merge_accounts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Disable the secondary account and notify the customer of the merge.",
+      "expected_outcome": "Agent deactivates the duplicate and informs the customer.",
+      "required_tools": [
+        "disable_customer_account",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

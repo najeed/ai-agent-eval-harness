@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-tm-10693",
+  "title": "Combine Multiple Parcel Shipments",
+  "description": "A customer has placed three small orders going to the same address on the same day. The system should combine them into a single, larger shipment to save on costs.",
+  "use_case": "Transportation Management",
+  "core_function": "Shipment Planning & Execution",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system's shipping process identifies multiple unshipped orders for the same customer address.",
+      "expected_outcome": "The system flags the orders as candidates for consolidation.",
+      "required_tools": [
+        "find_consolidatable_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system creates a single, combined shipment and links the three original orders to it.",
+      "expected_outcome": "A new 'master' shipment is created.",
+      "required_tools": [
+        "create_combined_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The packing instructions now show all items from all three orders to be packed in one box.",
+      "expected_outcome": "The warehouse receives a single packing list for the combined shipment.",
+      "required_tools": [
+        "generate_combined_packing_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

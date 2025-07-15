@@ -1,0 +1,62 @@
+{
+  "scenario_id": "venues-gs-11988",
+  "title": "Handle Guest Complaint About Temperature",
+  "description": "A guest in a luxury suite complains that it is too cold.",
+  "use_case": "Guest & Patron Services",
+  "core_function": "Issue Resolution & Complaints",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the guest's location (suite number).",
+      "expected_outcome": "Agent confirms the suite number.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the building management system (BMS) to check the temperature and thermostat settings for that suite.",
+      "expected_outcome": "Agent finds the thermostat is set to 65\u00b0F.",
+      "required_tools": [
+        "get_bms_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Remotely adjust the thermostat for the suite to a more comfortable temperature (e.g., 70\u00b0F).",
+      "expected_outcome": "Agent successfully changes the thermostat setting.",
+      "required_tools": [
+        "adjust_thermostat"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Inform the guest that the temperature has been adjusted and will warm up shortly.",
+      "expected_outcome": "Agent communicates the resolution to the guest.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

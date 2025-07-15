@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-plan-11079",
+  "title": "Optimize Underground Development",
+  "description": "A planning engineer optimizes the layout of access tunnels (development) in an underground mine to minimize cost while providing access to all planned stopes.",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Short-Term Scheduling",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the final stope designs for the section of the mine to be developed.",
+      "expected_outcome": "All target ore bodies (stopes) are loaded into the design software.",
+      "required_tools": [
+        "import_stope_designs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use an automated tool to generate a network of development tunnels that connects all the stopes.",
+      "expected_outcome": "A preliminary network of access tunnels is created.",
+      "required_tools": [
+        "generate_development_network"
+      ],
+      "success_criteria": [
+        {
+          "metric": "optimization_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the generated network and manually refine it to ensure it is practical and meets all design constraints.",
+      "expected_outcome": "A final, cost-effective, and practical development design is produced.",
+      "required_tools": [
+        "edit_development_design"
+      ],
+      "success_criteria": [
+        {
+          "metric": "engineering_design_compliance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

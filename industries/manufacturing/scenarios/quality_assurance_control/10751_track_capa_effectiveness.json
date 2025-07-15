@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-qc-10751",
+  "title": "Track CAPA Effectiveness",
+  "description": "A CAPA was implemented 3 months ago. A quality manager needs to check its effectiveness by reviewing recent data.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Non-Conformance & CAPA",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the original CAPA record to understand the problem it was meant to solve.",
+      "expected_outcome": "Agent pulls up the closed CAPA for reducing 'surface scratches'.",
+      "required_tools": [
+        "get_capa_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the production quality data for the last 3 months for the specific defect.",
+      "expected_outcome": "Agent generates a trend chart showing the frequency of 'surface scratches' has decreased by 80%.",
+      "required_tools": [
+        "get_quality_data_trend"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the effectiveness check in the CAPA record, confirming the action was successful, and close the monitoring task.",
+      "expected_outcome": "Agent updates the CAPA record with the positive results and officially closes it.",
+      "required_tools": [
+        "log_capa_effectiveness_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

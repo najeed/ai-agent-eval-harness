@@ -1,0 +1,66 @@
+{
+  "scenario_id": "lw-im-10678",
+  "title": "Create an Inventory Hold for Quality Inspection",
+  "description": "A batch of newly received items must be held in a quarantine status until the quality assurance team can inspect and release it.",
+  "use_case": "Inventory Management",
+  "core_function": "Inventory Control",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "After a PO is received, the system automatically identifies that the item requires a QA check.",
+      "expected_outcome": "The system flags the received inventory for a mandatory QA hold.",
+      "required_tools": [
+        "get_product_qa_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The inventory's status is automatically set to 'QA Hold', making it unavailable for fulfillment.",
+      "expected_outcome": "The inventory is successfully ring-fenced from the available stock.",
+      "required_tools": [
+        "update_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "A task is created in the QA team's queue to inspect the new inventory.",
+      "expected_outcome": "The QA team is notified that a new inspection is required.",
+      "required_tools": [
+        "create_qa_inspection_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Once QA inspects and approves the batch, they update the task, and the system releases the hold, making the inventory available.",
+      "expected_outcome": "The inventory status is changed to 'Available', and it can now be used to fulfill orders.",
+      "required_tools": [
+        "release_inventory_hold"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

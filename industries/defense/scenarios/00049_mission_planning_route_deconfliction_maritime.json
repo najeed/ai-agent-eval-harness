@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-mp-49",
+  "title": "Maritime Route Deconfliction",
+  "description": "A planner must deconflict the transit route of a carrier strike group with commercial shipping lanes and a known submarine threat area.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Route & Airspace Deconfliction",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Plot the desired route for the carrier strike group.",
+      "expected_outcome": "Planner accurately inputs the intended path.",
+      "required_tools": [
+        "plot_maritime_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Overlay commercial shipping lane data and intelligence data on submarine threat areas.",
+      "expected_outcome": "Planner creates a comprehensive map showing all constraints.",
+      "required_tools": [
+        "get_shipping_lane_data",
+        "get_threat_overlay"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_fusion_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Adjust the strike group's route to avoid the highest-density shipping lanes and the submarine threat area.",
+      "expected_outcome": "Planner creates a safer, deconflicted route for the naval force.",
+      "required_tools": [
+        "adjust_maritime_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "conflict_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-omf-10085",
+  "title": "Handle Failed Subscription Payment",
+  "description": "A customer's recurring subscription payment fails due to an expired credit card. The system needs to handle this gracefully.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Payment & Invoicing",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When a recurring payment fails, identify the reason ('Expired Card').",
+      "expected_outcome": "System correctly logs the payment failure reason.",
+      "required_tools": [
+        "process_recurring_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically send the customer a 'dunning' email, notifying them of the failure and providing a link to update their payment method.",
+      "expected_outcome": "System sends a clear and helpful notification.",
+      "required_tools": [
+        "send_dunning_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Temporarily pause the subscription and schedule a retry of the payment in 3 days.",
+      "expected_outcome": "System updates the subscription status to 'Past Due' and schedules a future payment attempt.",
+      "required_tools": [
+        "update_subscription_status",
+        "schedule_payment_retry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

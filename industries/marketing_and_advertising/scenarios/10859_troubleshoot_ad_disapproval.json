@@ -1,0 +1,64 @@
+{
+  "scenario_id": "marketing-cm-10859",
+  "title": "Troubleshoot a Disapproved Ad",
+  "description": "An ad has been disapproved by the ad platform for violating a policy. A manager needs to diagnose and fix the issue.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Campaign Monitoring & Optimization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the disapproved ad and the specific policy violation cited by the platform (e.g., 'Misleading Claims').",
+      "expected_outcome": "Agent finds the ad and the reason for disapproval.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the ad copy and landing page to find the content that violates the policy.",
+      "expected_outcome": "Agent identifies a claim in the ad copy that is unsubstantiated on the landing page.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Edit the ad copy to remove the problematic claim.",
+      "expected_outcome": "Agent rewrites the ad to be compliant.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "copywriting_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Resubmit the ad for review.",
+      "expected_outcome": "The ad is sent back to the platform for a new review.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

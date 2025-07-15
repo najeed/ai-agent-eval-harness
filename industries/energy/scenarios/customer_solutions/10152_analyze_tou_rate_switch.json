@@ -1,0 +1,64 @@
+{
+  "scenario_id": "energy-cs-10152",
+  "title": "Analyze Customer Switch to Time-of-Use Rate",
+  "description": "A customer on a flat electricity rate wants to know if they would save money by switching to a Time-of-Use (TOU) rate.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "Energy Efficiency & Audits",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's hourly consumption data for the past 12 months.",
+      "expected_outcome": "Agent gathers all necessary interval data.",
+      "required_tools": [
+        "get_historical_consumption_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Simulate the customer's annual electricity bill using their current flat rate.",
+      "expected_outcome": "Agent calculates the total cost under the current plan.",
+      "required_tools": [
+        "simulate_bill_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Simulate the customer's annual bill again using the same data but applying the TOU rate structure.",
+      "expected_outcome": "Agent calculates the total cost under the proposed TOU plan.",
+      "required_tools": [
+        "simulate_bill_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Compare the two simulated bills and advise the customer whether they would save money.",
+      "expected_outcome": "Agent advises the customer they would save an estimated $250 per year by switching.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

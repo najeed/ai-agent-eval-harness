@@ -1,0 +1,49 @@
+{
+  "scenario_id": "finance-wm-10287",
+  "title": "Review Portfolio Asset Allocation",
+  "description": "An advisor is conducting an annual review and needs to check if a client's portfolio allocation is aligned with their goals.",
+  "use_case": "Wealth Management",
+  "core_function": "Portfolio Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the client's current portfolio holdings and their target asset allocation.",
+      "expected_outcome": "Agent pulls the current holdings and the target (e.g., 70% equity, 30% fixed income).",
+      "required_tools": [
+        "get_portfolio_composition",
+        "get_client_investment_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the current allocation to the target and identify any significant drift.",
+      "expected_outcome": "Agent's analysis shows the portfolio has drifted to 75% equity due to market performance.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Present the findings to the advisor and suggest rebalancing.",
+      "expected_outcome": "Agent provides a summary of the allocation drift and recommends rebalancing trades.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

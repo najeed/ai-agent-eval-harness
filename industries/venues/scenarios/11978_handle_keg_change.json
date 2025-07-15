@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-fb-11978",
+  "title": "Handle a Keg Change",
+  "description": "A bartender reports that the keg for a specific beer has run out.",
+  "use_case": "Food & Beverage (Concessions)",
+  "core_function": "Inventory Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the report that the keg is empty.",
+      "expected_outcome": "Agent logs the request.",
+      "required_tools": [
+        "log_inventory_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check inventory for a replacement keg.",
+      "expected_outcome": "Agent confirms a full keg is available in the cooler.",
+      "required_tools": [
+        "check_central_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a beverage technician to tap the new keg.",
+      "expected_outcome": "Agent creates a work order for the technician.",
+      "required_tools": [
+        "dispatch_technician"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

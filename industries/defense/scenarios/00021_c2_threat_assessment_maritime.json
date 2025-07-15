@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-c2-21",
+  "title": "Subsurface Threat Assessment",
+  "description": "A naval operator must assess an unidentified subsurface contact detected by sonar to determine if it is a hostile submarine.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Threat Assessment & Prioritization",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the acoustic signature of the subsurface contact.",
+      "expected_outcome": "Operator correctly analyzes the sonar data.",
+      "required_tools": [
+        "analyze_acoustic_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the signature against a database of known friendly, neutral, and hostile submarine classes.",
+      "expected_outcome": "Operator finds a potential match with a known adversary submarine class.",
+      "required_tools": [
+        "query_acoustic_signature_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend deploying a maritime patrol aircraft to gain secondary confirmation of the contact.",
+      "expected_outcome": "Operator makes a timely and appropriate recommendation for further action.",
+      "required_tools": [
+        "recommend_course_of_action",
+        "task_maritime_patrol_aircraft"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

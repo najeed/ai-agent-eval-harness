@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sl-10723",
+  "title": "Qualify a New Supplier",
+  "description": "A procurement manager needs to add a new potential supplier to the system for a specific commodity.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Procurement & Ordering",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Collect required documentation from the potential supplier (e.g., quality certifications, financial statements).",
+      "expected_outcome": "Agent receives and logs the necessary documents.",
+      "required_tools": [
+        "upload_supplier_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the new supplier's details into the supplier relationship management (SRM) system.",
+      "expected_outcome": "Agent creates a new supplier profile with all contact and business information.",
+      "required_tools": [
+        "create_supplier_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Initiate the supplier qualification workflow for internal review and approval.",
+      "expected_outcome": "Agent submits the new supplier profile for approval by the quality and finance teams.",
+      "required_tools": [
+        "start_supplier_approval_workflow"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "pharma-cm-11237",
+  "title": "Manage Patient Co-pay Assistance",
+  "description": "A patient calls a support program to activate a co-pay card to help with the cost of their prescription.",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Patient Support Programs",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the patient in the support program database using their name and date of birth.",
+      "expected_outcome": "Agent successfully locates the patient's profile.",
+      "required_tools": [
+        "search_patient_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the patient's eligibility for the co-pay assistance program.",
+      "expected_outcome": "Agent confirms the patient has commercial insurance and meets the eligibility criteria.",
+      "required_tools": [
+        "verify_program_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Activate the patient's co-pay card in the system.",
+      "expected_outcome": "Agent successfully activates the card and provides the patient with the necessary processing information for the pharmacy.",
+      "required_tools": [
+        "activate_copay_card"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

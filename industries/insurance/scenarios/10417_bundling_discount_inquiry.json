@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-pc-10417",
+  "title": "Inquiry About Bundling Discount",
+  "description": "A customer has an auto policy and is calling to see if they can get a discount by adding a renters policy.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Underwriting & Quoting",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the existing auto policyholder.",
+      "expected_outcome": "Agent correctly identifies the customer's account.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the multi-policy (bundling) discount and its benefits.",
+      "expected_outcome": "Agent clearly explains how the customer can save money.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a quote for a new renters policy that includes the bundling discount.",
+      "expected_outcome": "Agent generates a quote for the renters policy showing the discounted price.",
+      "required_tools": [
+        "generate_renters_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

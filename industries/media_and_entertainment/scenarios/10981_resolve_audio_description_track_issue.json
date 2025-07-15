@@ -1,0 +1,55 @@
+{
+  "scenario_id": "media-bo-10981",
+  "title": "Resolve Audio Description Track Issue",
+  "description": "A visually impaired user reports that the audio description track for a TV show is silent.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Content Ingest & QC",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the asset and verify the presence of an audio description track.",
+      "expected_outcome": "Agent confirms the file should have an audio description track, but it is missing or corrupt.",
+      "required_tools": [
+        "find_asset_by_title",
+        "analyze_media_file_tracks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request a corrected file with a valid audio description track from the content provider.",
+      "expected_outcome": "Agent sends a re-delivery request for the accessible version of the content.",
+      "required_tools": [
+        "send_notification_to_partner"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once received, replace the faulty file on the streaming servers.",
+      "expected_outcome": "Agent ingests, QCs, and replaces the file, resolving the issue.",
+      "required_tools": [
+        "ingest_media_file",
+        "run_automated_qc_scan",
+        "update_asset_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

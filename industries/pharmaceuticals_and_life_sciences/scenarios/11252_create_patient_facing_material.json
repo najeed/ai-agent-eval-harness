@@ -1,0 +1,52 @@
+{
+  "scenario_id": "pharma-cm-11252",
+  "title": "Create Patient-Facing Educational Material",
+  "description": "A medical communications specialist needs to create a patient-friendly brochure explaining a specific disease state.",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Patient Support Programs",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Research and summarize the key information about the disease state in plain language.",
+      "expected_outcome": "Agent drafts a summary avoiding medical jargon.",
+      "required_tools": [
+        "search_medical_literature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the content for the brochure using the summary.",
+      "expected_outcome": "Agent creates the full text for the brochure.",
+      "required_tools": [
+        "draft_brochure_content"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the draft brochure for internal medical and regulatory review to ensure accuracy and compliance.",
+      "expected_outcome": "Agent submits the document to the promotional review committee.",
+      "required_tools": [
+        "upload_document_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

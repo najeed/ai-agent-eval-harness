@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-cs-11379",
+  "title": "Update Household Information for Benefits",
+  "description": "A benefits recipient needs to report the birth of a new child, which may affect their benefit amount.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Benefits Administration",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the citizen and their active benefits case.",
+      "expected_outcome": "Agent locates the correct case file.",
+      "required_tools": [
+        "get_case_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the new child to the household composition in the case file.",
+      "expected_outcome": "Agent accurately adds the new dependent's information.",
+      "required_tools": [
+        "update_case_household"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Trigger a recalculation of benefits based on the new household size.",
+      "expected_outcome": "The system recalculates and increases the benefit amount.",
+      "required_tools": [
+        "recalculate_benefits"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

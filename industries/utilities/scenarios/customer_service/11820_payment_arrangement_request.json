@@ -1,0 +1,54 @@
+{
+  "scenario_id": "utils-cs-11820",
+  "title": "Payment Arrangement Request",
+  "description": "A customer has received a disconnection notice and is calling to request a payment arrangement to avoid shut-off.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's account and verify the past-due balance and disconnection date.",
+      "expected_outcome": "Agent confirms the amount owed and the scheduled shut-off date.",
+      "required_tools": [
+        "get_customer_details",
+        "get_billing_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the customer's eligibility for a payment arrangement based on their payment history.",
+      "expected_outcome": "Agent confirms the customer is eligible for a payment plan.",
+      "required_tools": [
+        "check_payment_plan_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Offer the available payment plan options (e.g., splitting the balance over 3 months) and process the customer's selection.",
+      "expected_outcome": "Agent successfully sets up the payment arrangement and cancels the pending disconnection order.",
+      "required_tools": [
+        "setup_payment_arrangement",
+        "cancel_service_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

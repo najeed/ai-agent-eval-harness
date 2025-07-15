@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-vo-11588",
+  "title": "Manage VIP Suite Access List",
+  "description": "A corporate suite holder needs to provide a list of guests who will be attending the game and need access to the suite.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Hospitality & VIP Services",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the guest list from the suite holder.",
+      "expected_outcome": "Agent has the list of names for the suite.",
+      "required_tools": [
+        "receive_guest_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the guest list to the venue's access control system.",
+      "expected_outcome": "Agent successfully adds the guests to the system.",
+      "required_tools": [
+        "update_access_control_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the suite holder with instructions on how their guests can check in on game day.",
+      "expected_outcome": "Agent sends clear instructions to the suite holder.",
+      "required_tools": [
+        "send_check_in_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "media-bo-10941",
+  "title": "Replace Defective VOD File",
+  "description": "A VOD asset is found to have a corrupted video file. An agent must replace it with a corrected version from the production house.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Content Ingest & QC",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the VOD asset with the corrupted file.",
+      "expected_outcome": "Agent locates the specific asset in the management system.",
+      "required_tools": [
+        "find_asset_by_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request a new, corrected file from the content partner.",
+      "expected_outcome": "Agent sends a formal request for re-delivery.",
+      "required_tools": [
+        "send_notification_to_partner"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ingest the new file and run it through automated QC.",
+      "expected_outcome": "Agent ingests the new file, and it passes the QC scan.",
+      "required_tools": [
+        "ingest_media_file",
+        "run_automated_qc_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Replace the corrupted file with the new file on the streaming servers.",
+      "expected_outcome": "Agent successfully updates the VOD asset.",
+      "required_tools": [
+        "update_asset_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

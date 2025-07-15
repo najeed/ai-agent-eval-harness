@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-10467",
+  "title": "Request a Duplicate Policy Document",
+  "description": "A policyholder has misplaced their physical life insurance policy and wants a new copy.",
+  "use_case": "Life & Annuities",
+  "core_function": "Policy Servicing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify and authenticate the policyholder.",
+      "expected_outcome": "Agent securely verifies the customer.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the request for a duplicate policy document.",
+      "expected_outcome": "Agent successfully generates a copy of the policy contract.",
+      "required_tools": [
+        "generate_duplicate_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Mail the new document to the policyholder's address of record.",
+      "expected_outcome": "Agent initiates the mailing of the physical document.",
+      "required_tools": [
+        "send_mail"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

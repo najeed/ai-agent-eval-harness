@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-wm-10288",
+  "title": "Place a Good-'Til-Canceled (GTC) Trade Order",
+  "description": "A client wants to place a limit order to buy a stock, but wants the order to remain active until it's either filled or they cancel it.",
+  "use_case": "Wealth Management",
+  "core_function": "Trade Execution & Servicing",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the trade details: buy, quantity, stock symbol, limit price, and time-in-force (GTC).",
+      "expected_outcome": "Agent accurately captures all parameters for the GTC limit order.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the client's account for sufficient buying power.",
+      "expected_outcome": "Agent confirms the account has enough funds to execute the trade if the limit price is hit.",
+      "required_tools": [
+        "check_buying_power"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place the GTC limit order and confirm its details with the client.",
+      "expected_outcome": "Agent successfully places the open order and provides a confirmation.",
+      "required_tools": [
+        "execute_trade"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ecommerce-css-10094",
+  "title": "Find an Order by Item Purchased",
+  "description": "A customer can't remember their order number but knows they bought a specific item last month. An agent needs to find their order.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Account Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's account.",
+      "expected_outcome": "Agent finds the customer's profile.",
+      "required_tools": [
+        "get_customer_by_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the customer's order history for the specific product they mentioned within the given timeframe.",
+      "expected_outcome": "Agent successfully finds the order containing the 'Red Scarf' purchased last month.",
+      "required_tools": [
+        "search_order_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

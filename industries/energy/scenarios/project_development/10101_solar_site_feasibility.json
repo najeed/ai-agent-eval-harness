@@ -1,0 +1,68 @@
+{
+  "scenario_id": "energy-pd-10101",
+  "title": "Solar Farm Site Feasibility Analysis",
+  "description": "An agent must assess a potential land parcel for its suitability for a new utility-scale solar farm.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Site Assessment & Feasibility",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze solar irradiance and weather data for the specified coordinates.",
+      "expected_outcome": "Agent provides average annual GHI/DNI values and identifies any significant weather risks.",
+      "required_tools": [
+        "get_solar_irradiance_data",
+        "get_historical_weather_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for grid interconnection points within a 10km radius and their available capacity.",
+      "expected_outcome": "Agent identifies the nearest substation and its current load and capacity data.",
+      "required_tools": [
+        "query_grid_infrastructure_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review land topography and environmental zoning restrictions for the parcel.",
+      "expected_outcome": "Agent confirms the land is not in a protected zone and has a suitable slope.",
+      "required_tools": [
+        "get_topographical_map",
+        "check_environmental_zoning"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a preliminary feasibility report summarizing findings and recommending next steps.",
+      "expected_outcome": "Agent produces a structured report with a clear recommendation.",
+      "required_tools": [
+        "generate_feasibility_summary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

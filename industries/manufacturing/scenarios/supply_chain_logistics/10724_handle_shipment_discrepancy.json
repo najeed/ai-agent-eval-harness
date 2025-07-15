@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sl-10724",
+  "title": "Handle a Shipment Discrepancy",
+  "description": "A receiving clerk received a shipment where the quantity is less than what was on the packing slip.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Inbound & Receiving",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Record the actual received quantity against the purchase order.",
+      "expected_outcome": "Agent enters the physically counted quantity in the system.",
+      "required_tools": [
+        "record_po_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a 'Discrepancy Report' detailing the PO number, part number, expected quantity, and actual quantity.",
+      "expected_outcome": "Agent generates a formal report for the discrepancy.",
+      "required_tools": [
+        "create_shipment_discrepancy_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the procurement department so they can contact the supplier to resolve the short shipment.",
+      "expected_outcome": "Agent forwards the report to the responsible buyer.",
+      "required_tools": [
+        "send_internal_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

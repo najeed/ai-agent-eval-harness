@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-osm-10096",
+  "title": "Bulk Edit Product Weights for Shipping",
+  "description": "A logistics manager realizes the weights for an entire product line were entered incorrectly, affecting shipping cost calculations. They need to perform a bulk update.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Product Information Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all products within a specific category or brand.",
+      "expected_outcome": "Agent retrieves all products from 'Brand Y'.",
+      "required_tools": [
+        "get_products_by_category"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Export the product list with SKUs and current weights to a CSV file.",
+      "expected_outcome": "Agent generates the CSV file.",
+      "required_tools": [
+        "export_product_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the manager corrects the weights in the CSV, import the file to bulk update the product information.",
+      "expected_outcome": "Agent successfully imports the corrected data, updating the weights for all products in the list.",
+      "required_tools": [
+        "import_product_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

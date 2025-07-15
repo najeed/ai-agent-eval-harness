@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-go-10902",
+  "title": "Player Reports In-Game Cheating",
+  "description": "A player submits a report with video evidence of another player using an aimbot in a competitive match.",
+  "use_case": "Gaming Operations",
+  "core_function": "Anti-Cheat & Moderation",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the player report, including the reported player's ID and the attached video evidence.",
+      "expected_outcome": "Agent successfully accesses all details of the report.",
+      "required_tools": [
+        "get_player_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the reported player's match history and performance stats for anomalies.",
+      "expected_outcome": "Agent finds that the player's headshot accuracy stat is unnaturally high (95%).",
+      "required_tools": [
+        "get_player_match_history",
+        "analyze_player_stats"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the evidence and stat analysis, issue a permanent ban to the cheating player.",
+      "expected_outcome": "Agent successfully applies a permanent ban to the player's account.",
+      "required_tools": [
+        "issue_player_ban"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

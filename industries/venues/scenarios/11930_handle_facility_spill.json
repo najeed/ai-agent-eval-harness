@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-vo-11930",
+  "title": "Handle a Facility Spill",
+  "description": "A guest reports a large soda spill in a main concourse, creating a slip hazard.",
+  "use_case": "Venue Operations & Logistics",
+  "core_function": "Housekeeping & Maintenance",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the report and the exact location of the spill.",
+      "expected_outcome": "Agent creates a new housekeeping request with the location.",
+      "required_tools": [
+        "log_housekeeping_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch the nearest available housekeeping crew member to the location.",
+      "expected_outcome": "Agent assigns the task to a specific cleaner.",
+      "required_tools": [
+        "dispatch_housekeeping_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct a nearby usher or security guard to stand by the spill to warn guests until housekeeping arrives.",
+      "expected_outcome": "Agent dispatches another staff member to secure the area.",
+      "required_tools": [
+        "dispatch_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

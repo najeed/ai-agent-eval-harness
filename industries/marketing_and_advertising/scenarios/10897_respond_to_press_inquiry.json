@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-sp-10897",
+  "title": "Respond to a Press Inquiry",
+  "description": "A journalist has emailed with questions for a story about the company. A PR manager needs to coordinate a response.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Brand Management",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge receipt of the journalist's email and inform them you are working on a response.",
+      "expected_outcome": "Agent sends a prompt and professional initial reply.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Share the journalist's questions with the relevant internal subject matter experts to get accurate answers.",
+      "expected_outcome": "Agent routes the questions to the correct people within the company.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Consolidate the answers into a single, approved statement and send it to the journalist before their deadline.",
+      "expected_outcome": "Agent provides a complete and approved response to the press.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

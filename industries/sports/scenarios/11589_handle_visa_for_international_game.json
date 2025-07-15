@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-tm-11589",
+  "title": "Handle Visas for an International Game",
+  "description": "A team is scheduled to play a game in another country. The travel manager must ensure all players and staff have the necessary visas.",
+  "use_case": "Team & Player Management",
+  "core_function": "Team Logistics & Travel",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the visa requirements for the destination country for all players and staff based on their nationalities.",
+      "expected_outcome": "Agent creates a list of who needs a visa.",
+      "required_tools": [
+        "check_visa_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather all necessary documentation from each person who needs a visa.",
+      "expected_outcome": "Agent collects all passports and application forms.",
+      "required_tools": [
+        "collect_visa_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the visa applications to the relevant embassy or consulate.",
+      "expected_outcome": "Agent successfully submits all applications.",
+      "required_tools": [
+        "submit_visa_application"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

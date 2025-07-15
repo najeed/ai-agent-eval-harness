@@ -1,0 +1,65 @@
+{
+  "scenario_id": "energy-pd-10181",
+  "title": "Wind Farm Noise Impact Modeling",
+  "description": "A permitting manager needs to model the noise propagation from a proposed wind farm to ensure it complies with local ordinances.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Permitting & Compliance",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the sound power level specifications for the selected wind turbine model.",
+      "expected_outcome": "Agent retrieves the manufacturer's noise data.",
+      "required_tools": [
+        "get_turbine_specifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the locations of the nearest residences and the local noise level limits (e.g., 45 dBA at night).",
+      "expected_outcome": "Agent maps nearby homes and retrieves the local noise ordinance.",
+      "required_tools": [
+        "get_property_locations",
+        "get_local_regulations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a noise propagation model to predict the sound level at each residence.",
+      "expected_outcome": "Model shows that all but one residence will be below the noise limit.",
+      "required_tools": [
+        "run_noise_propagation_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Suggest mitigation options, such as relocating a turbine or offering to purchase a noise easement from the affected homeowner.",
+      "expected_outcome": "Agent provides actionable mitigation recommendations.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

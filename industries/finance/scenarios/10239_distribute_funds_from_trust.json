@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-wm-10239",
+  "title": "Distribute Funds from a Trust",
+  "description": "A trustee requests a distribution from a trust account to one of its beneficiaries.",
+  "use_case": "Wealth Management",
+  "core_function": "Financial Planning",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the identity of the trustee and their authority to make distributions.",
+      "expected_outcome": "Agent confirms the trustee's identity and legal authority.",
+      "required_tools": [
+        "verify_trustee_authority"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm the distribution details: amount and beneficiary's receiving account.",
+      "expected_outcome": "Agent accurately records the distribution instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the fund transfer from the trust account to the beneficiary.",
+      "expected_outcome": "Agent successfully executes the distribution.",
+      "required_tools": [
+        "execute_trust_distribution"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

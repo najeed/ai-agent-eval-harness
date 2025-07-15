@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-pt-11764",
+  "title": "Perform Run Cut Analysis",
+  "description": "A service planner needs to group scheduled bus trips into daily work assignments (runs) for drivers, optimizing for efficiency and adherence to labor rules.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Service Planning & Scheduling",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the master schedule of all bus trips for a specific day.",
+      "expected_outcome": "All required trips are loaded into the planning tool.",
+      "required_tools": [
+        "import_master_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define constraints, such as maximum run time, minimum break time, and other labor agreement rules.",
+      "expected_outcome": "All labor constraints are correctly configured.",
+      "required_tools": [
+        "set_run_cut_constraints"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the optimization engine to automatically group trips into efficient runs.",
+      "expected_outcome": "The system generates a set of proposed runs that covers all trips.",
+      "required_tools": [
+        "run_run_cut_optimizer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Review the proposed runs, make manual adjustments as needed, and finalize the run cut for drivers to bid on.",
+      "expected_outcome": "A final, efficient set of driver work assignments is created.",
+      "required_tools": [
+        "finalize_run_cut"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

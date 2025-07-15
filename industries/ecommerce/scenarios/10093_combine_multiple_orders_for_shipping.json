@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-omf-10093",
+  "title": "Combine Multiple Orders for Shipping",
+  "description": "A customer placed two separate orders going to the same address within a few hours. A warehouse agent wants to combine them into one shipment to save costs.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Order Processing",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify multiple open orders from the same customer going to the same address.",
+      "expected_outcome": "System flags two orders from the same customer that can be combined.",
+      "required_tools": [
+        "find_combinable_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Merge the two orders into a single fulfillment order.",
+      "expected_outcome": "Agent successfully merges the orders in the system.",
+      "required_tools": [
+        "merge_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Refund any excess shipping charges back to the customer.",
+      "expected_outcome": "Agent processes a partial refund for the saved shipping cost.",
+      "required_tools": [
+        "process_partial_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "transaction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

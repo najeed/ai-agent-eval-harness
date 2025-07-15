@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ret-cs-11440",
+  "title": "Answer Product Availability Call",
+  "description": "A customer calls the store to ask if a specific item is in stock.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Product Inquiries",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the product name or item number from the customer.",
+      "expected_outcome": "The agent understands which product to look for.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the inventory management system to look up the item's current on-hand quantity.",
+      "expected_outcome": "The system shows the current stock level for the item.",
+      "required_tools": [
+        "check_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer whether the item is in stock and offer to hold it for them.",
+      "expected_outcome": "The agent accurately answers the customer's question and provides helpful service.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

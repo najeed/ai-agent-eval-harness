@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-log-63",
+  "title": "Potable Water Resupply in Arid Environment",
+  "description": "A logistics officer must plan the production and distribution of potable water for a battalion operating in the desert.",
+  "use_case": "Logistics & Sustainment",
+  "core_function": "Supply Chain & Inventory Management",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the daily water requirement for the entire battalion based on personnel count and environmental factors.",
+      "expected_outcome": "Officer accurately calculates the total daily water need.",
+      "required_tools": [
+        "calculate_supply_demand"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status and production rate of all available Reverse Osmosis Water Purification Units (ROWPUs).",
+      "expected_outcome": "Officer determines they have enough production capacity to meet demand.",
+      "required_tools": [
+        "get_asset_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a distribution schedule to deliver water from the ROWPUs to all company positions.",
+      "expected_outcome": "Officer creates an efficient schedule to ensure all soldiers receive their daily water supply.",
+      "required_tools": [
+        "create_distribution_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

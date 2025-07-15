@@ -1,0 +1,51 @@
+{
+  "scenario_id": "utils-cs-11884",
+  "title": "Inquiry About New Service Charge",
+  "description": "A customer is calling to ask about a new 'Grid Modernization Charge' that appeared on their bill.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and locate the new charge on their billing statement.",
+      "expected_outcome": "Agent finds the specified charge on the customer's bill.",
+      "required_tools": [
+        "get_customer_details",
+        "get_billing_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the internal knowledge base to find the official, regulator-approved explanation for the new charge.",
+      "expected_outcome": "Agent retrieves the approved script explaining the purpose of the charge.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Clearly explain the purpose of the charge to the customer using the information from the knowledge base.",
+      "expected_outcome": "Agent accurately and clearly communicates the reason for the new charge.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ecommerce-osm-10044",
+  "title": "Bulk Update Product Tags for SEO",
+  "description": "An SEO specialist wants to add a new tag (e.g., 'eco-friendly') to a list of products to improve their search filterability.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Search & Navigation",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a list of SKUs and the tag to be added ('eco-friendly').",
+      "expected_outcome": "Agent ingests the data correctly.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each SKU in the list, retrieve its current tags.",
+      "expected_outcome": "Agent gets the current list of tags for each product.",
+      "required_tools": [
+        "get_product_tags"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Append the new tag to the existing tags for each product and save the changes.",
+      "expected_outcome": "Agent successfully performs the bulk update without removing existing tags.",
+      "required_tools": [
+        "update_product_tags"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

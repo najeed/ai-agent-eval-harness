@@ -1,0 +1,54 @@
+{
+  "scenario_id": "pharma-cm-11277",
+  "title": "Track Competitive Intelligence",
+  "description": "A competitive intelligence analyst needs to track and summarize recent news and clinical trial updates for a competitor's drug.",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Key Opinion Leader (KOL) Engagement",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan news feeds, press releases, and clinical trial registries for mentions of the competitor drug.",
+      "expected_outcome": "Agent finds a press release announcing the competitor has started a new Phase 2 trial.",
+      "required_tools": [
+        "scan_news_feeds",
+        "search_clinical_trial_registries"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Summarize the key findings.",
+      "expected_outcome": "Agent writes a concise summary of the new trial's indication and design.",
+      "required_tools": [
+        "summarize_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summary_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a competitive intelligence alert and distribute it to the relevant internal teams.",
+      "expected_outcome": "Agent drafts and sends an alert to the product strategy team.",
+      "required_tools": [
+        "create_ci_alert",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

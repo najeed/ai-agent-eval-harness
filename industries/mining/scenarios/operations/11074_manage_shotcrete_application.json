@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-ops-11074",
+  "title": "Manage Shotcrete Application",
+  "description": "An underground crew applies shotcrete (sprayed concrete) to the walls and roof of a new tunnel for ground support.",
+  "use_case": "Mine Operations",
+  "core_function": "Underground Production",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that the rock surface has been properly scaled (cleared of loose rock) and prepared for shotcreting.",
+      "expected_outcome": "The surface is confirmed to be ready.",
+      "required_tools": [
+        "complete_inspection_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Operate the robotic shotcrete sprayer to apply a layer of the required thickness (e.g., 100mm) to the rock surface.",
+      "expected_outcome": "The shotcrete is applied evenly and to the correct thickness.",
+      "required_tools": [
+        "operate_shotcrete_sprayer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "operational_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Take samples of the shotcrete during application to be tested for compressive strength to ensure it meets the design specification.",
+      "expected_outcome": "QA/QC samples are taken and sent for testing.",
+      "required_tools": [
+        "take_qaqc_samples"
+      ],
+      "success_criteria": [
+        {
+          "metric": "safety_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

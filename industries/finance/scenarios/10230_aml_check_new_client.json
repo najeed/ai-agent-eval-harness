@@ -1,0 +1,48 @@
+{
+  "scenario_id": "finance-wm-10230",
+  "title": "Perform AML Check on New Client",
+  "description": "As part of onboarding, a new client must be checked against AML and sanctions watchlists.",
+  "use_case": "Wealth Management",
+  "core_function": "Client Onboarding & KYC",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Take the new client's name and date of birth.",
+      "expected_outcome": "Agent accurately captures the client's identifying information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the client's details through the AML screening tool.",
+      "expected_outcome": "Agent successfully runs the check against global watchlists.",
+      "required_tools": [
+        "run_aml_sanctions_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the results for any potential matches and clear any false positives.",
+      "expected_outcome": "Agent reviews the results, finds no true matches, and marks the check as complete.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

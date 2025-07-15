@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-cm-11217",
+  "title": "Enroll Patient in Support Program",
+  "description": "A case manager for a patient support program receives a request to enroll a new patient and verify their benefits for a specialty drug.",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Patient Support Programs",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and log the completed enrollment form from the patient's physician.",
+      "expected_outcome": "Agent creates a new patient case and enters their demographic and insurance information.",
+      "required_tools": [
+        "create_patient_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a benefits verification check with the patient's insurance provider.",
+      "expected_outcome": "Agent uses a benefits verification tool and finds the drug is covered but requires prior authorization.",
+      "required_tools": [
+        "run_benefits_verification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Initiate the prior authorization process on behalf of the physician's office.",
+      "expected_outcome": "Agent submits the required clinical information to the insurance company.",
+      "required_tools": [
+        "submit_prior_authorization"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Inform the patient and physician that the enrollment is pending prior authorization approval.",
+      "expected_outcome": "Agent sends a status update notification to the patient and physician.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

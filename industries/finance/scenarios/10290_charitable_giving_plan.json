@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-wm-10290",
+  "title": "Plan for Charitable Giving",
+  "description": "A client wants to donate appreciated stock to a charity to be more tax-efficient.",
+  "use_case": "Wealth Management",
+  "core_function": "Financial Planning",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify highly appreciated, long-term holdings in the client's portfolio.",
+      "expected_outcome": "Agent identifies a stock that has significant unrealized capital gains.",
+      "required_tools": [
+        "scan_for_unrealized_gains"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the tax benefits of donating appreciated stock directly versus selling it and donating the cash.",
+      "expected_outcome": "Agent clearly explains how donating the stock avoids capital gains tax.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Facilitate the transfer of the shares from the client's account to the charity's brokerage account.",
+      "expected_outcome": "Agent processes the transfer of shares to the designated charity.",
+      "required_tools": [
+        "transfer_shares"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-vo-11538",
+  "title": "Manage Event Day Staffing",
+  "description": "On game day, several ushers call in sick. A manager needs to adjust staffing levels to ensure all sections are covered.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Event Day Operations",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive notifications of the staff absences.",
+      "expected_outcome": "Agent has a list of all staff members who have called in sick.",
+      "required_tools": [
+        "get_staff_absences"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the original staffing plan and identify the now-uncovered sections.",
+      "expected_outcome": "Agent identifies three stadium sections that are now understaffed.",
+      "required_tools": [
+        "get_staffing_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reassign staff from less critical areas or on-call staff to cover the empty positions.",
+      "expected_outcome": "Agent successfully updates the staffing plan to cover all critical areas.",
+      "required_tools": [
+        "update_staff_assignments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Notify the reassigned staff of their new positions for the day.",
+      "expected_outcome": "Agent sends out notifications to the affected staff members.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

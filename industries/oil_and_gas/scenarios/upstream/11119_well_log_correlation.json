@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-11119",
+  "title": "Correlate Well Logs",
+  "description": "A geologist correlates gamma ray and resistivity logs from a new well with logs from nearby offset wells to understand the stratigraphy.",
+  "use_case": "Upstream",
+  "core_function": "Geoscience & Exploration",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Display the logs for the new well and three selected offset wells in a correlation view.",
+      "expected_outcome": "All specified well logs are displayed side-by-side.",
+      "required_tools": [
+        "load_well_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify and 'pick' the tops of key geological formations (e.g., 'Top Wilcox Sand') on each well log.",
+      "expected_outcome": "The geologist accurately identifies and marks the formation tops on all wells.",
+      "required_tools": [
+        "pick_formation_tops"
+      ],
+      "success_criteria": [
+        {
+          "metric": "geological_interpretation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a cross-section view showing the correlated formation tops between the wells.",
+      "expected_outcome": "A geological cross-section is generated, illustrating the subsurface structure.",
+      "required_tools": [
+        "create_cross_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

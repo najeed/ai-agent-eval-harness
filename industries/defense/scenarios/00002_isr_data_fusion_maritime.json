@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-isr-2",
+  "title": "Maritime Smuggling Vessel Identification",
+  "description": "An analyst must fuse satellite imagery (IMINT) with signals intelligence (SIGINT) to identify a vessel suspected of smuggling.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "ISR Data Fusion & Analysis",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze satellite imagery to locate a vessel matching the description in a specified search area.",
+      "expected_outcome": "Analyst correctly identifies the target vessel from multiple others in the area.",
+      "required_tools": [
+        "analyze_satellite_imagery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "target_detection_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Correlate the identified vessel's location with SIGINT emissions indicating a known smuggling group.",
+      "expected_outcome": "Analyst successfully links the visual identification with the electronic signature.",
+      "required_tools": [
+        "correlate_imint_sigint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "cross_source_correlation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an intelligence report with a high-confidence assessment that the vessel is involved in smuggling.",
+      "expected_outcome": "Analyst produces a clear, concise report with all supporting evidence.",
+      "required_tools": [
+        "generate_intelligence_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_accuracy_and_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ret-so-11402",
+  "title": "Assign Daily Tasks",
+  "description": "A shift supervisor needs to assign restocking and cleaning tasks to associates for the current shift.",
+  "use_case": "Store Operations",
+  "core_function": "Task & Shift Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the task management application.",
+      "expected_outcome": "The supervisor accesses the task assignment tool.",
+      "required_tools": [
+        "open_task_manager"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new task for 'Restock beverage cooler' and assign it to a specific associate.",
+      "expected_outcome": "The task is created and assigned to the correct employee.",
+      "required_tools": [
+        "create_task",
+        "assign_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the list of all assigned tasks for the shift to ensure workload is balanced.",
+      "expected_outcome": "The supervisor confirms that tasks are distributed evenly among the available staff.",
+      "required_tools": [
+        "view_shift_tasks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

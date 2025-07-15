@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tr-rs-11729",
+  "title": "Manage Surge Pricing During an Event",
+  "description": "After a concert ends, demand for rides skyrockets. The system must manage dynamic 'surge' pricing to attract more drivers to the area.",
+  "use_case": "Ride-Sharing & On-Demand Mobility",
+  "core_function": "Matching & Dispatch",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system detects a rapid increase in ride requests and a low number of available drivers in a specific geographic zone.",
+      "expected_outcome": "The system identifies a supply/demand imbalance.",
+      "required_tools": [
+        "monitor_supply_demand_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically applies a surge multiplier (e.g., 2.5x) to fares in that zone.",
+      "expected_outcome": "Surge pricing is activated for the concert zone.",
+      "required_tools": [
+        "apply_surge_multiplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system sends a notification to drivers in nearby zones, informing them of the high earnings potential in the surge zone.",
+      "expected_outcome": "Drivers are incentivized to move towards the area of high demand.",
+      "required_tools": [
+        "send_driver_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

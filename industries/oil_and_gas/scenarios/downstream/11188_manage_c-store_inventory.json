@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-down-11188",
+  "title": "Manage C-Store Inventory",
+  "description": "A manager of a gas station with a convenience store (C-store) needs to reorder drinks and snacks.",
+  "use_case": "Downstream",
+  "core_function": "Distribution & Retail",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a sales report to identify the fastest-moving items over the past week.",
+      "expected_outcome": "A report showing top-selling items is generated.",
+      "required_tools": [
+        "generate_sales_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the current on-hand inventory for the top-selling items.",
+      "expected_outcome": "The system shows that several popular items are below their reorder point.",
+      "required_tools": [
+        "check_product_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Automatically generate a purchase order for the items that are below their reorder points and send it to the main supplier.",
+      "expected_outcome": "A purchase order is created and sent to the supplier to restock the C-store.",
+      "required_tools": [
+        "generate_purchase_order",
+        "send_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

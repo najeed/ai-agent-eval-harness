@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-ops-11060",
+  "title": "Manage In-Pit Crushing and Conveying",
+  "description": "An operator manages an in-pit crushing and conveying (IPCC) system, where ore is crushed inside the pit and transported out via conveyor, instead of by truck.",
+  "use_case": "Mine Operations",
+  "core_function": "Load & Haul",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the feed rate and power draw of the in-pit primary crusher.",
+      "expected_outcome": "The operator confirms the IPCC system is running smoothly.",
+      "required_tools": [
+        "get_crusher_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate with the shovel operators to ensure a steady feed of ore to the crusher to maximize utilization.",
+      "expected_outcome": "The shovels and crusher are working in sync to provide a consistent flow.",
+      "required_tools": [
+        "communicate_with_shovel_operators"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the status of the overland conveyor that transports the crushed ore out of the pit.",
+      "expected_outcome": "The conveyor is monitored for any signs of belt misalignment or other issues.",
+      "required_tools": [
+        "get_conveyor_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

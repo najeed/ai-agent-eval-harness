@@ -1,0 +1,64 @@
+{
+  "scenario_id": "energy-pd-10125",
+  "title": "Compare LCOE for Solar vs. Wind",
+  "description": "An analyst needs to compare the Levelized Cost of Energy (LCOE) for a new solar project versus a new wind project at the same location.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Financial Modeling & Investment Analysis",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather cost and performance data for both a 100 MW solar farm and a 100 MW wind farm (CAPEX, OPEX, capacity factor).",
+      "expected_outcome": "Agent compiles the necessary input data for both project types.",
+      "required_tools": [
+        "get_project_cost_benchmarks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the LCOE for the solar project.",
+      "expected_outcome": "Agent computes the LCOE for solar.",
+      "required_tools": [
+        "calculate_lcoe"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the LCOE for the wind project.",
+      "expected_outcome": "Agent computes the LCOE for wind.",
+      "required_tools": [
+        "calculate_lcoe"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Present a comparison and conclude which technology offers a lower LCOE at this site.",
+      "expected_outcome": "Agent provides a clear summary table and states that solar has a 15% lower LCOE.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

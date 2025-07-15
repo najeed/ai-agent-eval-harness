@@ -1,0 +1,69 @@
+{
+  "scenario_id": "venues-em-11957",
+  "title": "Cancel Event Due to Severe Weather",
+  "description": "A severe blizzard forces the cancellation of an outdoor winter festival on the day of the event.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Event Planning & Coordination",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Update the event status to 'Canceled' in the master calendar and ticketing system.",
+      "expected_outcome": "Agent updates the status, which automatically halts any further ticket sales.",
+      "required_tools": [
+        "update_event_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Post cancellation notices on the venue's website, social media channels, and mobile app.",
+      "expected_outcome": "Agent pushes a coordinated cancellation message across all public-facing platforms.",
+      "required_tools": [
+        "post_website_banner",
+        "post_social_media_update"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send an email and SMS notification to all ticket holders about the cancellation and refund process.",
+      "expected_outcome": "Agent initiates a bulk communication to all attendees.",
+      "required_tools": [
+        "send_bulk_email",
+        "send_bulk_sms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Notify all scheduled staff and vendors that the event is canceled.",
+      "expected_outcome": "Agent sends a cancellation notice to all internal and external stakeholders.",
+      "required_tools": [
+        "notify_staff_of_cancellation",
+        "notify_vendors"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

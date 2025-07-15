@@ -1,0 +1,65 @@
+{
+  "scenario_id": "energy-op-10187",
+  "title": "Analyze Transformer Oil Sample",
+  "description": "An asset manager reviews the lab results from an oil sample taken from a large power transformer to assess its internal health.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Asset Performance Monitoring",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ingest the lab report data, including dissolved gas analysis (DGA), moisture content, and dielectric strength.",
+      "expected_outcome": "System parses and structures the data from the lab report.",
+      "required_tools": [
+        "extract_data_from_pdf"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the results to industry standards (e.g., IEEE C57.104) and the transformer's own historical trends.",
+      "expected_outcome": "Agent identifies that furan levels are rising, indicating paper insulation degradation.",
+      "required_tools": [
+        "compare_to_ieee_standards",
+        "analyze_historical_trends"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Estimate the remaining useful life of the transformer based on the rate of degradation.",
+      "expected_outcome": "Agent provides an updated end-of-life estimate.",
+      "required_tools": [
+        "estimate_asset_remaining_life"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Recommend a change in maintenance strategy, such as more frequent oil sampling or planning for replacement.",
+      "expected_outcome": "Agent recommends increasing the sampling frequency to every 6 months.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

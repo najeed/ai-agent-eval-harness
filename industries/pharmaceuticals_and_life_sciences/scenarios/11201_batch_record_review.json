@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-ms-11201",
+  "title": "Review Electronic Batch Record for Deviations",
+  "description": "An agent must review a completed electronic batch record (eBR) for a batch of tablets, checking for any recorded deviations or out-of-specification results.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Production & Batch Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the eBR for the specified batch number.",
+      "expected_outcome": "Agent correctly pulls up the complete batch record.",
+      "required_tools": [
+        "get_batch_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan the eBR for any recorded deviation events.",
+      "expected_outcome": "Agent identifies a deviation logged for 'incorrect mixing time' in the granulation step.",
+      "required_tools": [
+        "analyze_batch_record_deviations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the linked quality investigation report for the deviation.",
+      "expected_outcome": "Agent finds the investigation which concluded 'no impact on product quality'.",
+      "required_tools": [
+        "get_quality_investigation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Forward the batch record to the Quality Assurance department for final approval and release.",
+      "expected_outcome": "Agent successfully routes the eBR to the QA work queue.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

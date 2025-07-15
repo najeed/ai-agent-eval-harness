@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-10510",
+  "title": "Calendar Court-Ordered Deadlines",
+  "description": "A paralegal receives a scheduling order from a court and must calendar all deadlines.",
+  "use_case": "Law Practice Management",
+  "core_function": "Docketing & Calendar Management",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the scheduling order document and extract all dates and corresponding deadlines.",
+      "expected_outcome": "Agent identifies a list of dates and events (e.g., 'Discovery Cutoff: Oct 31', 'Final Pretrial Conference: Nov 15').",
+      "required_tools": [
+        "document_parsing_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each deadline, create an entry in the firm's master calendar and the specific case calendar.",
+      "expected_outcome": "Agent populates the calendars with the deadlines.",
+      "required_tools": [
+        "calendar_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up automated reminders for the case team for 14 days, 7 days, and 1 day before each deadline.",
+      "expected_outcome": "Agent configures the necessary reminders to prevent missed deadlines.",
+      "required_tools": [
+        "calendar_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "mfg-qc-10742",
+  "title": "Trace a Component Lot Number",
+  "description": "A customer has reported an issue with a finished product. A quality engineer needs to trace the lot number of a specific component used in that product.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Traceability & Genealogy",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the finished product's serial number in the system.",
+      "expected_outcome": "Agent locates the specific unit that was shipped to the customer.",
+      "required_tools": [
+        "find_serial_number"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the product's genealogy or 'as-built' record.",
+      "expected_outcome": "Agent pulls up a record showing every component and sub-assembly used to build that specific unit.",
+      "required_tools": [
+        "get_product_genealogy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the lot number of the specific component in question from the genealogy record.",
+      "expected_outcome": "Agent successfully finds and reports the lot number of the component.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

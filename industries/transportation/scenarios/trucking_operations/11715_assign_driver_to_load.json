@@ -1,0 +1,53 @@
+{
+  "scenario_id": "tr-to-11715",
+  "title": "Assign Driver to a New Load",
+  "description": "A dispatcher needs to assign a newly available load to the most suitable driver based on location, hours of service (HOS), and equipment type.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Dispatch & Load Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the details of a new load, including origin, destination, and required equipment (e.g., refrigerated trailer).",
+      "expected_outcome": "Dispatcher understands the requirements of the load.",
+      "required_tools": [
+        "get_load_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find available drivers who are near the load's origin, have sufficient available HOS, and have the correct equipment qualification.",
+      "expected_outcome": "System returns a list of 3 eligible drivers.",
+      "required_tools": [
+        "find_available_drivers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the load to the best-fit driver and send them the dispatch information.",
+      "expected_outcome": "The load is assigned, and the driver receives all necessary pickup details.",
+      "required_tools": [
+        "assign_load_to_driver",
+        "send_dispatch_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

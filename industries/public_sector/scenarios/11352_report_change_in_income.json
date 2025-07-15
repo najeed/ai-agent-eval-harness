@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ps-cs-11352",
+  "title": "Report a Change in Income for Benefits",
+  "description": "A citizen receiving SNAP benefits has gotten a new job and needs to report their change in income.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Benefits Administration",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the citizen and their benefits case.",
+      "expected_outcome": "Agent locates the active SNAP case.",
+      "required_tools": [
+        "get_case_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the new income information and supporting documentation (e.g., pay stubs).",
+      "expected_outcome": "Agent accurately documents the new income details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recalculate the citizen's benefit amount based on the new income.",
+      "expected_outcome": "The system recalculates the benefits, resulting in a lower monthly amount.",
+      "required_tools": [
+        "recalculate_benefits"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Inform the citizen of their new benefit amount and the date it becomes effective.",
+      "expected_outcome": "Agent clearly communicates the change to the citizen.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

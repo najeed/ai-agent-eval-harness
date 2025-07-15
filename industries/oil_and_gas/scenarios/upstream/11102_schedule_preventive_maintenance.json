@@ -1,0 +1,54 @@
+{
+  "scenario_id": "og-up-11102",
+  "title": "Schedule Preventive Maintenance for Wellhead",
+  "description": "A maintenance planner schedules a preventive maintenance job for a critical wellhead based on runtime hours and manufacturer recommendations.",
+  "use_case": "Upstream",
+  "core_function": "Asset & Maintenance Management",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the maintenance history and total operating hours for wellhead WH-101.",
+      "expected_outcome": "The asset's full maintenance history and runtime are retrieved.",
+      "required_tools": [
+        "get_asset_maintenance_history",
+        "get_asset_runtime"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on the data, determine the required maintenance tasks and create a work order in the CMMS.",
+      "expected_outcome": "A detailed work order is created with all necessary tasks listed.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the work order to a qualified technician team and schedule it for next week.",
+      "expected_outcome": "The work order is scheduled and assigned in the system.",
+      "required_tools": [
+        "assign_work_order",
+        "schedule_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

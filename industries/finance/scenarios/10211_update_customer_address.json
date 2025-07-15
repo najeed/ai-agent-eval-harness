@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-rb-10211",
+  "title": "Update Customer Address",
+  "description": "A retail banking customer has moved and needs to update their mailing address.",
+  "use_case": "Retail Banking",
+  "core_function": "Account Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the customer using two-factor authentication.",
+      "expected_outcome": "Agent successfully verifies the customer's identity.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the new address from the customer.",
+      "expected_outcome": "Agent accurately captures the new mailing address.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the customer's address in the core banking system.",
+      "expected_outcome": "Agent successfully updates the address and confirms the change.",
+      "required_tools": [
+        "update_customer_address"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

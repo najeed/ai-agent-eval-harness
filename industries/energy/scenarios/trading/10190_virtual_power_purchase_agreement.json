@@ -1,0 +1,48 @@
+{
+  "scenario_id": "energy-tr-10190",
+  "title": "Structure a Virtual PPA (VPPA)",
+  "description": "A corporate buyer wants to sign a Virtual Power Purchase Agreement (VPPA) to support a new wind farm and receive its RECs, without taking physical delivery of the power.",
+  "use_case": "Energy Trading & Portfolio Management",
+  "core_function": "Trade Execution & Hedging",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the structure of a VPPA, which is a financial contract for difference.",
+      "expected_outcome": "Agent clearly communicates how a VPPA works.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Negotiate the key terms: contract tenor, volume, and the fixed 'strike price' for the energy.",
+      "expected_outcome": "Agent helps establish the core financial terms of the agreement.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft the contract, specifying the settlement mechanism (the difference between the floating market price and the fixed strike price) and the transfer of the associated RECs.",
+      "expected_outcome": "Agent drafts a term sheet for the VPPA.",
+      "required_tools": [
+        "draft_vppa_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "contract_completeness",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

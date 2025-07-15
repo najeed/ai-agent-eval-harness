@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-cm-11262",
+  "title": "Draft an Abstract for a Scientific Publication",
+  "description": "A medical writer needs to draft an abstract summarizing the results of a clinical study for submission to a journal.",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Medical Information & Inquiries",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the clinical study report (CSR) to understand the key findings.",
+      "expected_outcome": "Agent identifies the primary and key secondary endpoint results from the CSR.",
+      "required_tools": [
+        "get_document_by_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the abstract following the standard IMRAD (Introduction, Methods, Results, and Discussion) structure.",
+      "expected_outcome": "Agent writes a draft abstract that correctly follows the IMRAD format.",
+      "required_tools": [
+        "draft_abstract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the abstract adheres to the word count limit of the target journal (e.g., 250 words).",
+      "expected_outcome": "Agent edits the abstract to meet the length requirement without losing key information.",
+      "required_tools": [
+        "check_word_count",
+        "summarize_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Route the draft abstract for internal review and approval before submission.",
+      "expected_outcome": "Agent sends the draft to the study authors for their review and approval.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

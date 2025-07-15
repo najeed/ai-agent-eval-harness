@@ -1,0 +1,53 @@
+{
+  "scenario_id": "lw-wo-10624",
+  "title": "Re-slot a High-Velocity Item",
+  "description": "An item's sales have increased, and a warehouse manager wants to move it to a forward picking location closer to the packing stations to reduce travel time.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Storage & Slotting",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run an inventory velocity report to identify the fastest-moving items.",
+      "expected_outcome": "Agent identifies a product that has become a top-10 seller.",
+      "required_tools": [
+        "generate_inventory_velocity_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find an empty or suitable pick location in the 'Gold Zone' near the outbound area.",
+      "expected_outcome": "Agent identifies an available, appropriately sized location.",
+      "required_tools": [
+        "find_empty_pick_locations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create and assign a task for an operator to move the item from its current location to the new, optimized location.",
+      "expected_outcome": "Agent successfully creates a replenishment/move task to the new location.",
+      "required_tools": [
+        "create_inventory_move_task",
+        "assign_warehouse_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

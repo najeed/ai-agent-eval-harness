@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-rd-11208",
+  "title": "Track Lab Sample Lifecycle",
+  "description": "A lab technician needs to log a new batch of patient samples, track them through an assay, and record their storage location.",
+  "use_case": "Research & Development",
+  "core_function": "Lab & Sample Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Register a new batch of 20 plasma samples into the Laboratory Information Management System (LIMS).",
+      "expected_outcome": "Agent successfully creates 20 new sample records, each with a unique barcode.",
+      "required_tools": [
+        "register_samples_in_lims"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Associate the samples with a specific analytical test (e.g., 'ELISA for Biomarker X').",
+      "expected_outcome": "Agent correctly links all 20 samples to the scheduled test.",
+      "required_tools": [
+        "assign_test_to_samples"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the test, update the status of the samples to 'Analysis Complete'.",
+      "expected_outcome": "Agent successfully updates the status for all samples.",
+      "required_tools": [
+        "update_sample_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Log the final storage location of the samples in the -80\u00b0C freezer.",
+      "expected_outcome": "Agent updates each sample record with the correct freezer, rack, and box number.",
+      "required_tools": [
+        "update_sample_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

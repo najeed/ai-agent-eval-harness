@@ -1,0 +1,62 @@
+{
+  "scenario_id": "marketing-sp-10893",
+  "title": "Evaluate a Sponsorship Request",
+  "description": "The company has received a request to sponsor a local event. A manager needs to evaluate if the opportunity aligns with their marketing goals.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Media Planning",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the sponsorship proposal to understand the event, its audience, and the cost.",
+      "expected_outcome": "Agent gathers all the key details from the proposal.",
+      "required_tools": [
+        "document_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the event's audience demographics to the brand's target audience persona.",
+      "expected_outcome": "Agent determines if there is a strong audience match.",
+      "required_tools": [
+        "get_audience_persona"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assess if the potential brand exposure and lead generation opportunities justify the cost.",
+      "expected_outcome": "Agent performs a cost-benefit analysis.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Make a final recommendation to approve or decline the sponsorship request.",
+      "expected_outcome": "Agent provides a clear, data-backed recommendation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ret-ml-11493",
+  "title": "Pause a Marketing Campaign",
+  "description": "A marketing manager discovers an error in a scheduled email campaign and needs to pause it before it sends.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Campaign Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the scheduled campaign in the marketing platform.",
+      "expected_outcome": "The manager locates the campaign that needs to be stopped.",
+      "required_tools": [
+        "find_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the 'Pause' or 'Unschedule' option.",
+      "expected_outcome": "The campaign's status is changed to 'Paused'.",
+      "required_tools": [
+        "pause_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Correct the error in the email and then reschedule the campaign.",
+      "expected_outcome": "A potential error is averted, and the corrected campaign is ready to be sent.",
+      "required_tools": [
+        "edit_campaign",
+        "schedule_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-go-10982",
+  "title": "Investigate DDoS Attack on Game Login Server",
+  "description": "The system alerts that a game's login server is under a DDoS attack, preventing players from logging in.",
+  "use_case": "Gaming Operations",
+  "core_function": "Server Operations & Matchmaking",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the DDoS alert and analyze traffic patterns to the login server.",
+      "expected_outcome": "Agent confirms a high volume of traffic from a botnet is targeting the server.",
+      "required_tools": [
+        "get_network_alerts",
+        "analyze_traffic_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Activate DDoS mitigation services to filter the malicious traffic.",
+      "expected_outcome": "Agent enables the DDoS protection service, which begins to drop the attack traffic.",
+      "required_tools": [
+        "enable_ddos_mitigation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the server status until it returns to normal operation.",
+      "expected_outcome": "Agent watches the server load and confirms that legitimate players can log in again.",
+      "required_tools": [
+        "get_server_load_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

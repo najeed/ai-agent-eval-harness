@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-wo-10628",
+  "title": "Apply Special Labeling (VAS)",
+  "description": "A specific customer requires all their outbound cartons to have a special 'Fragile' label and a customer-specific barcode label applied before shipping.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Value-Added Services",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When an order for this customer is being packed, the system flags it for required Value-Added Services (VAS).",
+      "expected_outcome": "The packer is alerted that special labeling is required for this order.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Print the customer-specific barcode label.",
+      "expected_outcome": "Agent successfully prints the required custom label.",
+      "required_tools": [
+        "print_custom_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply both the 'Fragile' sticker and the custom barcode label to the carton and confirm the VAS task is complete.",
+      "expected_outcome": "Agent applies the labels and confirms completion in the system.",
+      "required_tools": [
+        "confirm_vas_task_completion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

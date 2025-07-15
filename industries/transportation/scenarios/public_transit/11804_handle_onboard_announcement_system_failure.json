@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tr-pt-11804",
+  "title": "Handle Onboard Announcement System Failure",
+  "description": "A bus driver reports that their automated next-stop announcement system has failed.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Real-time Operations & Control",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a radio call from a driver about the announcement system failure.",
+      "expected_outcome": "The dispatcher logs the vehicle defect.",
+      "required_tools": [
+        "log_vehicle_defect"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Instruct the driver to manually announce all stops for the remainder of their trip to ensure ADA compliance.",
+      "expected_outcome": "The driver is given clear instructions to maintain service accessibility.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a maintenance work order for the bus to have the announcement system repaired at the end of the day.",
+      "expected_outcome": "A repair ticket is created.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

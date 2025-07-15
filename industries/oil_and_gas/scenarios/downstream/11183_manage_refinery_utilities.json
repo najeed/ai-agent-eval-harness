@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-down-11183",
+  "title": "Manage Refinery Steam System",
+  "description": "A utilities operator manages the refinery's steam system, ensuring there is enough high-pressure steam for process units while optimizing fuel gas consumption in the boilers.",
+  "use_case": "Downstream",
+  "core_function": "Refinery Operations & Optimization",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the current steam demand from all process units and the current production from each boiler.",
+      "expected_outcome": "A balance of steam supply and demand is displayed.",
+      "required_tools": [
+        "get_steam_demand_data",
+        "get_boiler_production_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notice that the main steam header pressure is dropping, indicating a supply/demand imbalance.",
+      "expected_outcome": "The operator correctly identifies the developing problem.",
+      "required_tools": [
+        "get_steam_header_pressure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Increase the firing rate on a backup boiler to bring more steam production online and stabilize the header pressure.",
+      "expected_outcome": "The backup boiler is brought online, and the steam pressure returns to its normal operating range.",
+      "required_tools": [
+        "set_boiler_firing_rate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-rb-10284",
+  "title": "Verify a Large Check Deposit",
+  "description": "A customer has deposited a large, out-of-state check, and the bank needs to place a hold on the funds for verification.",
+  "use_case": "Retail Banking",
+  "core_function": "Fraud & Security",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the large check deposit in the customer's account.",
+      "expected_outcome": "Agent identifies the $25,000 check deposit from an out-of-state bank.",
+      "required_tools": [
+        "get_transaction_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on bank policy, place a standard hold on the deposited funds.",
+      "expected_outcome": "Agent places a 7-day hold on the funds.",
+      "required_tools": [
+        "place_hold_on_funds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the customer about the hold, explaining the reason and the date the funds will be available.",
+      "expected_outcome": "Agent clearly communicates the hold policy and fund availability date to the customer.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

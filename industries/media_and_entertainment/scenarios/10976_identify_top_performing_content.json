@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-ae-10976",
+  "title": "Identify Top Performing Content of the Month",
+  "description": "A content manager wants a report on the top 10 most-watched movies and TV shows on the streaming platform for the previous month.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Audience Analytics",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query the viewership database for all content watched last month.",
+      "expected_outcome": "Agent retrieves the raw viewership data.",
+      "required_tools": [
+        "get_monthly_viewership_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Aggregate the data by title and sort by total hours watched.",
+      "expected_outcome": "Agent processes the data and ranks all content by viewership.",
+      "required_tools": [
+        "aggregate_viewership_by_title"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report listing the top 10 titles.",
+      "expected_outcome": "Agent produces a clear, ranked list of the top 10 movies and shows.",
+      "required_tools": [
+        "generate_top_content_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

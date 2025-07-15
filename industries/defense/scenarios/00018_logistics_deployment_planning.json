@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-log-18",
+  "title": "Brigade Deployment Planning",
+  "description": "A logistics planner must create a strategic deployment plan to move a brigade and its equipment from its home base to a theater of operations.",
+  "use_case": "Logistics & Sustainment",
+  "core_function": "Deployment & Redeployment Planning",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Catalog all personnel, vehicles, and equipment to be deployed.",
+      "expected_outcome": "Planner generates a complete and accurate list of all assets for deployment.",
+      "required_tools": [
+        "get_unit_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the optimal mix of transport assets (air, sea, land) to meet the deployment timeline.",
+      "expected_outcome": "Planner allocates the correct number and type of transport assets.",
+      "required_tools": [
+        "analyze_transport_options"
+      ],
+      "success_criteria": [
+        {
+          "metric": "resource_optimization_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a detailed time-phased force and deployment data (TPFDD) plan.",
+      "expected_outcome": "Planner creates a valid TPFDD that sequences the entire deployment.",
+      "required_tools": [
+        "generate_tpfdd"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_validity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

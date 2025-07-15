@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-omf-10089",
+  "title": "Process Order Paid by Purchase Order/Check (B2B)",
+  "description": "A B2B customer places an order using a purchase order and will pay by check. The order should not be shipped until payment is received.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Payment & Invoicing",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new order with the payment method set to 'Purchase Order'.",
+      "expected_outcome": "Agent correctly creates the order.",
+      "required_tools": [
+        "create_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set the order status to 'Awaiting Payment' and generate an invoice to send to the customer.",
+      "expected_outcome": "Agent updates the status and generates the invoice.",
+      "required_tools": [
+        "update_order_status",
+        "generate_invoice_pdf"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the finance department confirms the check has cleared, update the order status to 'Processing' to release it for fulfillment.",
+      "expected_outcome": "Agent updates the status, allowing the warehouse to ship the order.",
+      "required_tools": [
+        "update_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

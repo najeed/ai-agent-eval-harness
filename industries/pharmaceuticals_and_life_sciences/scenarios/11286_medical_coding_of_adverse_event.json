@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-ct-11286",
+  "title": "Perform Medical Coding of an Adverse Event",
+  "description": "A drug safety physician must perform the medical assessment and coding for a complex adverse event case.",
+  "use_case": "Clinical Trials",
+  "core_function": "Clinical Data Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the source documents and narrative for a serious adverse event case.",
+      "expected_outcome": "Agent reviews the case details.",
+      "required_tools": [
+        "review_safety_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a medical narrative summarizing the case in a standard format.",
+      "expected_outcome": "Agent writes a clear, concise, and medically accurate narrative.",
+      "required_tools": [
+        "write_medical_narrative"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Code the reported events and diagnoses using the MedDRA dictionary.",
+      "expected_outcome": "Agent accurately codes all medical concepts in the case to the appropriate MedDRA terms.",
+      "required_tools": [
+        "manually_code_term"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Perform a causality assessment to determine the likelihood that the drug caused the event.",
+      "expected_outcome": "Agent assesses the relationship as 'possibly related' and documents the justification.",
+      "required_tools": [
+        "perform_causality_assessment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

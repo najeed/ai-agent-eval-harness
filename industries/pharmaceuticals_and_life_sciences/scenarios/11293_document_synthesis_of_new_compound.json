@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-rd-11293",
+  "title": "Document Synthesis of a New Compound",
+  "description": "A medicinal chemist has synthesized a new compound and needs to document the process and register the molecule.",
+  "use_case": "Research & Development",
+  "core_function": "Preclinical Research",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draw the chemical structure of the newly synthesized compound.",
+      "expected_outcome": "Agent uses a chemical drawing tool to create the structure.",
+      "required_tools": [
+        "draw_chemical_structure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "visualization_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Register the new compound in the corporate compound registry.",
+      "expected_outcome": "Agent submits the structure and the system assigns a unique registration number.",
+      "required_tools": [
+        "register_compound"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the multi-step synthesis procedure in the Electronic Lab Notebook (ELN).",
+      "expected_outcome": "Agent writes a detailed, step-by-step protocol in the ELN.",
+      "required_tools": [
+        "document_protocol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Upload the analytical data (e.g., NMR, mass spec) that confirms the structure and purity of the compound.",
+      "expected_outcome": "Agent attaches the analytical data files to the ELN entry for the new compound.",
+      "required_tools": [
+        "attach_data_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

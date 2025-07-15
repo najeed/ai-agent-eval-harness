@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-pa-10312",
+  "title": "Add Patient to Appointment Waitlist",
+  "description": "A provider's schedule is full, but a patient wants to be notified if an earlier appointment becomes available.",
+  "use_case": "Patient Administration",
+  "core_function": "Patient Registration & Scheduling",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the patient and the type of appointment they need.",
+      "expected_outcome": "Agent confirms the patient's details and the desired appointment.",
+      "required_tools": [
+        "get_patient_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm there are no available appointments in the desired timeframe.",
+      "expected_outcome": "Agent verifies the provider's schedule is booked.",
+      "required_tools": [
+        "view_provider_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the patient to the provider's appointment waitlist.",
+      "expected_outcome": "Agent successfully adds the patient to the waitlist, so they will be automatically flagged if a cancellation occurs.",
+      "required_tools": [
+        "add_to_waitlist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

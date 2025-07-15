@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-rc-11390",
+  "title": "Perform an Internal Audit",
+  "description": "An internal auditor is starting an audit of a department's use of government-issued credit cards (P-cards).",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Audit & Oversight",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the scope of the audit and select a random sample of P-card transactions to review.",
+      "expected_outcome": "The auditor defines the audit scope and selects a sample of 50 transactions from the last quarter.",
+      "required_tools": [
+        "select_audit_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each transaction in the sample, review the supporting documentation to ensure it was a valid business expense.",
+      "expected_outcome": "The auditor reviews the receipts and justifications for all 50 transactions.",
+      "required_tools": [
+        "get_transaction_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document any findings or exceptions where policy was not followed.",
+      "expected_outcome": "The auditor finds two transactions that were missing proper receipts and documents this as a finding.",
+      "required_tools": [
+        "log_audit_finding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

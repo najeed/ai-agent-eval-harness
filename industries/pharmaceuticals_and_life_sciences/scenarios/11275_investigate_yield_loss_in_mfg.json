@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-ms-11275",
+  "title": "Investigate Yield Loss in Manufacturing",
+  "description": "A manufacturing engineer needs to investigate why the yield of a recent batch was significantly lower than average.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Production & Batch Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the batch record and process parameters for the low-yield batch.",
+      "expected_outcome": "Agent pulls the data from the MES.",
+      "required_tools": [
+        "get_batch_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the process parameters of the low-yield batch to those of several historical high-yield batches.",
+      "expected_outcome": "Agent performs a comparison and finds that the drying time for the low-yield batch was 2 hours shorter than normal.",
+      "required_tools": [
+        "compare_batch_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Formulate a hypothesis for the root cause.",
+      "expected_outcome": "Agent hypothesizes that the reduced drying time led to incomplete solvent removal, causing material to be rejected.",
+      "required_tools": [
+        "formulate_hypothesis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Open a formal investigation to confirm the root cause and implement a corrective action.",
+      "expected_outcome": "Agent initiates a quality investigation to address the issue.",
+      "required_tools": [
+        "create_quality_investigation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

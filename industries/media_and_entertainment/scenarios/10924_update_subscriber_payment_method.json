@@ -1,0 +1,54 @@
+{
+  "scenario_id": "media-ae-10924",
+  "title": "Subscriber Updates Payment Method",
+  "description": "A subscriber's credit card has expired, and they need to update their payment information to keep their streaming service active.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Subscriber Lifecycle Management",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the subscriber and confirm their subscription is at risk due to a failed payment.",
+      "expected_outcome": "Agent correctly identifies the subscriber and the payment failure.",
+      "required_tools": [
+        "get_subscriber_details",
+        "get_billing_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Securely collect the new credit card information from the subscriber.",
+      "expected_outcome": "Agent uses a secure form to capture the new payment details.",
+      "required_tools": [
+        "capture_payment_details_securely"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the payment method on the subscriber's account and re-run the failed charge.",
+      "expected_outcome": "Agent successfully updates the payment info and processes the payment.",
+      "required_tools": [
+        "update_payment_method",
+        "retry_failed_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-cy-75",
+  "title": "Psychological Operations (PSYOP) Planning",
+  "description": "A PSYOP officer must plan a leaflet drop and radio broadcast campaign to encourage enemy soldiers to surrender.",
+  "use_case": "Cybersecurity & Information Warfare",
+  "core_function": "Information Operations (IO) Planning",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze intelligence on the morale and grievances of the target enemy soldiers.",
+      "expected_outcome": "Officer identifies key themes (e.g., lack of food, poor leadership) that can be exploited.",
+      "required_tools": [
+        "analyze_adversary_morale"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Develop the content for the leaflets and radio broadcasts, including surrender instructions and promises of safe treatment.",
+      "expected_outcome": "Officer creates persuasive and culturally appropriate messaging.",
+      "required_tools": [
+        "develop_psyop_content"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Plan the delivery of the messages, including coordinating for aircraft to drop the leaflets and a broadcast aircraft to transmit the radio messages.",
+      "expected_outcome": "Officer creates a detailed execution plan for the PSYOP campaign.",
+      "required_tools": [
+        "plan_message_delivery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

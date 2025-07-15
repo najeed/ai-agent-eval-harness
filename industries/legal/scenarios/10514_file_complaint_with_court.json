@@ -1,0 +1,66 @@
+{
+  "scenario_id": "legal-ldr-10514",
+  "title": "File a Complaint with the Court",
+  "description": "A paralegal needs to electronically file a new complaint with a federal court.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Pleadings & Motions Practice",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Convert the final complaint document to a text-searchable PDF.",
+      "expected_outcome": "Agent creates a compliant PDF file.",
+      "required_tools": [
+        "pdf_conversion_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log in to the court's CM/ECF (Case Management/Electronic Case Files) system.",
+      "expected_outcome": "Agent successfully accesses the e-filing portal.",
+      "required_tools": [
+        "ecf_filing_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Initiate a new civil case, enter all party information, and upload the complaint PDF.",
+      "expected_outcome": "Agent correctly enters all data and uploads the document.",
+      "required_tools": [
+        "ecf_filing_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Pay the filing fee and save the receipt and notice of electronic filing.",
+      "expected_outcome": "The complaint is successfully filed, and a new case is opened.",
+      "required_tools": [
+        "ecf_filing_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

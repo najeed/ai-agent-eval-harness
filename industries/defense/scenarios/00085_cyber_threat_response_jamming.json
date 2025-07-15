@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-cy-85",
+  "title": "GPS Jamming Attack Response",
+  "description": "An operator of a drone reports that they are losing their GPS signal due to suspected enemy jamming.",
+  "use_case": "Cybersecurity & Information Warfare",
+  "core_function": "Network Threat Detection & Response",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the GPS interference report from the drone.",
+      "expected_outcome": "Operator confirms receipt of the report.",
+      "required_tools": [
+        "get_comms_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Task a signals intelligence asset to scan the area for the source of the jamming signal.",
+      "expected_outcome": "A SIGINT aircraft detects and locates the position of the GPS jammer.",
+      "required_tools": [
+        "task_sigint_asset",
+        "locate_emitter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "localization_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Task an artillery unit to destroy the identified jammer, eliminating the threat to friendly assets.",
+      "expected_outcome": "Operator successfully coordinates a kinetic strike to neutralize the electronic warfare threat.",
+      "required_tools": [
+        "task_artillery_strike"
+      ],
+      "success_criteria": [
+        {
+          "metric": "threat_neutralization_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

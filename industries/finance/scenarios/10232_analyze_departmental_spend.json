@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-cf-10232",
+  "title": "Analyze Departmental Spending",
+  "description": "A manager asks an FP&A analyst to analyze the Marketing department's spending for the year to date.",
+  "use_case": "Corporate Finance",
+  "core_function": "Financial Planning & Analysis (FP&A)",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all transactions coded to the Marketing department for the current year.",
+      "expected_outcome": "Agent successfully pulls the detailed transaction data.",
+      "required_tools": [
+        "get_departmental_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Categorize the spending by expense type (e.g., advertising, software, events).",
+      "expected_outcome": "Agent correctly categorizes the spending and identifies the top 3 spending categories.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a summary report with charts to present the findings to the manager.",
+      "expected_outcome": "Agent creates a clear, visual report summarizing the department's spending.",
+      "required_tools": [
+        "create_summary_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

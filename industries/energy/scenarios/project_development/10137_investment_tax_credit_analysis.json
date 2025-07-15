@@ -1,0 +1,53 @@
+{
+  "scenario_id": "energy-pd-10137",
+  "title": "Investment Tax Credit (ITC) Analysis",
+  "description": "A tax analyst needs to determine the eligible Investment Tax Credit for a new solar-plus-storage project and its impact on the project's financial returns.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Financial Modeling & Investment Analysis",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the current federal and state ITC rates applicable to solar and energy storage projects.",
+      "expected_outcome": "Agent identifies the correct tax credit percentages.",
+      "required_tools": [
+        "get_tax_credit_regulations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total eligible project cost basis and the resulting tax credit amount in dollars.",
+      "expected_outcome": "Agent computes the total tax credit value.",
+      "required_tools": [
+        "calculate_tax_credit_value"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the project's financial model to include the ITC, and recalculate the project's after-tax IRR and NPV.",
+      "expected_outcome": "Agent shows that the ITC increases the IRR by 200 basis points.",
+      "required_tools": [
+        "update_financial_model",
+        "run_financial_model_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

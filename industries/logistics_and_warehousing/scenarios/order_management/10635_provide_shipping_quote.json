@@ -1,0 +1,48 @@
+{
+  "scenario_id": "lw-om-10635",
+  "title": "Provide a Shipping Quote",
+  "description": "A sales agent is on the phone with a potential customer and needs to provide a real-time shipping quote for an order.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Customer Support",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Enter the destination address and the list of items the customer wants to order.",
+      "expected_outcome": "Agent accurately inputs the required information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a rating engine to get real-time shipping rates from multiple carriers (e.g., Parcel, LTL).",
+      "expected_outcome": "The system returns quotes for Standard Ground, 2-Day Air, and Next-Day Air.",
+      "required_tools": [
+        "get_shipping_rates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Communicate the different shipping options and their costs to the customer.",
+      "expected_outcome": "Agent clearly presents the available shipping methods and prices.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "scenario_id": "lw-wo-10688",
+  "title": "Direct Put-Away to Optimal Bin",
+  "description": "After receiving an item, the WMS must direct the operator to the best possible storage bin, considering space, item type, and existing stock.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Inbound & Receiving",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "An operator scans a newly received item.",
+      "expected_outcome": "The system identifies the item.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system analyzes put-away rules: first, it looks for an existing pick face for that item with available capacity.",
+      "expected_outcome": "The system checks for a primary location to top-off.",
+      "required_tools": [
+        "find_optimal_putaway_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Finding no room in the pick face, the system then finds the closest available bulk storage location that can fit the pallet.",
+      "expected_outcome": "The system suggests an optimal bulk storage bin.",
+      "required_tools": [
+        "find_optimal_putaway_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The system creates a put-away task directing the operator to the suggested location.",
+      "expected_outcome": "The operator receives a clear instruction for where to store the item.",
+      "required_tools": [
+        "create_putaway_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

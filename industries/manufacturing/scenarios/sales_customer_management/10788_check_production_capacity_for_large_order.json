@@ -1,0 +1,48 @@
+{
+  "scenario_id": "mfg-sc-10788",
+  "title": "Check Production Capacity for a Large Order",
+  "description": "A customer wants to place a very large order, and the sales rep needs to check if there is enough production capacity to meet the requested delivery date.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Order Status & Fulfillment Tracking",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Enter the product and quantity for the potential order.",
+      "expected_outcome": "Agent enters the details of the large order.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run an 'Available-to-Promise' (ATP) check.",
+      "expected_outcome": "The system checks material availability and production capacity.",
+      "required_tools": [
+        "run_atp_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system returns a confirmation that the order can be fulfilled by the requested date. The sales rep informs the customer.",
+      "expected_outcome": "Agent confirms the delivery date with the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

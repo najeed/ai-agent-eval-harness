@@ -1,0 +1,66 @@
+{
+  "scenario_id": "energy-pd-10189",
+  "title": "Wind Farm Aviation Impact Assessment",
+  "description": "A developer must file a notice with the Federal Aviation Administration (FAA) for a new wind farm and assess its potential impact on aviation.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Permitting & Compliance",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the precise coordinates and maximum tip height for every proposed wind turbine.",
+      "expected_outcome": "Agent compiles the required location and height data.",
+      "required_tools": [
+        "get_project_technical_specifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Submit a 'Notice of Proposed Construction or Alteration' to the FAA using their online portal.",
+      "expected_outcome": "Agent successfully files the required notice with the FAA.",
+      "required_tools": [
+        "file_faa_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check for proximity to any airports or military training routes that could be affected.",
+      "expected_outcome": "Agent identifies a small, private airfield within 5 miles of the project.",
+      "required_tools": [
+        "query_aviation_maps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Based on the FAA's feedback, determine the required nighttime lighting for the turbines.",
+      "expected_outcome": "Agent confirms the specific type of red flashing lights required for the turbines.",
+      "required_tools": [
+        "get_faa_lighting_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

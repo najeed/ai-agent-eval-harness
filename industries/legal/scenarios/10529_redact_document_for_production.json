@@ -1,0 +1,64 @@
+{
+  "scenario_id": "legal-ldr-10529",
+  "title": "Redact a Document for Production",
+  "description": "During discovery, an attorney needs to redact privileged information from a document before producing it to the other side.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Discovery & E-Discovery",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the document in a redaction tool.",
+      "expected_outcome": "Agent has the document loaded in the appropriate software.",
+      "required_tools": [
+        "redaction_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify all instances of attorney-client communication or attorney work product within the document.",
+      "expected_outcome": "Agent correctly identifies the specific text to be redacted.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply black-box redactions over the privileged text.",
+      "expected_outcome": "Agent successfully covers the sensitive information.",
+      "required_tools": [
+        "redaction_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Produce a new version of the document with the redactions permanently applied.",
+      "expected_outcome": "A safe, redacted version of the document is created for production.",
+      "required_tools": [
+        "redaction_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

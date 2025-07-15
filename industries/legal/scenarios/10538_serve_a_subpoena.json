@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ldr-10538",
+  "title": "Serve a Subpoena",
+  "description": "A paralegal needs to arrange for a third-party witness to be served with a deposition subpoena.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Pleadings & Motions Practice",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft the deposition subpoena with the correct witness name, date, time, and location of the deposition.",
+      "expected_outcome": "Agent prepares a legally sufficient subpoena.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact a registered process server and provide them with the subpoena and the witness's last known address.",
+      "expected_outcome": "Agent successfully hires and instructs a process server.",
+      "required_tools": [
+        "process_server_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the process server serves the subpoena, receive and file the 'Proof of Service' with the court.",
+      "expected_outcome": "Agent completes the service process by filing the required proof with the court.",
+      "required_tools": [
+        "ecf_filing_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

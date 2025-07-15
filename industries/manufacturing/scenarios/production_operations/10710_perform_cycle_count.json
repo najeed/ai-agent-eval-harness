@@ -1,0 +1,50 @@
+{
+  "scenario_id": "mfg-po-10710",
+  "title": "Perform a Cycle Count",
+  "description": "A warehouse operator is tasked with performing a cycle count for a specific inventory item at a production line.",
+  "use_case": "Production & Operations",
+  "core_function": "Material & Inventory Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the system's expected on-hand quantity for the specified item at that location.",
+      "expected_outcome": "Agent pulls the current inventory level from the ERP system.",
+      "required_tools": [
+        "get_inventory_on_hand"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a physical count of the item at the location.",
+      "expected_outcome": "Operator physically counts the items.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the physical count into the system and flag any discrepancy for review.",
+      "expected_outcome": "Agent enters the counted quantity and the system flags a variance for a manager to investigate.",
+      "required_tools": [
+        "enter_cycle_count"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ecommerce-osm-10009",
+  "title": "Update Inventory After Receiving Shipment",
+  "description": "A warehouse manager needs to update inventory levels after receiving a new shipment of products from a supplier.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Inventory Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the SKUs and quantities from the supplier's packing slip.",
+      "expected_outcome": "Agent ingests the list of SKUs and quantities received.",
+      "required_tools": [
+        "parse_shipment_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each SKU, increase the inventory count in the system by the quantity received.",
+      "expected_outcome": "Agent successfully updates the stock levels for all received items.",
+      "required_tools": [
+        "update_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

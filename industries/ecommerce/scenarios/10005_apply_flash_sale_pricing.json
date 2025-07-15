@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ecommerce-osm-10005",
+  "title": "Apply Flash Sale Pricing",
+  "description": "A marketing manager wants to apply a 24-hour 20% discount to an entire category of products for a flash sale.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Pricing & Promotions",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all products within the 'Summer Collection' category.",
+      "expected_outcome": "Agent retrieves a list of all SKUs in the specified category.",
+      "required_tools": [
+        "get_products_by_category"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply a 20% discount to all identified products with an expiration of 24 hours.",
+      "expected_outcome": "Agent successfully runs a bulk update to apply the promotional pricing.",
+      "required_tools": [
+        "apply_bulk_discount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

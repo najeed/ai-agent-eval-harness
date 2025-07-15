@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-wo-11851",
+  "title": "Manage Water Storage Tank Levels",
+  "description": "An operator monitors and controls the water levels in storage tanks across the city to ensure adequate supply and pressure.",
+  "use_case": "Water & Wastewater Operations",
+  "core_function": "Network Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Display the real-time water level for all major storage tanks on a dashboard.",
+      "expected_outcome": "System provides a live overview of water storage.",
+      "required_tools": [
+        "get_tank_level_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system alerts the operator that a tank's level is approaching its low-level alarm setpoint.",
+      "expected_outcome": "System generates an alert for the specific tank.",
+      "required_tools": [
+        "monitor_tank_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Turn on the pumps that fill the tank to bring the level back into the normal operating band.",
+      "expected_outcome": "Operator sends a command to start the pumps.",
+      "required_tools": [
+        "control_pump_station"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

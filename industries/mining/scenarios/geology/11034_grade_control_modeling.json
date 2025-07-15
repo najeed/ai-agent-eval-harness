@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-geo-11034",
+  "title": "Perform Grade Control Modeling",
+  "description": "A grade control geologist uses data from blast drillholes to create a short-term grade model to guide mining.",
+  "use_case": "Geology & Exploration",
+  "core_function": "Resource Modeling",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the assay data from the samples taken from the blast drillholes.",
+      "expected_outcome": "The blast hole sample data is loaded and validated.",
+      "required_tools": [
+        "import_drillhole_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a high-resolution grade control model of the bench to be mined.",
+      "expected_outcome": "A detailed model showing the location of high-grade and low-grade ore is created.",
+      "required_tools": [
+        "run_grade_estimation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "geostatistical_model_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Digitize the ore-waste boundaries on the model and provide this 'ore mark-out' map to the surveyors and operators.",
+      "expected_outcome": "A map is created that will be used in the pit to visually separate ore from waste during loading.",
+      "required_tools": [
+        "digitize_ore_blocks",
+        "generate_ore_markup_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

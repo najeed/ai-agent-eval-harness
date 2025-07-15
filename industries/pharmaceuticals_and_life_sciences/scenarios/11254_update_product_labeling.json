@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-rc-11254",
+  "title": "Update Product Labeling",
+  "description": "Following the identification of a new safety signal, the company must update the product's official labeling (prescribing information).",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Submission Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft the new text to be added to the 'Warnings and Precautions' section of the label.",
+      "expected_outcome": "Agent drafts clear and accurate text describing the new safety risk.",
+      "required_tools": [
+        "draft_labeling_update"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Route the proposed labeling change for internal review and approval.",
+      "expected_outcome": "Agent circulates the draft to all relevant internal stakeholders for approval.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare a labeling supplement for submission to the appropriate health authority (e.g., FDA).",
+      "expected_outcome": "Agent compiles the necessary submission package.",
+      "required_tools": [
+        "assemble_submission_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Submit the supplement and track it until approval.",
+      "expected_outcome": "Agent successfully submits the labeling update and monitors for health authority feedback.",
+      "required_tools": [
+        "submit_to_regulatory_gateway",
+        "track_submission_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

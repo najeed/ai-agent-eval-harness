@@ -1,0 +1,68 @@
+{
+  "scenario_id": "pharma-ms-11265",
+  "title": "Assign Training for a New SOP",
+  "description": "Following the approval of a new manufacturing SOP, a training coordinator must assign and track training for all affected personnel.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Production & Batch Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the new SOP and the job roles that are required to be trained on it.",
+      "expected_outcome": "Agent identifies the SOP and the target audience (e.g., 'All Manufacturing Operators').",
+      "required_tools": [
+        "get_sop_details",
+        "get_training_matrix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new training curriculum in the Learning Management System (LMS).",
+      "expected_outcome": "Agent creates a new curriculum containing the SOP document and a quiz.",
+      "required_tools": [
+        "create_lms_curriculum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the new curriculum to all employees in the target job roles.",
+      "expected_outcome": "Agent successfully assigns the training to the correct group of employees.",
+      "required_tools": [
+        "assign_training"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Monitor the training completion rates and send reminders to employees with overdue training.",
+      "expected_outcome": "Agent generates a completion report and sends automated reminders.",
+      "required_tools": [
+        "get_training_completion_report",
+        "send_reminder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

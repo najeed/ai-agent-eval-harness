@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-bm-11582",
+  "title": "Select Photo for a Press Release",
+  "description": "A media relations coordinator is writing a press release about a player winning an award and needs to select an official photo to include.",
+  "use_case": "Broadcasting & Media",
+  "core_function": "Media Rights & Distribution",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search the team's official photo archive for approved images of the player.",
+      "expected_outcome": "Agent retrieves all available photos of the player.",
+      "required_tools": [
+        "search_photo_archive"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the photos to find high-resolution images suitable for press use.",
+      "expected_outcome": "Agent narrows down the selection to a handful of high-quality photos.",
+      "required_tools": [
+        "filter_photos_by_resolution"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select the best photo and attach it to the press release.",
+      "expected_outcome": "Agent chooses the final photo and includes it with the press release distribution.",
+      "required_tools": [
+        "attach_photo_to_press_release"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

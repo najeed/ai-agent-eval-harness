@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-10506",
+  "title": "Conduct Legal Due Diligence",
+  "description": "As part of an M&A transaction, a junior associate needs to review a target company's key contracts to identify any legal risks.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Mergers & Acquisitions (M&A)",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the virtual data room and locate the 'Material Contracts' folder.",
+      "expected_outcome": "Agent successfully navigates to the correct document repository.",
+      "required_tools": [
+        "virtual_data_room_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review each contract for problematic clauses, such as 'change of control' provisions that could be triggered by the acquisition.",
+      "expected_outcome": "Agent identifies several contracts that require third-party consent for a change of control.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a due diligence report summarizing the findings and quantifying the potential risks.",
+      "expected_outcome": "Agent produces a report that flags the consent requirements as a key issue for the deal.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

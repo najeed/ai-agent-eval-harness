@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ecommerce-mce-10020",
+  "title": "Check Loyalty Points Balance",
+  "description": "A customer wants to know how many loyalty points they have and what they can be redeemed for.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Loyalty Programs",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's loyalty program balance.",
+      "expected_outcome": "Agent finds the customer has 1,500 points.",
+      "required_tools": [
+        "get_loyalty_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the redemption options (e.g., 500 points = $5 discount).",
+      "expected_outcome": "Agent clearly communicates how the points can be used.",
+      "required_tools": [
+        "get_loyalty_program_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

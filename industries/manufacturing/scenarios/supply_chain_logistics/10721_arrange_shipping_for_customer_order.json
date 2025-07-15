@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mfg-sl-10721",
+  "title": "Arrange Shipping for a Customer Order",
+  "description": "A logistics coordinator needs to arrange transportation for a completed customer order.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Outbound & Shipping",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer order that is ready for shipment.",
+      "expected_outcome": "Agent retrieves the sales order and confirms its status is 'Ready to Ship'.",
+      "required_tools": [
+        "get_sales_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get freight quotes from approved carriers based on the shipment's weight, dimensions, and destination.",
+      "expected_outcome": "Agent receives quotes from three different freight carriers.",
+      "required_tools": [
+        "get_freight_quotes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the shipment with the most cost-effective carrier and generate the Bill of Lading (BOL).",
+      "expected_outcome": "Agent books the shipment and prints the BOL for the driver.",
+      "required_tools": [
+        "book_shipment",
+        "generate_bol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

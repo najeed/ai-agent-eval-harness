@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-rc-11388",
+  "title": "File a Lobbyist Activity Report",
+  "description": "A registered lobbyist is filing their required monthly report of their activities and expenditures.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Compliance Reporting",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the lobbyist and the correct reporting period.",
+      "expected_outcome": "The lobbyist logs in and selects the correct month for their report.",
+      "required_tools": [
+        "get_lobbyist_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter details of all lobbying contacts and any related expenditures.",
+      "expected_outcome": "The lobbyist accurately fills out the disclosure form.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Certify and submit the report.",
+      "expected_outcome": "The lobbyist successfully files their monthly disclosure.",
+      "required_tools": [
+        "submit_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

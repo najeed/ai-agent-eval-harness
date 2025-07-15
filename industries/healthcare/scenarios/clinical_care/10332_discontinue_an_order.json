@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hc-cc-10332",
+  "title": "Discontinue an Order",
+  "description": "A patient has had an adverse reaction to a medication. The physician needs to discontinue the order immediately.",
+  "use_case": "Clinical Care",
+  "core_function": "Orders & Results Management (CPOE)",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient's chart and view their active orders.",
+      "expected_outcome": "Physician finds the list of current medication orders.",
+      "required_tools": [
+        "get_patient_record",
+        "get_active_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the medication order that needs to be stopped.",
+      "expected_outcome": "Physician correctly identifies the medication causing the reaction.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_logic",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select the 'Discontinue' action, provide a reason ('Adverse reaction'), and sign the order.",
+      "expected_outcome": "The order is immediately inactivated on the MAR and in the pharmacy system.",
+      "required_tools": [
+        "discontinue_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

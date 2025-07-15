@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-cc-10808",
+  "title": "Create a Weekly Email Newsletter",
+  "description": "An email marketer needs to assemble and write the content for the weekly newsletter.",
+  "use_case": "Content & Creative Development",
+  "core_function": "Copywriting & Content Creation",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the top 3 blog posts from the past week to feature in the newsletter.",
+      "expected_outcome": "Agent identifies the most popular recent content.",
+      "required_tools": [
+        "get_blog_performance_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a short, engaging introduction for the newsletter.",
+      "expected_outcome": "Agent writes a compelling opening paragraph.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "copywriting_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assemble the newsletter in the email marketing platform, including the intro, links to the blog posts, and a featured product.",
+      "expected_outcome": "Agent builds the complete newsletter in the email tool, ready for sending.",
+      "required_tools": [
+        "email_marketing_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

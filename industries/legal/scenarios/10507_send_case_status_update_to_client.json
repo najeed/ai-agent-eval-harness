@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-10507",
+  "title": "Send Case Status Update to Client",
+  "description": "A partner asks a paralegal to send a status update to a client on a litigation matter.",
+  "use_case": "Law Practice Management",
+  "core_function": "Client Communication & Reporting",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the case file for recent activity, including recent filings and upcoming deadlines.",
+      "expected_outcome": "Agent identifies that a key deposition was recently completed and a response to a motion is due next week.",
+      "required_tools": [
+        "case_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a concise email to the client summarizing the recent progress and outlining the next immediate steps.",
+      "expected_outcome": "Agent writes a clear, professional email that is easy for a non-lawyer to understand.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the draft email to the partner for review and approval before sending to the client.",
+      "expected_outcome": "Agent follows the correct internal protocol for client communications.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

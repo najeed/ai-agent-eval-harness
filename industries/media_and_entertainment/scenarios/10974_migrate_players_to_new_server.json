@@ -1,0 +1,66 @@
+{
+  "scenario_id": "media-go-10974",
+  "title": "Migrate Players to a New Server",
+  "description": "A game is retiring an old server and needs to migrate all players and their data to a new, more powerful server.",
+  "use_case": "Gaming Operations",
+  "core_function": "Server Operations & Matchmaking",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Place the old server in 'maintenance mode' to prevent new logins.",
+      "expected_outcome": "Agent successfully puts the old server in maintenance.",
+      "required_tools": [
+        "set_server_maintenance_mode"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a complete backup of the old server's player database.",
+      "expected_outcome": "Agent successfully creates a full data backup.",
+      "required_tools": [
+        "backup_server_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Restore the backup onto the new server.",
+      "expected_outcome": "Agent successfully restores all player data to the new server.",
+      "required_tools": [
+        "restore_server_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the game's server list to point players to the new server's IP address.",
+      "expected_outcome": "Agent updates the configuration so players will connect to the new server.",
+      "required_tools": [
+        "update_server_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

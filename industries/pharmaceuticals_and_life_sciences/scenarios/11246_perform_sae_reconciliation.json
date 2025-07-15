@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-ct-11246",
+  "title": "Perform SAE Reconciliation",
+  "description": "A data manager and a safety specialist must reconcile Serious Adverse Events (SAEs) between the clinical database and the safety database to ensure consistency.",
+  "use_case": "Clinical Trials",
+  "core_function": "Clinical Data Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a listing of all SAEs from the clinical (EDC) database for a specific study.",
+      "expected_outcome": "Agent extracts a report of SAEs from the clinical database.",
+      "required_tools": [
+        "generate_sae_listing_from_edc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a listing of all SAEs from the safety database for the same study.",
+      "expected_outcome": "Agent extracts a report of SAEs from the safety database.",
+      "required_tools": [
+        "generate_sae_listing_from_safety_db"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the two listings to identify any discrepancies in events or event details.",
+      "expected_outcome": "Agent compares the reports and finds a discrepancy: one event's severity is 'moderate' in clinical and 'severe' in safety.",
+      "required_tools": [
+        "compare_datasets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a reconciliation log and assign the discrepancy to the appropriate party for resolution.",
+      "expected_outcome": "Agent logs the discrepancy and assigns a task to the data manager to clarify the correct severity with the site.",
+      "required_tools": [
+        "create_reconciliation_log",
+        "assign_tasks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

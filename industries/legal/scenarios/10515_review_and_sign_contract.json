@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-10515",
+  "title": "Execute a Contract via E-signature",
+  "description": "After negotiations are complete, an attorney needs to send a final version of a contract to both parties for electronic signature.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Contract Lifecycle Management",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Upload the final contract document to an e-signature platform like DocuSign.",
+      "expected_outcome": "Agent successfully uploads the document.",
+      "required_tools": [
+        "esignature_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Place signature and date blocks for all required signatories.",
+      "expected_outcome": "Agent correctly tags the document for signature.",
+      "required_tools": [
+        "esignature_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the document to all parties for signature.",
+      "expected_outcome": "The signing process is initiated.",
+      "required_tools": [
+        "esignature_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

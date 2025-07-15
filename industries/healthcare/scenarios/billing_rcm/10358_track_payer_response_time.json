@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hc-brc-10358",
+  "title": "Track Payer Response Time",
+  "description": "A manager wants to analyze which insurance companies are the slowest to pay their claims.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Denial Management",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run an 'Aged A/R (Accounts Receivable)' report, summarized by payer.",
+      "expected_outcome": "Manager generates a report showing outstanding balances grouped by insurance company.",
+      "required_tools": [
+        "run_ar_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the report to show the average days from claim submission to payment for each payer.",
+      "expected_outcome": "The report shows the average payment turnaround time for each major payer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the payer with the highest average days to pay.",
+      "expected_outcome": "Manager successfully uses the report to identify a payer that may require focused follow-up from the billing team.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

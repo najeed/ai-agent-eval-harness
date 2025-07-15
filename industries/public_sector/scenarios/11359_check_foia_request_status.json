@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-rc-11359",
+  "title": "Check the Status of a FOIA Request",
+  "description": "A journalist who filed a FOIA request two weeks ago is calling to check on its status.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Public Records & FOIA",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the journalist and their request using the tracking number.",
+      "expected_outcome": "The records officer successfully locates the pending request.",
+      "required_tools": [
+        "get_foia_request_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the current status from the system.",
+      "expected_outcome": "The officer finds the status is 'In Review' with the legal department.",
+      "required_tools": [
+        "get_foia_request_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a status update to the journalist.",
+      "expected_outcome": "The officer informs the journalist that the request is still under review.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

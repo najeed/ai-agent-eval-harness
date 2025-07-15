@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-om-10623",
+  "title": "Generate Commercial Invoice for International Shipment",
+  "description": "An international order is being shipped, and it requires a commercial invoice for customs purposes.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Reporting & Documentation",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the details for the international order.",
+      "expected_outcome": "Agent correctly identifies the order and its items.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each item, verify the country of origin, value, and Harmonized System (HS) code.",
+      "expected_outcome": "Agent confirms all customs-related data is present and accurate.",
+      "required_tools": [
+        "get_product_customs_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_validation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the commercial invoice document with all required information.",
+      "expected_outcome": "Agent successfully generates a complete and accurate commercial invoice.",
+      "required_tools": [
+        "generate_commercial_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

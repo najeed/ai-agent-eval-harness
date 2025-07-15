@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cc-10812",
+  "title": "Design Ad Creative",
+  "description": "A designer needs to create a set of display ads for a new campaign based on a creative brief.",
+  "use_case": "Content & Creative Development",
+  "core_function": "Creative Asset Development",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the creative brief for key messaging, branding guidelines, and required ad sizes.",
+      "expected_outcome": "Agent understands the core requirements for the ad visuals.",
+      "required_tools": [
+        "get_creative_brief"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a visual design for the ads that incorporates the brand's logo, colors, and the main call-to-action.",
+      "expected_outcome": "Agent produces a design that is on-brand and visually appealing.",
+      "required_tools": [
+        "design_software_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "design_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Export the design in all required sizes (e.g., 300x250, 728x90, 160x600).",
+      "expected_outcome": "Agent generates a complete set of ad files in the correct dimensions.",
+      "required_tools": [
+        "design_software_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

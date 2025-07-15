@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-pw-11360",
+  "title": "Schedule Preventive Maintenance on Asset",
+  "description": "A public works manager is scheduling annual preventive maintenance for a city-owned HVAC unit.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Asset Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the HVAC unit in the asset management system.",
+      "expected_outcome": "The manager locates the correct asset record.",
+      "required_tools": [
+        "get_asset_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the manufacturer's recommended maintenance schedule.",
+      "expected_outcome": "The manager confirms the required annual maintenance tasks.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for the internal maintenance crew to perform the service.",
+      "expected_outcome": "The manager successfully creates and assigns the preventive maintenance work order.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-isr-57",
+  "title": "Multi-INT Asset Planning",
+  "description": "A planner must coordinate satellite imagery (IMINT), signals intelligence (SIGINT), and a human intelligence (HUMINT) source to find a hidden weapons cache.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "ISR Asset Planning & Tasking",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use a HUMINT report to narrow down the search area to a specific village.",
+      "expected_outcome": "Planner correctly uses the HUMINT to define the initial search box.",
+      "required_tools": [
+        "get_humint_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Task a SIGINT aircraft to fly over the village to detect any electronic emissions associated with security systems.",
+      "expected_outcome": "Planner successfully tasks the SIGINT asset, which detects emissions from one specific compound.",
+      "required_tools": [
+        "task_sigint_asset"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tasking_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Task an imaging satellite to take high-resolution pictures of the specific compound identified by SIGINT.",
+      "expected_outcome": "Planner uses the SIGINT to focus the IMINT collection, leading to confirmation of the cache.",
+      "required_tools": [
+        "task_satellite_imint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "collection_synergy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

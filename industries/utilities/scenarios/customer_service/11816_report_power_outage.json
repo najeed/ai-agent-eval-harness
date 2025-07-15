@@ -1,0 +1,53 @@
+{
+  "scenario_id": "utils-cs-11816",
+  "title": "Report Power Outage",
+  "description": "A customer calls to report that their power is out.",
+  "use_case": "Customer Service",
+  "core_function": "Outage Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's account using their phone number or address.",
+      "expected_outcome": "Agent correctly identifies the customer's service location.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the outage management system (OMS) to see if the customer is part of a known outage.",
+      "expected_outcome": "Agent confirms the customer is within the boundary of a known outage.",
+      "required_tools": [
+        "check_outage_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the customer with the estimated time of restoration (ETR) and offer to sign them up for text message updates.",
+      "expected_outcome": "Agent communicates the ETR and successfully enrolls the customer in outage alerts.",
+      "required_tools": [
+        "get_outage_etr",
+        "enroll_in_notifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "insurance-pc-10425",
+  "title": "Underwriting Review for Home Insurance",
+  "description": "An underwriter is reviewing a new application for homeowner's insurance and sees a potential risk.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Underwriting & Quoting",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the submitted application and property inspection report.",
+      "expected_outcome": "The underwriter notes the inspection report mentions an unfenced swimming pool.",
+      "required_tools": [
+        "review_application",
+        "review_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine that an unfenced pool is an unacceptable hazard according to underwriting guidelines.",
+      "expected_outcome": "The underwriter flags the application as requiring action.",
+      "required_tools": [
+        "check_underwriting_guidelines"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Communicate to the agent that the policy can be issued, but only if the applicant provides proof that a fence has been installed around the pool.",
+      "expected_outcome": "The underwriter clearly documents the conditional approval and the required action.",
+      "required_tools": [
+        "send_underwriting_decision"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-geo-11044",
+  "title": "Analyze Soil Geochemical Data",
+  "description": "An exploration geologist analyzes data from a soil sampling survey to identify anomalies that could indicate buried mineralization.",
+  "use_case": "Geology & Exploration",
+  "core_function": "Exploration & Targeting",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the soil sample locations and their assay results (e.g., copper, gold concentrations) into a GIS software.",
+      "expected_outcome": "The geochemical data is loaded and displayed on a map.",
+      "required_tools": [
+        "import_geochemical_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a statistical analysis of the data to define what constitutes an anomalous result (e.g., anything above the 95th percentile).",
+      "expected_outcome": "A threshold for anomalous values is determined.",
+      "required_tools": [
+        "run_statistical_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a contour map of the copper concentrations to visualize the size and shape of the anomalies, identifying targets for follow-up work.",
+      "expected_outcome": "A map is generated that clearly shows several coherent anomalies worthy of further investigation.",
+      "required_tools": [
+        "create_contour_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

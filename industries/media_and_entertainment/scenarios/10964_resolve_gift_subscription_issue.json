@@ -1,0 +1,62 @@
+{
+  "scenario_id": "media-ae-10964",
+  "title": "Resolve Gift Subscription Activation Issue",
+  "description": "A user received a gift subscription to a streaming service but is having trouble activating it.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Customer & Community Support",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the user for the gift subscription code.",
+      "expected_outcome": "Agent receives the code from the user.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of the gift code in the subscription system.",
+      "expected_outcome": "Agent finds the code is valid but has not yet been redeemed.",
+      "required_tools": [
+        "check_gift_code_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Guide the user through the redemption process on the website.",
+      "expected_outcome": "Agent provides step-by-step instructions to the user.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Manually apply the gift code to the user's account if they are still unable to redeem it.",
+      "expected_outcome": "Agent successfully applies the subscription credit to the user's account.",
+      "required_tools": [
+        "apply_gift_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}
