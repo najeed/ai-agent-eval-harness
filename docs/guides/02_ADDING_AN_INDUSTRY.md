@@ -20,7 +20,7 @@ This guide provides a step-by-step process for adding a new industry to the eval
 
 ## Step 3: Add The Core Functions Description to the [Core Functions Guide](03_CORE_FUNCTIONS_GUIDE.md)
 
-1.  Locate the alphabetic location for your Industry (e.g., `aerospace` industry resides between `accounting` industry and `agriculture` industry).
+1.  Locate the alphabetic spot for your industry (e.g., `aerospace` industry resides between `accounting` industry and `agriculture` industry).
 2.  Add your new industry, its use cases and core functions, by following the markdown format of the other industries. These constructs relate to the `industry`, `use_case`, and `core_function` fields in your JSON files.
 3.  Define the core functions to document their scope.
 
