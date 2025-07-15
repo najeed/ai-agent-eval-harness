@@ -22,7 +22,7 @@ The harness is organized into two main parts:
 ### Prerequisites
 
 -   Python 3.8+
--   (Add any other dependencies here, e.g., `pip install -r requirements.txt`)
+-   A curious and tinkering spirit
 
 ### Running an Evaluation
 
