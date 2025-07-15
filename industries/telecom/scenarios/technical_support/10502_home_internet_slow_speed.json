@@ -1,0 +1,66 @@
+{
+  "scenario_id": "telecom-ts-10502",
+  "title": "Home Internet Troubleshooting - Slow Speed",
+  "description": "A customer reports their home internet service is very slow. The agent must diagnose the cause.",
+  "use_case": "Technical Support",
+  "core_function": "Broadband and Fixed-Line Support",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the speed tier of their internet plan.",
+      "expected_outcome": "Agent confirms the customer is on a '100 Mbps' plan.",
+      "required_tools": [
+        "get_customer_details",
+        "get_service_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a remote line test and a speed test to the customer's modem.",
+      "expected_outcome": "Agent's remote test shows the modem is receiving the full 100 Mbps speed.",
+      "required_tools": [
+        "run_line_test",
+        "run_remote_speed_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Since the issue is likely with the customer's Wi-Fi, guide them to run a speed test on a device connected via Ethernet.",
+      "expected_outcome": "Agent provides clear instructions for the customer to perform a local speed test.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Based on the local test results, recommend Wi-Fi optimization steps like changing the channel or moving the router.",
+      "expected_outcome": "Agent correctly identifies the problem as local Wi-Fi and provides relevant troubleshooting advice.",
+      "required_tools": [
+        "provide_wifi_optimization_guide"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

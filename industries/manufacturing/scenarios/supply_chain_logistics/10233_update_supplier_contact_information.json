@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sl-10233",
+  "title": "Update Supplier Contact Information",
+  "description": "A supplier has notified the company of a new primary contact for handling purchase orders.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Supplier Relationship Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the supplier's profile in the SRM system.",
+      "expected_outcome": "Agent successfully retrieves the correct supplier profile.",
+      "required_tools": [
+        "get_supplier_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Navigate to the contacts section and add the new contact's details (name, email, phone).",
+      "expected_outcome": "Agent enters the new contact information accurately.",
+      "required_tools": [
+        "add_supplier_contact"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set the new contact as the 'Primary' for purchase orders and archive the old contact.",
+      "expected_outcome": "Agent successfully updates the contact roles.",
+      "required_tools": [
+        "update_supplier_contact_role"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

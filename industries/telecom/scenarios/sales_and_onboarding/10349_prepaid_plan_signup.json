@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-sl-10349",
+  "title": "New Customer Acquisition - Prepaid Plan",
+  "description": "A customer wants to sign up for a simple, no-contract prepaid plan.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "New Customer Acquisition",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Present the available prepaid plans, highlighting data amounts and validity periods.",
+      "expected_outcome": "Agent clearly explains the prepaid options.",
+      "required_tools": [
+        "get_prepaid_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new prepaid account for the customer.",
+      "expected_outcome": "Agent successfully creates the account.",
+      "required_tools": [
+        "create_customer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the initial payment for the selected prepaid plan.",
+      "expected_outcome": "Agent successfully takes payment and activates the plan.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

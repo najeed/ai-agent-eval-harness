@@ -15,6 +15,34 @@ Strategy & Recommendation: Scenarios where the agent develops strategic framewor
 
 Presentation & Reporting: Scenarios focused on communicating findings, including creating slide decks, writing executive summaries, and drafting final reports for clients.
 
+# Finance Core Functions
+## Use Case: Retail Banking
+Account Management: Scenarios related to opening, closing, and maintaining customer accounts (e.g., checking, savings). This includes updating customer information, handling account holds, and managing statement preferences.
+
+Payments & Transfers: Scenarios focused on processing domestic and international fund transfers, setting up recurring payments, handling bill payments, and resolving transaction errors or disputes.
+
+Loan & Mortgage Services: Scenarios involving the entire loan lifecycle, from application and credit assessment to disbursal, servicing, and closing. Includes handling inquiries about loan products, rates, and payment schedules.
+
+Fraud & Security: Scenarios focused on identifying and responding to potentially fraudulent activity, managing card security (e.g., blocking/unblocking cards), and handling customer identity verification challenges.
+
+## Use Case: Wealth Management
+Client Onboarding & KYC: Scenarios covering the process of bringing on new clients, including Know Your Customer (KYC) and Anti-Money Laundering (AML) checks, risk profile assessment, and account setup.
+
+Portfolio Management: Scenarios related to the ongoing management of a client's investment portfolio, such as performance analysis, rebalancing, tax-loss harvesting, and generating portfolio reports.
+
+Financial Planning: Scenarios involving the creation and review of comprehensive financial plans for clients, covering retirement, education, estate planning, and other long-term goals.
+
+Trade Execution & Servicing: Scenarios focused on placing, modifying, and canceling trade orders for various securities (stocks, bonds, funds) as per client instructions, and handling post-trade settlement issues.
+
+## Use Case: Corporate Finance
+Treasury & Cash Management: Scenarios focused on managing a company's liquidity, executing cash concentration, processing payments, and forecasting cash flows.
+
+Financial Planning & Analysis (FP&A): Scenarios involving budgeting, forecasting, variance analysis, and creating management reports to support strategic business decisions.
+
+Risk & Compliance: Scenarios related to identifying, assessing, and mitigating financial risks (market, credit, operational), as well as ensuring adherence to regulatory requirements like SOX or Dodd-Frank.
+
+Audit & Reporting: Scenarios that cover internal and external audit support, preparing financial statements (e.g., 10-K, 10-Q), and managing regulatory reporting.
+
 # Healthcare Core Functions
 ## Use Case: Patient Administration
 Patient Registration & Scheduling: Scenarios focused on registering new patients, updating demographic information, and scheduling, rescheduling, or canceling appointments.
@@ -61,6 +89,25 @@ Health Risk Assessment: Scenarios that involve identifying at-risk patient popul
 
 Reporting & Analytics: Scenarios covering the generation of reports on clinical quality measures, financial performance, and population health metrics to support administrative and clinical decision-making.
 
+# Insurance Core Functions
+## Use Case: Property & Casualty (P&C) Insurance
+Policy Administration: Scenarios involving the management of active policies, such as making amendments (e.g., adding a driver, changing coverage), processing renewals, handling cancellations, and issuing policy documents like insurance ID cards or certificates of insurance.
+
+Claims Processing: Scenarios covering the entire claims lifecycle, from the First Notice of Loss (FNOL) and assigning an adjuster, to damage assessment, liability determination, and payment settlement. This includes handling both simple and complex claims for auto, home, or commercial properties.
+
+Underwriting & Quoting: Scenarios focused on evaluating risk, determining eligibility for coverage, and calculating premiums for new policies. This includes gathering applicant information, running reports (e.g., MVR, CLUE), and generating quotes for auto, home, or renters insurance.
+
+Billing & Collections: Scenarios related to managing premium payments, setting up various payment plans (e.g., EFT, recurring credit card), handling billing inquiries or disputes, and managing the collections process for overdue premiums.
+
+## Use Case: Life & Annuities
+New Business & Underwriting: Scenarios covering the application and underwriting process for new life insurance policies or annuity contracts. This includes collecting applicant health and financial information, scheduling medical exams, assessing risk, and making a final underwriting decision.
+
+Policy Servicing: Scenarios involving the maintenance of in-force life insurance policies and annuities. This includes processing beneficiary changes, handling policy loans, updating contact information, and responding to inquiries about cash value or policy performance.
+
+Claims & Payouts: Scenarios focused on processing life insurance death claims or annuity payouts. This includes verifying the death certificate, confirming beneficiary information, and distributing the proceeds according to the policy or contract terms.
+
+Annuity Management: Scenarios specific to annuities, such as processing withdrawals, managing income payout schedules (annuitization), handling fund transfers between investment options in a variable annuity, and explaining tax implications.
+
 # Manufacturing Core Functions
 ## Use Case: Production & Operations
 Production Scheduling: Scenarios dealing with the creation, modification, and management of production schedules, including job sequencing, resource allocation, and timeline adjustments.
@@ -106,6 +153,52 @@ Order Status & Fulfillment Tracking: Scenarios related to providing customers wi
 Customer Support & Issue Resolution: Scenarios that involve handling customer inquiries, resolving issues with products or orders, and managing return merchandise authorizations (RMAs).
 
 Account & Contract Management: Scenarios covering the management of customer accounts, contract renewals, and customer-specific pricing and terms.
+
+# Retail Core Functions
+## Use Case: Store Operations
+Point of Sale (POS) Transactions: Scenarios involving customer checkout, processing various payment types, applying discounts, and handling tax exemptions.
+
+Store Opening & Closing: Scenarios covering daily operational checklists, cash management (e.g., float preparation, reconciliation), and system startups/shutdowns.
+
+In-Store Customer Assistance: Scenarios where associates help customers locate products, provide product information, and check stock at other locations.
+
+Task & Shift Management: Scenarios related to assigning tasks to associates, managing shift schedules, and monitoring task completion.
+
+## Use Case: E-commerce & Order Management
+Online Order Placement: Scenarios focused on the customer's journey of placing an order online, including adding items to a cart, applying promo codes, and completing checkout.
+
+Order Fulfillment & Status: Scenarios covering the backend process of picking, packing, and shipping online orders, as well as providing customers with status updates and tracking information.
+
+Click & Collect / BOPIS: Scenarios that manage the "Buy Online, Pick up In Store" process, including notifying customers when orders are ready and managing the in-store pickup experience.
+
+Subscription Management: Scenarios related to managing recurring orders or subscription boxes, including sign-ups, modifications, and cancellations.
+
+## Use Case: Customer Service & Support
+Returns & Exchanges: Scenarios involving processing customer returns or exchanges for both in-store and online purchases, including inspecting items and issuing refunds or store credit.
+
+Product Inquiries: Scenarios where customer service agents handle detailed questions about product specifications, warranty, or availability.
+
+Issue Resolution: Scenarios focused on resolving customer complaints related to damaged products, shipping errors, or billing disputes.
+
+Account Management: Scenarios related to helping customers manage their online accounts, including password resets and updating personal information.
+
+## Use Case: Inventory & Merchandising
+Stock Management: Scenarios covering inventory control processes like cycle counts, stock transfers between stores, and investigating inventory discrepancies.
+
+Merchandising & Planograms: Scenarios related to executing in-store merchandising plans (planograms), setting up promotional displays, and ensuring product presentation standards are met.
+
+Receiving & Restocking: Scenarios focused on receiving shipments from distribution centers, verifying contents against delivery manifests, and restocking shelves.
+
+Pricing & Promotions: Scenarios involving the management of product pricing, including executing price changes, activating promotional offers, and ensuring price accuracy at the POS.
+
+## Use Case: Marketing & Loyalty
+Loyalty Program Management: Scenarios related to enrolling customers in the loyalty program, explaining benefits, and helping them redeem points or rewards.
+
+Personalized Offers: Scenarios where the system generates and delivers personalized offers to customers based on their purchase history and browsing behavior.
+
+Campaign Management: Scenarios covering the execution and tracking of marketing campaigns, such as email blasts or social media promotions.
+
+Customer Feedback & Reviews: Scenarios focused on soliciting and managing customer feedback, including sending post-purchase surveys and responding to online product reviews.
 
 # Telecom Core Functions
 ## Use Case: Customer Service

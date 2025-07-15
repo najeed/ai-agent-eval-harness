@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ml-10282",
+  "title": "Send a Personalized Offer",
+  "description": "A customer who frequently buys a specific brand of coffee has not purchased it in a while. The marketing system automatically sends them a personalized offer.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Personalized Offers",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A system job identifies customers who meet the criteria for the 'Lapsed Purchaser' campaign.",
+      "expected_outcome": "The system generates a list of customers to target.",
+      "required_tools": [
+        "run_customer_segmentation_query"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system generates a unique, single-use coupon for '25% off your next coffee purchase'.",
+      "expected_outcome": "A personalized offer is created for the customer.",
+      "required_tools": [
+        "generate_one_time_promo_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system sends an email to the customer with the personalized offer.",
+      "expected_outcome": "A relevant offer is delivered to the customer to encourage a repeat purchase.",
+      "required_tools": [
+        "send_marketing_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

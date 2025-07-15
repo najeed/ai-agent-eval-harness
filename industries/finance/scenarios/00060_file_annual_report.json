@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-cf-60",
+  "title": "File Annual Report (10-K) with SEC",
+  "description": "The reporting team is ready to file the company's annual 10-K report with the SEC.",
+  "use_case": "Corporate Finance",
+  "core_function": "Audit & Reporting",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Compile the final 10-K document in the required EDGAR format.",
+      "expected_outcome": "Agent successfully converts the final report into the correct format for filing.",
+      "required_tools": [
+        "format_for_edgar"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a final validation check on the formatted document.",
+      "expected_outcome": "The system validates the file and confirms there are no formatting errors.",
+      "required_tools": [
+        "validate_edgar_filing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the 10-K filing to the SEC via the official gateway.",
+      "expected_outcome": "Agent successfully submits the filing and receives an acceptance confirmation.",
+      "required_tools": [
+        "submit_sec_filing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

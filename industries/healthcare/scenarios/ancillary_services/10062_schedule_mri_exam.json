@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-as-10062",
+  "title": "Schedule an MRI Exam",
+  "description": "A radiology scheduler receives an order for an MRI and needs to schedule the exam for the patient.",
+  "use_case": "Ancillary Services",
+  "core_function": "Radiology & Imaging Services",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the patient and the specific MRI exam being ordered.",
+      "expected_outcome": "Scheduler finds the order in the Radiology Information System (RIS).",
+      "required_tools": [
+        "get_radiology_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the MRI scanner's schedule to find an open appointment slot.",
+      "expected_outcome": "Scheduler finds available times for the exam.",
+      "required_tools": [
+        "view_resource_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the patient, schedule the exam for an agreed-upon time, and provide preparation instructions.",
+      "expected_outcome": "The MRI is successfully scheduled, and the patient is informed of how to prepare.",
+      "required_tools": [
+        "schedule_radiology_exam"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

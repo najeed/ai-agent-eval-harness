@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mfg-po-10109",
+  "title": "Split a Work Order",
+  "description": "A planner needs to split a large work order into two smaller batches to run on different machines simultaneously.",
+  "use_case": "Production & Operations",
+  "core_function": "Work Order Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the original work order and verify the total quantity.",
+      "expected_outcome": "Agent retrieves the work order for 1000 units.",
+      "required_tools": [
+        "find_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate the 'split' function and specify the quantities for the two new work orders.",
+      "expected_outcome": "Agent splits the order into two new work orders of 500 units each.",
+      "required_tools": [
+        "split_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign each new work order to a different machine and release them to the floor.",
+      "expected_outcome": "Agent successfully assigns and releases the two new, smaller work orders.",
+      "required_tools": [
+        "update_work_order_assignment",
+        "release_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

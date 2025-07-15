@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-qc-10147",
+  "title": "Manage a Controlled Document",
+  "description": "A process engineer has updated a Standard Operating Procedure (SOP) and needs to submit it for approval and release.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Compliance & Auditing",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check out the current version of the SOP from the document control system.",
+      "expected_outcome": "Agent checks out the document, locking it for editing.",
+      "required_tools": [
+        "checkout_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the new version of the SOP and provide a summary of the changes.",
+      "expected_outcome": "Agent uploads the revised file and enters change control notes.",
+      "required_tools": [
+        "upload_document_revision"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the revised document into the approval workflow.",
+      "expected_outcome": "Agent submits the document, and it is routed to the quality manager for review.",
+      "required_tools": [
+        "start_document_approval_workflow"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

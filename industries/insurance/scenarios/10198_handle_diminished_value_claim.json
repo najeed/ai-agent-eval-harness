@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-pc-10198",
+  "title": "Handle a Diminished Value Claim",
+  "description": "A third-party claimant is demanding payment for the diminished value of their vehicle after it was repaired following an accident with your insured.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Claims Processing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the diminished value claim from the third party.",
+      "expected_outcome": "The adjuster logs the new demand in the claim file.",
+      "required_tools": [
+        "log_claim_demand"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the state's laws regarding diminished value claims.",
+      "expected_outcome": "The adjuster confirms that diminished value claims are permissible in the relevant state.",
+      "required_tools": [
+        "check_state_laws"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the claim and make a reasonable settlement offer based on the vehicle's type, age, and damage severity.",
+      "expected_outcome": "The adjuster analyzes the case and makes a settlement offer, which may be less than the original demand.",
+      "required_tools": [
+        "offer_settlement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

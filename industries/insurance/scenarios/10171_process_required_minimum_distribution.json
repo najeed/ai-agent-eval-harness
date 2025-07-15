@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-10171",
+  "title": "Process a Required Minimum Distribution (RMD)",
+  "description": "An IRA holder held within an annuity has reached the age where they must begin taking RMDs.",
+  "use_case": "Life & Annuities",
+  "core_function": "Annuity Management",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the contract holder and calculate their RMD for the year.",
+      "expected_outcome": "Agent correctly calculates the amount the customer must withdraw.",
+      "required_tools": [
+        "calculate_annuity_rmd"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notify the customer of their RMD amount and the deadline to take it.",
+      "expected_outcome": "Agent sends a clear notification to the customer.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the RMD withdrawal as requested by the customer.",
+      "expected_outcome": "Agent successfully distributes the RMD amount.",
+      "required_tools": [
+        "process_annuity_withdrawal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

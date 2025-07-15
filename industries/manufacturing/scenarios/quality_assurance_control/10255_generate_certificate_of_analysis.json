@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-qc-10255",
+  "title": "Generate a Certificate of Analysis (CoA)",
+  "description": "A batch of product has passed final testing and needs a Certificate of Analysis (CoA) to be sent with the shipment.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Traceability & Genealogy",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific production batch that requires a CoA.",
+      "expected_outcome": "Agent selects the correct batch number.",
+      "required_tools": [
+        "find_production_batch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve all the final quality test results associated with that batch.",
+      "expected_outcome": "Agent pulls the test results from the LIMS (Laboratory Information Management System).",
+      "required_tools": [
+        "get_batch_test_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the CoA document, populating it with the test results, specifications, and a statement of conformity.",
+      "expected_outcome": "Agent successfully generates the CoA PDF, ready to be sent to the customer.",
+      "required_tools": [
+        "generate_coa"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

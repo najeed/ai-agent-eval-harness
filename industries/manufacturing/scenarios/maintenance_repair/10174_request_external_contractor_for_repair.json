@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-mr-10174",
+  "title": "Request an External Contractor for a Repair",
+  "description": "A specialized piece of equipment has broken down and requires a certified technician from the OEM to repair it.",
+  "use_case": "Maintenance & Repair",
+  "core_function": "Corrective Maintenance & Repair",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the approved service provider for the specific piece of equipment.",
+      "expected_outcome": "Agent finds the OEM's service contact information in the supplier database.",
+      "required_tools": [
+        "get_supplier_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a service request detailing the issue and the asset that needs repair.",
+      "expected_outcome": "Agent drafts a formal service request.",
+      "required_tools": [
+        "create_service_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the service request to the external contractor and await a proposed appointment time.",
+      "expected_outcome": "Agent successfully dispatches the service request.",
+      "required_tools": [
+        "send_service_request_to_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

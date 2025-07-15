@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-ph-10094",
+  "title": "Track Referral Status",
+  "description": "A care coordinator needs to check if a patient ever scheduled their appointment with the specialist they were referred to.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Care Coordination & Planning",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the referral order in the patient's chart.",
+      "expected_outcome": "The coordinator locates the original referral.",
+      "required_tools": [
+        "get_patient_referrals"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of the referral.",
+      "expected_outcome": "The system shows the referral status is still 'Sent', not 'Scheduled' or 'Completed'.",
+      "required_tools": [
+        "get_referral_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a task to call the patient to help them schedule the specialist appointment.",
+      "expected_outcome": "The coordinator identifies a gap in care and takes action to close it.",
+      "required_tools": [
+        "create_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-brc-10043",
+  "title": "Post a Patient Payment",
+  "description": "A front desk staff member collects a copay from a patient at check-in and needs to post the payment.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Patient Billing & Collections",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the patient's account and their outstanding balance or expected copay.",
+      "expected_outcome": "Agent finds the patient's account and sees the copay amount.",
+      "required_tools": [
+        "get_patient_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Take the payment from the patient via credit card.",
+      "expected_outcome": "Agent processes the credit card transaction.",
+      "required_tools": [
+        "process_credit_card_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the payment to the patient's account, applying it to their copay balance for the current visit.",
+      "expected_outcome": "The payment is successfully posted, and the patient's balance is reduced.",
+      "required_tools": [
+        "post_patient_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-pa-10001",
+  "title": "Register a New Patient",
+  "description": "A front desk staff member needs to register a new patient for their first appointment.",
+  "use_case": "Patient Administration",
+  "core_function": "Patient Registration & Scheduling",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for the patient in the EHR to ensure they are not already in the system.",
+      "expected_outcome": "Agent confirms no existing patient record is found.",
+      "required_tools": [
+        "search_patient_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the patient's demographic information, including name, DOB, address, and contact details.",
+      "expected_outcome": "Agent accurately creates a new patient chart with all required demographic data.",
+      "required_tools": [
+        "create_patient_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Scan the patient's photo ID and insurance card and upload them to their chart.",
+      "expected_outcome": "Agent successfully attaches the document images to the new patient record.",
+      "required_tools": [
+        "upload_patient_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

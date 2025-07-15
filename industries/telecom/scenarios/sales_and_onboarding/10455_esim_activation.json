@@ -1,0 +1,50 @@
+{
+  "scenario_id": "telecom-sl-10455",
+  "title": "Onboarding - eSIM Activation",
+  "description": "A new customer with a compatible phone wants to activate their service using an eSIM instead of a physical SIM.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "Onboarding and Activation",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the customer's phone model is eSIM compatible.",
+      "expected_outcome": "Agent confirms the device supports eSIM.",
+      "required_tools": [
+        "check_device_compatibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate an eSIM QR code and send it to the customer's email.",
+      "expected_outcome": "Agent successfully generates and emails the QR code.",
+      "required_tools": [
+        "generate_esim_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Guide the customer on how to scan the QR code in their phone's settings to complete activation.",
+      "expected_outcome": "Agent provides clear instructions for eSIM activation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

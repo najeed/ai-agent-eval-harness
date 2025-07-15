@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-rb-98",
+  "title": "Resolve Debit Card Dispute (Provisional Credit)",
+  "description": "A customer disputes a transaction. After an initial investigation, the bank issues a provisional credit while the full investigation continues.",
+  "use_case": "Retail Banking",
+  "core_function": "Fraud & Security",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the customer's dispute for a $200 charge they don't recognize.",
+      "expected_outcome": "Agent successfully files the dispute in the system.",
+      "required_tools": [
+        "initiate_chargeback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on regulations (Reg E), issue a provisional credit for the disputed amount to the customer's account.",
+      "expected_outcome": "Agent applies a temporary credit of $200 to the customer's account.",
+      "required_tools": [
+        "apply_provisional_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a letter to the customer explaining the provisional credit and the next steps in the investigation.",
+      "expected_outcome": "Agent sends a formal communication to the customer about the status of their dispute.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

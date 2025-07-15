@@ -1,0 +1,53 @@
+{
+  "scenario_id": "finance-wm-56",
+  "title": "Close Wealth Management Account",
+  "description": "A client is transferring their assets to another institution and wants to close their account.",
+  "use_case": "Wealth Management",
+  "core_function": "Client Onboarding & KYC",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the ACATS transfer request from the other institution.",
+      "expected_outcome": "Agent receives and validates the Automated Customer Account Transfer Service request.",
+      "required_tools": [
+        "validate_acats_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Liquidate any non-transferable assets as per client instructions.",
+      "expected_outcome": "Agent sells a proprietary mutual fund and sweeps the cash.",
+      "required_tools": [
+        "execute_trade"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Transfer all assets and close the account.",
+      "expected_outcome": "Agent successfully completes the ACATS transfer, leaving a zero balance, and closes the account.",
+      "required_tools": [
+        "process_acats_transfer",
+        "close_investment_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

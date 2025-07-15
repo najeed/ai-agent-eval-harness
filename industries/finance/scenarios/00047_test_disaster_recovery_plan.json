@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-cf-47",
+  "title": "Test Financial System Disaster Recovery Plan",
+  "description": "A risk officer is conducting a test of the disaster recovery (DR) plan for the primary accounting system.",
+  "use_case": "Corporate Finance",
+  "core_function": "Risk & Compliance",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Initiate the failover process to switch from the primary system to the DR system.",
+      "expected_outcome": "Agent executes the command to switch to the backup data center.",
+      "required_tools": [
+        "initiate_dr_failover"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the DR system is online and that data is consistent with the primary system.",
+      "expected_outcome": "Agent runs a data integrity check and confirms the DR system is functioning correctly.",
+      "required_tools": [
+        "verify_dr_system_integrity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the results of the DR test, including the time taken for failover.",
+      "expected_outcome": "Agent documents a successful DR test with a failover time of 15 minutes.",
+      "required_tools": [
+        "log_dr_test_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

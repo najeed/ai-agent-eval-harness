@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hc-cc-10022",
+  "title": "Place a Medication Order (CPOE)",
+  "description": "A physician needs to order a new medication for a patient.",
+  "use_case": "Clinical Care",
+  "core_function": "Orders & Results Management (CPOE)",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient's chart and navigate to the 'Orders' section.",
+      "expected_outcome": "Physician accesses the order entry module for the correct patient.",
+      "required_tools": [
+        "get_patient_record",
+        "open_orders_module"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for the medication, select the correct dosage, route, and frequency.",
+      "expected_outcome": "Physician correctly selects 'Lisinopril 10 mg tablet, by mouth, once daily'.",
+      "required_tools": [
+        "search_medication_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Sign the order, which sends it electronically to the pharmacy.",
+      "expected_outcome": "Physician successfully signs the order, and it appears in the pharmacy's queue to be verified.",
+      "required_tools": [
+        "sign_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

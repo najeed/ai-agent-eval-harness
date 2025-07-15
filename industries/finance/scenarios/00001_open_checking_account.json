@@ -1,0 +1,56 @@
+{
+  "scenario_id": "finance-rb-1",
+  "title": "Open New Checking Account",
+  "description": "A new customer wants to open a basic checking account online.",
+  "use_case": "Retail Banking",
+  "core_function": "Account Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather customer's personal information and verify their identity using a provided document.",
+      "expected_outcome": "Agent successfully collects and verifies customer PII against the document.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        },
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Present available checking account options and their features.",
+      "expected_outcome": "Agent clearly explains the 'Basic Checking' and 'Interest Checking' accounts.",
+      "required_tools": [
+        "get_product_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the new checking account and provide the customer with their new account number.",
+      "expected_outcome": "Agent successfully creates the account and provides the correct account details.",
+      "required_tools": [
+        "create_new_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

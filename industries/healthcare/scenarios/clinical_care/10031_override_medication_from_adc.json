@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-cc-10031",
+  "title": "Override Medication from Automated Dispensing Cabinet",
+  "description": "A nurse needs to pull a medication from an Automated Dispensing Cabinet (ADC) for an emergency, overriding the standard verification process.",
+  "use_case": "Clinical Care",
+  "core_function": "Medication Administration",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the patient on the ADC screen.",
+      "expected_outcome": "Nurse correctly identifies the patient at the ADC.",
+      "required_tools": [
+        "select_patient_on_adc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the 'override' function to search for and select the needed medication (e.g., 'Epinephrine').",
+      "expected_outcome": "Nurse successfully uses the override feature to access a non-profiled medication.",
+      "required_tools": [
+        "use_adc_override"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter a reason for the override and retrieve the medication. The system logs the event for later review by pharmacy.",
+      "expected_outcome": "Nurse obtains the medication quickly, and the high-risk transaction is logged for audit.",
+      "required_tools": [
+        "remove_medication_from_adc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

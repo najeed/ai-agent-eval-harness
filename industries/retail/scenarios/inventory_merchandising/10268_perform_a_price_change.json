@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ret-im-10268",
+  "title": "Perform a Price Change",
+  "description": "A category manager has decided to permanently lower the price of an item. A store associate needs to update the shelf label.",
+  "use_case": "Inventory & Merchandising",
+  "core_function": "Pricing & Promotions",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a task to update the price for a specific item.",
+      "expected_outcome": "The associate gets a notification of a required price change.",
+      "required_tools": [
+        "get_task_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The new price has already been updated in the central system. The associate prints a new shelf label with the updated price.",
+      "expected_outcome": "A new, accurate shelf label is printed.",
+      "required_tools": [
+        "print_shelf_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Go to the item's location on the sales floor, remove the old label, and replace it with the new one.",
+      "expected_outcome": "The price displayed to the customer on the shelf now matches the price in the POS system.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

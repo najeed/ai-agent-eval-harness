@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-mr-10277",
+  "title": "Create a New PM Plan",
+  "description": "A new piece of equipment has been installed and a reliability engineer needs to create its preventive maintenance plan from scratch.",
+  "use_case": "Maintenance & Repair",
+  "core_function": "Preventive Maintenance",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new asset record for the equipment in the CMMS.",
+      "expected_outcome": "Agent successfully creates the new asset record.",
+      "required_tools": [
+        "create_asset_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define the individual PM tasks based on the OEM's recommendations (e.g., 'Inspect monthly', 'Replace filter quarterly').",
+      "expected_outcome": "Agent creates several new PM tasks with different frequencies.",
+      "required_tools": [
+        "create_pm_task_definition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Build the maintenance plan by associating the PM tasks with the new asset.",
+      "expected_outcome": "Agent successfully creates the full PM plan, and the system generates the first set of due dates.",
+      "required_tools": [
+        "build_maintenance_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

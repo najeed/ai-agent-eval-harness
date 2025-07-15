@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-10471",
+  "title": "Provision VPN for New Business Customer",
+  "description": "A new enterprise customer requires a secure VPN tunnel to be configured between their office and the telecom network.",
+  "use_case": "Network Operations",
+  "core_function": "Network Provisioning",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the VPN configuration parameters from the customer's service order.",
+      "expected_outcome": "Agent gets the required IP addresses, encryption type, and pre-shared key.",
+      "required_tools": [
+        "get_service_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the VPN configuration to the edge router serving the customer.",
+      "expected_outcome": "Agent successfully configures the VPN tunnel on the router.",
+      "required_tools": [
+        "configure_vpn_tunnel"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a connectivity test to ensure the VPN tunnel is active and passing traffic.",
+      "expected_outcome": "Agent pings the customer's internal IP through the tunnel and gets a successful reply.",
+      "required_tools": [
+        "test_vpn_connectivity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

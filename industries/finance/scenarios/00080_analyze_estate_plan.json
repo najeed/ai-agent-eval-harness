@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-wm-80",
+  "title": "Analyze an Estate Plan",
+  "description": "A client wants a review of their current estate plan to ensure it meets their goals and is tax-efficient.",
+  "use_case": "Wealth Management",
+  "core_function": "Financial Planning",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the client's existing estate planning documents (e.g., will, trusts).",
+      "expected_outcome": "Agent reviews the documents and identifies the current structure of the estate plan.",
+      "required_tools": [
+        "review_legal_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the potential estate tax liability based on the client's current net worth.",
+      "expected_outcome": "Agent calculates that the client's estate is currently projected to be subject to estate taxes.",
+      "required_tools": [
+        "calculate_estate_tax_liability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend strategies to mitigate estate taxes, such as gifting or setting up an irrevocable trust.",
+      "expected_outcome": "Agent provides 2-3 actionable strategies for the client to discuss with their attorney.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "telecom-no-10496",
+  "title": "Update DNS Record for a Customer",
+  "description": "A business customer needs to update the A record for their domain, which is hosted on the telecom's DNS servers.",
+  "use_case": "Network Operations",
+  "core_function": "Network Provisioning",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the customer's identity and their authority to make DNS changes.",
+      "expected_outcome": "Agent successfully authenticates the customer.",
+      "required_tools": [
+        "verify_customer_identity_enhanced"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the domain name, record type (A), and new IP address from the customer.",
+      "expected_outcome": "Agent correctly gathers the required DNS information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the DNS record in the DNS management system.",
+      "expected_outcome": "Agent successfully updates the A record.",
+      "required_tools": [
+        "update_dns_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

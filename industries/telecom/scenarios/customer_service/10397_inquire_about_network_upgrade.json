@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-cs-10397",
+  "title": "Inquire About Future Network Upgrades",
+  "description": "A customer is asking if and when their neighborhood will be upgraded to fiber optic service.",
+  "use_case": "Customer Service",
+  "core_function": "Service Lifecycle",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's service address.",
+      "expected_outcome": "Agent correctly identifies the customer's location.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the internal network expansion roadmap for any planned upgrades in that area.",
+      "expected_outcome": "Agent finds the neighborhood is scheduled for a fiber upgrade in the next 6-9 months.",
+      "required_tools": [
+        "check_network_expansion_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer of the planned upgrade timeline and offer to add them to a notification list.",
+      "expected_outcome": "Agent clearly communicates the information and adds the customer to the notification list.",
+      "required_tools": [
+        "add_to_notification_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

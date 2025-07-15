@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-cf-72",
+  "title": "Reconcile Bank Statement",
+  "description": "An accountant needs to perform the monthly bank reconciliation, matching transactions in the general ledger to the bank statement.",
+  "use_case": "Corporate Finance",
+  "core_function": "Audit & Reporting",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the monthly bank statement into the accounting software.",
+      "expected_outcome": "Agent successfully imports the bank transaction data.",
+      "required_tools": [
+        "import_bank_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the automated matching process to reconcile transactions.",
+      "expected_outcome": "The system automatically matches 95% of the transactions.",
+      "required_tools": [
+        "run_bank_reconciliation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify and investigate any outstanding, unmatched items.",
+      "expected_outcome": "Agent identifies three unmatched items that require manual investigation (e.g., a bank fee, an unrecorded debit).",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

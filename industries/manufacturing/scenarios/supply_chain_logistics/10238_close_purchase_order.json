@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mfg-sl-10238",
+  "title": "Close a Purchase Order",
+  "description": "A purchase order has been fully received and invoiced, and now needs to be closed in the system.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Procurement & Ordering",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the purchase order.",
+      "expected_outcome": "Agent retrieves the correct PO.",
+      "required_tools": [
+        "find_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all line items have been fully received and the corresponding supplier invoice has been paid.",
+      "expected_outcome": "Agent confirms a '3-way match' between the PO, receipt, and invoice is complete.",
+      "required_tools": [
+        "verify_po_receipt_status",
+        "verify_po_invoice_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Change the status of the purchase order to 'Closed'.",
+      "expected_outcome": "Agent successfully closes the PO.",
+      "required_tools": [
+        "close_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

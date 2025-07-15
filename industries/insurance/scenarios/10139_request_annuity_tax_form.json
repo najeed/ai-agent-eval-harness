@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-10139",
+  "title": "Request Annuity Tax Form (1099-R)",
+  "description": "An annuity holder needs a copy of their 1099-R tax form for a distribution they took last year.",
+  "use_case": "Life & Annuities",
+  "core_function": "Annuity Management",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the contract holder.",
+      "expected_outcome": "Agent correctly identifies the customer.",
+      "required_tools": [
+        "get_annuity_contract_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a copy of the requested 1099-R from the previous tax year.",
+      "expected_outcome": "Agent successfully retrieves the tax document from the archive.",
+      "required_tools": [
+        "generate_tax_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the tax form to the customer.",
+      "expected_outcome": "Agent sends the 1099-R to the customer's registered email address.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-pa-10015",
+  "title": "Document Patient Elopement",
+  "description": "An inpatient has left the unit without being discharged. A nurse must document this as an elopement.",
+  "use_case": "Patient Administration",
+  "core_function": "Admissions, Discharge, & Transfer (ADT)",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Notify hospital security and the attending physician.",
+      "expected_outcome": "Nurse follows hospital protocol for a missing patient.",
+      "required_tools": [
+        "send_secure_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Locate the patient's record in the EHR.",
+      "expected_outcome": "Agent finds the correct inpatient encounter.",
+      "required_tools": [
+        "get_patient_encounter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process a 'Discharge - Left Against Medical Advice (AMA)' ADT message with a note indicating elopement.",
+      "expected_outcome": "Agent correctly updates the patient's status and documents the circumstances of the departure.",
+      "required_tools": [
+        "process_adt_discharge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

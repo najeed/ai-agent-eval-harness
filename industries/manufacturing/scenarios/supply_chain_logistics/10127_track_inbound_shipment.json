@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sl-10127",
+  "title": "Track an Inbound Shipment",
+  "description": "A planner wants to know the current location and ETA of a critical inbound shipment.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Inbound & Receiving",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the tracking number for the shipment from the purchase order.",
+      "expected_outcome": "Agent finds the carrier tracking number associated with the PO.",
+      "required_tools": [
+        "get_po_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the tracking number to check the status on the carrier's portal.",
+      "expected_outcome": "Agent uses the tracking tool to find the shipment is currently 'In Transit' and 1 day away.",
+      "required_tools": [
+        "track_shipment_with_carrier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the internal record with the latest ETA.",
+      "expected_outcome": "Agent updates the expected delivery date in the ERP system.",
+      "required_tools": [
+        "update_po_delivery_date"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

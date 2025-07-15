@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sc-10188",
+  "title": "Renew a Customer's Annual Contract",
+  "description": "A major customer's annual supply contract is due for renewal next month.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Account & Contract Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's existing contract to review the terms and pricing.",
+      "expected_outcome": "Agent pulls up the current contract from the document repository.",
+      "required_tools": [
+        "get_customer_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a new draft contract for the upcoming year, applying a standard annual price increase.",
+      "expected_outcome": "Agent creates a draft of the new contract with updated pricing.",
+      "required_tools": [
+        "draft_new_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the draft contract to the customer for their review and signature.",
+      "expected_outcome": "Agent emails the new contract to the customer's procurement contact.",
+      "required_tools": [
+        "send_document_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

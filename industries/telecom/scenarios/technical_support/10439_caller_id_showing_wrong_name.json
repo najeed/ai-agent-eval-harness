@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-ts-10439",
+  "title": "Troubleshooting - Caller ID Showing Wrong Name",
+  "description": "A customer reports that when they call people, the wrong name is appearing on the recipient's Caller ID.",
+  "use_case": "Technical Support",
+  "core_function": "Value-Added Service Support",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the customer's name as it is listed on the account.",
+      "expected_outcome": "Agent confirms the correct name is on the account.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the public CNAM (Caller ID Name) database for the customer's number.",
+      "expected_outcome": "Agent finds the CNAM database has an old, incorrect name associated with the number.",
+      "required_tools": [
+        "query_cnam_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit a request to update the CNAM database with the correct name.",
+      "expected_outcome": "Agent successfully submits the CNAM update request.",
+      "required_tools": [
+        "submit_cnam_update"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

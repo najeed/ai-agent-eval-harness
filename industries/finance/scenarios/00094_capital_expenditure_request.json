@@ -1,0 +1,48 @@
+{
+  "scenario_id": "finance-cf-94",
+  "title": "Analyze a Capital Expenditure Request",
+  "description": "The FP&A team needs to analyze a request from the operations department to purchase a new piece of machinery for $500,000.",
+  "use_case": "Corporate Finance",
+  "core_function": "Financial Planning & Analysis (FP&A)",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the details of the capital expenditure request, including the cost and expected cost savings or revenue generation.",
+      "expected_outcome": "Agent collects the business case for the new machine.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a financial analysis, calculating metrics like Net Present Value (NPV), Internal Rate of Return (IRR), and payback period.",
+      "expected_outcome": "Agent calculates a positive NPV and an IRR above the company's hurdle rate.",
+      "required_tools": [
+        "calculate_capital_budgeting_metrics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a recommendation to the capital committee on whether to approve the expenditure.",
+      "expected_outcome": "Agent drafts a report recommending approval based on the strong financial metrics.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

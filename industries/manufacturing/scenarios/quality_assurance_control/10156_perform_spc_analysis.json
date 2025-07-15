@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-qc-10156",
+  "title": "Perform Statistical Process Control (SPC) Analysis",
+  "description": "A quality engineer is monitoring a critical process parameter and wants to analyze its SPC chart.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Quality Inspection & Testing",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the process parameter (e.g., 'Torque') and the machine to be analyzed.",
+      "expected_outcome": "Agent selects the correct parameter from the SPC system.",
+      "required_tools": [
+        "get_spc_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the X-bar and R control chart for the last 24 hours of data.",
+      "expected_outcome": "Agent views the control chart on their screen.",
+      "required_tools": [
+        "get_spc_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify a trend on the chart where seven consecutive points are all above the centerline, indicating a potential process shift.",
+      "expected_outcome": "Agent correctly identifies a rule violation on the SPC chart and flags it for investigation.",
+      "required_tools": [
+        "analyze_spc_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}
