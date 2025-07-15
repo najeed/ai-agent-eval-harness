@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ports-vo-12622",
+  "title": "Manage Mooring Gang Operations",
+  "description": "A vessel is arriving. The mooring gang supervisor must direct the linesmen to safely secure the vessel.",
+  "use_case": "Vessel Operations",
+  "core_function": "Mooring & Unmooring Operations",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the vessel's mooring plan, showing the number and arrangement of mooring lines.",
+      "expected_outcome": "Supervisor reviews the plan which specifies 8 mooring lines.",
+      "required_tools": [
+        "get_vessel_mooring_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Position the linesmen at the correct bollards on the quay as the vessel approaches.",
+      "expected_outcome": "The crew is correctly positioned to catch the heaving lines from the ship.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Direct the team to secure the mooring lines in the correct sequence and confirm to the pilot when the vessel is 'all fast'.",
+      "expected_outcome": "All lines are secured, and the supervisor radios 'all fast' to the vessel's pilot.",
+      "required_tools": [
+        "report_vessel_all_fast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

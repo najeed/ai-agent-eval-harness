@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10398",
+  "title": "Audit the Ethics Hotline Process",
+  "description": "An auditor reviews the process for handling reports made to the company's ethics hotline.",
+  "use_case": "Internal Audit",
+  "core_function": "Fieldwork & Data Collection",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the log of all cases reported to the ethics hotline in the past year.",
+      "expected_outcome": "The auditor has the case management log.",
+      "required_tools": [
+        "get_ethics_hotline_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a sample of cases to review.",
+      "expected_outcome": "A sample is selected for testing.",
+      "required_tools": [
+        "select_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each sampled case, review the investigation file to ensure that the issue was investigated thoroughly, documented properly, and resolved in a timely manner.",
+      "expected_outcome": "The auditor confirms that all sampled cases were handled in accordance with the investigation protocol.",
+      "required_tools": [
+        "review_investigation_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

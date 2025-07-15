@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-rdq-10514",
+  "title": "Release Finished Product Batch",
+  "description": "A Quality Assurance specialist needs to review a completed batch record and its associated lab results to approve the batch for release to customers.",
+  "use_case": "R&D and Quality",
+  "core_function": "Quality Assurance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a batch from the 'Pending QA Review' queue.",
+      "expected_outcome": "Agent retrieves the batch record and all associated documentation.",
+      "required_tools": [
+        "get_pending_release_queue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all manufacturing steps were completed and signed off, and that all lab results are within specification.",
+      "expected_outcome": "Agent confirms the batch record is complete and all quality tests passed.",
+      "required_tools": [
+        "review_batch_record",
+        "review_lab_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply an electronic signature to formally release the batch, changing its inventory status from 'Quarantine' to 'Available'.",
+      "expected_outcome": "Agent successfully releases the batch, making it available for sale.",
+      "required_tools": [
+        "apply_electronic_signature_for_release"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

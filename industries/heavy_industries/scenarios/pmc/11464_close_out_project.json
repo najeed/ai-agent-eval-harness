@@ -1,0 +1,54 @@
+{
+  "scenario_id": "heavy-industries-pmc-11464",
+  "title": "Close Out a Project",
+  "description": "A project is complete. The project manager must perform the final administrative steps to formally close it.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Reporting & Communication",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that all deliverables have been completed and handed over to the client.",
+      "expected_outcome": "Agent confirms all project deliverables are complete.",
+      "required_tools": [
+        "check_deliverable_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the final invoices from all subcontractors and vendors.",
+      "expected_outcome": "Agent ensures all suppliers have been paid.",
+      "required_tools": [
+        "process_final_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the final project cost report and a 'lessons learned' document, then formally close the project in the system.",
+      "expected_outcome": "Agent completes the final reports, archives the project data, and changes the project status to 'Closed'.",
+      "required_tools": [
+        "generate_final_cost_report",
+        "create_lessons_learned_report",
+        "close_project"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

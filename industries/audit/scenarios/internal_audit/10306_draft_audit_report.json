@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10306",
+  "title": "Draft an Internal Audit Report",
+  "description": "An audit manager needs to draft the final report for a marketing expenses audit.",
+  "use_case": "Internal Audit",
+  "core_function": "Reporting & Remediation Tracking",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Compile all documented findings from the audit workpapers.",
+      "expected_outcome": "All approved findings are gathered for inclusion in the report.",
+      "required_tools": [
+        "get_audit_findings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write the executive summary, including the overall audit rating (e.g., 'Satisfactory') and a summary of key findings.",
+      "expected_outcome": "A concise and impactful executive summary is written.",
+      "required_tools": [
+        "generate_executive_summary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the draft report to the Director of Marketing for their review and to provide management responses to the findings.",
+      "expected_outcome": "The draft report is formally issued to the auditee for their response.",
+      "required_tools": [
+        "send_draft_audit_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

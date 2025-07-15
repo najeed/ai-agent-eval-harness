@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-iam-10712",
+  "title": "Privileged Access Checkout",
+  "description": "A database administrator needs to check out the credentials for a privileged database account to perform maintenance.",
+  "use_case": "Identity & Access Management (IAM)",
+  "core_function": "Privileged Access Management (PAM)",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the administrator's request to check out the 'DB_Admin' credential, including a justification and ticket number.",
+      "expected_outcome": "The PAM system receives the request.",
+      "required_tools": [
+        "request_pam_checkout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "request_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The PAM system automatically releases the password to the administrator for a pre-defined time limit (e.g., 2 hours).",
+      "expected_outcome": "The administrator receives the one-time password.",
+      "required_tools": [
+        "release_pam_credential"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_execution_success",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the time limit expires, the PAM system automatically checks the credential back in and rotates the password.",
+      "expected_outcome": "The one-time password is automatically invalidated, securing the account.",
+      "required_tools": [
+        "rotate_pam_password"
+      ],
+      "success_criteria": [
+        {
+          "metric": "automation_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

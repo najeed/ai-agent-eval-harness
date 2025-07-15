@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-res-10217",
+  "title": "Process a Refund for a Cancelled Flight",
+  "description": "A customer whose flight was cancelled by the airline is entitled to a full refund and has called to request it.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Customer Support",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's booking and verify that it is eligible for a full refund due to the airline-initiated cancellation.",
+      "expected_outcome": "Agent confirms the booking and its refund eligibility.",
+      "required_tools": [
+        "get_booking_details",
+        "check_refund_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the refund back to the customer's original form of payment.",
+      "expected_outcome": "Agent successfully initiates the refund in the system.",
+      "required_tools": [
+        "process_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer that the refund has been processed and advise them of the expected timeframe for the funds to appear in their account.",
+      "expected_outcome": "Agent clearly communicates the refund status and timeline.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

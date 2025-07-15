@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10270",
+  "title": "Add Frequent Flyer Number to Booking",
+  "description": "A customer made a booking but forgot to add their frequent flyer number. They call to have it added.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Post-Booking Services",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's booking.",
+      "expected_outcome": "Agent finds the reservation.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the customer's frequent flyer number.",
+      "expected_outcome": "Agent collects the number.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the frequent flyer number to the booking record.",
+      "expected_outcome": "Agent successfully updates the booking with the number.",
+      "required_tools": [
+        "add_frequent_flyer_number"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

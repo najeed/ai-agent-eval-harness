@@ -1,0 +1,66 @@
+{
+  "scenario_id": "energy-cs-11121",
+  "title": "Generate VPP Performance Report",
+  "description": "A VPP program manager needs a monthly performance and revenue report for a portfolio of residential batteries.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "Billing & Program Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Aggregate performance data for all batteries in the VPP for the last month, including dispatch events and total MWh discharged.",
+      "expected_outcome": "Agent compiles the total number of events and energy dispatched.",
+      "required_tools": [
+        "get_vpp_performance_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_aggregation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total revenue generated from grid services (e.g., frequency response, capacity markets).",
+      "expected_outcome": "Agent calculates the total revenue figure.",
+      "required_tools": [
+        "calculate_vpp_revenue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the individual earnings for each customer based on their contribution and the program's revenue-sharing agreement.",
+      "expected_outcome": "Agent generates a list of payments due to each customer.",
+      "required_tools": [
+        "calculate_customer_payouts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a summary report with key performance indicators (KPIs) and financial results.",
+      "expected_outcome": "Agent produces a structured PDF report.",
+      "required_tools": [
+        "generate_performance_summary_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

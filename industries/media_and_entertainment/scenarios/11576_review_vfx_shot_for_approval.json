@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-cp-11576",
+  "title": "Review VFX Shot for Approval",
+  "description": "A VFX artist has submitted a new version of a complex visual effects shot for the director's approval.",
+  "use_case": "Content Production & Management",
+  "core_function": "Post-production & VFX",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest version of the VFX shot and the director's notes from the previous version.",
+      "expected_outcome": "Agent accesses the new video file and the director's feedback.",
+      "required_tools": [
+        "get_vfx_shot_version",
+        "get_director_notes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Place the shot in the director's daily review playlist.",
+      "expected_outcome": "Agent adds the shot to the secure online review platform for the director.",
+      "required_tools": [
+        "add_to_review_playlist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the review, update the shot's status to 'Approved' based on the director's feedback.",
+      "expected_outcome": "Agent receives the approval and updates the shot's status in the tracking system.",
+      "required_tools": [
+        "update_shot_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

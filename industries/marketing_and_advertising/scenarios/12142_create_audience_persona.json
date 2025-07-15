@@ -1,0 +1,53 @@
+{
+  "scenario_id": "marketing-sp-12142",
+  "title": "Create an Audience Persona",
+  "description": "A strategist needs to create a detailed persona for the brand's primary target customer.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Market & Audience Research",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Synthesize data from surveys, analytics, and market research about the target audience.",
+      "expected_outcome": "Agent gathers all available data about the target customer.",
+      "required_tools": [
+        "query_analytics_data",
+        "get_survey_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a persona document that includes a fictional name, photo, demographics, goals, and pain points.",
+      "expected_outcome": "Agent creates a detailed, empathetic representation of the target customer.",
+      "required_tools": [
+        "document_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Share the persona document with the marketing and creative teams to ensure everyone is aligned.",
+      "expected_outcome": "Agent distributes the persona for team-wide use.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

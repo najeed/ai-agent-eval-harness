@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-tc-12175",
+  "title": "Order a Home Warranty",
+  "description": "The purchase contract specifies that the seller will provide a one-year home warranty for the buyer. The TC must order it.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the home warranty details (provider, plan level) from the purchase agreement.",
+      "expected_outcome": "Agent confirms the contract specifies the 'Gold Plan' from 'ABC Home Warranty'.",
+      "required_tools": [
+        "get_transaction_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Place the order with the specified home warranty company.",
+      "expected_outcome": "The order is successfully placed for the correct plan and property.",
+      "required_tools": [
+        "order_home_warranty"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the invoice for the warranty to the title company to be paid from the seller's proceeds at closing.",
+      "expected_outcome": "The invoice is forwarded to the escrow officer with payment instructions.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

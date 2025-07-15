@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-ta-11634",
+  "title": "Reject a Candidate After Interview",
+  "description": "A candidate who interviewed for a role was not selected to move forward. A recruiter needs to inform them.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Sourcing & Screening",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the candidate and confirm the decision not to move forward.",
+      "expected_outcome": "Recruiter confirms the candidate's status.",
+      "required_tools": [
+        "get_candidate_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the candidate's status to 'Rejected' in the ATS.",
+      "expected_outcome": "Recruiter updates the system of record.",
+      "required_tools": [
+        "update_candidate_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the candidate a standardized rejection email thanking them for their time.",
+      "expected_outcome": "Recruiter sends a polite and professional rejection notification.",
+      "required_tools": [
+        "send_email_from_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hr-em-11635",
+  "title": "Update Employee Direct Deposit Information",
+  "description": "An employee needs to update their bank account information for direct deposit.",
+  "use_case": "Employee Management",
+  "core_function": "Payroll & Compensation",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the employee and authenticate their identity.",
+      "expected_outcome": "Agent securely verifies the employee's identity.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the employee to the self-service portal to update their direct deposit details.",
+      "expected_outcome": "Agent provides instructions for the employee to make the change themselves.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain that the change may take 1-2 pay cycles to take effect and they might receive a paper check in the interim.",
+      "expected_outcome": "Agent clearly sets expectations about the timing of the change.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10221",
+  "title": "Handle a Flight Delay Notification",
+  "description": "The operations team has announced a 2-hour delay for an upcoming flight. A customer service agent must inform the passengers.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Disruption Management (Customer Facing)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the delay information for the specific flight, including the new estimated departure time.",
+      "expected_outcome": "Agent acknowledges the delay details.",
+      "required_tools": [
+        "get_flight_status_update"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the list of all passengers on the flight and their contact information.",
+      "expected_outcome": "Agent retrieves the passenger list.",
+      "required_tools": [
+        "get_passenger_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send an automated SMS and email notification to all passengers informing them of the delay.",
+      "expected_outcome": "Agent successfully triggers the automated notifications.",
+      "required_tools": [
+        "send_bulk_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

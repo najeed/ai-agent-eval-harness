@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ag-cm-10141",
+  "title": "Frost Alert and Mitigation for an Orchard",
+  "description": "The weather forecast indicates temperatures will drop below freezing, threatening an apple orchard that is in bloom.",
+  "use_case": "Crop Management",
+  "core_function": "Irrigation Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a frost alert based on the weather forecast.",
+      "expected_outcome": "Agent acknowledges the alert for impending sub-zero temperatures.",
+      "required_tools": [
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a high-priority notification to the orchard manager to prepare frost mitigation measures.",
+      "expected_outcome": "Agent successfully sends the alert.",
+      "required_tools": [
+        "send_sms_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide instructions to activate the overhead sprinkler irrigation system for frost protection, which releases latent heat as water freezes.",
+      "expected_outcome": "Agent provides a checklist and activation commands for the irrigation-based frost protection system.",
+      "required_tools": [
+        "control_irrigation_system",
+        "get_frost_mitigation_protocol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

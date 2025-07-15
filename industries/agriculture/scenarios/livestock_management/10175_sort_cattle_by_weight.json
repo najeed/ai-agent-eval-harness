@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10175",
+  "title": "Sort Cattle for Market",
+  "description": "A feedlot manager needs to sort a pen of cattle, sending all animals over a certain weight to market.",
+  "use_case": "Livestock Management",
+  "core_function": "Feeding & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Connect to the smart scale and automated sorting gate system.",
+      "expected_outcome": "Agent establishes a connection with the hardware.",
+      "required_tools": [
+        "connect_to_sorting_gate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set the sorting parameter to 'weight > 1300 lbs'.",
+      "expected_outcome": "Agent correctly configures the sorting logic.",
+      "required_tools": [
+        "set_sorting_parameters"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "As each animal is weighed, send a command to the gate to either sort it to the 'market' pen or the 'keep' pen.",
+      "expected_outcome": "Agent successfully controls the sorting gate in real-time for each animal.",
+      "required_tools": [
+        "control_sorting_gate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ac-ar-23",
+  "title": "Issue a Credit Memo",
+  "description": "A customer returned damaged goods. After customer service approves the return, accounting needs to issue a credit memo to the customer.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Billing & Invoicing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the approved Return Merchandise Authorization (RMA) from the customer service department.",
+      "expected_outcome": "Agent gets the RMA, which specifies the customer, original invoice, and value of the returned goods.",
+      "required_tools": [
+        "get_rma_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a credit memo in the ERP system for the value of the returned goods.",
+      "expected_outcome": "Agent successfully generates the credit memo, referencing the original invoice.",
+      "required_tools": [
+        "create_credit_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply the credit memo to the customer's open balance and send a copy to the customer.",
+      "expected_outcome": "Agent applies the credit, reduces the customer's balance, and emails them the credit memo.",
+      "required_tools": [
+        "apply_credit_memo",
+        "email_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

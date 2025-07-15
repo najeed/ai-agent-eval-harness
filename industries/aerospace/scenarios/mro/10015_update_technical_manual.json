@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10015",
+  "title": "Update an Aircraft Maintenance Manual (AMM)",
+  "description": "A manufacturer has issued a revision to a maintenance procedure. A technical writer must update the company's AMM.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Technical Documentation & Compliance",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the service bulletin from the manufacturer detailing the changes to the procedure.",
+      "expected_outcome": "Agent correctly identifies the document and the affected AMM section.",
+      "required_tools": [
+        "get_service_bulletin"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Revise the text and diagrams in the specified AMM section to reflect the new procedure.",
+      "expected_outcome": "Agent accurately updates the content in the technical manual.",
+      "required_tools": [
+        "edit_technical_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Publish the revised manual and notify all maintenance personnel of the update.",
+      "expected_outcome": "Agent successfully publishes the new version and sends a notification to all relevant staff.",
+      "required_tools": [
+        "publish_document",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

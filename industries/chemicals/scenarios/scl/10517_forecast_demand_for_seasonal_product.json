@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-scl-10517",
+  "title": "Forecast Demand for Seasonal Product",
+  "description": "A supply planner needs to forecast demand for an agricultural chemical with highly seasonal sales to inform the production plan.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Demand & Supply Planning",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the sales history for the product for the past three years.",
+      "expected_outcome": "Agent successfully pulls historical sales data, showing peaks in the spring.",
+      "required_tools": [
+        "get_historical_sales_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply a seasonal forecasting model to the historical data to predict demand for the upcoming season.",
+      "expected_outcome": "Agent generates a demand forecast of 500 metric tons for the next quarter.",
+      "required_tools": [
+        "run_demand_forecast_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Share the forecast with the production planning team to be used as input for the master production schedule.",
+      "expected_outcome": "Agent successfully transmits the forecast data to the production planning module.",
+      "required_tools": [
+        "update_master_production_schedule_input"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

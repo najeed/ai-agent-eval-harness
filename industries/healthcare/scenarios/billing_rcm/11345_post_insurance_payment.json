@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-brc-11345",
+  "title": "Post an Insurance Payment",
+  "description": "A payment poster receives an Electronic Remittance Advice (ERA) from an insurance company and needs to post the payments and adjustments.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Claims Management & Submission",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the ERA file into the billing system.",
+      "expected_outcome": "The system successfully parses the ERA file.",
+      "required_tools": [
+        "import_era"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically matches payments to claims and posts the allowed amounts, contractual adjustments, and patient responsibility amounts.",
+      "expected_outcome": "The system auto-posts the majority of the payments.",
+      "required_tools": [
+        "auto_post_remittance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually review and resolve any exceptions where the system could not automatically post the payment.",
+      "expected_outcome": "Payment poster investigates and resolves the few payments that require manual intervention.",
+      "required_tools": [
+        "resolve_posting_exceptions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

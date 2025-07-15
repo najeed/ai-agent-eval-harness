@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10136",
+  "title": "Automated Irrigation System Fault Detection",
+  "description": "A center pivot irrigation system reports a pressure drop in one of its spans, indicating a leak or broken sprinkler.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Robotics & Automation",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the pressure drop alert and identify the specific span and location of the fault.",
+      "expected_outcome": "Agent identifies the fault is in Span 5, near tower 6.",
+      "required_tools": [
+        "get_equipment_telemetry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically shut down the irrigation system to prevent water waste and further damage.",
+      "expected_outcome": "Agent successfully sends the shutdown command.",
+      "required_tools": [
+        "control_irrigation_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a high-priority work order for a technician, including the precise GPS location of the fault.",
+      "expected_outcome": "Agent creates a detailed work order with location data.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

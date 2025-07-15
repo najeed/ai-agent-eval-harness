@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ar-19",
+  "title": "Process Dunning Notices for Overdue Accounts",
+  "description": "The collections specialist needs to run the weekly dunning process to send reminders for overdue invoices.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Collections & Deductions",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all customers with invoices that are more than 30 days past due.",
+      "expected_outcome": "Agent generates a list of delinquent accounts.",
+      "required_tools": [
+        "get_overdue_invoices_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each customer on the list, generate the appropriate dunning letter based on the age of the oldest invoice (e.g., 30-day gentle reminder, 60-day firm notice).",
+      "expected_outcome": "Agent generates the correct level of dunning letter for each customer.",
+      "required_tools": [
+        "generate_dunning_letters"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the dunning letters to the customers.",
+      "expected_outcome": "Agent successfully emails or queues the letters for mailing.",
+      "required_tools": [
+        "send_dunning_letters"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

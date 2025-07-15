@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10196",
+  "title": "Manage a Commercial Apiary",
+  "description": "A commercial beekeeper needs to manage inspection records and honey production for hundreds of hives.",
+  "use_case": "Crop Management",
+  "core_function": "Harvesting & Logistics",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Record the results of a hive inspection, including queen status, brood pattern, and signs of disease.",
+      "expected_outcome": "Agent successfully logs the inspection data for a specific hive.",
+      "required_tools": [
+        "record_hive_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Record the amount of honey harvested from a specific hive.",
+      "expected_outcome": "Agent logs the honey yield.",
+      "required_tools": [
+        "record_honey_harvest"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report showing the average honey production per hive and flag any underperforming hives for further inspection.",
+      "expected_outcome": "Agent creates a report that identifies the bottom 10% of hives by production.",
+      "required_tools": [
+        "generate_apiary_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

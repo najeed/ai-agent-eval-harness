@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10060",
+  "title": "Assemble Multi-Layer Insulation (MLI)",
+  "description": "A technician is assembling MLI blankets to provide thermal protection for a satellite.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Manufacturing & Integration",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Cut the multiple layers of reflective material (e.g., Mylar) and separator netting to the correct size based on a template.",
+      "expected_outcome": "Agent accurately cuts all layers.",
+      "required_tools": [
+        "get_mli_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Stack the layers in the correct sequence.",
+      "expected_outcome": "Agent assembles the layers in the specified order.",
+      "required_tools": [
+        "assemble_mli_layers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Sew the edges of the blanket together and add grounding straps as required by the design.",
+      "expected_outcome": "Agent completes the fabrication of the MLI blanket.",
+      "required_tools": [
+        "sew_mli_blanket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

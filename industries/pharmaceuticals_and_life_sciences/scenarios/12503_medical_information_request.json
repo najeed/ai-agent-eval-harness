@@ -1,0 +1,68 @@
+{
+  "scenario_id": "pharma-cm-12503",
+  "title": "Respond to Medical Information Request",
+  "description": "A medical information specialist must respond to an unsolicited email inquiry from a Healthcare Professional (HCP) about the off-label use of a drug.",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Medical Information & Inquiries",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the incoming request and verify the HCP's credentials.",
+      "expected_outcome": "Agent creates a new case in the medical information system and verifies the HCP's license.",
+      "required_tools": [
+        "log_medical_inquiry",
+        "verify_hcp_credentials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the internal medical knowledge base for standard response documents related to the inquiry.",
+      "expected_outcome": "Agent finds a relevant standard response letter and a list of published literature.",
+      "required_tools": [
+        "search_medical_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft a non-promotional, scientifically balanced response letter using the approved documents.",
+      "expected_outcome": "Agent composes a response that is accurate and compliant with regulations.",
+      "required_tools": [
+        "draft_response_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send the response to the HCP and close the case.",
+      "expected_outcome": "Agent successfully sends the email and updates the case status to 'Closed'.",
+      "required_tools": [
+        "send_secure_email",
+        "update_case_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-csra-10479",
+  "title": "Child Safety Seat Installation Inquiry",
+  "description": "A new parent wants to know the correct way to install a child safety seat in their new SUV.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "General Inquiries",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's vehicle model.",
+      "expected_outcome": "Agent identifies the vehicle.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the vehicle's owner's manual to locate the LATCH anchor points.",
+      "expected_outcome": "Agent finds the diagram showing the anchor point locations in the second-row seats.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the location of the LATCH anchors and strongly recommend that the customer also consult the child seat manufacturer's instructions and have the installation checked by a certified technician.",
+      "expected_outcome": "Agent provides helpful information but also includes a critical safety disclaimer and recommendation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

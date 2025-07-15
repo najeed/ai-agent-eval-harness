@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-pm-10622",
+  "title": "Forecast Final Project Cost",
+  "description": "At the 50% completion mark, a project manager needs to forecast the final project cost based on performance to date.",
+  "use_case": "Project Management",
+  "core_function": "Budgeting & Cost Control",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the project's Budget at Completion (BAC), Earned Value (EV), and Actual Cost (AC).",
+      "expected_outcome": "Agent retrieves BAC=$500k, EV=$250k, AC=$275k.",
+      "required_tools": [
+        "get_project_cost_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the Cost Performance Index (CPI) and Estimate at Completion (EAC).",
+      "expected_outcome": "Agent calculates CPI = EV/AC = 0.91 and EAC = BAC/CPI = $550k.",
+      "required_tools": [
+        "calculate_cost_performance_metrics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report indicating a forecasted cost overrun of $50,000.",
+      "expected_outcome": "A cost forecast report is generated with the key metrics and conclusion.",
+      "required_tools": [
+        "generate_cost_forecast_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

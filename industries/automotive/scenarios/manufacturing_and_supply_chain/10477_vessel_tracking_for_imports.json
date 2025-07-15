@@ -1,0 +1,48 @@
+{
+  "scenario_id": "auto-ms-10477",
+  "title": "Track an Overseas Vessel with Parts",
+  "description": "A logistics manager needs to track an ocean freighter carrying a large shipment of transmissions from a supplier in Germany.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Supplier Management",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the container number or bill of lading for the shipment.",
+      "expected_outcome": "Agent has the shipment identifier.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use an international freight tracking system to find the vessel's name and current location.",
+      "expected_outcome": "Agent finds the shipment is on the 'MSC Isabella' and its current location is in the mid-Atlantic.",
+      "required_tools": [
+        "track_international_freight"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the manager with the vessel's estimated date of arrival at the port.",
+      "expected_outcome": "Agent gives the manager the ETA for port arrival.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

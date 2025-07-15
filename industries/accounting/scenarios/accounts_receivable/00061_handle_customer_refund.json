@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ar-61",
+  "title": "Process a Customer Refund",
+  "description": "A customer who paid in advance has canceled their order and is due a refund.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Cash Application",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that the customer has a credit balance on their account.",
+      "expected_outcome": "Agent confirms the customer has a credit balance from the advance payment.",
+      "required_tools": [
+        "get_customer_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process a payment request through Accounts Payable to issue a check to the customer for the credit balance amount.",
+      "expected_outcome": "Agent creates a payment request in the AP system to refund the customer.",
+      "required_tools": [
+        "create_refund_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post a transaction in Accounts Receivable to clear the credit balance from the customer's account.",
+      "expected_outcome": "Agent posts a debit memo to clear the customer's credit balance.",
+      "required_tools": [
+        "post_ar_adjustment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

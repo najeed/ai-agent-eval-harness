@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-qc-11357",
+  "title": "Link a Customer Complaint to an NCR",
+  "description": "A customer complaint has been received that matches an existing internal Non-Conformance Report. The two records need to be linked.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Non-Conformance & CAPA",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer complaint record.",
+      "expected_outcome": "Agent pulls up the specific customer complaint case.",
+      "required_tools": [
+        "get_customer_complaint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for and identify the related internal NCR.",
+      "expected_outcome": "Agent finds the matching NCR based on the part number and defect description.",
+      "required_tools": [
+        "find_ncr"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Link the two records together for complete traceability.",
+      "expected_outcome": "Agent successfully links the complaint to the NCR in the quality management system.",
+      "required_tools": [
+        "link_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

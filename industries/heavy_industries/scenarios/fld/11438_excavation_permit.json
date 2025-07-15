@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-fld-11438",
+  "title": "Request an Excavation Permit",
+  "description": "A crew needs to excavate a trench for a new pipeline. They must first get an excavation permit, which includes a check for underground utilities.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Safety & Permitting",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Initiate a new request for an 'Excavation Permit', attaching the drawing showing the trench location.",
+      "expected_outcome": "Agent starts a new permit request with the required documentation.",
+      "required_tools": [
+        "create_permit_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The permit system automatically triggers a request to the 'Call Before You Dig' service to identify any buried utilities in the area.",
+      "expected_outcome": "A request is automatically sent to the utility locating service.",
+      "required_tools": [
+        "trigger_utility_locate_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the utility locate is complete and the area is marked clear, get final approval for the permit from the site supervisor.",
+      "expected_outcome": "After receiving the all-clear, the agent routes the permit to the supervisor who provides the final signature.",
+      "required_tools": [
+        "get_permit_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

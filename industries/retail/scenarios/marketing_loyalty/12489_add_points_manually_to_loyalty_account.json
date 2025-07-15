@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ml-12489",
+  "title": "Add Points Manually to Loyalty Account",
+  "description": "A customer forgot to use their loyalty card during a previous purchase. A customer service agent needs to add the points manually.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Loyalty Program Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the customer's loyalty account.",
+      "expected_outcome": "The agent finds the correct account.",
+      "required_tools": [
+        "lookup_loyalty_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the customer's previous purchase using their receipt.",
+      "expected_outcome": "The agent confirms the sale and calculates the points that should have been earned.",
+      "required_tools": [
+        "find_transaction_by_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually add the calculated points to the customer's account with a note explaining the reason.",
+      "expected_outcome": "The customer's point balance is corrected.",
+      "required_tools": [
+        "adjust_loyalty_points"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

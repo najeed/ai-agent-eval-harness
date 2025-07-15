@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-mp-10835",
+  "title": "ISR Asset Resource Planning",
+  "description": "A planner must select the best ISR asset to find a mobile surface-to-air missile (SAM) launcher hidden in a forested area.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Resource & Ordnance Planning",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the intelligence on the target type and the terrain (dense forest).",
+      "expected_outcome": "Planner understands the difficulty of finding a mobile, hidden target in foliage.",
+      "required_tools": [
+        "get_target_intelligence",
+        "get_terrain_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query available ISR assets and their sensor capabilities (e.g., standard video, thermal, synthetic aperture radar).",
+      "expected_outcome": "Planner gets a list of available assets and their sensor payloads.",
+      "required_tools": [
+        "get_isr_asset_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select a drone equipped with synthetic aperture radar (SAR), which can penetrate foliage, as the optimal asset for the mission.",
+      "expected_outcome": "Planner makes the correct technical decision to use a SAR-equipped platform.",
+      "required_tools": [
+        "select_optimal_asset"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

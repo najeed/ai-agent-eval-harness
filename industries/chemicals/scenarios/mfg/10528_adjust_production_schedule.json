@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10528",
+  "title": "Adjust Production Schedule for Rush Order",
+  "description": "Sales has accepted a high-priority rush order that must be inserted into an already full production schedule.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Production Scheduling",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the new rush order's required completion date and volume.",
+      "expected_outcome": "Agent identifies the order details and deadline.",
+      "required_tools": [
+        "get_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the current production schedule to find a lower-priority order that can be postponed.",
+      "expected_outcome": "Agent identifies a 'make-to-stock' order that can be delayed with minimal impact.",
+      "required_tools": [
+        "get_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reschedule the lower-priority order and insert the new rush order into the now-vacant slot.",
+      "expected_outcome": "Agent successfully updates the production schedule to accommodate the rush order.",
+      "required_tools": [
+        "update_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

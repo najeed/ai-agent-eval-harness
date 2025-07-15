@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-af-11940",
+  "title": "Process New Employee Access Request",
+  "description": "A new operations manager has been hired. The security admin needs to set up their access credentials for the port's systems.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Customer Service & Claims",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the approved new hire form from HR.",
+      "expected_outcome": "Admin has the new employee's name, title, and department.",
+      "required_tools": [
+        "get_hr_onboarding_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a user account in the port's main system based on their job role template.",
+      "expected_outcome": "A new user account is created with permissions appropriate for an operations manager.",
+      "required_tools": [
+        "create_user_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Request the issuance of a physical port access ID card.",
+      "expected_outcome": "A request is sent to the badging office to create a new ID card for the employee.",
+      "required_tools": [
+        "request_id_card_issuance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

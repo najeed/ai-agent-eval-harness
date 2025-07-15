@@ -1,0 +1,48 @@
+{
+  "scenario_id": "auto-cs-10475",
+  "title": "Reset In-Car User Profile",
+  "description": "A customer has bought a used car and wants to delete the previous owner's user profile and settings from the infotainment system.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Infotainment & App Support",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Guide the customer to the 'Settings' menu on the infotainment screen.",
+      "expected_outcome": "Agent provides clear directions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Instruct the customer on how to perform a 'Factory Reset' or 'Master Reset' of the system.",
+      "expected_outcome": "Agent guides the customer through the reset process.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain that this will erase all personal data, including saved addresses and paired phones, and then guide them to create their own new profile.",
+      "expected_outcome": "Agent clearly sets expectations and helps the customer set up their new profile.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

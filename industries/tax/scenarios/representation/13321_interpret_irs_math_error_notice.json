@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-rep-13321",
+  "title": "Interpret IRS Math Error Notice",
+  "description": "A taxpayer receives a notice from the IRS (e.g., CP11) indicating a math error was found on their return.",
+  "use_case": "Taxpayer Representation & Resolution",
+  "core_function": "Notice & Correspondence Management",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the IRS notice to identify the specific line item that was corrected.",
+      "expected_outcome": "Agent determines the IRS corrected a simple addition error in calculating total income.",
+      "required_tools": [
+        "analyze_irs_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the original tax return to confirm the math error.",
+      "expected_outcome": "Agent verifies that the math error did occur as the IRS stated.",
+      "required_tools": [
+        "review_tax_return"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the taxpayer to pay the additional tax due, as the correction is accurate.",
+      "expected_outcome": "Agent provides clear advice to the taxpayer on how to resolve the issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

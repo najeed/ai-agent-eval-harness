@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-ago-10286",
+  "title": "Handle a Final Boarding Call",
+  "description": "A flight is about to close, but a few passengers have not yet appeared at the gate. The agent must make a final call.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Gate & Boarding",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the system to see which passengers have checked in but not yet boarded.",
+      "expected_outcome": "Agent identifies three passengers who are missing.",
+      "required_tools": [
+        "get_boarding_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Make a final boarding announcement over the PA system, calling the missing passengers by name.",
+      "expected_outcome": "Agent makes a clear final call.",
+      "required_tools": [
+        "make_pa_announcement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the passengers do not appear after a set time, offload their bags (if any) and close the flight.",
+      "expected_outcome": "The passengers do not arrive. Agent coordinates with baggage handlers to offload their bags and closes the flight.",
+      "required_tools": [
+        "offload_baggage",
+        "close_flight"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

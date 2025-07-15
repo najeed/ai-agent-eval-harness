@@ -1,0 +1,52 @@
+{
+  "scenario_id": "pharma-rd-12549",
+  "title": "Manage Cell Bank Inventory",
+  "description": "A scientist needs to retrieve a vial from the master cell bank for use in an experiment and document the process.",
+  "use_case": "Research & Development",
+  "core_function": "Lab & Sample Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search the LIMS for the location of the master cell bank for 'Cell Line Y'.",
+      "expected_outcome": "Agent finds the correct liquid nitrogen freezer and canister location.",
+      "required_tools": [
+        "search_lims_for_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Document the retrieval of one vial from the cell bank.",
+      "expected_outcome": "Agent logs the removal of the vial, decrementing the inventory count by one.",
+      "required_tools": [
+        "update_sample_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the thawing and plating of the cells for the new experiment.",
+      "expected_outcome": "Agent creates a new record for the derived cell culture, linking it back to the parent vial.",
+      "required_tools": [
+        "create_derived_sample_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

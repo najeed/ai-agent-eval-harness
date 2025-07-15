@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hosp-bo-11579",
+  "title": "Handle a Hotel Power Outage",
+  "description": "The hotel experiences a sudden power outage.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Security & Emergency Response",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm that the hotel's backup generator has automatically started and is powering emergency lights and essential systems (like servers and phones).",
+      "expected_outcome": "The agent verifies that emergency systems are operational.",
+      "required_tools": [
+        "mms_check_generator_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the local utility company to report the outage and get an estimated time for restoration.",
+      "expected_outcome": "The agent gets an ETR from the utility company.",
+      "required_tools": [
+        "contact_external_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch security and engineering staff to patrol hallways and assist any guests who need help.",
+      "expected_outcome": "Staff are dispatched to ensure guest safety.",
+      "required_tools": [
+        "dispatch_security",
+        "dispatch_engineer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10326",
+  "title": "Audit Cloud Environment Configuration",
+  "description": "An IT auditor reviews the configuration of the company's AWS environment.",
+  "use_case": "IT Audit",
+  "core_function": "Cybersecurity & Privacy Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the configuration of S3 buckets to ensure none are publicly accessible.",
+      "expected_outcome": "Auditor finds one S3 bucket that is incorrectly configured to allow public access.",
+      "required_tools": [
+        "get_aws_s3_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review IAM policies to ensure users have been granted permissions based on the principle of least privilege.",
+      "expected_outcome": "Auditor identifies several users with overly broad 'administrator' privileges.",
+      "required_tools": [
+        "get_aws_iam_policies"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that CloudTrail logging is enabled in all regions to ensure all API activity is captured.",
+      "expected_outcome": "Auditor confirms logging is enabled correctly.",
+      "required_tools": [
+        "get_aws_cloudtrail_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

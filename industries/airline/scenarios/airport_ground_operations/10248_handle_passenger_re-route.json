@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-ago-10248",
+  "title": "Handle a Passenger Re-route at the Airport",
+  "description": "A passenger has missed their connecting flight due to a delay on their first flight. A gate agent must rebook them.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Gate & Boarding",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's booking and confirm they have misconnected.",
+      "expected_outcome": "Agent verifies the situation.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for the next available flight to the passenger's destination.",
+      "expected_outcome": "Agent finds a flight later that day with available seats.",
+      "required_tools": [
+        "search_flights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Rebook the passenger on the new flight and issue them a new boarding pass, along with meal vouchers for the inconvenience.",
+      "expected_outcome": "Agent successfully rebooks the passenger and provides compensation.",
+      "required_tools": [
+        "rebook_passenger",
+        "print_boarding_pass",
+        "issue_compensation_voucher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

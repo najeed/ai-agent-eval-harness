@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-ehs-10595",
+  "title": "Conduct and Document an Emergency Drill",
+  "description": "An EHS specialist is conducting a planned fire drill for the site.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Incident Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Initiate the fire alarm system to start the drill.",
+      "expected_outcome": "The site alarms are activated.",
+      "required_tools": [
+        "activate_emergency_alarm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Time how long it takes for all personnel to evacuate to their designated muster points.",
+      "expected_outcome": "The EHS specialist records the total evacuation time.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the drill details, including the evacuation time and any observations, in the emergency drill log.",
+      "expected_outcome": "Agent successfully creates a new record in the drill log, documenting the successful drill.",
+      "required_tools": [
+        "create_drill_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

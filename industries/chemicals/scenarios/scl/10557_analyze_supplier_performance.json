@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-scl-10557",
+  "title": "Analyze Supplier Performance",
+  "description": "A procurement manager needs to generate a quarterly performance scorecard for a key supplier, looking at on-time delivery and quality.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Raw Material Procurement",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all purchase orders and goods receipts for the supplier for the last quarter.",
+      "expected_outcome": "Agent pulls the complete order history for the supplier for Q2.",
+      "required_tools": [
+        "get_purchase_orders_by_supplier",
+        "get_goods_receipts_by_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the on-time delivery percentage by comparing the requested delivery date to the actual receipt date.",
+      "expected_outcome": "Agent calculates the on-time delivery rate as 92%.",
+      "required_tools": [
+        "calculate_on_time_delivery_rate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the quality acceptance rate by checking how many lots were accepted versus rejected by QC.",
+      "expected_outcome": "Agent calculates the quality acceptance rate as 99%.",
+      "required_tools": [
+        "calculate_quality_acceptance_rate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10054",
+  "title": "Replace a Cockpit Windshield",
+  "description": "A maintenance crew needs to replace a cockpit windshield that was damaged by a bird strike.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Component Repair & Overhaul",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Remove the damaged windshield and its sealant according to the Structural Repair Manual (SRM).",
+      "expected_outcome": "Agent follows the SRM procedure to safely remove the old windshield.",
+      "required_tools": [
+        "get_structural_repair_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Install the new windshield, apply new sealant, and allow it to cure for the specified time.",
+      "expected_outcome": "Agent correctly installs the new windshield.",
+      "required_tools": [
+        "install_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform a cabin pressurization leak check to ensure the new windshield is properly sealed.",
+      "expected_outcome": "Agent runs the leak check and confirms there are no leaks.",
+      "required_tools": [
+        "perform_leak_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

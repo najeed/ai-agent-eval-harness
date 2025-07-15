@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-ph-10996",
+  "title": "Send Patient Satisfaction Survey",
+  "description": "Twenty-four hours after a patient's appointment, the system automatically sends them a satisfaction survey.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Patient Outreach & Engagement",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A system process identifies all completed appointments from the previous day.",
+      "expected_outcome": "The system generates a list of patients to survey.",
+      "required_tools": [
+        "get_completed_appointments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each patient, the system sends a link to a satisfaction survey via email or text.",
+      "expected_outcome": "The survey is successfully delivered to the patients.",
+      "required_tools": [
+        "send_automated_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The patient's responses are collected and aggregated into a performance dashboard.",
+      "expected_outcome": "The practice is able to collect feedback to improve the patient experience.",
+      "required_tools": [
+        "collect_survey_response"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

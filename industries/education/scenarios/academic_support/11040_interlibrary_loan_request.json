@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-as-11040",
+  "title": "Request an Interlibrary Loan",
+  "description": "A graduate student needs a book for their research that is not available in the university's library system.",
+  "use_case": "Academic Support",
+  "core_function": "Library & Research Services",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and collect the bibliographic information for the requested book (title, author, ISBN).",
+      "expected_outcome": "Agent gathers all necessary details for the book.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the national interlibrary loan (ILL) database to find a library that has the book.",
+      "expected_outcome": "Agent finds three libraries that own the book and can lend it.",
+      "required_tools": [
+        "search_interlibrary_loan_db"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the ILL request to the lending library and inform the student of the estimated arrival time.",
+      "expected_outcome": "Agent successfully places the request and communicates the timeline to the student.",
+      "required_tools": [
+        "submit_interlibrary_loan_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

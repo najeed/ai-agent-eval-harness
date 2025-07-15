@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-ms-10471",
+  "title": "New Supplier Onboarding",
+  "description": "A new supplier for seat foam has been selected and needs to be set up in the procurement and logistics systems.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Supplier Management",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all necessary information for the new supplier (company name, address, contact info, banking details, tax ID).",
+      "expected_outcome": "Agent collects all required data points.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new vendor profile in the master supplier database.",
+      "expected_outcome": "Agent successfully creates the new supplier record.",
+      "required_tools": [
+        "create_supplier_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Configure the logistics system with the supplier's shipping location and lead times to enable automated parts ordering.",
+      "expected_outcome": "Agent successfully sets up the supplier in the logistics platform.",
+      "required_tools": [
+        "configure_logistics_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

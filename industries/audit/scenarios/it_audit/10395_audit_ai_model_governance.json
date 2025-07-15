@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10395",
+  "title": "Audit AI Model Governance",
+  "description": "An IT auditor reviews the governance process for developing and deploying artificial intelligence (AI) models.",
+  "use_case": "IT Audit",
+  "core_function": "System Development & Implementation Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the company's AI ethics policy.",
+      "expected_outcome": "The auditor confirms that a policy exists to guide the ethical development of AI.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For a new AI model used for credit scoring, review the documentation to see how the model was tested for bias against protected groups.",
+      "expected_outcome": "The auditor finds that the documentation for bias testing is weak and lacks statistical rigor.",
+      "required_tools": [
+        "review_model_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that there is a process for monitoring the AI model's performance in production to detect drift or degradation over time.",
+      "expected_outcome": "The auditor confirms that a model monitoring process is in place.",
+      "required_tools": [
+        "check_model_monitoring_process"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

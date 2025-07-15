@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-cp-10321",
+  "title": "Audit SOX Entity-Level Controls",
+  "description": "An auditor assesses the company-wide (entity-level) controls as part of the annual Sarbanes-Oxley (SOX) compliance audit.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Regulatory Compliance Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the company's Code of Conduct and verify that all employees have completed their annual ethics training.",
+      "expected_outcome": "Auditor confirms a 98% completion rate for ethics training.",
+      "required_tools": [
+        "review_policy_document",
+        "get_training_completion_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the minutes from the Board of Directors' Audit Committee meetings to ensure they are meeting regularly and discussing financial risks.",
+      "expected_outcome": "Auditor confirms the committee met quarterly and minutes show discussion of key risks.",
+      "required_tools": [
+        "get_meeting_minutes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Interview senior management to assess the 'tone at the top' regarding ethics and internal controls.",
+      "expected_outcome": "The auditor documents management's commitment to a strong control environment.",
+      "required_tools": [
+        "conduct_interview"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

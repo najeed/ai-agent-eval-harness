@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10249",
+  "title": "Perform a Pre-Flight Walk-around Inspection",
+  "description": "Before every flight, a pilot must perform a walk-around inspection of the aircraft to check for any obvious issues.",
+  "use_case": "Flight Operations",
+  "core_function": "Flight Planning & Dispatch",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Follow a standard checklist to visually inspect the aircraft's exterior.",
+      "expected_outcome": "Pilot follows the prescribed flow around the aircraft.",
+      "required_tools": [
+        "get_walkaround_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for issues such as tire condition, leaks, damage to control surfaces, and that all sensor covers have been removed.",
+      "expected_outcome": "Pilot carefully inspects all key areas.",
+      "required_tools": [
+        "inspect_aircraft_exterior"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If any issues are found, report them to maintenance. If not, sign off on the inspection in the aircraft's technical log.",
+      "expected_outcome": "No issues are found. Pilot signs the log, confirming the aircraft is fit to fly.",
+      "required_tools": [
+        "update_technical_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

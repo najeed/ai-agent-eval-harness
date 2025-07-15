@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10023",
+  "title": "Integrate a Satellite with a Launch Vehicle",
+  "description": "Engineers at a launch site must physically mount a satellite onto the launch vehicle's payload adapter.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Launch Operations",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that both the satellite and the payload adapter have passed all pre-integration checks.",
+      "expected_outcome": "Agent confirms the status of all checks is 'complete'.",
+      "required_tools": [
+        "get_pre_integration_checklist_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Oversee the crane operation to lift and position the satellite onto the adapter.",
+      "expected_outcome": "Agent monitors the physical process to ensure it follows the procedure.",
+      "required_tools": [
+        "monitor_crane_operation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Connect the umbilical cords for data and power between the satellite and the launch vehicle, and perform a final interface check.",
+      "expected_outcome": "Agent confirms all connections are secure and a successful data link is established.",
+      "required_tools": [
+        "run_interface_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

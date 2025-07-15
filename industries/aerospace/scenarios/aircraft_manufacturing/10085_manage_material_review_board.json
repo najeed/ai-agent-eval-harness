@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10085",
+  "title": "Manage a Material Review Board (MRB) Action",
+  "description": "A part has been manufactured with a minor deviation from the blueprint. An MRB (a team of engineers) must decide if the part is usable 'as-is', needs repair, or must be scrapped.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Supply Chain & Procurement",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Present the non-conformance report (NCR) to the MRB, detailing the deviation.",
+      "expected_outcome": "Agent clearly presents the facts of the non-conformance.",
+      "required_tools": [
+        "get_ncr_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Facilitate the discussion among the engineers as they analyze the deviation's impact on the part's form, fit, and function.",
+      "expected_outcome": "Agent moderates the technical discussion.",
+      "required_tools": [
+        "facilitate_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the MRB's final disposition (e.g., 'Use As Is') and sign off on the NCR.",
+      "expected_outcome": "Agent records the board's official decision and closes the NCR.",
+      "required_tools": [
+        "document_mrb_disposition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

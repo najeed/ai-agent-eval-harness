@@ -1,0 +1,55 @@
+{
+  "scenario_id": "defense-log-10504",
+  "title": "Forward Operating Base Fuel Resupply",
+  "description": "A logistics officer must reroute a fuel convoy after its primary route is compromised by enemy activity.",
+  "use_case": "Logistics & Sustainment",
+  "core_function": "Supply Chain & Inventory Management",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the route compromise alert and retrieve the convoy's current location and fuel status.",
+      "expected_outcome": "Officer correctly identifies the convoy's position and remaining fuel.",
+      "required_tools": [
+        "get_asset_location",
+        "get_convoy_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze alternate routes, considering threat levels, road conditions, and travel time.",
+      "expected_outcome": "Officer identifies the safest and most efficient alternate route.",
+      "required_tools": [
+        "analyze_route_options",
+        "get_threat_overlay"
+      ],
+      "success_criteria": [
+        {
+          "metric": "route_optimization_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue new orders to the convoy commander with the updated route and request air cover for a high-threat portion.",
+      "expected_outcome": "Officer successfully re-tasks the convoy and coordinates for support.",
+      "required_tools": [
+        "issue_convoy_orders",
+        "request_close_air_support"
+      ],
+      "success_criteria": [
+        {
+          "metric": "coordination_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

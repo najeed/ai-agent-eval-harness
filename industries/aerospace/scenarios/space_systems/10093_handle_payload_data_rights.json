@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10093",
+  "title": "Manage Payload Data Rights",
+  "description": "A university has an instrument on a NASA satellite. A mission manager must ensure the university gets their data while protecting the data rights of other instruments.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Mission Design & Analysis",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the data sharing agreements for all payloads on the satellite.",
+      "expected_outcome": "Agent understands the data rights and access rules for each instrument team.",
+      "required_tools": [
+        "get_data_sharing_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Configure the ground data system to automatically route the data from the university's instrument to their dedicated server.",
+      "expected_outcome": "Agent sets up the data routing rules.",
+      "required_tools": [
+        "configure_data_routing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the university team can access their data and that they cannot access data from any other instruments.",
+      "expected_outcome": "Agent confirms the access controls are working correctly.",
+      "required_tools": [
+        "verify_data_access"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "lw-tm-11982",
+  "title": "Book a Guaranteed Delivery Service",
+  "description": "A critical shipment must arrive by a specific time. The planner must book a guaranteed service with an LTL carrier.",
+  "use_case": "Transportation Management",
+  "core_function": "Shipment Planning & Execution",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When getting LTL rates, specify a 'Guaranteed by 10 AM' service requirement.",
+      "expected_outcome": "The rating request includes the special service flag.",
+      "required_tools": [
+        "get_ltl_rates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system returns rates only from carriers that offer this guaranteed service, along with the service upcharge.",
+      "expected_outcome": "Only relevant carriers and services are displayed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select a carrier and book the shipment, ensuring the 'Guaranteed Service' option is selected.",
+      "expected_outcome": "The shipment is booked with the carrier, and the guarantee is noted on the BOL.",
+      "required_tools": [
+        "book_ltl_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

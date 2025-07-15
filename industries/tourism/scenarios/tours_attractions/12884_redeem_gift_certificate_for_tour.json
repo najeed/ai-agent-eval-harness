@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-ta-12884",
+  "title": "Redeem Gift Certificate for a Tour",
+  "description": "A customer wants to use a gift certificate to pay for a hot air balloon ride.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Activity Booking & Scheduling",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check availability for the hot air balloon ride.",
+      "expected_outcome": "Agent confirms availability on the desired date.",
+      "required_tools": [
+        "check_tour_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Validate the customer's gift certificate number and its balance.",
+      "expected_outcome": "Agent confirms the gift certificate is valid and has sufficient funds to cover the tour.",
+      "required_tools": [
+        "validate_gift_certificate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the tour, applying the gift certificate as payment.",
+      "expected_outcome": "Agent successfully books the tour and redeems the gift certificate.",
+      "required_tools": [
+        "book_activity_with_voucher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

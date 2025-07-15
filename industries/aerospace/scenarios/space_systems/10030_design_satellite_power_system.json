@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10030",
+  "title": "Design a Satellite Power System",
+  "description": "An engineer is designing the electrical power system for a new satellite, including solar panels and batteries.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Manufacturing & Integration",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the satellite's power budget, including the power consumption of all subsystems during different operational modes (e.g., day, night, data transmission).",
+      "expected_outcome": "Agent creates a detailed power budget.",
+      "required_tools": [
+        "get_subsystem_power_specs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Size the solar arrays to generate enough power to run the satellite and charge the batteries during the sunlit portion of the orbit.",
+      "expected_outcome": "Agent determines the required size and efficiency of the solar panels.",
+      "required_tools": [
+        "calculate_solar_array_size"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Size the batteries to have enough capacity to power the satellite through the longest possible eclipse period with a safe depth of discharge.",
+      "expected_outcome": "Agent determines the required battery capacity in amp-hours.",
+      "required_tools": [
+        "calculate_battery_capacity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

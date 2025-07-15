@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-sf-10404",
+  "title": "Vehicle Trade-in Valuation Request",
+  "description": "A customer wants to get an estimated value for their current vehicle as a trade-in.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Trade-in & Appraisal",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather details of the customer's current vehicle: VIN, make, model, year, mileage, and general condition.",
+      "expected_outcome": "Agent collects all required vehicle information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the VIN to look up the vehicle's history report for accidents or damage.",
+      "expected_outcome": "Agent retrieves the history report and notes a minor accident from two years ago.",
+      "required_tools": [
+        "get_vehicle_history_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide an estimated trade-in value range based on market data, explaining that the final value requires a physical inspection.",
+      "expected_outcome": "Agent provides a realistic value range and clearly sets expectations for the final appraisal.",
+      "required_tools": [
+        "get_market_valuation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

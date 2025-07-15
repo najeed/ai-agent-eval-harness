@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-sc-10659",
+  "title": "Investigate Missing Scaffolding Tag",
+  "description": "A safety officer notices a scaffold that is missing its inspection tag (green or red). They must investigate its safety status.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Hazard Analysis",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Immediately restrict access to the untagged scaffold.",
+      "expected_outcome": "The area around the scaffold is cordoned off.",
+      "required_tools": [
+        "restrict_site_area"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Locate the competent person responsible for scaffolding inspections on site.",
+      "expected_outcome": "The responsible person is located.",
+      "required_tools": [
+        "get_personnel_directory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Request an immediate inspection of the scaffold and proper tagging before allowing use.",
+      "expected_outcome": "A competent person inspects the scaffold and applies the correct safety tag.",
+      "required_tools": [
+        "request_safety_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-12261",
+  "title": "File an Eviction for Non-Payment",
+  "description": "A tenant has failed to pay rent or move out after being served a notice. The manager must begin the formal eviction process.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that all prior notices (late notice, notice to pay or quit) were served correctly and have expired.",
+      "expected_outcome": "Agent confirms all legal prerequisites for eviction have been met.",
+      "required_tools": [
+        "get_tenant_communication_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather all necessary documentation: the lease, tenant ledger, and copies of all notices.",
+      "expected_outcome": "Agent compiles a complete file for the eviction.",
+      "required_tools": [
+        "get_lease_details",
+        "get_tenant_ledger"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Forward the complete file to the company's legal counsel to file the unlawful detainer lawsuit.",
+      "expected_outcome": "Agent successfully escalates the case to the attorney.",
+      "required_tools": [
+        "send_email_to_attorney"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

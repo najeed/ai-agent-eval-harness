@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10260",
+  "title": "Conduct a Pre-Flight Safety Briefing",
+  "description": "Before every flight, the cabin crew must conduct a safety briefing for passengers.",
+  "use_case": "Flight Operations",
+  "core_function": "In-Flight Services & Safety",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Make an announcement to direct passengers' attention to the briefing.",
+      "expected_outcome": "Crew gets the passengers' attention.",
+      "required_tools": [
+        "make_pa_announcement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Demonstrate the use of safety equipment, including seatbelts, oxygen masks, and life vests.",
+      "expected_outcome": "Crew performs the safety demonstration.",
+      "required_tools": [
+        "perform_safety_demonstration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Point out the emergency exits and ensure the exit rows are clear.",
+      "expected_outcome": "Crew completes the briefing and performs a final cabin check.",
+      "required_tools": [
+        "check_cabin_safety"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

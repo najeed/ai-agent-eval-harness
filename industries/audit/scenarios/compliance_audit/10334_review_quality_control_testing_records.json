@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-cp-10334",
+  "title": "Review Quality Control Testing Records",
+  "description": "A quality auditor reviews the testing records for a batch of manufactured products.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Quality Assurance Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a recently completed production batch and obtain its quality control test records.",
+      "expected_outcome": "Auditor receives the testing documentation for the selected batch.",
+      "required_tools": [
+        "get_production_batch_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all required tests were performed at the specified frequencies.",
+      "expected_outcome": "Auditor confirms all tests were completed.",
+      "required_tools": [
+        "review_qc_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the test results to ensure they all fall within the acceptable specification limits.",
+      "expected_outcome": "Auditor finds that one test result was outside the acceptable range, but the batch was released anyway. This is documented as a major non-conformance.",
+      "required_tools": [
+        "review_qc_records",
+        "log_non_conformance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

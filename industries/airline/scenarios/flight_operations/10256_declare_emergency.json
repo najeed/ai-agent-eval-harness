@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10256",
+  "title": "Declare an Emergency",
+  "description": "A flight crew detects smoke in the cockpit and must declare an emergency and divert immediately.",
+  "use_case": "Flight Operations",
+  "core_function": "Operations Control (OCC)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The flight crew dons oxygen masks and follows the smoke/fire checklist.",
+      "expected_outcome": "Pilots follow emergency procedures.",
+      "required_tools": [
+        "get_emergency_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The pilot declares an emergency with air traffic control ('Mayday, Mayday, Mayday') and requests vectors to the nearest suitable airport.",
+      "expected_outcome": "Pilot communicates the emergency to ATC.",
+      "required_tools": [
+        "contact_atc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The OCC is notified and begins coordinating with the diversion airport, emergency services, and the airline's crisis response team.",
+      "expected_outcome": "The airline's ground teams activate their emergency response plan.",
+      "required_tools": [
+        "activate_emergency_response_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

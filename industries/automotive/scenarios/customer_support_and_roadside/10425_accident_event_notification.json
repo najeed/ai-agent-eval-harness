@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-csra-10425",
+  "title": "Automatic Accident Notification",
+  "description": "A vehicle's telematics system automatically detects a collision and alerts the support center.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Emergency & Roadside Assistance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the automated alert, which includes the vehicle's location and an indication of a severe impact.",
+      "expected_outcome": "Agent receives the alert with GPS coordinates and 'Airbag Deployment' flag.",
+      "required_tools": [
+        "get_telematics_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately open a voice channel to the vehicle to speak with the occupants.",
+      "expected_outcome": "Agent successfully establishes a two-way voice call into the car's cabin.",
+      "required_tools": [
+        "initiate_in_vehicle_call"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If there is no response or if help is requested, dispatch emergency services (police, ambulance) to the vehicle's location.",
+      "expected_outcome": "Agent receives no response and dispatches emergency services with the location.",
+      "required_tools": [
+        "dispatch_emergency_services"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

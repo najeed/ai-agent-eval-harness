@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-sm-10466",
+  "title": "Customer Inquires About Checking Fluid Levels",
+  "description": "A customer wants to know how to check their vehicle's basic fluid levels, like engine oil and washer fluid.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Vehicle Diagnostics",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's vehicle model and year.",
+      "expected_outcome": "Agent identifies the vehicle.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the digital owner's manual to find the diagrams showing the location of the engine oil dipstick and washer fluid reservoir.",
+      "expected_outcome": "Agent pulls up the relevant diagrams.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verbally guide the customer on how to safely check the oil level (engine off, on level ground) and how to top up the washer fluid.",
+      "expected_outcome": "Agent provides clear, safe, and accurate instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

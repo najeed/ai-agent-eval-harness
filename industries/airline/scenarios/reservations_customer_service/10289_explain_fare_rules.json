@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10289",
+  "title": "Explain Fare Rules",
+  "description": "A customer wants to know the rules for the 'Basic Economy' fare they are about to purchase.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Customer Support",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the detailed fare rules for the selected fare type.",
+      "expected_outcome": "Agent finds the rules for 'Basic Economy'.",
+      "required_tools": [
+        "get_fare_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Clearly explain the key restrictions, such as no changes, no refunds, no seat selection, and limits on carry-on baggage.",
+      "expected_outcome": "Agent provides a clear and accurate summary of the restrictions.",
+      "required_tools": [
+        "summarize_fare_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm that the customer understands and accepts the restrictions before proceeding with the booking.",
+      "expected_outcome": "Agent gets confirmation from the customer.",
+      "required_tools": [
+        "get_customer_confirmation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

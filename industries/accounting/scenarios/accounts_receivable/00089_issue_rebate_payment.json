@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ac-ar-89",
+  "title": "Issue a Customer Rebate Payment",
+  "description": "Based on their annual purchase volume, a customer has earned a rebate. Accounting needs to process this rebate.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Billing & Invoicing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the total purchases for the customer for the year.",
+      "expected_outcome": "Agent retrieves the customer's total sales volume.",
+      "required_tools": [
+        "get_customer_sales_volume"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the rebate amount based on the tiered rebate program rules (e.g., 2% rebate on sales over $1M).",
+      "expected_outcome": "Agent correctly calculates the total rebate earned.",
+      "required_tools": [
+        "calculate_rebate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a credit memo on the customer's account for the rebate amount.",
+      "expected_outcome": "Agent successfully generates the rebate credit memo.",
+      "required_tools": [
+        "create_credit_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The customer can then either apply this credit to open invoices or request a cash payment.",
+      "expected_outcome": "Agent provides the customer with the options for their rebate.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

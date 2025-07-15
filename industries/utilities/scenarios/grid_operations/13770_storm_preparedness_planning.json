@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-13770",
+  "title": "Storm Preparedness Planning",
+  "description": "A major hurricane is forecast to make landfall in the service territory in 3 days. The utility needs to prepare its response.",
+  "use_case": "Grid Operations",
+  "core_function": "Outage Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a predictive outage model based on the hurricane's forecast track and intensity to estimate the potential number of customer outages.",
+      "expected_outcome": "Model predicts up to 500,000 outages.",
+      "required_tools": [
+        "run_storm_outage_prediction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "forecast_accuracy_mae",
+          "threshold": 100000.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Secure external resources by activating mutual assistance agreements with other utilities to bring in extra line crews.",
+      "expected_outcome": "System sends requests and tracks responses from 10 neighboring utilities.",
+      "required_tools": [
+        "manage_mutual_assistance_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Pre-position crews and materials at staging areas just outside the storm's expected impact zone.",
+      "expected_outcome": "System generates plans for optimal staging area locations.",
+      "required_tools": [
+        "plan_staging_areas"
+      ],
+      "success_criteria": [
+        {
+          "metric": "optimization_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

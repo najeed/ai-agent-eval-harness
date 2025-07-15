@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-mid-12469",
+  "title": "Coordinate Simultaneous Operations (SIMOPS)",
+  "description": "A terminal manager must coordinate two potentially conflicting activities: a tanker truck loading at one bay while a maintenance crew does hot work nearby.",
+  "use_case": "Midstream",
+  "core_function": "Logistics & Scheduling",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the two planned activities from the daily schedule and recognize them as a potential SIMOPS conflict.",
+      "expected_outcome": "The system flags the two activities as a SIMOPS risk.",
+      "required_tools": [
+        "get_daily_schedule",
+        "identify_simops_conflict"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the SIMOPS matrix to determine the required mitigation measures (e.g., extra fire watch, exclusion zones).",
+      "expected_outcome": "The required safety controls are identified from the company's procedures.",
+      "required_tools": [
+        "get_simops_matrix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a SIMOPS permit that details the required controls and ensure all parties involved sign off on it before work begins.",
+      "expected_outcome": "A specific permit for the simultaneous operations is created and approved.",
+      "required_tools": [
+        "create_simops_permit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

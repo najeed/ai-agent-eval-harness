@@ -1,0 +1,53 @@
+{
+  "scenario_id": "auto-cs-10488",
+  "title": "OTA Update to Improve EV Charging Speed",
+  "description": "The manufacturer releases an OTA update for EVs to improve DC fast charging speeds.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Over-the-Air (OTA) Updates",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the population of eligible vehicles for the update.",
+      "expected_outcome": "Agent generates a list of all affected VINs.",
+      "required_tools": [
+        "get_service_campaign_population"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Push the update to all eligible vehicles and send a notification to owners via their mobile app explaining the benefit.",
+      "expected_outcome": "The update is deployed, and a notification is sent out.",
+      "required_tools": [
+        "retrigger_ota_update",
+        "send_bulk_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the installation success rate over the next few weeks.",
+      "expected_outcome": "Agent tracks a dashboard showing the percentage of vehicles that have successfully installed the update.",
+      "required_tools": [
+        "get_ota_update_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

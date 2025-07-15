@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-bo-11537",
+  "title": "Onboard a New Vendor",
+  "description": "The hotel is switching to a new local bakery for its morning pastries and needs to set them up as a vendor.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Supplier & Vendor Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Collect the new vendor's information, including their business license and payment details.",
+      "expected_outcome": "All required vendor documentation is collected.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new vendor profile in the accounting system.",
+      "expected_outcome": "The new vendor is successfully added to the system.",
+      "required_tools": [
+        "acct_create_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up a recurring purchase order for daily pastry delivery.",
+      "expected_outcome": "A recurring PO is created to automate future ordering.",
+      "required_tools": [
+        "proc_create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

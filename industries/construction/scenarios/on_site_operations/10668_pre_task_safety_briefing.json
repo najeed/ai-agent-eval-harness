@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-os-10668",
+  "title": "Conduct Pre-Task Safety Briefing",
+  "description": "Before starting a concrete demolition task, a foreman must conduct and document a pre-task safety briefing with the crew.",
+  "use_case": "On-Site Operations",
+  "core_function": "Task Execution & Coordination",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the Job Hazard Analysis (JHA) for 'Concrete Demolition'.",
+      "expected_outcome": "The relevant JHA document is retrieved.",
+      "required_tools": [
+        "get_jha_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log that a pre-task briefing was held, covering the hazards and controls listed in the JHA.",
+      "expected_outcome": "A new entry is made in the safety meeting log.",
+      "required_tools": [
+        "create_safety_meeting_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Record the names of the 6 crew members who attended the briefing.",
+      "expected_outcome": "The attendee list is added to the log entry.",
+      "required_tools": [
+        "update_safety_meeting_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

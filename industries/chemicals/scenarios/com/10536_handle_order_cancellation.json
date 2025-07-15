@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-com-10536",
+  "title": "Handle Order Cancellation",
+  "description": "A customer calls to cancel an order that was placed yesterday.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Order Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's sales order and check its current status.",
+      "expected_outcome": "Agent finds the order and sees its status is 'Sent to Warehouse', but not yet 'Shipped'.",
+      "required_tools": [
+        "get_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Since the order has not yet shipped, cancel the order in the system.",
+      "expected_outcome": "Agent successfully changes the order status to 'Cancelled'.",
+      "required_tools": [
+        "cancel_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the cancellation with the customer and notify the warehouse to halt the shipment.",
+      "expected_outcome": "Agent clearly communicates the cancellation and a notification is automatically sent to the warehouse.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

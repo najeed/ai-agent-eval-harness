@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-go-12251",
+  "title": "Player Requests Skill Rating Reset",
+  "description": "A long-absent player returns to a competitive game and requests their skill rating (MMR) be reset because they are out of practice.",
+  "use_case": "Gaming Operations",
+  "core_function": "Server Operations & Matchmaking",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the player's account and check their recent match history.",
+      "expected_outcome": "Agent confirms the player has not played any matches in over a year.",
+      "required_tools": [
+        "get_player_details",
+        "get_player_match_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the policy for MMR resets and confirm the player is eligible.",
+      "expected_outcome": "Agent finds the policy allows a reset after 6 months of inactivity.",
+      "required_tools": [
+        "get_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reset the player's MMR to the default starting value.",
+      "expected_outcome": "Agent successfully resets the player's skill rating.",
+      "required_tools": [
+        "reset_player_mmr"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

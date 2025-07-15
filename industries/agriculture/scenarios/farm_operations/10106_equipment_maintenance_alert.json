@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10106",
+  "title": "Combine Harvester Maintenance Alert",
+  "description": "A telematics system on a combine harvester reports that it is due for its 200-hour service.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Equipment Management & Maintenance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the maintenance alert and verify the machine's current operating hours.",
+      "expected_outcome": "Agent confirms the machine has exceeded 200 hours since its last service.",
+      "required_tools": [
+        "get_equipment_telemetry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the standard maintenance checklist for the 200-hour service for that specific combine model.",
+      "expected_outcome": "Agent retrieves the correct maintenance checklist.",
+      "required_tools": [
+        "get_maintenance_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order in the maintenance system and assign it to the lead mechanic.",
+      "expected_outcome": "Agent successfully creates and assigns the work order.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

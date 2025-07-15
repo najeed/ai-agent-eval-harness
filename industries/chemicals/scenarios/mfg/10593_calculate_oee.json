@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10593",
+  "title": "Calculate Overall Equipment Effectiveness (OEE)",
+  "description": "A supervisor wants to calculate the OEE for a production line for the previous week.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Process Optimization",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the production data for the line, including total units produced and scrap.",
+      "expected_outcome": "Agent gets the quality data.",
+      "required_tools": [
+        "get_production_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the downtime logs for the line to calculate availability.",
+      "expected_outcome": "Agent gets the availability data.",
+      "required_tools": [
+        "get_downtime_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the system tool to calculate the OEE score from the quality, availability, and performance data.",
+      "expected_outcome": "Agent successfully calculates the OEE as 75%.",
+      "required_tools": [
+        "calculate_oee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

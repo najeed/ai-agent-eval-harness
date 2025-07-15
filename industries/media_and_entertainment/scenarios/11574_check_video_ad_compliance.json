@@ -1,0 +1,66 @@
+{
+  "scenario_id": "media-bo-11574",
+  "title": "Check Video Ad for Compliance",
+  "description": "A new ad creative from an advertiser needs to be checked against technical and content policies before it can be used in campaigns.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Ad Insertion & Management",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ingest the new ad creative file.",
+      "expected_outcome": "Agent successfully ingests the video file.",
+      "required_tools": [
+        "ingest_media_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run an automated scan to check for technical compliance (e.g., bitrate, format, audio levels).",
+      "expected_outcome": "The scan passes with no technical issues.",
+      "required_tools": [
+        "run_automated_qc_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually review the ad for compliance with content policies (e.g., no promotion of gambling or violence).",
+      "expected_outcome": "Agent reviews the ad and confirms it complies with all content policies.",
+      "required_tools": [
+        "review_against_guidelines"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Approve the ad creative and make it available for campaigns.",
+      "expected_outcome": "Agent marks the creative as 'approved' in the ad management system.",
+      "required_tools": [
+        "approve_ad_creative"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

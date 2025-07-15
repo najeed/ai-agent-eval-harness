@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-sa-11018",
+  "title": "Inquire About Missing Application Document",
+  "description": "An applicant received an email that their application is incomplete and wants to know what is missing.",
+  "use_case": "Student Administration",
+  "core_function": "Admissions & Enrollment",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the applicant's record.",
+      "expected_outcome": "Agent correctly identifies the applicant.",
+      "required_tools": [
+        "get_applicant_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the application checklist in the SIS.",
+      "expected_outcome": "Agent identifies that the 'Official High School Transcript' is marked as not received.",
+      "required_tools": [
+        "get_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the applicant which document is missing and explain how to submit it.",
+      "expected_outcome": "Agent clearly communicates the missing item and submission instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

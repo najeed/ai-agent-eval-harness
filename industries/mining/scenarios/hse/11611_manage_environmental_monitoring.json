@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-hse-11611",
+  "title": "Manage Water Quality Monitoring",
+  "description": "An environmental officer checks the latest water quality monitoring data to ensure the mine is compliant with its discharge permit.",
+  "use_case": "Health, Safety & Environment (HSE)",
+  "core_function": "Environmental Compliance",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest water quality sample results from the downstream monitoring point.",
+      "expected_outcome": "The latest lab analysis for pH, suspended solids, and heavy metals is retrieved.",
+      "required_tools": [
+        "get_water_quality_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the results against the compliance limits set in the mine's environmental permit.",
+      "expected_outcome": "The comparison shows all parameters are well within the allowed limits.",
+      "required_tools": [
+        "check_against_compliance_limits"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the monthly water quality report for submission to the environmental regulatory agency.",
+      "expected_outcome": "A compliant report is automatically generated and ready for submission.",
+      "required_tools": [
+        "generate_environmental_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

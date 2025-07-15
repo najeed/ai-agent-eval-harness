@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-las-10235",
+  "title": "Handle a Corporate Travel Booking",
+  "description": "A corporate travel manager is booking a flight for an employee and needs to ensure it's billed to the company account.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Corporate & Group Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the company's corporate travel account.",
+      "expected_outcome": "Agent finds the correct corporate account.",
+      "required_tools": [
+        "get_corporate_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new booking under the employee's name but link it to the corporate account.",
+      "expected_outcome": "Agent correctly creates the booking and links it.",
+      "required_tools": [
+        "create_booking",
+        "link_to_corporate_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply the company's negotiated fare and use the company's central credit card for payment.",
+      "expected_outcome": "Agent applies the correct fare and bills the company account.",
+      "required_tools": [
+        "apply_corporate_fare",
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

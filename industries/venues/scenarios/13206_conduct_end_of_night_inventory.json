@@ -1,0 +1,64 @@
+{
+  "scenario_id": "venues-fb-13206",
+  "title": "Conduct End-of-Night Inventory Count",
+  "description": "After an event, a concession stand manager must count their remaining inventory and report it.",
+  "use_case": "Food & Beverage (Concessions)",
+  "core_function": "Inventory Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Physically count all remaining inventory items in the stand.",
+      "expected_outcome": "The manager counts all items.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the closing counts into the inventory management system.",
+      "expected_outcome": "Agent enters the final counts for all items.",
+      "required_tools": [
+        "enter_inventory_counts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system compares the closing count plus total sales against the opening count to calculate variance.",
+      "expected_outcome": "The system calculates a small, acceptable variance for most items.",
+      "required_tools": [
+        "calculate_inventory_variance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Review the variance report and investigate any significant discrepancies.",
+      "expected_outcome": "Agent reviews the report and flags any items with a large variance for further review.",
+      "required_tools": [
+        "review_variance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10065",
+  "title": "Resolve an Assembly Clash",
+  "description": "During digital mock-up, a clash is detected between a hydraulic line and an electrical wire bundle. An engineer must resolve it.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Design & Engineering",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the clash report from the digital mock-up software to understand the location and severity of the interference.",
+      "expected_outcome": "Agent correctly identifies the two interfering components.",
+      "required_tools": [
+        "get_clash_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Modify the 3D CAD model to re-route the hydraulic line, ensuring it maintains the minimum required clearance from the wire bundle.",
+      "expected_outcome": "Agent successfully modifies the design to resolve the clash.",
+      "required_tools": [
+        "edit_cad_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue an engineering change notice to update the installation drawings for the production team.",
+      "expected_outcome": "Agent updates the relevant drawings to reflect the design change.",
+      "required_tools": [
+        "issue_engineering_change_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

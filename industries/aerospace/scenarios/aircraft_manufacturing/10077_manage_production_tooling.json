@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10077",
+  "title": "Manage Production Tooling",
+  "description": "A large jig used to assemble wings needs to be taken out of service for its scheduled maintenance.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Assembly & Production",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule the jig's maintenance in a way that minimizes disruption to the production schedule.",
+      "expected_outcome": "Agent finds a weekend slot for the maintenance.",
+      "required_tools": [
+        "schedule_tool_maintenance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Arrange for the maintenance team to perform the required checks and repairs on the jig.",
+      "expected_outcome": "Agent creates a work order for the maintenance team.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After maintenance is complete, verify the jig's dimensions and alignment before returning it to production service.",
+      "expected_outcome": "Agent confirms the jig is within tolerance and updates its status to 'Available'.",
+      "required_tools": [
+        "verify_tool_alignment",
+        "update_tool_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

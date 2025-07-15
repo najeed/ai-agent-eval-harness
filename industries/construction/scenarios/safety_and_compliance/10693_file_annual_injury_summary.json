@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-sc-10693",
+  "title": "File Annual OSHA Injury Summary",
+  "description": "It's the end of the calendar year. A safety director must compile and electronically file the OSHA Form 300A, the summary of work-related injuries and illnesses.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Documentation & Reporting",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Compile all OSHA 300 logs for the company for the past calendar year.",
+      "expected_outcome": "All necessary logs are gathered.",
+      "required_tools": [
+        "get_osha_300_logs_by_year"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the summary data required for Form 300A, including total number of cases, days away from work, etc.",
+      "expected_outcome": "The summary data is accurately calculated.",
+      "required_tools": [
+        "generate_osha_300a_summary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the summary data through OSHA's Injury Tracking Application (ITA) website.",
+      "expected_outcome": "The annual report is successfully filed with the regulatory agency.",
+      "required_tools": [
+        "submit_to_osha_ita_portal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

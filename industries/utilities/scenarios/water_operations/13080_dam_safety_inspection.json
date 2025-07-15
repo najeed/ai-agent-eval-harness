@@ -1,0 +1,66 @@
+{
+  "scenario_id": "utils-wo-13080",
+  "title": "Dam Safety Inspection",
+  "description": "An engineer is performing a routine safety inspection of a dam.",
+  "use_case": "Water & Wastewater Operations",
+  "core_function": "Asset Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the dam safety inspection checklist from the asset management system.",
+      "expected_outcome": "Engineer accesses the standard inspection form on their mobile device.",
+      "required_tools": [
+        "get_inspection_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Visually inspect the dam's structure for any signs of cracking, seepage, or erosion and document the findings.",
+      "expected_outcome": "Engineer documents observations and takes photos of any areas of concern.",
+      "required_tools": [
+        "log_field_observation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the readings from instrumentation like piezometers and settlement monitors.",
+      "expected_outcome": "Engineer records the latest instrumentation readings and compares them to historical trends.",
+      "required_tools": [
+        "get_dam_instrumentation_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Complete and submit the inspection report.",
+      "expected_outcome": "Engineer submits the final report, noting that no critical issues were found.",
+      "required_tools": [
+        "submit_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

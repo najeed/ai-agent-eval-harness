@@ -1,0 +1,64 @@
+{
+  "scenario_id": "auto-sf-10445",
+  "title": "Locate Specific Vehicle in Inventory",
+  "description": "A customer is looking for a very specific configuration (model, trim, color, options). A salesperson needs to check inventory at their own and nearby dealerships.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Sales Consultation & Configuration",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the specific vehicle configuration details from the customer.",
+      "expected_outcome": "Agent records the desired configuration.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the local dealership's inventory for a matching vehicle.",
+      "expected_outcome": "The search returns no matches in local inventory.",
+      "required_tools": [
+        "search_vehicle_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Expand the search to include the inventory of all dealerships within a 100-mile radius.",
+      "expected_outcome": "The expanded search finds a perfect match at a dealership 75 miles away.",
+      "required_tools": [
+        "search_vehicle_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Offer to arrange a dealer transfer for the vehicle.",
+      "expected_outcome": "Agent informs the customer the vehicle can be transferred and explains the process.",
+      "required_tools": [
+        "initiate_dealer_transfer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

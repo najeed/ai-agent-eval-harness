@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-brc-10941",
+  "title": "Submit a Claim to a Payer",
+  "description": "A biller needs to submit a finalized claim to an insurance company for payment.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Claims Management & Submission",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify a claim that has been coded and is ready for submission.",
+      "expected_outcome": "Biller finds a claim in the 'Ready to Bill' work queue.",
+      "required_tools": [
+        "get_claim_workqueue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the claim through a 'claim scrubber' to check for common errors.",
+      "expected_outcome": "The claim scrubber checks for issues like invalid diagnosis codes or missing information. The claim passes the check.",
+      "required_tools": [
+        "run_claim_scrubber"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Batch the claim with others going to the same payer and transmit it electronically via the clearinghouse.",
+      "expected_outcome": "The claim is successfully sent to the payer, and its status is updated to 'Submitted'.",
+      "required_tools": [
+        "batch_and_submit_claims"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

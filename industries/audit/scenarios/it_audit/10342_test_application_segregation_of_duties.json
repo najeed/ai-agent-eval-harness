@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10342",
+  "title": "Test Application Segregation of Duties",
+  "description": "An IT auditor tests for toxic access combinations within a financial application.",
+  "use_case": "IT Audit",
+  "core_function": "Application Controls Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a list of all user roles and their associated permissions within the ERP system.",
+      "expected_outcome": "Auditor has the complete role-permission matrix.",
+      "required_tools": [
+        "get_user_role_permissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain a list of all users and their assigned roles.",
+      "expected_outcome": "Auditor has the user-role mapping.",
+      "required_tools": [
+        "get_user_role_assignments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the data to find users who are assigned roles that allow them to both create a vendor and approve an invoice, a known toxic combination.",
+      "expected_outcome": "The analysis identifies three users with this conflicting access.",
+      "required_tools": [
+        "analyze_sod_conflicts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

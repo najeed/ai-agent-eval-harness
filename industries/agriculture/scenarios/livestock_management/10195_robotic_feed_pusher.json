@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10195",
+  "title": "Schedule a Robotic Feed Pusher",
+  "description": "A dairy farmer wants to schedule their robotic feed pusher to run more frequently during the day to encourage cow feed intake.",
+  "use_case": "Livestock Management",
+  "core_function": "Feeding & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the current schedule for the robotic feed pusher.",
+      "expected_outcome": "Agent finds the robot is scheduled to run every 2 hours.",
+      "required_tools": [
+        "get_robot_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the schedule to have the robot run every hour between 6 AM and 10 PM.",
+      "expected_outcome": "Agent successfully updates the robot's operating schedule.",
+      "required_tools": [
+        "update_robot_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the new schedule has been accepted by the robot.",
+      "expected_outcome": "Agent verifies the new schedule is active.",
+      "required_tools": [
+        "get_robot_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

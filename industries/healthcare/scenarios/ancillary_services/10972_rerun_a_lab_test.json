@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-as-10972",
+  "title": "Rerun a Lab Test",
+  "description": "A lab result is questionable or inconsistent with the patient's clinical picture. A lab supervisor decides to rerun the test.",
+  "use_case": "Ancillary Services",
+  "core_function": "Laboratory Services",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the original test result in the LIS.",
+      "expected_outcome": "Supervisor finds the result that needs to be re-tested.",
+      "required_tools": [
+        "find_lab_result"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add a new order for the same test on the existing specimen.",
+      "expected_outcome": "A new order is created to track the rerun.",
+      "required_tools": [
+        "add_on_lab_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the specimen again and enter the new result, which will be marked as a corrected result.",
+      "expected_outcome": "The test is rerun, and the new, accurate result replaces the old one, with a full audit trail.",
+      "required_tools": [
+        "verify_lab_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

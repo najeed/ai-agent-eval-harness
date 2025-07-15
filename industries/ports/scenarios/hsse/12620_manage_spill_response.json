@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-hs-12620",
+  "title": "Manage a Minor Hydraulic Oil Spill",
+  "description": "A terminal tractor has a hydraulic line break, causing a small oil spill on the quay. An environmental officer must manage the cleanup.",
+  "use_case": "Health, Safety, Security & Environment (HSSE)",
+  "core_function": "Environmental Compliance",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the report of the spill and its location.",
+      "expected_outcome": "Officer is notified of the spill at Berth 5.",
+      "required_tools": [
+        "get_incident_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch the port's spill response team with a spill kit to the location.",
+      "expected_outcome": "The response team is dispatched with absorbent materials.",
+      "required_tools": [
+        "dispatch_spill_response_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the spill is contained, cleaned up, and the waste material is disposed of correctly, then log the incident.",
+      "expected_outcome": "The officer confirms cleanup is complete, waste is sent to the hazardous waste facility, and a report is filed.",
+      "required_tools": [
+        "log_environmental_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

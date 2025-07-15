@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-ss-10033",
+  "title": "Analyze Mission Risk",
+  "description": "A systems engineer needs to conduct a failure modes and effects analysis (FMEA) for a new interplanetary probe's communication system.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Mission Design & Analysis",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all components of the communication system (transmitters, receivers, antennas).",
+      "expected_outcome": "Agent lists all relevant components.",
+      "required_tools": [
+        "get_system_schematic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each component, brainstorm potential failure modes (e.g., transmitter failure, antenna deployment failure).",
+      "expected_outcome": "Agent generates a comprehensive list of potential failures.",
+      "required_tools": [
+        "brainstorm_failure_modes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the effect of each failure on the overall mission and assign a risk score. Propose mitigations for high-risk items (e.g., add a redundant transmitter).",
+      "expected_outcome": "Agent completes the FMEA table and recommends adding a backup transmitter.",
+      "required_tools": [
+        "perform_fmea",
+        "propose_mitigation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-las-10205",
+  "title": "Redeem Miles for a Cabin Upgrade",
+  "description": "A frequent flyer member wants to use their miles to upgrade from Economy to Business Class on an existing booking.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Frequent Flyer Program",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the member's booking and their frequent flyer account details.",
+      "expected_outcome": "Agent finds the booking and confirms the member's mileage balance.",
+      "required_tools": [
+        "get_booking_details",
+        "get_frequent_flyer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if upgrade seats are available on the flight and inform the member of the mileage cost.",
+      "expected_outcome": "Agent confirms upgrade availability and the required number of miles.",
+      "required_tools": [
+        "check_upgrade_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the upgrade by deducting the miles from the member's account and re-issuing the ticket in the higher class.",
+      "expected_outcome": "Agent successfully processes the upgrade and issues the new ticket.",
+      "required_tools": [
+        "deduct_miles",
+        "reissue_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

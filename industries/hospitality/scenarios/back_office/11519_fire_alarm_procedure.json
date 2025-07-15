@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-bo-11519",
+  "title": "Fire Alarm Activation",
+  "description": "A fire alarm is activated in the hotel. The security or front office staff must execute the emergency response procedure.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Security & Emergency Response",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the fire alarm alert from the main panel, identifying the zone where it was triggered.",
+      "expected_outcome": "Agent identifies the alarm is from the 3rd-floor kitchen.",
+      "required_tools": [
+        "sec_get_alarm_panel_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately contact emergency services (fire department).",
+      "expected_outcome": "Agent successfully calls 911 and reports the alarm.",
+      "required_tools": [
+        "contact_emergency_services"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Make a calm, clear announcement over the hotel's PA system instructing guests to evacuate.",
+      "expected_outcome": "A clear evacuation message is broadcast to all guests.",
+      "required_tools": [
+        "sec_use_pa_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

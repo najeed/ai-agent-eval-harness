@@ -1,0 +1,55 @@
+{
+  "scenario_id": "auto-sm-10406",
+  "title": "Book Routine Maintenance (Oil Change)",
+  "description": "A customer wants to book an appointment for a routine oil change and tire rotation.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Appointment & Scheduling",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their vehicle using their phone number or VIN.",
+      "expected_outcome": "Agent correctly identifies the customer and their 2021 Ford F-150.",
+      "required_tools": [
+        "get_customer_details",
+        "get_vehicle_details_by_vin"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the vehicle's service history to confirm recommended services and identify any open recalls.",
+      "expected_outcome": "Agent confirms the vehicle is due for an oil change and finds no open recalls.",
+      "required_tools": [
+        "get_vehicle_service_history",
+        "check_vin_for_recalls"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Offer available appointment slots and book the customer's preferred time, asking if they need a courtesy vehicle.",
+      "expected_outcome": "Agent books the appointment and notes the customer does not need a courtesy car.",
+      "required_tools": [
+        "get_service_bay_availability",
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

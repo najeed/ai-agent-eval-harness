@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-ago-10207",
+  "title": "Manage the Boarding Process",
+  "description": "A gate agent needs to manage the boarding process for a full flight.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Gate & Boarding",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Make pre-boarding announcements, inviting passengers who need extra assistance to board first.",
+      "expected_outcome": "Agent makes clear and timely announcements.",
+      "required_tools": [
+        "make_pa_announcement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Board the aircraft by zones or groups, scanning each passenger's boarding pass.",
+      "expected_outcome": "Agent follows the standard boarding procedure and scans all boarding passes.",
+      "required_tools": [
+        "scan_boarding_pass"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reconcile the passenger count with the flight manifest and formally close the flight.",
+      "expected_outcome": "Agent confirms all boarded passengers are on the manifest and closes the flight in the system.",
+      "required_tools": [
+        "reconcile_passenger_count",
+        "close_flight"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

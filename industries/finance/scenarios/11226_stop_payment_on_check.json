@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-rb-11226",
+  "title": "Stop Payment on a Check",
+  "description": "A customer has lost a check and wants to place a stop payment on it.",
+  "use_case": "Retail Banking",
+  "core_function": "Payments & Transfers",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and gather details of the check: check number, amount, and payee.",
+      "expected_outcome": "Agent collects all necessary information about the lost check.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if the check has already been cashed.",
+      "expected_outcome": "Agent confirms the check has not yet been presented for payment.",
+      "required_tools": [
+        "check_check_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place a stop payment order on the check and inform the customer of any associated fees.",
+      "expected_outcome": "Agent successfully issues the stop payment and clearly communicates the fee.",
+      "required_tools": [
+        "issue_stop_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

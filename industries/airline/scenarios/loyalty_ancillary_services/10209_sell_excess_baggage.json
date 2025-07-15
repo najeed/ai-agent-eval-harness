@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-las-10209",
+  "title": "Sell Excess Baggage",
+  "description": "A passenger at the check-in counter has a second bag to check, which is not included in their fare. The agent must sell them an excess baggage allowance.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Ancillary Revenue & Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Inform the passenger of the fee for the second checked bag.",
+      "expected_outcome": "Agent clearly communicates the cost.",
+      "required_tools": [
+        "get_ancillary_fee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the passenger's payment for the baggage fee.",
+      "expected_outcome": "Agent successfully takes payment.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the booking to reflect the additional piece of baggage and check the bag.",
+      "expected_outcome": "Agent updates the record and accepts the bag.",
+      "required_tools": [
+        "update_booking_ancillaries",
+        "print_bag_tag"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

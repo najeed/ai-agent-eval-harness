@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-grc-10465",
+  "title": "Executive Threat Briefing",
+  "description": "A security awareness manager must prepare and deliver a threat briefing to the company's executive leadership team.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Security Awareness & Training",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather data on recent security incidents and the current threat landscape relevant to the company's industry.",
+      "expected_outcome": "Manager collects relevant and timely threat intelligence.",
+      "required_tools": [
+        "get_incident_summary",
+        "get_industry_threat_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a concise, non-technical presentation that summarizes the key risks and highlights the importance of executive support for security initiatives.",
+      "expected_outcome": "Manager creates a presentation tailored to a non-technical, executive audience.",
+      "required_tools": [
+        "create_presentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deliver the briefing to the executive team and answer their questions.",
+      "expected_outcome": "Manager successfully communicates the key security risks and gains executive buy-in.",
+      "required_tools": [
+        "deliver_briefing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

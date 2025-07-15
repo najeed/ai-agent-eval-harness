@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hosp-gs-11562",
+  "title": "Concierge Request - Local Directions",
+  "description": "A guest asks for directions to a local tourist attraction.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Guest Inquiries & Concierge",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm the attraction the guest wishes to visit.",
+      "expected_outcome": "The agent understands the destination.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use an online mapping service to get driving or walking directions from the hotel.",
+      "expected_outcome": "The agent gets accurate directions.",
+      "required_tools": [
+        "get_map_routing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the directions to the guest, offering to print them out or send them to their phone.",
+      "expected_outcome": "The guest receives clear directions in their preferred format.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

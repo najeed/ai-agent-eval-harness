@@ -1,0 +1,50 @@
+{
+  "scenario_id": "heavy-industries-ast-11479",
+  "title": "Review Monthly Asset Performance",
+  "description": "A plant manager is reviewing the monthly performance report for critical assets.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Reliability Engineering",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate the asset performance report for the last month.",
+      "expected_outcome": "Agent obtains the report showing key metrics like uptime, downtime, and mean time between failures (MTBF).",
+      "required_tools": [
+        "generate_asset_performance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the asset with the lowest uptime for the month.",
+      "expected_outcome": "The manager identifies that a specific haul truck had the lowest uptime at 85%.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Drill down into the maintenance history for that truck to understand the reasons for its poor performance.",
+      "expected_outcome": "The manager reviews the work orders for the truck and sees it had multiple engine-related failures.",
+      "required_tools": [
+        "get_maintenance_history_by_asset"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

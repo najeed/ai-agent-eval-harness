@@ -1,0 +1,50 @@
+{
+  "scenario_id": "audit-ia-10373",
+  "title": "Perform Root Cause Analysis for a Finding",
+  "description": "For a significant audit finding, the auditor performs a root cause analysis to understand the underlying cause.",
+  "use_case": "Internal Audit",
+  "core_function": "Workpaper & Finding Documentation",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "State the finding: 'The company paid $50,000 in penalties for late tax filings'.",
+      "expected_outcome": "The problem is clearly defined.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the '5 Whys' technique to drill down. Why were the filings late? The tax manager was on leave. Why was there no backup? The backup person was not trained. Why were they not trained? It was not in the budget.",
+      "expected_outcome": "The auditor moves beyond the symptom to the underlying cause.",
+      "required_tools": [
+        "perform_5_whys_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the root cause as 'Inadequate resource planning and cross-training in the tax department' rather than just 'The manager was on leave'.",
+      "expected_outcome": "The documented cause addresses the systemic issue, leading to a more effective recommendation.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

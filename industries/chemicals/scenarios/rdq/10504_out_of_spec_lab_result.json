@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-rdq-10504",
+  "title": "Out-of-Specification (OOS) Lab Result",
+  "description": "A Quality Control lab analyst gets an OOS result for a key purity test on a finished product batch. An investigation must be initiated.",
+  "use_case": "R&D and Quality",
+  "core_function": "Lab Information Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Record the OOS result in the LIMS, which should automatically place a hold on the batch.",
+      "expected_outcome": "Agent correctly enters the result, and the LIMS status for the batch changes to 'On Hold'.",
+      "required_tools": [
+        "enter_lab_result"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the calibration records for the instrument used for the test to rule out equipment error.",
+      "expected_outcome": "Agent confirms the instrument was within its calibration period.",
+      "required_tools": [
+        "get_instrument_calibration_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Initiate a formal lab investigation, which includes scheduling a re-test on a new sample.",
+      "expected_outcome": "Agent successfully creates a new OOS investigation record and requests a new sample from the warehouse.",
+      "required_tools": [
+        "create_lab_investigation",
+        "request_retains_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ag-lm-10129",
+  "title": "Develop a Pasture Rotation Plan",
+  "description": "A sheep farmer wants to develop a rotational grazing plan to improve pasture health and animal nutrition.",
+  "use_case": "Livestock Management",
+  "core_function": "Feeding & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the farm map with all pasture boundaries and their acreage.",
+      "expected_outcome": "Agent gets the farm layout.",
+      "required_tools": [
+        "get_farm_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Estimate the forage availability in each pasture based on recent satellite imagery.",
+      "expected_outcome": "Agent provides a biomass estimate for each pasture.",
+      "required_tools": [
+        "estimate_forage_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the grazing days available in each pasture based on the herd size and forage availability.",
+      "expected_outcome": "Agent calculates how long the herd can stay in each pasture.",
+      "required_tools": [
+        "calculate_grazing_days"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a rotational grazing schedule for the next 3 months, ensuring adequate rest periods for each pasture.",
+      "expected_outcome": "Agent creates a schedule detailing which pasture to use and for how long.",
+      "required_tools": [
+        "generate_grazing_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

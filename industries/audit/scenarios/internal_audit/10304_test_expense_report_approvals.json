@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-ia-10304",
+  "title": "Test Expense Report Approvals",
+  "description": "An auditor tests a sample of expense reports to ensure they were properly approved according to policy.",
+  "use_case": "Internal Audit",
+  "core_function": "Testing & Analysis",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a data dump of all expense reports submitted in the last quarter.",
+      "expected_outcome": "Auditor receives a complete dataset of expense reports.",
+      "required_tools": [
+        "request_data_dump"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a random sample of 50 expense reports over $1,000.",
+      "expected_outcome": "A statistically valid sample is selected for testing.",
+      "required_tools": [
+        "select_random_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each sampled report, verify that the approver was the employee's direct manager or higher, as required by policy.",
+      "expected_outcome": "Auditor finds 3 instances where an employee's peer approved the report, noting them as exceptions.",
+      "required_tools": [
+        "verify_approver_in_hris",
+        "log_test_exception"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

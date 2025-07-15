@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-sa-11051",
+  "title": "Request Prerequisite Override",
+  "description": "A student believes their transfer credits should satisfy a prerequisite for a course, but the system is blocking their registration.",
+  "use_case": "Student Administration",
+  "core_function": "Registration & Course Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and the course they are trying to register for.",
+      "expected_outcome": "Agent confirms the student and the course.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the student's transfer credits and compare them to the course prerequisite.",
+      "expected_outcome": "Agent reviews the transfer evaluation and agrees the credits appear equivalent.",
+      "required_tools": [
+        "get_student_transfer_credits"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit a prerequisite override request to the academic department for approval.",
+      "expected_outcome": "Agent submits a formal request on the student's behalf to the department chair.",
+      "required_tools": [
+        "submit_prerequisite_override_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

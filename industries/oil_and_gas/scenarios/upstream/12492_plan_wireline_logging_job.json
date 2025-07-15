@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-up-12492",
+  "title": "Plan Open-Hole Wireline Logging Job",
+  "description": "After a well has been drilled to total depth, a geologist plans a wireline logging job to get high-resolution data about the formations.",
+  "use_case": "Upstream",
+  "core_function": "Geoscience & Exploration",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the suite of wireline logging tools to be run based on the data objectives (e.g., formation imaging, fluid sampling).",
+      "expected_outcome": "A list of required logging tools is finalized.",
+      "required_tools": [
+        "get_available_wireline_tools"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a detailed logging program, specifying the order of tool runs and the depth intervals to be logged.",
+      "expected_outcome": "A formal logging program document is created.",
+      "required_tools": [
+        "create_logging_program"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Order the wireline logging services from a service company and coordinate their arrival at the rig site.",
+      "expected_outcome": "The service company is booked, and their mobilization is scheduled.",
+      "required_tools": [
+        "create_service_request",
+        "schedule_contractor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

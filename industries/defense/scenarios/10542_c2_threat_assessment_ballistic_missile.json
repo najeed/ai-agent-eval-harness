@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-c2-10542",
+  "title": "Ballistic Missile Launch Threat Assessment",
+  "description": "An operator at a strategic command center must assess a detected ballistic missile launch to determine its trajectory and intended target.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Threat Assessment & Prioritization",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the launch alert from space-based infrared sensors.",
+      "expected_outcome": "Operator confirms the launch detection and its point of origin.",
+      "required_tools": [
+        "get_launch_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_acknowledgement_time",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Fuse tracking data from multiple radar systems to calculate the missile's trajectory.",
+      "expected_outcome": "Operator generates a precise trajectory and predicted impact point.",
+      "required_tools": [
+        "fuse_radar_tracks",
+        "calculate_missile_trajectory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "trajectory_prediction_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a high-priority warning to leadership and downstream missile defense units with the target information.",
+      "expected_outcome": "Operator disseminates a timely and accurate warning message.",
+      "required_tools": [
+        "issue_missile_warning"
+      ],
+      "success_criteria": [
+        {
+          "metric": "warning_dissemination_speed",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

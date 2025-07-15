@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-brc-10943",
+  "title": "Work a Claim Denial",
+  "description": "A biller receives a denial for a claim due to 'missing prior authorization'. They need to investigate and appeal.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Denial Management",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the denied claim from the denial work queue.",
+      "expected_outcome": "Biller retrieves the claim and the associated denial reason code.",
+      "required_tools": [
+        "get_denial_workqueue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the patient's record to find the prior authorization number that was obtained before the service.",
+      "expected_outcome": "Biller finds the correct authorization number that was mistakenly omitted from the claim.",
+      "required_tools": [
+        "get_patient_authorizations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit a corrected claim with the prior authorization number included.",
+      "expected_outcome": "Biller resubmits the claim for payment, resolving the denial.",
+      "required_tools": [
+        "submit_corrected_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

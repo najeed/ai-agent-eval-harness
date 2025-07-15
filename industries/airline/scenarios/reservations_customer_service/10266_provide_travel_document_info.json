@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10266",
+  "title": "Provide Travel Document Information",
+  "description": "A customer is unsure what travel documents they need for an international trip. An agent must provide the correct information.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Customer Support",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the passenger's nationality and their destination country.",
+      "expected_outcome": "Agent collects the key information.",
+      "required_tools": [
+        "get_passenger_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use an integrated travel document database (like TIMATIC) to check the passport and visa requirements for the specific trip.",
+      "expected_outcome": "Agent finds that the passenger requires a visa for their destination.",
+      "required_tools": [
+        "check_travel_document_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the passenger of the requirements and advise them to contact the destination country's embassy to obtain the visa.",
+      "expected_outcome": "Agent provides accurate and helpful advice.",
+      "required_tools": [
+        "provide_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

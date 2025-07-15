@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-27",
+  "title": "Process an Off-Cycle Payroll for a Terminated Employee",
+  "description": "A terminated employee must be paid their final wages. This requires an off-cycle payroll run.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Payroll Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the employee's final pay, including regular hours, any overtime, and accrued vacation payout, in accordance with state law.",
+      "expected_outcome": "Agent correctly calculates the final gross pay.",
+      "required_tools": [
+        "calculate_final_pay"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process a one-person, off-cycle payroll run for the employee.",
+      "expected_outcome": "Agent successfully runs the special payroll.",
+      "required_tools": [
+        "run_off_cycle_payroll"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a physical check for the final payment, as required by company policy for terminations.",
+      "expected_outcome": "Agent generates a printable check.",
+      "required_tools": [
+        "generate_physical_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

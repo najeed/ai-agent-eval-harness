@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-sp-12150",
+  "title": "Research Trending Topics for Content",
+  "description": "A content strategist needs to find trending topics related to their industry to generate ideas for new blog posts.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Market & Audience Research",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use a tool like Google Trends to analyze search interest over time for core industry terms.",
+      "expected_outcome": "Agent identifies seasonality and long-term trends.",
+      "required_tools": [
+        "google_trends_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a topic research tool to find popular questions and related concepts people are searching for.",
+      "expected_outcome": "Agent generates a list of 'what', 'why', and 'how' questions related to the industry.",
+      "required_tools": [
+        "topic_research_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Brainstorm a list of 5-10 potential blog post titles based on the research.",
+      "expected_outcome": "Agent creates a list of relevant and timely content ideas.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

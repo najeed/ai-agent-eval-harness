@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-om-13217",
+  "title": "Process Order and Generate Pick List",
+  "description": "A sales order has been confirmed and needs to be processed and sent to the warehouse for fulfillment.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Order Processing & Fulfillment",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve a confirmed sales order that is ready for fulfillment.",
+      "expected_outcome": "Agent selects a confirmed order from the queue.",
+      "required_tools": [
+        "get_confirmed_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Allocate the required inventory to the sales order.",
+      "expected_outcome": "Agent successfully reserves the stock for this order, reducing the available-to-sell quantity.",
+      "required_tools": [
+        "allocate_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a pick list for the warehouse staff, optimized for the most efficient picking path.",
+      "expected_outcome": "Agent creates a list that tells warehouse workers which items to pick from which locations in an optimal sequence.",
+      "required_tools": [
+        "generate_pick_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

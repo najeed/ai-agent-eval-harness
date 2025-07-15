@@ -1,0 +1,55 @@
+{
+  "scenario_id": "defense-mp-10880",
+  "title": "Dynamic Re-tasking of CAS for Troops in Contact",
+  "description": "A ground unit makes an urgent call for Close Air Support after coming under heavy fire. A nearby CAS aircraft on a different mission must be re-tasked.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Dynamic Re-tasking",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the 'Troops in Contact' report and the urgent request for CAS.",
+      "expected_outcome": "Operator acknowledges the high-priority request.",
+      "required_tools": [
+        "process_support_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_acknowledgement_time",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the closest available CAS aircraft and confirm its fuel and weapons status.",
+      "expected_outcome": "Operator finds a suitable aircraft and confirms it can support the request.",
+      "required_tools": [
+        "find_nearest_asset",
+        "get_asset_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "resource_identification_speed",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Abort the aircraft's current mission and provide it with a new tasking to support the ground unit, including the unit's location and radio frequency.",
+      "expected_outcome": "Operator successfully re-tasks the aircraft, providing immediate support to the troops in contact.",
+      "required_tools": [
+        "abort_mission",
+        "generate_dynamic_mission_plan",
+        "transmit_mission_update"
+      ],
+      "success_criteria": [
+        {
+          "metric": "retasking_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

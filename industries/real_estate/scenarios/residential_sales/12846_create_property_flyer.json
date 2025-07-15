@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-rs-12846",
+  "title": "Create a Property Marketing Flyer",
+  "description": "For a new listing, the agent needs to create a marketing flyer to be used at open houses.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Property Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the property's key details (e.g., price, beds, baths, sqft) and best photos from the MLS listing.",
+      "expected_outcome": "Agent gathers all necessary text and images for the flyer.",
+      "required_tools": [
+        "get_mls_listing_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a marketing template to create a new property flyer.",
+      "expected_outcome": "A professional, branded flyer is generated using a design template.",
+      "required_tools": [
+        "generate_marketing_material"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the flyer as a PDF and order 100 color copies from the print shop.",
+      "expected_outcome": "A print-ready PDF is created and an order is placed with the approved printer.",
+      "required_tools": [
+        "submit_print_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

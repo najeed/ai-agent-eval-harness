@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10568",
+  "title": "Monitor Plant Utility Consumption",
+  "description": "A plant manager wants to review the consumption of key utilities (steam, nitrogen, electricity) for the past month to track efficiency.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Process Optimization",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the utility consumption data for the past month from the plant historian.",
+      "expected_outcome": "Agent successfully pulls the requested data.",
+      "required_tools": [
+        "get_utility_consumption_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a report showing the total consumption for each utility and compare it to the previous month.",
+      "expected_outcome": "Agent creates a report showing steam usage increased by 5%.",
+      "required_tools": [
+        "generate_utility_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Correlate the increased steam usage with the production schedule to see if it was due to a specific energy-intensive product.",
+      "expected_outcome": "Agent determines the increase was expected as more of Product X was made.",
+      "required_tools": [
+        "get_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

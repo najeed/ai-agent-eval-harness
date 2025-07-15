@@ -1,0 +1,66 @@
+{
+  "scenario_id": "marketing-cm-12136",
+  "title": "Clone Ad Set for A/B Testing",
+  "description": "A media buyer wants to test a new audience. They need to clone an existing ad set and change only the targeting.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Paid Social & Display",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the original ad set in the campaign.",
+      "expected_outcome": "Agent finds the correct ad set to be duplicated.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Duplicate the ad set.",
+      "expected_outcome": "Agent successfully creates a copy of the ad set, including its ads.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "In the new (cloned) ad set, change the audience targeting to the new test audience.",
+      "expected_outcome": "Agent updates the targeting without changing the ad creative or other settings.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Activate the new ad set.",
+      "expected_outcome": "Both the original and the new test ad set are now running.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

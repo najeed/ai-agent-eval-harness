@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-ago-10218",
+  "title": "Handle Oversized Baggage",
+  "description": "A passenger wants to check in a large item (e.g., a surfboard) that is considered oversized baggage.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Check-in & Baggage",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Measure the item to confirm it is oversized but still within the maximum allowable dimensions.",
+      "expected_outcome": "Agent confirms the item can be transported.",
+      "required_tools": [
+        "measure_baggage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the passenger of the oversized baggage fee and process the payment.",
+      "expected_outcome": "Agent communicates the fee and takes payment.",
+      "required_tools": [
+        "get_ancillary_fee",
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Tag the item and direct the passenger to the special oversized baggage drop-off point.",
+      "expected_outcome": "Agent correctly tags the bag and provides clear directions.",
+      "required_tools": [
+        "print_bag_tag"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

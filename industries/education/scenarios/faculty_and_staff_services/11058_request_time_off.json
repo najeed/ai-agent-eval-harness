@@ -1,0 +1,48 @@
+{
+  "scenario_id": "education-fs-11058",
+  "title": "Employee Requests Time Off",
+  "description": "A staff member wants to request vacation time using the HR portal.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "HR & Onboarding",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the employee and check their available vacation leave balance.",
+      "expected_outcome": "Agent confirms the employee has enough accrued time for their request.",
+      "required_tools": [
+        "get_employee_leave_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the employee on how to submit a time-off request in the HR system.",
+      "expected_outcome": "Agent walks the employee through the submission form.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain that the request is now pending approval from their direct manager.",
+      "expected_outcome": "Agent clearly communicates the next step in the workflow.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

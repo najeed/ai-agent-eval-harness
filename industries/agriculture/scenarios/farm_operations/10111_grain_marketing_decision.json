@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10111",
+  "title": "Grain Marketing Decision Support",
+  "description": "A farmer has harvested their wheat and needs to decide whether to sell it now or store it based on market prices and storage costs.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Supply Chain & Inventory",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the current local cash price and futures market prices for wheat.",
+      "expected_outcome": "Agent gets the latest prices from local elevators and the futures exchange.",
+      "required_tools": [
+        "get_commodity_prices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the cost of on-farm storage per month, including interest, shrinkage, and energy costs.",
+      "expected_outcome": "Agent calculates an accurate monthly storage cost.",
+      "required_tools": [
+        "calculate_storage_costs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze historical price trends and provide a recommendation on the potential profitability of storing the grain for 3 months versus selling now.",
+      "expected_outcome": "Agent provides a data-driven recommendation, outlining the risks and potential rewards.",
+      "required_tools": [
+        "analyze_market_trends"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

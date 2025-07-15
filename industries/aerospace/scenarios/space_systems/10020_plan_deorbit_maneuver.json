@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10020",
+  "title": "Plan a Satellite De-orbit Maneuver",
+  "description": "A satellite is at the end of its life. A mission controller must plan a final series of thruster burns to safely de-orbit it over the Pacific Ocean.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Mission Design & Analysis",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the required delta-v and burn sequence to lower the satellite's perigee into the Earth's atmosphere.",
+      "expected_outcome": "Agent calculates the precise timing and duration of the required burns.",
+      "required_tools": [
+        "calculate_orbital_maneuver"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Simulate the re-entry trajectory to ensure the debris footprint falls within the designated safe area.",
+      "expected_outcome": "Agent runs a simulation and confirms the debris will land in the South Pacific Ocean Uninhabited Area.",
+      "required_tools": [
+        "simulate_reentry_trajectory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "simulation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the command sequence for the de-orbit burn and upload it to the satellite.",
+      "expected_outcome": "Agent creates the final command sequence and prepares it for upload.",
+      "required_tools": [
+        "generate_command_sequence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

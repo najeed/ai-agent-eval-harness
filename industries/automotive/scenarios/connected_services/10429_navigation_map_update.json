@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-cs-10429",
+  "title": "In-Car Navigation Map Update Inquiry",
+  "description": "A customer is asking how to update the maps in their car's built-in navigation system.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Infotainment & App Support",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the vehicle's model year and infotainment system version.",
+      "expected_outcome": "Agent identifies a 2020 model with the SYNC 3 system.",
+      "required_tools": [
+        "get_vehicle_details_by_vin"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine if the update is delivered via OTA or requires a manual download to a USB drive.",
+      "expected_outcome": "Agent's search reveals this system requires a manual USB update.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Guide the customer to the official website where they can download the map update, and explain the process of loading it onto a USB and installing it in the car.",
+      "expected_outcome": "Agent provides a link to the download portal and clear instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

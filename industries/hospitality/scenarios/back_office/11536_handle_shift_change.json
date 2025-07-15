@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-bo-11536",
+  "title": "Handle Staff Shift Change Request",
+  "description": "An employee needs to swap shifts with a coworker.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Staff Scheduling",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The employee submits a shift swap request through the scheduling app, indicating which coworker has agreed to the swap.",
+      "expected_outcome": "The request is submitted in the system.",
+      "required_tools": [
+        "ss_submit_shift_swap"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system sends a notification to the manager for approval.",
+      "expected_outcome": "The manager receives the request.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The manager reviews the request, ensures it doesn't cause overtime, and approves it.",
+      "expected_outcome": "The manager approves the swap, and the schedule is automatically updated.",
+      "required_tools": [
+        "ss_approve_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

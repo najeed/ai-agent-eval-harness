@@ -1,0 +1,53 @@
+{
+  "scenario_id": "real_estate-dev-13094",
+  "title": "Value Engineer a Project",
+  "description": "After bidding, construction costs for a new project come in over budget. The developer must work with the architect and contractor to 'value engineer' the project to reduce costs.",
+  "use_case": "Real Estate Development",
+  "core_function": "Project Management & Entitlements",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the construction bids to identify the most expensive line items.",
+      "expected_outcome": "The main drivers of the cost overrun are identified.",
+      "required_tools": [
+        "analyze_construction_bids"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Hold a meeting with the architect and contractor to brainstorm potential cost-saving changes, such as substituting materials or modifying non-essential design elements.",
+      "expected_outcome": "A list of potential cost-saving ideas is generated.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Revise the project plans and specifications based on the agreed-upon changes and obtain a new price from the contractor.",
+      "expected_outcome": "The project budget is successfully reduced to an acceptable level.",
+      "required_tools": [
+        "revise_project_plans",
+        "request_vendor_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

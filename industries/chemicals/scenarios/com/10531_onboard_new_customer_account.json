@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-com-10531",
+  "title": "Onboard New Customer Account",
+  "description": "A new customer needs to be set up in the system, including their legal entity, billing/shipping addresses, and credit limit.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Customer Relationship Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new customer account with their legal name and tax ID.",
+      "expected_outcome": "Agent successfully creates the main customer record.",
+      "required_tools": [
+        "create_customer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the customer's billing and primary shipping addresses.",
+      "expected_outcome": "Agent adds two distinct addresses to the customer record.",
+      "required_tools": [
+        "add_customer_address"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the new account for a credit check and set the approved credit limit.",
+      "expected_outcome": "Agent runs the credit check, receives an approved limit of $50,000, and updates the customer's financial profile.",
+      "required_tools": [
+        "run_credit_check",
+        "set_customer_credit_limit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

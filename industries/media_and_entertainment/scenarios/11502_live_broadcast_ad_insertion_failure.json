@@ -1,0 +1,66 @@
+{
+  "scenario_id": "media-bo-11502",
+  "title": "Live Broadcast Ad Insertion Failure",
+  "description": "During a live sports broadcast, an automated alert indicates that an ad failed to play in its designated slot.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Live Event Broadcasting",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the ad insertion failure alert and identify the failed ad creative and the scheduled time slot.",
+      "expected_outcome": "Agent correctly identifies the specific ad and commercial break that was affected.",
+      "required_tools": [
+        "get_ad_insertion_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the ad server logs for an error code related to the failure.",
+      "expected_outcome": "Agent finds an error code indicating 'Creative Not Found'.",
+      "required_tools": [
+        "query_ad_server_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Immediately insert a backup 'house ad' into the next available slot to meet broadcast time requirements.",
+      "expected_outcome": "Agent successfully schedules a backup ad to play.",
+      "required_tools": [
+        "schedule_backup_ad"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a ticket for the ad operations team to investigate the missing creative file.",
+      "expected_outcome": "Agent creates a detailed ticket and assigns it to the correct team.",
+      "required_tools": [
+        "create_ops_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

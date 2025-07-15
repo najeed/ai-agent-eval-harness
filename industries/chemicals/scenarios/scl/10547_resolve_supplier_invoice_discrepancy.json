@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-scl-10547",
+  "title": "Resolve Supplier Invoice Discrepancy",
+  "description": "Accounts payable has flagged a supplier invoice where the quantity billed does not match the quantity received.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Raw Material Procurement",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the purchase order, the goods receipt record, and the supplier's invoice.",
+      "expected_outcome": "Agent gathers all three relevant documents.",
+      "required_tools": [
+        "get_purchase_order",
+        "get_goods_receipt",
+        "get_supplier_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the three documents and confirm that the goods receipt shows a short shipment.",
+      "expected_outcome": "Agent verifies that 80 units were received, but 100 units were invoiced.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the supplier, explain the discrepancy, and request a corrected invoice for the quantity received.",
+      "expected_outcome": "Agent successfully communicates with the supplier and resolves the issue.",
+      "required_tools": [
+        "contact_supplier",
+        "request_revised_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

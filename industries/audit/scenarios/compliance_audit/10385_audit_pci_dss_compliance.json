@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10385",
+  "title": "Audit PCI DSS Compliance",
+  "description": "An auditor tests controls related to the Payment Card Industry Data Security Standard (PCI DSS).",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Regulatory Compliance Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the network diagram to ensure the systems that store or process credit card data are properly segmented from the rest of the network.",
+      "expected_outcome": "The auditor confirms the cardholder data environment (CDE) is properly isolated.",
+      "required_tools": [
+        "review_network_diagram"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan a sample of databases to ensure that full credit card numbers are not being stored.",
+      "expected_outcome": "The scan confirms that only the last four digits of credit card numbers are stored.",
+      "required_tools": [
+        "run_data_discovery_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review firewall rules to ensure that all traffic into and out of the CDE is restricted to only what is necessary.",
+      "expected_outcome": "The auditor confirms the firewall rules are appropriately restrictive.",
+      "required_tools": [
+        "get_firewall_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

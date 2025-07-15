@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10124",
+  "title": "Create a Grid Soil Sampling Plan",
+  "description": "A farmer wants to create a plan for soil sampling a field on a 2.5-acre grid pattern.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Data Collection & Sensing",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the boundary map for the specified field.",
+      "expected_outcome": "Agent successfully retrieves the field boundary.",
+      "required_tools": [
+        "get_field_boundary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a set of GPS coordinates for soil sampling points based on a 2.5-acre grid.",
+      "expected_outcome": "Agent creates a list of sampling points with latitudes and longitudes.",
+      "required_tools": [
+        "generate_grid_sampling_points"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a map file of the points that can be loaded into a GPS device for navigation in the field.",
+      "expected_outcome": "Agent generates a downloadable KML or SHP file.",
+      "required_tools": [
+        "create_navigation_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

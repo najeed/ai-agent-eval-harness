@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-rb-10873",
+  "title": "Dispute Credit Report Error",
+  "description": "A customer has found an error on their credit report that originates from their account with the bank and wants it corrected.",
+  "use_case": "Retail Banking",
+  "core_function": "Fraud & Security",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the specific account information they are disputing.",
+      "expected_outcome": "Agent identifies the customer's auto loan, which the customer claims was paid off but is still showing a balance on their credit report.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Investigate the bank's records for the account in question.",
+      "expected_outcome": "Agent reviews the account history and confirms that the loan was indeed paid in full six months ago.",
+      "required_tools": [
+        "get_loan_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit a request to the credit bureaus to correct the inaccurate information.",
+      "expected_outcome": "Agent files a data correction request with all three major credit bureaus.",
+      "required_tools": [
+        "submit_credit_bureau_correction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

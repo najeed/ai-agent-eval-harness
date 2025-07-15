@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-rdq-10554",
+  "title": "Perform Test Method Validation",
+  "description": "A newly authored analytical test method must be validated to prove it is accurate, precise, and robust before it can be used for QC testing.",
+  "use_case": "R&D and Quality",
+  "core_function": "Formulation & Product Development",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a validation protocol document outlining the experiments to be performed (e.g., accuracy, precision, linearity).",
+      "expected_outcome": "Agent authors a formal protocol for the validation study.",
+      "required_tools": [
+        "create_validation_protocol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute the experiments as per the protocol and record all results.",
+      "expected_outcome": "Analyst performs the required lab work and documents the outcomes.",
+      "required_tools": [
+        "enter_lab_result"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the results, confirm they meet all acceptance criteria, and write a final validation report.",
+      "expected_outcome": "Agent analyzes the data, confirms the method is valid, and authors the final summary report.",
+      "required_tools": [
+        "analyze_validation_data",
+        "generate_validation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

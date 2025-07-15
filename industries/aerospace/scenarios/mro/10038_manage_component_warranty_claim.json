@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10038",
+  "title": "Manage a Component Warranty Claim",
+  "description": "A component has failed prematurely while still under the manufacturer's warranty. An MRO administrator must file a warranty claim.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Spares & Logistics",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the failed component's installation date and the terms of its warranty.",
+      "expected_outcome": "Agent confirms the part is still within its 2-year warranty period.",
+      "required_tools": [
+        "get_component_installation_history",
+        "get_warranty_terms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Complete the manufacturer's warranty claim form, including details of the failure.",
+      "expected_outcome": "Agent fills out the claim form accurately.",
+      "required_tools": [
+        "complete_warranty_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange for the failed component to be shipped back to the manufacturer for evaluation and receive a credit or replacement part.",
+      "expected_outcome": "Agent processes the claim and arranges the return shipment.",
+      "required_tools": [
+        "arrange_return_shipping"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

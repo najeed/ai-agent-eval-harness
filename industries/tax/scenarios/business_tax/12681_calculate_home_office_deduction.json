@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tax-bus-12681",
+  "title": "Calculate Home Office Deduction",
+  "description": "A self-employed individual who uses a room in their home exclusively for business wants to claim the home office deduction.",
+  "use_case": "Business Tax Services",
+  "core_function": "Corporate & Partnership Tax",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Measure the square footage of the home office and the total square footage of the home.",
+      "expected_outcome": "Agent obtains the necessary measurements.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Choose between the simplified method and the regular method for the deduction.",
+      "expected_outcome": "Agent will calculate the deduction both ways to see which is more beneficial.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If using the regular method, gather all indirect (e.g., utilities, insurance) and direct (e.g., repairs) home office expenses and calculate the deduction on Form 8829.",
+      "expected_outcome": "Agent accurately calculates the deduction based on the business use percentage of the home.",
+      "required_tools": [
+        "prepare_form_8829"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

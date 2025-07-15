@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11644",
+  "title": "Generate a Diversity Report",
+  "description": "The Chief Diversity Officer needs a report on the company's workforce demographics (gender, ethnicity) by job level.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Reporting & Analytics",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the reporting tools in the HRIS.",
+      "expected_outcome": "Analyst navigates to the correct reporting module.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a report that includes employee demographic data and their current job level.",
+      "expected_outcome": "Analyst generates the raw data from the system.",
+      "required_tools": [
+        "run_hris_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create pivot tables and charts to visualize the demographic breakdown at each level of the organization.",
+      "expected_outcome": "Analyst creates a clear, visual presentation of the company's diversity metrics.",
+      "required_tools": [
+        "create_presentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-eng-11457",
+  "title": "Check for Design Standard Updates",
+  "description": "Before starting a new design, an engineer must check if any of the relevant industry design codes (e.g., ASME, API) have been updated.",
+  "use_case": "Engineering & Design",
+  "core_function": "Quality Engineering",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the applicable design codes for the project.",
+      "expected_outcome": "The engineer identifies that ASME B31.3 and API 650 are relevant.",
+      "required_tools": [
+        "get_project_design_basis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query an external standards database to find the latest version of each applicable code.",
+      "expected_outcome": "Agent queries the database and finds a new version of ASME B31.3 was released last month.",
+      "required_tools": [
+        "query_standards_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the lead engineer that the project's design basis needs to be updated to reference the new code version.",
+      "expected_outcome": "Agent sends a notification to the lead engineer about the required update.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

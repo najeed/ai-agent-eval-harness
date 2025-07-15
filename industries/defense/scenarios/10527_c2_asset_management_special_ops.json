@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-c2-10527",
+  "title": "Special Operations Asset Management",
+  "description": "A C2 operator must coordinate air, ground, and intelligence assets to support a special operations team conducting a raid.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Asset & Task Management",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Maintain real-time tracking of the ground team and all supporting assets.",
+      "expected_outcome": "Operator keeps a constant, accurate plot of all friendly forces.",
+      "required_tools": [
+        "get_blue_force_tracks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tracking_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive a request from the ground team for immediate drone surveillance of a nearby building.",
+      "expected_outcome": "Operator correctly processes the request for support.",
+      "required_tools": [
+        "process_support_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dynamically re-task a nearby ISR drone to provide video of the requested building and stream the feed to the ground team.",
+      "expected_outcome": "Operator successfully re-tasks the drone and provides the requested intelligence.",
+      "required_tools": [
+        "task_isr_asset",
+        "stream_video_feed"
+      ],
+      "success_criteria": [
+        {
+          "metric": "retasking_speed_and_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

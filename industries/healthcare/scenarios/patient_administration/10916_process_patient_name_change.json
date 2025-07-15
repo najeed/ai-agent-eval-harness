@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-pa-10916",
+  "title": "Process Patient Name Change",
+  "description": "A patient has legally changed their name and provides documentation. An HIM specialist needs to update their medical record.",
+  "use_case": "Patient Administration",
+  "core_function": "Patient Records Management",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the patient's record.",
+      "expected_outcome": "Agent finds the correct patient chart.",
+      "required_tools": [
+        "search_patient_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the legal name change document (e.g., marriage certificate, court order).",
+      "expected_outcome": "Agent confirms the documentation is valid.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the patient's name in the demographic record while retaining their previous name as an alias.",
+      "expected_outcome": "Agent successfully updates the patient's name, ensuring continuity of care.",
+      "required_tools": [
+        "update_patient_demographics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-res-12968",
+  "title": "Send Weekly Listing Performance Report",
+  "description": "An agent needs to send a weekly performance update to a seller client.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the listing and the seller client's contact information.",
+      "expected_outcome": "Agent correctly identifies the target listing and client.",
+      "required_tools": [
+        "get_listing_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Pull the listing's performance metrics for the past 7 days (online views, saves, showings scheduled).",
+      "expected_outcome": "Agent gathers the weekly analytics.",
+      "required_tools": [
+        "get_listing_analytics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a standardized weekly report and email it to the seller.",
+      "expected_outcome": "Agent successfully creates and sends the performance report.",
+      "required_tools": [
+        "generate_activity_report",
+        "send_email_to_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10369",
+  "title": "Audit the Data Governance Program",
+  "description": "An auditor reviews the company's newly established data governance program.",
+  "use_case": "IT Audit",
+  "core_function": "System Development & Implementation Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the data governance charter and policies to ensure there are clearly defined data owners and stewards for critical data elements.",
+      "expected_outcome": "The auditor confirms that the governance structure is well-documented.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Interview a designated data owner to assess their understanding of their roles and responsibilities.",
+      "expected_outcome": "The data owner for 'Customer Data' can clearly articulate their responsibilities.",
+      "required_tools": [
+        "conduct_interview"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check if a data dictionary or business glossary has been created for critical data elements.",
+      "expected_outcome": "The auditor finds that a data dictionary has been started but is incomplete, and recommends a plan to complete it.",
+      "required_tools": [
+        "check_for_data_dictionary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

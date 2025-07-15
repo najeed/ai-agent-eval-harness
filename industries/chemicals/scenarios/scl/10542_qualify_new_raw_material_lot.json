@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-scl-10542",
+  "title": "Qualify New Raw Material Lot",
+  "description": "A new lot of a critical raw material has arrived and must be tested and released by QC before it can be used in production.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Raw Material Procurement",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the receipt of the new material lot in the inventory system, which should automatically place it in 'Quarantine' status.",
+      "expected_outcome": "Agent creates a new inventory record for the lot with a 'Quarantine' status.",
+      "required_tools": [
+        "log_material_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Take a sample of the material and submit it to the QC lab for incoming inspection testing.",
+      "expected_outcome": "Agent creates a new sample record and testing order in the LIMS.",
+      "required_tools": [
+        "create_lab_testing_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After QC testing is complete and approved, change the status of the inventory lot from 'Quarantine' to 'Available'.",
+      "expected_outcome": "Agent receives notification of QC approval and successfully updates the inventory status.",
+      "required_tools": [
+        "update_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

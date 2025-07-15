@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-down-11787",
+  "title": "Calculate Value at Risk (VaR)",
+  "description": "A risk manager calculates the Value at Risk (VaR) for the company's trading portfolio to estimate the potential maximum loss over a single day.",
+  "use_case": "Downstream",
+  "core_function": "Supply & Trading",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all positions in the trading portfolio.",
+      "expected_outcome": "A complete list of all open positions is retrieved.",
+      "required_tools": [
+        "get_trader_portfolio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather historical market price data and calculate the volatility and correlations of the relevant commodities.",
+      "expected_outcome": "The statistical inputs for the VaR model are calculated.",
+      "required_tools": [
+        "get_historical_price_data",
+        "calculate_volatility_and_correlation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the VaR model to calculate the 1-day, 95% confidence level VaR for the portfolio.",
+      "expected_outcome": "The model outputs the VaR figure, e.g., '$5 million', which is then compared against a set limit.",
+      "required_tools": [
+        "run_var_calculation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

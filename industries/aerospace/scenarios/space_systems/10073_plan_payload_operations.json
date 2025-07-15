@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10073",
+  "title": "Plan Payload Operations",
+  "description": "A scientist needs to plan the weekly operations for a science instrument on an orbiting satellite.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Mission Design & Analysis",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the scientific targets for the upcoming week.",
+      "expected_outcome": "Agent lists the desired observation targets.",
+      "required_tools": [
+        "get_scientific_objectives"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the satellite's orbital track to determine when it will be over the desired targets.",
+      "expected_outcome": "Agent generates a list of observation opportunities.",
+      "required_tools": [
+        "get_pass_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a command sequence to power on the instrument, point it at the target, and collect data during the scheduled opportunities.",
+      "expected_outcome": "Agent creates a detailed command plan for the week's scientific operations.",
+      "required_tools": [
+        "generate_command_sequence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

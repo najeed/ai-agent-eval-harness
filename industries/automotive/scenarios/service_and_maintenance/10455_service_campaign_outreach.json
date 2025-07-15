@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sm-10455",
+  "title": "Service Campaign Outreach",
+  "description": "The manufacturer has initiated a non-safety 'service campaign' (e.g., a software update to improve transmission smoothness). The dealership needs to contact affected customers.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Appointment & Scheduling",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all dealership customers whose vehicles are covered by the new service campaign.",
+      "expected_outcome": "Agent generates a list of 250 affected customers.",
+      "required_tools": [
+        "get_service_campaign_population"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate an outreach program (email or phone call) to inform customers about the free update and its benefits.",
+      "expected_outcome": "Agent launches an email campaign to the generated list.",
+      "required_tools": [
+        "send_bulk_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "As customers respond, schedule appointments for them to have the update performed.",
+      "expected_outcome": "Agent successfully schedules appointments for customers who call in response to the email.",
+      "required_tools": [
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

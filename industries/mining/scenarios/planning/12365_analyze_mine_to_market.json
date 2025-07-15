@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-plan-12365",
+  "title": "Analyze Mine-to-Market Logistics",
+  "description": "A logistics planner for a bulk commodity mine (e.g., iron ore) analyzes the entire supply chain from mine to port to identify bottlenecks.",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Long-Term Planning & Feasibility",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Model the entire logistics chain, including the mine, rail system, and port, with their respective capacities and constraints.",
+      "expected_outcome": "A complete model of the supply chain is built.",
+      "required_tools": [
+        "model_supply_chain"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a simulation of the model to see how the different components interact.",
+      "expected_outcome": "The simulation shows that the rail system has sufficient capacity, but the ship loader at the port is the bottleneck.",
+      "required_tools": [
+        "run_logistics_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend a project to upgrade the ship loader to increase its capacity and debottleneck the entire system.",
+      "expected_outcome": "A capital project proposal is created to address the system's main constraint.",
+      "required_tools": [
+        "generate_capital_project_proposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

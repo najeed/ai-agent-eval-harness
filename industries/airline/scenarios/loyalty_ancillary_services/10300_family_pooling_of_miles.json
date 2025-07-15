@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10300",
+  "title": "Pool Miles with Family Members",
+  "description": "A frequent flyer program allows family members to pool their miles. A member wants to link their spouse's account to create a family pool.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Frequent Flyer Program",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the rules of the family pooling feature.",
+      "expected_outcome": "Agent clearly communicates the policy.",
+      "required_tools": [
+        "get_program_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the frequent flyer number of the family member to be added.",
+      "expected_outcome": "Agent collects the required information.",
+      "required_tools": [
+        "get_member_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Link the two accounts in the system to create the family pool.",
+      "expected_outcome": "Agent successfully links the accounts.",
+      "required_tools": [
+        "create_family_pool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

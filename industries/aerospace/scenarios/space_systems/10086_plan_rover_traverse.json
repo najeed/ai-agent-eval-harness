@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10086",
+  "title": "Plan a Mars Rover Traverse",
+  "description": "A rover planner on Earth needs to plan the next day's drive for a Mars rover to a new scientific target.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Operations & Control",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the latest 3D terrain maps from the rover's cameras to identify a safe path to the target.",
+      "expected_outcome": "Agent plots a path that avoids large rocks, steep slopes, and sand traps.",
+      "required_tools": [
+        "analyze_terrain_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a sequence of drive commands (e.g., 'drive forward 5 meters, turn right 15 degrees').",
+      "expected_outcome": "Agent generates the full command sequence for the traverse.",
+      "required_tools": [
+        "generate_drive_sequence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Simulate the traverse using a digital twin of the rover to verify the path is safe and the rover will not get stuck.",
+      "expected_outcome": "Agent runs the simulation and confirms the traverse is safe and will complete successfully.",
+      "required_tools": [
+        "run_rover_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "simulation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-grc-10433",
+  "title": "New Hire Security Training",
+  "description": "A security awareness manager must ensure all new hires complete their mandatory security awareness training within 30 days of starting.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Security Awareness & Training",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Automatically enroll all new hires into the security awareness training module in the Learning Management System (LMS).",
+      "expected_outcome": "All new hires are successfully enrolled upon creation of their accounts.",
+      "required_tools": [
+        "enroll_users_in_training"
+      ],
+      "success_criteria": [
+        {
+          "metric": "automation_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Track the completion status of the training for all new hires.",
+      "expected_outcome": "Manager has a real-time dashboard of training completion rates.",
+      "required_tools": [
+        "monitor_training_completion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send automated reminders to new hires (and their managers) who have not completed the training as the 30-day deadline approaches.",
+      "expected_outcome": "Reminders are sent automatically, improving the on-time completion rate.",
+      "required_tools": [
+        "send_training_reminder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

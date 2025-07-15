@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-ts-13421",
+  "title": "Home Internet Troubleshooting - No Connection",
+  "description": "A customer reports their home internet service is completely down.",
+  "use_case": "Technical Support",
+  "core_function": "Broadband and Fixed-Line Support",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a remote line test and modem diagnostic.",
+      "expected_outcome": "The diagnostic tool returns 'MODEM_OFFLINE'.",
+      "required_tools": [
+        "run_line_test",
+        "run_modem_diagnostic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the customer to perform a power cycle on their modem and router.",
+      "expected_outcome": "Agent provides clear, step-by-step instructions for a power cycle.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the power cycle, run the diagnostics again. If the line is now OK, close the case. If not, schedule a technician.",
+      "expected_outcome": "Agent re-runs diagnostics. The modem is still offline. Agent schedules a technician visit.",
+      "required_tools": [
+        "run_modem_diagnostic",
+        "schedule_technician_visit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10097",
+  "title": "Perform a Cabin Pressurization Test",
+  "description": "On the ground, engineers must test the aircraft's pressurization system to ensure it can hold pressure and has no leaks.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Assembly & Production",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Seal the aircraft and connect ground-based air carts to the pressurization system.",
+      "expected_outcome": "Agent ensures the aircraft is ready for the test.",
+      "required_tools": [
+        "connect_ground_support_equipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Slowly increase the pressure inside the cabin to simulate the pressure differential at high altitude.",
+      "expected_outcome": "Agent operates the system to pressurize the cabin to the target PSI.",
+      "required_tools": [
+        "operate_pressurization_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the pressure decay rate to ensure it is within the allowable limits, which indicates there are no significant leaks.",
+      "expected_outcome": "Agent monitors the pressure and confirms the leak rate is acceptable.",
+      "required_tools": [
+        "monitor_pressure_decay"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

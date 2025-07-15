@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-cm-10134",
+  "title": "Check Herbicide Carryover Risk",
+  "description": "A farmer wants to plant soybeans in a field where they applied a corn herbicide last year and needs to check for carryover risk.",
+  "use_case": "Crop Management",
+  "core_function": "Planting & Seeding",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the application history for the field to identify the specific herbicide used last year and the date it was applied.",
+      "expected_outcome": "Agent finds that Atrazine was applied last May.",
+      "required_tools": [
+        "get_application_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the herbicide label for plant-back restrictions for soybeans.",
+      "expected_outcome": "Agent finds the label specifies a 12-month waiting period before planting soybeans.",
+      "required_tools": [
+        "get_pesticide_label_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the farmer that planting soybeans is not recommended due to the high risk of crop injury from herbicide carryover.",
+      "expected_outcome": "Agent provides a clear and correct recommendation based on the label.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

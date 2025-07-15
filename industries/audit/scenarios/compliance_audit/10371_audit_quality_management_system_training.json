@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10371",
+  "title": "Audit Quality Management System Training",
+  "description": "A quality auditor verifies that all employees in a manufacturing role have completed their required QMS training.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Quality Assurance Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a list of all employees in manufacturing roles.",
+      "expected_outcome": "The auditor has the list of in-scope employees.",
+      "required_tools": [
+        "get_employee_list_by_department"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain the training records for the 'Good Manufacturing Practices (GMP)' course from the LMS.",
+      "expected_outcome": "The auditor has the training completion data.",
+      "required_tools": [
+        "get_training_completion_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the two lists to identify any employees who have not completed the mandatory training.",
+      "expected_outcome": "The comparison identifies 5 employees who are delinquent on their training.",
+      "required_tools": [
+        "compare_datasets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

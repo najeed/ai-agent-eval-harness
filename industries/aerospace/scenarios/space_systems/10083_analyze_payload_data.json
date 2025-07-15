@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10083",
+  "title": "Analyze Scientific Payload Data",
+  "description": "After downloading data from a space telescope, a scientist needs to process and analyze it to search for exoplanets.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Mission Design & Analysis",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run the raw telemetry data through a processing pipeline to calibrate it and convert it into scientifically useful units (e.g., stellar brightness).",
+      "expected_outcome": "Agent successfully processes the raw data into a calibrated data set.",
+      "required_tools": [
+        "run_data_processing_pipeline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the light curves of stars in the data set, searching for the characteristic dip in brightness caused by a transiting exoplanet.",
+      "expected_outcome": "Agent runs a transit detection algorithm and identifies a potential exoplanet candidate.",
+      "required_tools": [
+        "run_transit_detection_algorithm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform follow-up analysis to validate the candidate and determine the planet's size and orbital period.",
+      "expected_outcome": "Agent validates the candidate and calculates its key characteristics.",
+      "required_tools": [
+        "validate_exoplanet_candidate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

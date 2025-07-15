@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-sm-10486",
+  "title": "Diagnose Unusual Noise",
+  "description": "A customer reports a 'clicking' noise from the front wheel when turning.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Vehicle Diagnostics",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather details from the customer about when the noise occurs (e.g., speed, turning left/right).",
+      "expected_outcome": "Agent notes the noise happens when turning right at low speeds.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on the description, search the knowledge base for possible causes.",
+      "expected_outcome": "The knowledge base suggests the most likely cause is a failing CV joint.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the customer to schedule a service appointment for a technician to physically inspect the suspension and drivetrain components.",
+      "expected_outcome": "Agent explains the likely issue and books an appointment for confirmation.",
+      "required_tools": [
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

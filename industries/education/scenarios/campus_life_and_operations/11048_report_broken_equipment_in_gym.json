@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-co-11048",
+  "title": "Report Broken Equipment in Campus Gym",
+  "description": "A student reports that a treadmill in the campus recreation center is broken.",
+  "use_case": "Campus Life & Operations",
+  "core_function": "Event & Facilities Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the user and the location (rec center) and specific piece of equipment.",
+      "expected_outcome": "Agent gathers the details of the issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a maintenance work order for the facilities team to inspect the equipment.",
+      "expected_outcome": "Agent successfully creates a work order.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the recreation center front desk staff to put an 'Out of Order' sign on the machine.",
+      "expected_outcome": "Agent calls or messages the gym staff to take the machine out of service.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

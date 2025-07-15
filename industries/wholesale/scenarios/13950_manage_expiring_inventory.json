@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-im-13950",
+  "title": "Manage Expiring Inventory",
+  "description": "A food wholesaler needs to manage inventory with expiration dates to ensure products are sold before they expire.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Inventory Control",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a report to identify all inventory that is approaching its expiration date.",
+      "expected_outcome": "Agent gets a list of all products expiring in the next 30 days.",
+      "required_tools": [
+        "get_expiring_inventory_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notify the sales team to prioritize selling these items.",
+      "expected_outcome": "The sales team is alerted to the expiring stock.",
+      "required_tools": [
+        "send_internal_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Offer a discount on the expiring items to encourage faster sales.",
+      "expected_outcome": "Agent applies a temporary discount to the products.",
+      "required_tools": [
+        "apply_product_discount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

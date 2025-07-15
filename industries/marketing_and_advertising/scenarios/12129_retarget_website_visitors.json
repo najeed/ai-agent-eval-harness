@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cm-12129",
+  "title": "Set Up a Retargeting Campaign",
+  "description": "A media buyer wants to set up a display advertising campaign that retargets all users who have visited the website in the last 30 days.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Paid Social & Display",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new audience in the ad platform for 'All Website Visitors (Last 30 Days)'.",
+      "expected_outcome": "Agent successfully creates the retargeting audience based on the tracking pixel.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new campaign targeting this audience.",
+      "expected_outcome": "Agent sets up a new campaign with the correct audience selected.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload ad creatives specifically designed for users who are already familiar with the brand.",
+      "expected_outcome": "Agent uses ad copy like 'Still thinking about it?' or 'Come back and see what's new'.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "copywriting_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-down-11709",
+  "title": "Hedge Physical Jet Fuel Cargo",
+  "description": "A trader has just purchased a physical cargo of jet fuel for delivery in three months and needs to hedge the price risk.",
+  "use_case": "Downstream",
+  "core_function": "Supply & Trading",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the details of the physical jet fuel purchase, including volume, price basis, and delivery date.",
+      "expected_outcome": "The agent correctly identifies the exposure to be hedged.",
+      "required_tools": [
+        "get_physical_trade_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the futures market to find the best instrument to hedge the jet fuel price (e.g., heating oil futures).",
+      "expected_outcome": "The agent selects the appropriate futures contract and month.",
+      "required_tools": [
+        "get_futures_market_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute a sell order for the corresponding number of futures contracts to lock in the price.",
+      "expected_outcome": "The hedge is successfully placed, and the position's price risk is minimized.",
+      "required_tools": [
+        "execute_futures_trade"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

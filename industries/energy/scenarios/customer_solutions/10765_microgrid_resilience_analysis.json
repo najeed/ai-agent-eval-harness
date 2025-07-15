@@ -1,0 +1,64 @@
+{
+  "scenario_id": "energy-cs-10765",
+  "title": "Microgrid Resilience Analysis",
+  "description": "A hospital facility manager wants to assess how long their new microgrid (solar + battery + diesel generator) can power their critical loads during a grid outage.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "Energy Efficiency & Audits",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the hospital's critical loads and their total power demand in kW.",
+      "expected_outcome": "Agent determines the critical load is 500 kW.",
+      "required_tools": [
+        "get_critical_load_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the current status of the microgrid assets: battery state of charge, solar generation forecast, and diesel fuel level.",
+      "expected_outcome": "Agent compiles the real-time status of all microgrid components.",
+      "required_tools": [
+        "get_microgrid_asset_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Simulate the microgrid's operation during an outage, dispatching assets in order of cost (solar, battery, then diesel).",
+      "expected_outcome": "Agent runs a simulation of the microgrid under islanded mode.",
+      "required_tools": [
+        "simulate_microgrid_operation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Calculate the total number of hours the microgrid can sustain the critical load.",
+      "expected_outcome": "Agent reports that the microgrid can power critical loads for 72 hours.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

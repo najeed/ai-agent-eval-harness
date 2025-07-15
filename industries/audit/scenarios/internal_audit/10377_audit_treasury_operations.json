@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10377",
+  "title": "Audit Treasury Operations",
+  "description": "An auditor reviews the treasury department's controls over cash management and investments.",
+  "use_case": "Internal Audit",
+  "core_function": "Fieldwork & Data Collection",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the company's investment policy to understand the types of investments that are permitted.",
+      "expected_outcome": "The auditor understands the rules for investing company cash.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain a list of all current investments and verify they are compliant with the policy.",
+      "expected_outcome": "The auditor confirms all investments are of the permitted type and credit rating.",
+      "required_tools": [
+        "get_investment_portfolio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Test the controls over wire transfers, verifying that all large transfers require dual approval from two different managers.",
+      "expected_outcome": "The auditor tests a sample of wire transfers and confirms all had the required dual approvals.",
+      "required_tools": [
+        "test_wire_transfer_approvals"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

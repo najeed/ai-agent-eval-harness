@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tax-plan-13328",
+  "title": "Advise on Record-Keeping for Schedule C",
+  "description": "A new freelancer asks for advice on what records they need to keep for their business expenses.",
+  "use_case": "Tax Planning & Advisory",
+  "core_function": "Compliance & Risk Assessment",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the client's type of business (freelance writing).",
+      "expected_outcome": "Agent understands the nature of the client's business.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide a list of common deductible expenses for their industry (e.g., home office, internet, software, supplies).",
+      "expected_outcome": "Agent gives a relevant list of potential deductions.",
+      "required_tools": [
+        "get_common_deductions_by_industry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the documentation requirements for each type of expense (e.g., receipts, logs, bank statements).",
+      "expected_outcome": "Agent provides clear and actionable advice on how to properly document expenses to withstand an audit.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

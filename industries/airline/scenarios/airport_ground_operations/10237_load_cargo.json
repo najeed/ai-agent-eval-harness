@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-ago-10237",
+  "title": "Load Cargo onto a Passenger Flight",
+  "description": "A ramp agent is responsible for loading cargo into the belly hold of a passenger aircraft.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Ramp & Turnaround Management",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the cargo manifest and the load plan for the flight.",
+      "expected_outcome": "Agent gets the plan showing where each piece of cargo should be placed.",
+      "required_tools": [
+        "get_load_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Load the cargo into the correct positions in the aircraft's hold according to the load plan to maintain the aircraft's center of gravity.",
+      "expected_outcome": "Agent loads all cargo according to the plan.",
+      "required_tools": [
+        "load_cargo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Secure the cargo with nets and locks and confirm to the loadmaster that the loading is complete.",
+      "expected_outcome": "Agent secures the cargo and reports completion.",
+      "required_tools": [
+        "secure_cargo",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

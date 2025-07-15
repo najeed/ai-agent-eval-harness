@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-ehs-10575",
+  "title": "Submit Annual Tier II Report",
+  "description": "An EHS specialist needs to submit the annual Tier II Emergency and Hazardous Chemical Inventory report to state and local agencies.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Regulatory Compliance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a report of the maximum and average quantities of all hazardous chemicals stored on site over the last year.",
+      "expected_outcome": "Agent successfully queries the inventory system for the required data.",
+      "required_tools": [
+        "get_chemical_inventory_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the inventory data to populate the Tier II reporting form.",
+      "expected_outcome": "Agent correctly fills out the report with all chemicals exceeding the reporting thresholds.",
+      "required_tools": [
+        "generate_tier_ii_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the report through the state's online portal.",
+      "expected_outcome": "Agent successfully uploads and submits the final report.",
+      "required_tools": [
+        "submit_report_to_agency_portal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

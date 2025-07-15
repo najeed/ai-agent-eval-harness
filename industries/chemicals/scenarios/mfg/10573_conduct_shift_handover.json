@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-mfg-10573",
+  "title": "Conduct Shift Handover",
+  "description": "At the end of a shift, a plant operator must formally hand over control of the process to the operator on the next shift.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Plant Operations",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a shift summary report from the control system.",
+      "expected_outcome": "Agent obtains a report detailing all alarms, operator actions, and batch statuses from their shift.",
+      "required_tools": [
+        "generate_shift_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the report with the incoming operator, highlighting any ongoing issues or upcoming critical steps.",
+      "expected_outcome": "The outgoing operator effectively communicates the state of the plant.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Both operators apply an electronic signature to the shift log to confirm the handover was completed.",
+      "expected_outcome": "Agent and their replacement both sign the log, formally transferring responsibility.",
+      "required_tools": [
+        "apply_electronic_signature_to_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

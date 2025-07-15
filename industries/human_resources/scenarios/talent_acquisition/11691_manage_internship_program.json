@@ -1,0 +1,54 @@
+{
+  "scenario_id": "hr-ta-11691",
+  "title": "Manage the Summer Internship Program",
+  "description": "The university recruiting team is managing the application and selection process for the summer internship program.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Onboarding",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create and post all internship requisitions.",
+      "expected_outcome": "Team creates requisitions for all available intern roles.",
+      "required_tools": [
+        "create_job_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review applications and conduct interviews to select the final candidates.",
+      "expected_outcome": "Team screens, interviews, and selects a cohort of summer interns.",
+      "required_tools": [
+        "get_candidate_application",
+        "update_candidate_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send offer letters to the selected interns and manage their onboarding process.",
+      "expected_outcome": "Team successfully hires and onboards all interns for the program.",
+      "required_tools": [
+        "generate_document_from_template",
+        "send_onboarding_portal_link"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

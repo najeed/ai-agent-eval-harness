@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ap-36",
+  "title": "Handle Uncashed Vendor Checks (Escheatment)",
+  "description": "During a review, an accountant finds several vendor checks that were issued over a year ago but have never been cashed.",
+  "use_case": "Accounts Payable",
+  "core_function": "Accruals & Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all outstanding checks that are more than 180 days old.",
+      "expected_outcome": "Agent produces a list of stale-dated checks.",
+      "required_tools": [
+        "get_outstanding_checks_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform due diligence by attempting to contact the vendors to have them cash the checks or request a reissue.",
+      "expected_outcome": "Agent sends notification letters to the vendors.",
+      "required_tools": [
+        "send_due_diligence_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For checks that remain uncashed after the due diligence period, prepare to remit the funds to the state as unclaimed property, following escheatment laws.",
+      "expected_outcome": "Agent prepares the necessary report and payment for the state comptroller's office.",
+      "required_tools": [
+        "prepare_escheatment_filing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

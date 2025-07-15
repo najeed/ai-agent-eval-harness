@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10361",
+  "title": "Facilitate a Risk and Control Self-Assessment (RCSA)",
+  "description": "An auditor facilitates an RCSA workshop with a business unit to help them identify and assess their own risks and controls.",
+  "use_case": "Internal Audit",
+  "core_function": "Audit Planning & Scoping",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare for the workshop by creating a template for the business unit to use for documenting their risks and controls.",
+      "expected_outcome": "A standardized RCSA template is created.",
+      "required_tools": [
+        "create_document_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Lead the workshop, guiding the business team through the process of identifying risks in their key processes.",
+      "expected_outcome": "The business team identifies and documents their top 10 operational risks.",
+      "required_tools": [
+        "facilitate_workshop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the results of the RCSA to inform the scope of the upcoming audit of that business unit.",
+      "expected_outcome": "The audit plan is updated to focus on the highest-rated risks identified by the business itself.",
+      "required_tools": [
+        "update_audit_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

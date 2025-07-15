@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10263",
+  "title": "Handle Late Arriving Crew",
+  "description": "The flight crew for a departing flight is late arriving from their inbound flight. A ground operations agent must manage the delay.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Ramp & Turnaround Management",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get an updated ETA for the inbound crew.",
+      "expected_outcome": "Agent determines the crew will arrive 20 minutes late.",
+      "required_tools": [
+        "get_flight_eta"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the departure time for the outbound flight, creating a 20-minute delay.",
+      "expected_outcome": "Agent updates the flight status with the new departure time.",
+      "required_tools": [
+        "update_flight_departure_time"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Make an announcement to the waiting passengers, informing them of the delay due to a late-arriving crew.",
+      "expected_outcome": "Agent clearly communicates the reason for the delay to passengers.",
+      "required_tools": [
+        "make_pa_announcement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

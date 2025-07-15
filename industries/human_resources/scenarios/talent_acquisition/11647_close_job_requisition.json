@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-ta-11647",
+  "title": "Close a Filled Job Requisition",
+  "description": "A candidate has been hired for a role, and the recruiter needs to close the job requisition in the ATS.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Requisition Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the job requisition that has been filled.",
+      "expected_outcome": "Recruiter locates the correct requisition.",
+      "required_tools": [
+        "get_job_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the requisition status to 'Filled/Closed'.",
+      "expected_outcome": "Recruiter successfully updates the status.",
+      "required_tools": [
+        "update_requisition_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure all other candidates for the role have been dispositioned correctly (e.g., rejected).",
+      "expected_outcome": "Recruiter verifies that no candidates are left in an active state for the closed req.",
+      "required_tools": [
+        "get_candidates_by_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

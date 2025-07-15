@@ -1,0 +1,51 @@
+{
+  "scenario_id": "auto-sf-10461",
+  "title": "Add a Cosigner to a Loan Application",
+  "description": "A customer with a low credit score was denied a loan but wants to reapply with a cosigner.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Financing & Leasing",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's original, denied credit application.",
+      "expected_outcome": "Agent pulls up the original application and the reason for denial.",
+      "required_tools": [
+        "get_credit_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the role and responsibilities of a cosigner to the customer.",
+      "expected_outcome": "Agent clearly communicates that the cosigner is equally responsible for the loan.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Collect the cosigner's information and submit a new, joint credit application.",
+      "expected_outcome": "Agent gathers the cosigner's details and resubmits the application.",
+      "required_tools": [
+        "initiate_credit_application",
+        "submit_credit_application"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

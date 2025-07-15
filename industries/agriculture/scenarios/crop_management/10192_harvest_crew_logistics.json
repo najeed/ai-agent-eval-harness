@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10192",
+  "title": "Coordinate Harvest Crew Logistics",
+  "description": "A manager of a large hand-harvested fruit operation needs to coordinate crews, equipment, and transport across multiple ranches.",
+  "use_case": "Crop Management",
+  "core_function": "Harvesting & Logistics",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the daily harvest plan, including which crews are assigned to which fields.",
+      "expected_outcome": "Agent gets the daily schedule.",
+      "required_tools": [
+        "get_harvest_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch buses to pick up harvest crews and transport them to the correct fields.",
+      "expected_outcome": "Agent sends dispatch orders to the transport provider.",
+      "required_tools": [
+        "dispatch_vehicle"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate the delivery of empty bins to the fields and the pickup of full bins for transport to the packing house.",
+      "expected_outcome": "Agent manages the real-time logistics of bin movement.",
+      "required_tools": [
+        "manage_bin_logistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

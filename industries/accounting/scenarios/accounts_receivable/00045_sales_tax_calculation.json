@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ar-45",
+  "title": "Calculate Sales Tax on an Invoice",
+  "description": "When creating an invoice for a customer, the system needs to calculate the correct sales tax based on the customer's location.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Billing & Invoicing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's shipping address from the sales order.",
+      "expected_outcome": "Agent retrieves the customer's address.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if the customer has a valid sales tax exemption certificate on file.",
+      "expected_outcome": "Agent confirms the customer is not tax-exempt.",
+      "required_tools": [
+        "check_tax_exemption_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use a tax calculation engine to determine the correct state, county, and city sales tax rates for the shipping address.",
+      "expected_outcome": "Agent retrieves the correct, multi-level tax rates.",
+      "required_tools": [
+        "calculate_sales_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Apply the calculated sales tax to the invoice.",
+      "expected_outcome": "Agent adds the correct sales tax amount to the final invoice total.",
+      "required_tools": [
+        "apply_tax_to_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

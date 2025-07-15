@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-hk-11567",
+  "title": "Minibar Restocking",
+  "description": "A minibar attendant needs to restock the minibars on a floor.",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Inventory Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The attendant gets a report of all minibar consumption from the previous day.",
+      "expected_outcome": "A report is generated showing which items were consumed from which rooms.",
+      "required_tools": [
+        "pms_get_minibar_consumption_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The attendant stocks their cart with the necessary items from the storeroom.",
+      "expected_outcome": "The cart is stocked with the correct inventory.",
+      "required_tools": [
+        "ims_check_stock_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The attendant visits each room, restocks the consumed items, and logs the restock in their handheld device.",
+      "expected_outcome": "All minibars are restocked, and the inventory system is updated.",
+      "required_tools": [
+        "ims_update_stock_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

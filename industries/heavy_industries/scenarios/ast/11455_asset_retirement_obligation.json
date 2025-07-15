@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-ast-11455",
+  "title": "Calculate Asset Retirement Obligation (ARO)",
+  "description": "An accountant needs to calculate the Asset Retirement Obligation (ARO) for a large piece of mining equipment, which is the estimated future cost to dismantle and dispose of it.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Asset Commissioning",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Estimate the future cost to dismantle and dispose of the equipment in today's dollars.",
+      "expected_outcome": "The accountant estimates a future cost of $200,000.",
+      "required_tools": [
+        "estimate_decommissioning_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Estimate the useful life of the asset and select an appropriate discount rate.",
+      "expected_outcome": "The useful life is determined to be 20 years with a discount rate of 5%.",
+      "required_tools": [
+        "get_asset_useful_life"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the present value of the future disposal cost, which is the ARO to be recorded on the balance sheet.",
+      "expected_outcome": "Agent calculates the ARO and records the corresponding journal entry.",
+      "required_tools": [
+        "calculate_present_value",
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

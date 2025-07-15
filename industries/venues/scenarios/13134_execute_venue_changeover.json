@@ -1,0 +1,67 @@
+{
+  "scenario_id": "venues-vo-13134",
+  "title": "Execute Venue Changeover",
+  "description": "The operations team needs to convert the arena from a hockey rink setup to a basketball court setup overnight.",
+  "use_case": "Venue Operations & Logistics",
+  "core_function": "Event Setup & Changeover",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the standard operating procedure (SOP) for the hockey-to-basketball changeover.",
+      "expected_outcome": "Agent pulls up the detailed checklist and timeline for the conversion.",
+      "required_tools": [
+        "get_changeover_sop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create and assign tasks to the various crews (e.g., ice crew, floor crew, seating crew) in the work order system.",
+      "expected_outcome": "Agent creates all necessary work orders for the changeover.",
+      "required_tools": [
+        "create_work_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the progress of the changeover against the timeline.",
+      "expected_outcome": "Agent tracks the completion of each major task in real-time.",
+      "required_tools": [
+        "monitor_task_progress"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Once complete, perform a final quality check and mark the venue as 'Ready' for the next event.",
+      "expected_outcome": "Agent confirms the venue is ready and updates its status in the master calendar.",
+      "required_tools": [
+        "perform_quality_check",
+        "update_venue_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

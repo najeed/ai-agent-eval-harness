@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-bo-12298",
+  "title": "Manage Regional Sports Programming",
+  "description": "A national broadcaster needs to show different live games in different cities based on regional broadcast rights.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Ad Insertion & Management",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the broadcast schedule and the regional rights for all games being played tonight.",
+      "expected_outcome": "Agent gets a list of which game should be shown in which city.",
+      "required_tools": [
+        "get_broadcast_schedule",
+        "get_regional_rights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Configure the broadcast playout system to route the correct game feed to each regional affiliate station.",
+      "expected_outcome": "Agent successfully sets up the routing rules for the evening's broadcasts.",
+      "required_tools": [
+        "configure_playout_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the feeds at the start of the broadcast to ensure all regions are receiving the correct game.",
+      "expected_outcome": "Agent verifies that the correct content is being broadcast in each region.",
+      "required_tools": [
+        "monitor_broadcast_feeds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

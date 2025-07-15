@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11643",
+  "title": "Audit HRIS Data Integrity",
+  "description": "An HRIS analyst needs to run an audit to find employees with missing or incomplete data in their records.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "HRIS Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a query or report to find employee records with blank fields for critical information (e.g., emergency contact, address).",
+      "expected_outcome": "Analyst generates a list of employees with incomplete profiles.",
+      "required_tools": [
+        "run_hris_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each employee on the list, determine what specific information is missing.",
+      "expected_outcome": "Analyst creates a spreadsheet detailing the missing data for each employee.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send notifications to the identified employees asking them to update their information in the self-service portal.",
+      "expected_outcome": "Analyst sends targeted emails requesting employees to complete their profiles.",
+      "required_tools": [
+        "send_reminder_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

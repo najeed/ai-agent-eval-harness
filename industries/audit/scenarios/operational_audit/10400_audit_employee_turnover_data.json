@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10400",
+  "title": "Audit Employee Turnover Data and Trends",
+  "description": "An operational auditor analyzes employee turnover data to identify potential systemic issues.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Process Efficiency Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain employee turnover data for the past two years from the HR system.",
+      "expected_outcome": "The auditor has the complete turnover dataset.",
+      "required_tools": [
+        "get_hr_turnover_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data by department, manager, and tenure to identify any hotspots or trends.",
+      "expected_outcome": "The analysis reveals that one specific department has a turnover rate three times higher than the company average.",
+      "required_tools": [
+        "analyze_hr_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the exit interview data for the high-turnover department to identify common themes and root causes.",
+      "expected_outcome": "The exit interview data points to poor management and a lack of career development as the primary reasons for leaving.",
+      "required_tools": [
+        "get_exit_interview_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

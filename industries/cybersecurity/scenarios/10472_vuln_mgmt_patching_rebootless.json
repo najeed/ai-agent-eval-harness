@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-vm-10472",
+  "title": "Live Kernel Patching",
+  "description": "An analyst must apply a critical vulnerability patch to the Linux kernel on hundreds of production servers without rebooting them.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Patch Management & Remediation",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all servers that require the live kernel patch.",
+      "expected_outcome": "Analyst has a complete list of target servers.",
+      "required_tools": [
+        "query_asset_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a live patching tool (e.g., kpatch, KernelCare) to deploy the patch to all affected servers in memory.",
+      "expected_outcome": "Analyst successfully deploys the patch without requiring a system reboot.",
+      "required_tools": [
+        "deploy_live_patch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "deployment_success_rate",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the patch is active on all servers and that they are no longer vulnerable.",
+      "expected_outcome": "Analyst confirms the live patch has successfully remediated the vulnerability across the fleet.",
+      "required_tools": [
+        "verify_live_patch_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "remediation_verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

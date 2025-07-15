@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-pc-11091",
+  "title": "Explain a Billing Statement",
+  "description": "A customer does not understand the charges on their most recent bill, which includes a policy change prorated amount.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Billing & Collections",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and retrieve their latest billing statement.",
+      "expected_outcome": "Agent pulls up the statement in question.",
+      "required_tools": [
+        "get_billing_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the statement and the customer's recent policy changes.",
+      "expected_outcome": "Agent sees the customer recently added a new car, which triggered a prorated premium charge.",
+      "required_tools": [
+        "get_policy_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Clearly walk the customer through the statement, explaining each line item and how the prorated charge was calculated.",
+      "expected_outcome": "Agent successfully explains the bill to the customer's satisfaction.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

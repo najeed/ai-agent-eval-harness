@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10078",
+  "title": "Author a Service Bulletin (SB)",
+  "description": "An aircraft manufacturer has identified a potential issue and needs to issue a non-mandatory Service Bulletin to operators recommending an inspection or modification.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Technical Documentation & Compliance",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Describe the potential issue and the reason for the recommended action.",
+      "expected_outcome": "Agent writes a clear explanation of the problem.",
+      "required_tools": [
+        "generate_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide detailed, step-by-step instructions for the inspection or modification procedure.",
+      "expected_outcome": "Agent authors a clear and unambiguous procedure for technicians.",
+      "required_tools": [
+        "author_maintenance_procedure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Publish the Service Bulletin and distribute it to all registered owners and operators of the affected aircraft model.",
+      "expected_outcome": "Agent successfully publishes and distributes the SB.",
+      "required_tools": [
+        "publish_document",
+        "distribute_to_operators"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

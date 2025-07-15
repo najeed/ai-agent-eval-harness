@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ap-76",
+  "title": "Process a Utility Bill Received via EDI",
+  "description": "A large utility provider sends its monthly invoices via an EDI 810 transaction. The system needs to process this electronic invoice.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the EDI 810 invoice transaction.",
+      "expected_outcome": "Agent's system ingests the electronic invoice file.",
+      "required_tools": [
+        "receive_edi_transaction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Parse the EDI transaction and map the data to the fields of an AP invoice in the ERP system.",
+      "expected_outcome": "Agent successfully parses the EDI data and creates a draft invoice.",
+      "required_tools": [
+        "parse_edi_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Automatically code the invoice to the correct utility expense account based on pre-defined rules and post it for payment.",
+      "expected_outcome": "The system automatically codes and posts the invoice without manual intervention.",
+      "required_tools": [
+        "post_ap_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

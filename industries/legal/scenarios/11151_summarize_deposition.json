@@ -1,0 +1,50 @@
+{
+  "scenario_id": "legal-ldr-11151",
+  "title": "Summarize a Deposition Transcript",
+  "description": "A junior lawyer needs to create a concise summary of a key witness's deposition testimony.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Legal Research & Writing",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Read the entire deposition transcript.",
+      "expected_outcome": "Agent processes the full text of the transcript.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the top 5-10 most important admissions or statements made by the witness.",
+      "expected_outcome": "Agent extracts the key pieces of testimony.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft a one-page summary of the deposition, organized by topic, with page/line citations for the key statements.",
+      "expected_outcome": "Agent produces a useful, well-organized summary for the case team.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

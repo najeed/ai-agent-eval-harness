@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10232",
+  "title": "Handle a Customer Complaint",
+  "description": "A customer is calling to complain about a rude gate agent during their last trip.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Customer Support",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Listen to the customer's complaint empathetically and gather all relevant details (flight number, date, agent description).",
+      "expected_outcome": "Agent listens actively and logs the details of the complaint.",
+      "required_tools": [
+        "log_customer_complaint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apologize for the negative experience and assure the customer that their feedback will be passed to the airport management team.",
+      "expected_outcome": "Agent provides a sincere apology and explains the follow-up process.",
+      "required_tools": [
+        "escalate_complaint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "As a gesture of goodwill, offer the customer a travel voucher for a future flight.",
+      "expected_outcome": "Agent successfully offers and issues a goodwill voucher.",
+      "required_tools": [
+        "issue_travel_voucher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

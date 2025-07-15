@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ar-77",
+  "title": "Send Monthly Customer Statements",
+  "description": "At the beginning of the month, the AR department needs to send statements of account to all customers showing their previous balance, new invoices, payments, and ending balance.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Billing & Invoicing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For each customer, retrieve all invoice and payment activity for the prior month.",
+      "expected_outcome": "Agent gathers all the necessary transaction data.",
+      "required_tools": [
+        "get_customer_activity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a statement of account for each customer.",
+      "expected_outcome": "Agent successfully produces the statement documents.",
+      "required_tools": [
+        "generate_customer_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Email the statements to all customers.",
+      "expected_outcome": "Agent successfully completes the bulk email send.",
+      "required_tools": [
+        "email_statements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

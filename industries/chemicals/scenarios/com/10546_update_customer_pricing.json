@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-com-10546",
+  "title": "Update Customer Contract Pricing",
+  "description": "A new annual contract has been signed with a major customer, requiring an update to their special pricing for several products.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Pricing & Quoting",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's current pricing agreement.",
+      "expected_outcome": "Agent pulls up the existing price list for the customer.",
+      "required_tools": [
+        "get_customer_pricing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the new, lower prices for the three products covered by the new contract.",
+      "expected_outcome": "Agent successfully updates the prices for the specified products.",
+      "required_tools": [
+        "update_customer_pricing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set the effective date for the new pricing to the start of the next month.",
+      "expected_outcome": "Agent correctly configures the start date for the new price list.",
+      "required_tools": [
+        "update_customer_pricing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

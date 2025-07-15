@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10539",
+  "title": "Review Instrument Calibration Data",
+  "description": "A lab supervisor must review and approve the recent calibration results for a critical analytical instrument.",
+  "use_case": "R&D and Quality",
+  "core_function": "Lab Information Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select an instrument from the 'Pending Calibration Review' queue.",
+      "expected_outcome": "Agent opens the calibration record for an HPLC.",
+      "required_tools": [
+        "get_pending_calibration_reviews"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the calibration data to ensure all tested parameters meet the acceptance criteria.",
+      "expected_outcome": "Agent confirms that the calibration results are within the defined limits.",
+      "required_tools": [
+        "review_calibration_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply an electronic signature to approve the calibration, making the instrument available for use.",
+      "expected_outcome": "Agent signs off on the calibration, and the instrument's status changes to 'Available'.",
+      "required_tools": [
+        "approve_instrument_calibration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

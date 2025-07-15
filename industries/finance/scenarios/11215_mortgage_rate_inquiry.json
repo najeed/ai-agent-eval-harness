@@ -1,0 +1,48 @@
+{
+  "scenario_id": "finance-rb-11215",
+  "title": "Mortgage Rate Inquiry",
+  "description": "A potential customer is inquiring about current interest rates for a 30-year fixed-rate mortgage.",
+  "use_case": "Retail Banking",
+  "core_function": "Loan & Mortgage Services",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather basic information from the customer, such as estimated credit score, loan amount, and property value.",
+      "expected_outcome": "Agent collects the necessary inputs to provide a rate quote.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the rate quoting tool to provide an indicative interest rate and APR.",
+      "expected_outcome": "Agent provides the current indicative rate for a customer with the specified profile.",
+      "required_tools": [
+        "get_mortgage_rate_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the difference between interest rate and APR and outline the next steps to apply.",
+      "expected_outcome": "Agent clearly explains the financial terms and application process.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

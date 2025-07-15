@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10336",
+  "title": "Test the IT Disaster Recovery Plan",
+  "description": "An IT auditor reviews the results of the latest disaster recovery (DR) test.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the DR test plan and the after-action report from the most recent test.",
+      "expected_outcome": "Auditor has the documentation detailing the plan and results of the DR test.",
+      "required_tools": [
+        "get_dr_test_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the test results to determine if the Recovery Time Objective (RTO) and Recovery Point Objective (RPO) were met.",
+      "expected_outcome": "Auditor finds that the RTO of 4 hours was missed; the actual recovery took 7 hours.",
+      "required_tools": [
+        "analyze_dr_test_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the failure to meet the RTO as a finding and recommend a root cause analysis be performed by the IT team.",
+      "expected_outcome": "A finding is created to address the DR test failure.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

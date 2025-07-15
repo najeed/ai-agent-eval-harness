@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-isr-10808",
+  "title": "Vehicle Target Identification",
+  "description": "An analyst must use drone full-motion video (FMV) to positively identify a specific vehicle in a convoy believed to be carrying a high-value individual (HVI).",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "Target Identification & Tracking",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the live FMV feed to locate the convoy.",
+      "expected_outcome": "Analyst successfully finds the convoy in the video feed.",
+      "required_tools": [
+        "view_live_fmv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "target_detection_speed",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare vehicles in the convoy against intelligence descriptions to find the target vehicle.",
+      "expected_outcome": "Analyst correctly identifies the specific vehicle based on features like make, model, and markings.",
+      "required_tools": [
+        "compare_video_to_intelligence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Maintain a continuous track on the identified vehicle and report any changes in its status or behavior.",
+      "expected_outcome": "Analyst successfully tracks the vehicle without losing sight.",
+      "required_tools": [
+        "maintain_target_track"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tracking_continuity",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

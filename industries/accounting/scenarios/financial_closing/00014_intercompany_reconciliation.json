@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-fc-14",
+  "title": "Perform Intercompany Reconciliation",
+  "description": "During consolidation for month-end close, an accountant needs to reconcile intercompany payables and receivables between two subsidiaries.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Period-End Close Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the 'Intercompany AP' balance from Subsidiary A for transactions with Subsidiary B.",
+      "expected_outcome": "Agent finds Subsidiary A shows a payable of $15,200 to B.",
+      "required_tools": [
+        "get_intercompany_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the 'Intercompany AR' balance from Subsidiary B for transactions with Subsidiary A.",
+      "expected_outcome": "Agent finds Subsidiary B shows a receivable of $14,800 from A.",
+      "required_tools": [
+        "get_intercompany_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the transactions causing the discrepancy.",
+      "expected_outcome": "Agent finds a timing difference: Subsidiary A has recorded an invoice from B that B has not yet recorded as revenue.",
+      "required_tools": [
+        "identify_intercompany_discrepancy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Propose a consolidating adjustment to ensure the balances eliminate upon consolidation.",
+      "expected_outcome": "Agent drafts the correct elimination entry.",
+      "required_tools": [
+        "propose_consolidating_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

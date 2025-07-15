@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-pd-11130",
+  "title": "Draft Community Engagement Plan",
+  "description": "A project developer needs to create a community engagement plan for a new wind farm project to address local concerns.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Permitting & Compliance",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify key community stakeholders, including local government officials, landowners, and community groups.",
+      "expected_outcome": "Agent produces a categorized list of stakeholders.",
+      "required_tools": [
+        "identify_local_stakeholders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Research common community concerns about wind farms (e.g., visual impact, noise, property values).",
+      "expected_outcome": "Agent summarizes the top 5 most frequent concerns.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft a plan that includes a timeline of activities like town hall meetings, project newsletters, and a dedicated project website.",
+      "expected_outcome": "Agent creates a structured engagement plan with clear action items.",
+      "required_tools": [
+        "draft_engagement_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

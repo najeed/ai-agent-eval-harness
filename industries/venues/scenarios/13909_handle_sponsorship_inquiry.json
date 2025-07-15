@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-sh-13909",
+  "title": "Handle a Sponsorship Inquiry",
+  "description": "A local company inquires about sponsorship opportunities at the venue, such as signage or naming rights.",
+  "use_case": "Sales & Hospitality",
+  "core_function": "Premium Seating & Suite Sales",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the inquiry and gather basic information about the company and their budget.",
+      "expected_outcome": "Agent logs the new lead in the CRM.",
+      "required_tools": [
+        "log_sales_lead"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the company the venue's standard sponsorship deck, which details available opportunities and pricing.",
+      "expected_outcome": "Agent emails the information packet.",
+      "required_tools": [
+        "send_information_packet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the lead to a corporate sales manager for follow-up.",
+      "expected_outcome": "Agent assigns the lead to the appropriate sales rep.",
+      "required_tools": [
+        "assign_sales_leads"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

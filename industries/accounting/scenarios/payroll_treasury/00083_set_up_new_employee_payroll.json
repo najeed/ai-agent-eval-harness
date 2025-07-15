@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-83",
+  "title": "Set Up a New Employee in the Payroll System",
+  "description": "A new employee has been hired. The payroll specialist needs to add them to the payroll system before the next pay run.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Payroll Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the new hire paperwork, including their W-4 for tax withholding and direct deposit information.",
+      "expected_outcome": "Agent receives all necessary forms and data.",
+      "required_tools": [
+        "get_new_hire_paperwork"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new employee record in the payroll system.",
+      "expected_outcome": "Agent successfully creates the new employee profile.",
+      "required_tools": [
+        "create_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the employee's salary, federal and state tax withholding information, benefit deductions, and direct deposit details.",
+      "expected_outcome": "Agent accurately enters all required payroll data.",
+      "required_tools": [
+        "update_employee_payroll_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-ia-10367",
+  "title": "Test Journal Entry Controls",
+  "description": "An auditor tests manual journal entries to ensure they are appropriate and properly approved.",
+  "use_case": "Internal Audit",
+  "core_function": "Testing & Analysis",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a log of all manual journal entries posted in the last quarter.",
+      "expected_outcome": "The auditor has the complete dataset of journal entries.",
+      "required_tools": [
+        "get_journal_entry_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use data analytics to identify high-risk entries, such as those made on weekends, by unusual users, or with round dollar amounts.",
+      "expected_outcome": "The analysis flags a sample of high-risk entries for investigation.",
+      "required_tools": [
+        "run_data_analytics_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For the sampled high-risk entries, review supporting documentation and verify they had independent review and approval from a manager.",
+      "expected_outcome": "The auditor finds one large entry posted by a senior manager that had no independent review, documenting it as a finding.",
+      "required_tools": [
+        "get_supporting_documentation",
+        "review_approval_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

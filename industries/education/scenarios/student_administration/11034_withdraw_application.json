@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-sa-11034",
+  "title": "Withdraw Application",
+  "description": "An applicant who has been accepted wishes to withdraw their application as they have decided to attend another university.",
+  "use_case": "Student Administration",
+  "core_function": "Admissions & Enrollment",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the applicant and verify their identity.",
+      "expected_outcome": "Agent securely identifies the applicant.",
+      "required_tools": [
+        "get_applicant_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm the student's intent to withdraw.",
+      "expected_outcome": "Agent confirms the student wishes to withdraw their application.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the applicant's status to 'Withdrawn' in the SIS.",
+      "expected_outcome": "Agent successfully updates the application status.",
+      "required_tools": [
+        "update_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

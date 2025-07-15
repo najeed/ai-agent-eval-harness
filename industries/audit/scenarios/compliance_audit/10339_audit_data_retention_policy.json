@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10339",
+  "title": "Audit Data Retention Policy Compliance",
+  "description": "An auditor checks if data is being disposed of in accordance with the company's data retention policy.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Policy & Procedure Adherence",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the data retention policy to identify the required retention period for customer emails (e.g., 7 years).",
+      "expected_outcome": "The auditor understands the policy requirement.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the email archive system for any customer emails that are older than 7 years.",
+      "expected_outcome": "The query returns a significant number of emails that should have been deleted.",
+      "required_tools": [
+        "query_archive_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the failure to follow the retention policy as a finding, noting the increased legal discovery and storage costs.",
+      "expected_outcome": "A finding is created to address the non-compliance.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

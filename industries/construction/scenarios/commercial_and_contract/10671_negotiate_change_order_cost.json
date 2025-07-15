@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-cc-10671",
+  "title": "Negotiate Change Order Cost",
+  "description": "A subcontractor has submitted a change order proposal that the PM believes is overpriced. The PM needs to negotiate a lower price.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Change Order Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the subcontractor's change order proposal and its cost breakdown.",
+      "expected_outcome": "The proposal and its details are retrieved.",
+      "required_tools": [
+        "get_change_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform an independent cost estimate for the change order scope using standard industry pricing data.",
+      "expected_outcome": "Agent's independent estimate is 20% lower than the subcontractor's proposal.",
+      "required_tools": [
+        "perform_independent_cost_estimate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a counter-offer to the subcontractor with the independent estimate as justification for a lower price.",
+      "expected_outcome": "A formal counter-offer is sent to the subcontractor.",
+      "required_tools": [
+        "send_vendor_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

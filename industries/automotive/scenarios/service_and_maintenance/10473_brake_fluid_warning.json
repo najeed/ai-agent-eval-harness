@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-sm-10473",
+  "title": "Brake System Warning Light",
+  "description": "A customer's brake system warning light has illuminated. This is a critical safety alert.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Vehicle Diagnostics",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Advise the customer to pull over safely and not to drive the vehicle due to the potential for brake failure.",
+      "expected_outcome": "Agent communicates the urgency and seriousness of the warning.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a remote diagnostic to check for specific brake system DTCs.",
+      "expected_outcome": "The scan returns DTC C1288 - 'Brake Pressure Sensor Circuit Failure'.",
+      "required_tools": [
+        "run_remote_diagnostics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch roadside assistance to tow the vehicle to the nearest dealership for immediate inspection.",
+      "expected_outcome": "Agent dispatches a tow truck to the customer's location.",
+      "required_tools": [
+        "dispatch_roadside_assistance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

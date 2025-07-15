@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10045",
+  "title": "Manage the Master Production Schedule",
+  "description": "A production planner must adjust the master production schedule due to a supplier delay for a critical component.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Supply Chain & Procurement",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive notification of a 2-week delay for a specific part from a supplier.",
+      "expected_outcome": "Agent identifies the delayed part and the affected aircraft units.",
+      "required_tools": [
+        "get_supplier_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the production schedule to identify all downstream tasks that will be impacted by the delay.",
+      "expected_outcome": "Agent generates a list of all affected work orders and assembly steps.",
+      "required_tools": [
+        "analyze_schedule_dependencies"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the master production schedule, shifting the impacted tasks and notifying the affected production teams of the new timeline.",
+      "expected_outcome": "Agent successfully revises and publishes the new schedule.",
+      "required_tools": [
+        "update_master_production_schedule",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

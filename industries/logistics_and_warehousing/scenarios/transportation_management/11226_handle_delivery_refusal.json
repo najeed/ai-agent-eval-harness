@@ -1,0 +1,66 @@
+{
+  "scenario_id": "lw-tm-11226",
+  "title": "Handle a Delivery Refusal",
+  "description": "A carrier reports that a customer has refused a delivery. The agent must determine the next steps.",
+  "use_case": "Transportation Management",
+  "core_function": "Real-time Tracking & Visibility",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an alert from the carrier that a shipment has been refused, along with the reason ('Damaged Box').",
+      "expected_outcome": "Agent is notified of the exception and the reason.",
+      "required_tools": [
+        "get_carrier_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the customer to confirm the refusal and understand the issue.",
+      "expected_outcome": "Agent speaks with the customer and confirms they refused the shipment due to damage.",
+      "required_tools": [
+        "get_customer_contact_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide disposition instructions to the carrier to return the shipment to the origin warehouse.",
+      "expected_outcome": "Agent successfully instructs the carrier to initiate a return.",
+      "required_tools": [
+        "send_disposition_to_carrier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a new sales order to ship a replacement to the customer.",
+      "expected_outcome": "Agent proactively resolves the customer's issue by shipping a new order.",
+      "required_tools": [
+        "create_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "education-sa-11021",
+  "title": "Set Up a Tuition Payment Plan",
+  "description": "A student cannot pay their tuition in full and wants to enroll in a monthly payment plan.",
+  "use_case": "Student Administration",
+  "core_function": "Financial Aid & Billing",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and their outstanding tuition balance.",
+      "expected_outcome": "Agent confirms the student's identity and the amount due.",
+      "required_tools": [
+        "get_student_record",
+        "get_student_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the available payment plan options, including the number of installments and any service fees.",
+      "expected_outcome": "Agent clearly presents the payment plan terms.",
+      "required_tools": [
+        "get_payment_plan_options"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enroll the student in their chosen payment plan.",
+      "expected_outcome": "Agent successfully enrolls the student in the 4-month payment plan.",
+      "required_tools": [
+        "enroll_in_payment_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

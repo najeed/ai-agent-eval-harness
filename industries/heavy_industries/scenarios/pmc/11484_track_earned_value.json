@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11484",
+  "title": "Track Project Earned Value",
+  "description": "A project controls engineer needs to calculate the earned value for a work package to assess its performance.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Reporting & Communication",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the budgeted cost for the work package.",
+      "expected_outcome": "Agent retrieves the budget for the package.",
+      "required_tools": [
+        "get_wbs_budget"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the reported physical percentage complete for the work package from the field team.",
+      "expected_outcome": "The field reports that the work is 50% complete.",
+      "required_tools": [
+        "get_physical_percent_complete"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the earned value by multiplying the budget by the percentage complete, and update the project's performance metrics.",
+      "expected_outcome": "Agent calculates the earned value and updates the project's performance dashboard.",
+      "required_tools": [
+        "calculate_earned_value",
+        "update_performance_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

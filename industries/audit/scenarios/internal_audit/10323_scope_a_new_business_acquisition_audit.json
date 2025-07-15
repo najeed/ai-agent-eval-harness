@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10323",
+  "title": "Scope an Audit of a New Business Acquisition",
+  "description": "Following a recent acquisition, an internal audit manager plans an audit to review the integration process.",
+  "use_case": "Internal Audit",
+  "core_function": "Audit Planning & Scoping",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the acquisition's due diligence reports to identify key risks noted during the deal.",
+      "expected_outcome": "Auditor identifies key risks related to the acquired company's IT systems and cultural integration.",
+      "required_tools": [
+        "review_due_diligence_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Interview the head of the integration management office (IMO) to understand the integration plan and current status.",
+      "expected_outcome": "Auditor gets an overview of the integration timeline and key milestones.",
+      "required_tools": [
+        "conduct_interview"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft an audit scope that focuses on the highest risk areas of the integration, such as IT systems migration and employee retention.",
+      "expected_outcome": "A risk-based audit scope is developed and approved.",
+      "required_tools": [
+        "generate_audit_planning_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

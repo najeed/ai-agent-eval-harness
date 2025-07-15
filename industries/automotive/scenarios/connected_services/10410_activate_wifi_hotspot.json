@@ -1,0 +1,51 @@
+{
+  "scenario_id": "auto-cs-10410",
+  "title": "Activate In-Car Wi-Fi Hotspot Trial",
+  "description": "A new car owner wants to activate the free trial for their in-car Wi-Fi hotspot.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Subscription Management",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and vehicle, and verify eligibility for the Wi-Fi trial.",
+      "expected_outcome": "Agent confirms the vehicle is eligible for a 3-month/3GB free trial.",
+      "required_tools": [
+        "get_customer_details",
+        "get_connected_service_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the terms of the trial (duration, data cap) and what happens when it expires.",
+      "expected_outcome": "Agent clearly communicates the trial terms and conditions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Activate the Wi-Fi hotspot service on the customer's account.",
+      "expected_outcome": "Agent successfully activates the service, and it becomes available in the vehicle.",
+      "required_tools": [
+        "activate_connected_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

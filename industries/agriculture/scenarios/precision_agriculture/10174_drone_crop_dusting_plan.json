@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10174",
+  "title": "Plan a Crop Dusting Mission for a Drone",
+  "description": "A farmer needs to apply a fungicide to a specific, hard-to-reach part of a field using a large spraying drone.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Robotics & Automation",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Allow the user to draw a polygon on the field map to define the target application area.",
+      "expected_outcome": "Agent captures the target zone.",
+      "required_tools": [
+        "draw_polygon_on_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the application rate for the specified fungicide.",
+      "expected_outcome": "Agent retrieves the correct rate from the product label.",
+      "required_tools": [
+        "get_pesticide_label_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an optimized flight plan for the spraying drone to cover the target polygon, considering spray drift and buffer zones.",
+      "expected_outcome": "Agent creates an efficient and safe mission plan.",
+      "required_tools": [
+        "generate_drone_mission_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

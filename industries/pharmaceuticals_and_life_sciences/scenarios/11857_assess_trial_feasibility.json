@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-ct-11857",
+  "title": "Assess Clinical Trial Feasibility",
+  "description": "A clinical scientist needs to assess the feasibility of a proposed trial design by analyzing patient data.",
+  "use_case": "Clinical Trials",
+  "core_function": "Trial Design & Feasibility",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define a set of draft inclusion/exclusion criteria for a new study.",
+      "expected_outcome": "Agent drafts a list of potential criteria for the study.",
+      "required_tools": [
+        "define_study_criteria"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Model the impact of the criteria by querying a real-world evidence database.",
+      "expected_outcome": "Agent queries the database and finds that the initial criteria are too strict and result in too few eligible patients.",
+      "required_tools": [
+        "query_rwe_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Iteratively adjust the criteria and re-run the model to find an optimal balance between scientific rigor and recruitment feasibility.",
+      "expected_outcome": "Agent modifies the criteria (e.g., widens an age range) and finds a scenario that yields a sufficient number of patients.",
+      "required_tools": [
+        "query_rwe_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a feasibility report with the final recommended criteria and projected enrollment numbers.",
+      "expected_outcome": "Agent creates a report to support the final protocol design.",
+      "required_tools": [
+        "generate_feasibility_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10053",
+  "title": "Develop Flight Software for a Satellite",
+  "description": "A software engineer is developing the flight software that controls a satellite's attitude determination and control system (ADCS).",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Mission Design & Analysis",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Write software code to read data from the satellite's sensors (star trackers, gyros).",
+      "expected_outcome": "Agent writes compliant and efficient code to interface with the sensors.",
+      "required_tools": [
+        "write_software_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "code_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Implement a control algorithm (e.g., a Kalman filter) to process the sensor data and determine the satellite's orientation.",
+      "expected_outcome": "Agent correctly implements the complex control algorithm.",
+      "required_tools": [
+        "implement_algorithm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "algorithm_correctness",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Test the software in a hardware-in-the-loop simulation to verify its performance before uploading it to the satellite.",
+      "expected_outcome": "Agent runs the simulation and confirms the software can accurately and stably control the satellite's attitude.",
+      "required_tools": [
+        "run_hardware_in_the_loop_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "simulation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-ms-10454",
+  "title": "Plan Production Line Retooling",
+  "description": "A production manager needs to plan for a scheduled shutdown of the assembly line to retool for the next model year.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Production Planning",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the official project plan for the model year changeover, noting the required downtime.",
+      "expected_outcome": "Agent finds the project requires a 72-hour shutdown.",
+      "required_tools": [
+        "get_project_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a detailed shutdown schedule, coordinating with maintenance, robotics, and logistics teams.",
+      "expected_outcome": "Agent creates and distributes a minute-by-minute schedule for the retooling process.",
+      "required_tools": [
+        "create_maintenance_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Adjust the master production schedule to account for the planned downtime, ensuring production targets are met before the shutdown.",
+      "expected_outcome": "Agent increases the production rate in the weeks leading up to the shutdown to build up a buffer.",
+      "required_tools": [
+        "update_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

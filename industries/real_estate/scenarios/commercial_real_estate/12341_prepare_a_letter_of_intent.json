@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-cre-12341",
+  "title": "Prepare a Letter of Intent (LOI)",
+  "description": "A tenant's agent needs to draft a Letter of Intent to lease a commercial space on behalf of their client.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Leasing & Tenant Representation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the key business terms for the offer from the tenant client (e.g., rent rate, lease term, requested TI allowance, use clause).",
+      "expected_outcome": "Agent has all the necessary terms to draft the LOI.",
+      "required_tools": [
+        "offer_intake_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use an LOI template to generate a draft document with the client's proposed terms.",
+      "expected_outcome": "A draft LOI is created.",
+      "required_tools": [
+        "generate_loi_from_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the draft LOI to the client for review and approval before submitting it to the landlord's agent.",
+      "expected_outcome": "The client approves the LOI for submission.",
+      "required_tools": [
+        "send_document_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

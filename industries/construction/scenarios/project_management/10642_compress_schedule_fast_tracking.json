@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-pm-10642",
+  "title": "Compress Schedule Using Fast-Tracking",
+  "description": "To shorten the project duration, a PM decides to use fast-tracking by starting the electrical rough-in while structural steel work is still ongoing.",
+  "use_case": "Project Management",
+  "core_function": "Project Planning & Scheduling",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify two tasks on the critical path that can be performed in parallel, such as 'Erect Steel - Sector B' and 'Rough-in Electrical - Sector A'.",
+      "expected_outcome": "Agent identifies two tasks that can be fast-tracked.",
+      "required_tools": [
+        "get_critical_path",
+        "analyze_task_dependencies"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Change the dependency between the two tasks from 'Finish-to-Start' to 'Start-to-Start' with a 5-day lag.",
+      "expected_outcome": "The schedule is updated to reflect the fast-tracking logic.",
+      "required_tools": [
+        "update_task_dependency"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the increased risk associated with fast-tracking in the risk register.",
+      "expected_outcome": "A new risk entry is created, noting the potential for trade interference.",
+      "required_tools": [
+        "create_risk_register_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

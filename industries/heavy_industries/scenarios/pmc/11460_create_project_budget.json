@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-pmc-11460",
+  "title": "Create Initial Project Budget",
+  "description": "A project is being initiated, and a cost engineer needs to create the initial budget based on the conceptual estimate.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Cost Engineering & Control",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the approved conceptual cost estimate for the project.",
+      "expected_outcome": "Agent gets the high-level cost estimate.",
+      "required_tools": [
+        "get_cost_estimate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Import the cost estimate into the cost management system to create the baseline budget.",
+      "expected_outcome": "Agent successfully creates the initial budget structure.",
+      "required_tools": [
+        "create_baseline_budget"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Allocate the budget across the top-level WBS elements.",
+      "expected_outcome": "Agent distributes the total budget among the main project areas like 'Engineering', 'Procurement', and 'Construction'.",
+      "required_tools": [
+        "allocate_budget_to_wbs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10378",
+  "title": "Audit Database Security",
+  "description": "An IT auditor reviews the security configuration of a critical financial database.",
+  "use_case": "IT Audit",
+  "core_function": "Cybersecurity & Privacy Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the database configuration to ensure that security patches are up to date.",
+      "expected_outcome": "The auditor finds that the database has not been patched in over a year and is missing several critical security patches.",
+      "required_tools": [
+        "get_database_configuration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the database user accounts to ensure that default or weak passwords are not in use.",
+      "expected_outcome": "The auditor confirms that all users have complex passwords.",
+      "required_tools": [
+        "check_database_passwords"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that activity on the database is being logged to a secure, separate log server.",
+      "expected_outcome": "The auditor confirms that audit logging is enabled and functioning correctly.",
+      "required_tools": [
+        "check_database_logging"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

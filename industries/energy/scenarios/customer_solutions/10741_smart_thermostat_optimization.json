@@ -1,0 +1,66 @@
+{
+  "scenario_id": "energy-cs-10741",
+  "title": "Smart Thermostat Demand Response Optimization",
+  "description": "During a heatwave, a VPP operator needs to use a fleet of smart thermostats to pre-cool homes before a demand response event.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "Distributed Energy Resource (DER) Onboarding",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all enrolled smart thermostats in the target region.",
+      "expected_outcome": "Agent retrieves a list of 10,000 eligible thermostats.",
+      "required_tools": [
+        "get_der_assets_by_zone"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a dispatch signal to the thermostats to pre-cool homes by 2 degrees in the hour leading up to the peak demand period.",
+      "expected_outcome": "Agent successfully sends the pre-cooling command.",
+      "required_tools": [
+        "dispatch_thermostat_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "During the peak period, send a second signal to raise the setpoint by 4 degrees, creating a load reduction.",
+      "expected_outcome": "Agent successfully sends the temperature setback command.",
+      "required_tools": [
+        "dispatch_thermostat_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Monitor the aggregate load reduction from the thermostat fleet to verify performance.",
+      "expected_outcome": "Agent confirms the fleet is delivering the expected load shed.",
+      "required_tools": [
+        "monitor_event_performance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

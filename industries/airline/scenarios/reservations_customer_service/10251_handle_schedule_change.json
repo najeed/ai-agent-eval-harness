@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10251",
+  "title": "Handle an Airline Schedule Change",
+  "description": "An airline has changed its schedule, and a customer's flight now departs 3 hours earlier. An agent must notify the customer and handle their request.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Disruption Management (Customer Facing)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Notify the customer of the schedule change.",
+      "expected_outcome": "Agent sends an email/SMS about the change.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The customer calls and says the new time does not work for them. Explain their options, such as accepting the change, moving to a different flight for free, or getting a refund.",
+      "expected_outcome": "Agent clearly communicates the customer's options.",
+      "required_tools": [
+        "explain_schedule_change_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The customer chooses to move to a later flight. Process this change free of charge.",
+      "expected_outcome": "Agent successfully rebooks the customer on a more suitable flight at no cost.",
+      "required_tools": [
+        "rebook_passenger"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

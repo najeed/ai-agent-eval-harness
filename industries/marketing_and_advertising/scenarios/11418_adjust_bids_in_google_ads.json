@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cm-11418",
+  "title": "Adjust Bids in Google Ads",
+  "description": "An SEM manager needs to increase bids for high-performing keywords and decrease them for low-performing ones.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Paid Search (SEM)",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Pull a keyword performance report for the last 30 days, including conversion rate.",
+      "expected_outcome": "Agent retrieves the necessary data.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify keywords with a conversion rate above the campaign average and increase their bids by 15%.",
+      "expected_outcome": "Agent successfully increases bids for the top-performing keywords.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify keywords with zero conversions and significant spend, and decrease their bids by 20%.",
+      "expected_outcome": "Agent successfully decreases bids for the poor-performing keywords.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

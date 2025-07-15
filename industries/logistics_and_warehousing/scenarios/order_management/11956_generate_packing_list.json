@@ -1,0 +1,50 @@
+{
+  "scenario_id": "lw-om-11956",
+  "title": "Generate a Packing List",
+  "description": "Before an order is packed, the system must generate a packing list to be included inside the box.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Reporting & Documentation",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the details of the order to be packed.",
+      "expected_outcome": "Agent correctly identifies the order and its contents.",
+      "required_tools": [
+        "get_order_by_tote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the items and quantities that have been picked for the order.",
+      "expected_outcome": "Agent confirms the picked items match the order.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_validation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate and print the packing list document.",
+      "expected_outcome": "A packing list is successfully printed, showing the items and quantities being shipped.",
+      "required_tools": [
+        "generate_packing_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

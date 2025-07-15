@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10328",
+  "title": "Audit Anti-Bribery and Corruption (ABAC) Policy",
+  "description": "An auditor tests compliance with the company's ABAC policy, focusing on gifts and entertainment provided to foreign officials.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Policy & Procedure Adherence",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a list of all payments made to third-party agents in high-risk countries.",
+      "expected_outcome": "Auditor has a dataset of potentially high-risk payments.",
+      "required_tools": [
+        "get_payment_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For a sample of payments, review supporting documentation to ensure there was a legitimate business purpose.",
+      "expected_outcome": "Auditor reviews invoices and contracts for the sampled payments.",
+      "required_tools": [
+        "get_supporting_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review expense reports from the international sales team for any excessive or inappropriate gifts or entertainment expenses.",
+      "expected_outcome": "Auditor identifies several expenses for 'client entertainment' that lack detailed receipts or business justification.",
+      "required_tools": [
+        "review_expense_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "auto-sm-10431",
+  "title": "Tire Pressure Monitoring System (TPMS) Warning",
+  "description": "A customer's TPMS warning light is on, and they want to know what to do.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Vehicle Diagnostics",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use telematics to remotely check the tire pressure readings for all four tires.",
+      "expected_outcome": "Agent retrieves readings: LF: 35, RF: 35, LR: 24, RR: 35 psi.",
+      "required_tools": [
+        "run_remote_diagnostics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the customer that their left-rear tire is low and advise them to inflate it to the recommended pressure found on the door jamb sticker.",
+      "expected_outcome": "Agent clearly communicates which tire is low and the correct pressure.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the customer that if the light returns, they may have a slow leak and should schedule a service appointment.",
+      "expected_outcome": "Agent provides appropriate advice for further action.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

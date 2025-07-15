@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ag-fo-10193",
+  "title": "Generate a Farm Sustainability Report",
+  "description": "A farm that supplies a major food brand needs to generate an annual sustainability report covering its water usage, carbon footprint, and biodiversity practices.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Financial Management & Compliance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the farm's total water usage for the year.",
+      "expected_outcome": "Agent gets the water usage data.",
+      "required_tools": [
+        "get_water_usage_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the farm's carbon footprint based on fuel usage, fertilizer inputs, and tillage practices.",
+      "expected_outcome": "Agent calculates the total CO2 equivalent emissions.",
+      "required_tools": [
+        "calculate_carbon_footprint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Retrieve records of biodiversity-promoting activities, such as planting pollinator habitats or cover crops.",
+      "expected_outcome": "Agent gathers the relevant practice records.",
+      "required_tools": [
+        "get_farm_practice_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Compile all the data into a formatted sustainability report based on the food brand's template.",
+      "expected_outcome": "Agent generates a complete, professional report.",
+      "required_tools": [
+        "generate_sustainability_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

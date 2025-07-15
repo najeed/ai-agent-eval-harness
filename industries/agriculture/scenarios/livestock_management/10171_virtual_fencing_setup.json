@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10171",
+  "title": "Set Up a Virtual Fence",
+  "description": "A rancher wants to create a new virtual fence to confine cattle to a specific area of a large pasture without using physical fences.",
+  "use_case": "Livestock Management",
+  "core_function": "Health & Welfare",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Display a satellite map of the pasture.",
+      "expected_outcome": "Agent shows the map.",
+      "required_tools": [
+        "get_farm_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Allow the rancher to draw a polygon on the map to define the virtual fence boundary.",
+      "expected_outcome": "Agent successfully captures the polygon drawn by the user.",
+      "required_tools": [
+        "draw_polygon_on_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the new polygon as a virtual fence and apply it to the GPS collars of the cattle in that pasture.",
+      "expected_outcome": "Agent successfully creates the geofence and updates the animal collars.",
+      "required_tools": [
+        "save_virtual_fence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-go-11515",
+  "title": "Game Server Capacity Management",
+  "description": "Following the launch of a new game expansion, player concurrency is higher than expected, causing login queues.",
+  "use_case": "Gaming Operations",
+  "core_function": "Server Operations & Matchmaking",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify which game servers are experiencing high player load and long login queues.",
+      "expected_outcome": "Agent identifies that the EU and US-East servers are at 100% capacity.",
+      "required_tools": [
+        "get_server_load_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provision and deploy new temporary game server instances in the affected regions from the cloud provider.",
+      "expected_outcome": "Agent successfully spins up 10 new server instances for the EU region.",
+      "required_tools": [
+        "provision_new_server_instance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the new instances to the matchmaking pool to alleviate player load.",
+      "expected_outcome": "Agent updates the server pool configuration, and login queues begin to decrease.",
+      "required_tools": [
+        "update_matchmaking_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

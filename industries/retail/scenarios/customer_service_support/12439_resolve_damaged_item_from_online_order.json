@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ret-cs-12439",
+  "title": "Resolve Damaged Item from Online Order",
+  "description": "A customer calls to report that an item they received from an online order arrived broken.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Issue Resolution",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the customer's online order using their name or order number.",
+      "expected_outcome": "The agent finds the correct order in the order management system.",
+      "required_tools": [
+        "find_online_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apologize for the issue and offer the customer a choice of a refund or a replacement item.",
+      "expected_outcome": "The agent provides clear resolution options.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The customer chooses a replacement. The agent creates a new, no-charge order for the same item to be shipped to the customer.",
+      "expected_outcome": "A replacement order is created, resolving the customer's issue.",
+      "required_tools": [
+        "create_replacement_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "hr-em-11622",
+  "title": "Correct a Payroll Error",
+  "description": "An employee reports that their last paycheck was for the wrong amount.",
+  "use_case": "Employee Management",
+  "core_function": "Payroll & Compensation",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the employee and retrieve their last pay statement.",
+      "expected_outcome": "Payroll specialist pulls up the employee's most recent pay stub.",
+      "required_tools": [
+        "get_employee_record",
+        "get_payroll_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the payroll data and identify the error (e.g., incorrect hours entered).",
+      "expected_outcome": "Specialist finds that the employee's overtime hours were not included.",
+      "required_tools": [
+        "review_payroll_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process an off-cycle payment to correct the shortfall and explain the resolution to the employee.",
+      "expected_outcome": "Specialist issues a correction payment and clearly communicates the fix to the employee.",
+      "required_tools": [
+        "enter_off_cycle_payment",
+        "run_off_cycle_payroll"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-so-12404",
+  "title": "Clock In for a Shift",
+  "description": "A store associate arrives for their shift and needs to clock in.",
+  "use_case": "Store Operations",
+  "core_function": "Task & Shift Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the time clock application on a POS terminal or dedicated device.",
+      "expected_outcome": "The associate opens the timekeeping software.",
+      "required_tools": [
+        "open_timeclock_app"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter their employee ID and password.",
+      "expected_outcome": "The system authenticates the associate.",
+      "required_tools": [
+        "enter_employee_credentials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select the 'Clock In' option.",
+      "expected_outcome": "The associate's shift start time is successfully recorded.",
+      "required_tools": [
+        "clock_in"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

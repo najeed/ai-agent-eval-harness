@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10062",
+  "title": "Perform a CFD Analysis",
+  "description": "An aerodynamicist needs to run a Computational Fluid Dynamics (CFD) simulation to analyze airflow over a new winglet design.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Design & Engineering",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a mesh (a grid of points) around the 3D model of the winglet for the simulation.",
+      "expected_outcome": "Agent generates a high-quality mesh suitable for CFD.",
+      "required_tools": [
+        "create_cfd_mesh"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set up the simulation conditions, including airspeed, altitude (air density), and turbulence model.",
+      "expected_outcome": "Agent correctly defines all simulation parameters.",
+      "required_tools": [
+        "define_simulation_conditions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the CFD simulation and analyze the results to determine the winglet's effectiveness at reducing induced drag.",
+      "expected_outcome": "Agent runs the simulation and the results show a 4% reduction in drag.",
+      "required_tools": [
+        "run_cfd_simulation",
+        "analyze_simulation_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

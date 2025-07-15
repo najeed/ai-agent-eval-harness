@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10109",
+  "title": "Feed Formulation for Beef Cattle",
+  "description": "A cattle rancher needs to formulate a cost-effective feed ration that meets the nutritional requirements for their finisher cattle.",
+  "use_case": "Livestock Management",
+  "core_function": "Feeding & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the nutritional requirements for beef cattle in the finishing stage (e.g., protein, energy, minerals).",
+      "expected_outcome": "Agent retrieves the correct nutritional targets.",
+      "required_tools": [
+        "get_animal_nutrition_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the current prices and nutritional content of available feed ingredients (e.g., corn, soybean meal, hay).",
+      "expected_outcome": "Agent gets up-to-date pricing and nutritional data.",
+      "required_tools": [
+        "get_feed_ingredient_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a feed formulation optimization model to find the least-cost ration that meets all nutritional constraints.",
+      "expected_outcome": "Agent generates a feed recipe with specific percentages of each ingredient.",
+      "required_tools": [
+        "optimize_feed_ration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10007",
+  "title": "Manage Fuselage Assembly Work Order",
+  "description": "A production supervisor needs to manage a work order for joining two fuselage sections on the assembly line.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Assembly & Production",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the work order for the fuselage section join.",
+      "expected_outcome": "Agent correctly identifies the work order and its associated tasks.",
+      "required_tools": [
+        "get_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all prerequisite tasks, such as pre-positioning the sections and inspecting the joints, are complete.",
+      "expected_outcome": "Agent confirms all preceding steps are marked as complete.",
+      "required_tools": [
+        "check_task_dependencies"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the work order status to 'Complete' after the technicians finish the join and it passes inspection.",
+      "expected_outcome": "Agent successfully updates the work order status.",
+      "required_tools": [
+        "update_work_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

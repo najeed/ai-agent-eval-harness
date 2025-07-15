@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-mp-10565",
+  "title": "Course of Action Analysis for Maritime Chokepoint Transit",
+  "description": "A naval planner must compare two COAs for a fleet to transit a dangerous maritime chokepoint: a high-speed transit vs. a slower, more deliberate transit with enhanced ISR.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Course of Action (COA) Analysis",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Develop plans for both the high-speed transit and the deliberate transit COAs.",
+      "expected_outcome": "Planner creates two distinct and viable transit plans.",
+      "required_tools": [
+        "develop_course_of_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assess the risks for each COA, considering threats from shore-based missiles, mines, and small boats.",
+      "expected_outcome": "Planner accurately assesses that high speed reduces exposure time but limits reaction time.",
+      "required_tools": [
+        "assess_mission_risk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_assessment_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the slower, deliberate transit, as the enhanced ISR provides better situational awareness to counter potential ambushes.",
+      "expected_outcome": "Planner makes a well-justified recommendation prioritizing security over speed.",
+      "required_tools": [
+        "generate_coa_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_justification_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

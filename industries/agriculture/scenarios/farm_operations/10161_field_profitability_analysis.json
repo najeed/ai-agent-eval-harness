@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ag-fo-10161",
+  "title": "Analyze Field-Level Profitability",
+  "description": "At the end of the year, a farm manager wants to analyze the profitability of each individual field.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Financial Management & Compliance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For a specific field, retrieve the total revenue from the harvested crop (yield x price).",
+      "expected_outcome": "Agent calculates the total revenue for the field.",
+      "required_tools": [
+        "get_field_revenue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve all expenses associated with that field, including seed, fertilizer, chemicals, and machinery costs.",
+      "expected_outcome": "Agent compiles a complete list of expenses for the field.",
+      "required_tools": [
+        "get_field_expenses"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the net profit or loss for the field.",
+      "expected_outcome": "Agent calculates the final profitability for the field.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a report comparing the profitability of all fields on the farm.",
+      "expected_outcome": "Agent creates a report that ranks fields by profitability.",
+      "required_tools": [
+        "generate_profitability_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

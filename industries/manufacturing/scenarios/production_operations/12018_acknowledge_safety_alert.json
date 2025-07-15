@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mfg-po-12018",
+  "title": "Acknowledge Safety Alert",
+  "description": "A light curtain on a robotic arm has been tripped, pausing the machine. The area supervisor needs to acknowledge and resolve the alert.",
+  "use_case": "Production & Operations",
+  "core_function": "Real-time Monitoring & Control",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the safety alert in the control system.",
+      "expected_outcome": "Agent acknowledges the alert, noting the time and location.",
+      "required_tools": [
+        "acknowledge_safety_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review safety camera footage to determine the cause of the alert.",
+      "expected_outcome": "Agent reviews the footage and sees a piece of cardboard fell into the path of the sensor.",
+      "required_tools": [
+        "review_safety_camera"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the cause, clear the obstruction, and reset the machine to resume operation.",
+      "expected_outcome": "Agent logs 'Foreign Object' as the cause and successfully restarts the machine.",
+      "required_tools": [
+        "log_alert_cause",
+        "reset_machine"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

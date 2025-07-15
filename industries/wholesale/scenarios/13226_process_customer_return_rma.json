@@ -1,0 +1,66 @@
+{
+  "scenario_id": "wholesale-im-13226",
+  "title": "Process a Customer Return (RMA)",
+  "description": "A retailer is returning unsold merchandise at the end of a season, as allowed by their contract.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Returns Management (RMA)",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The retailer requests a Return Merchandise Authorization (RMA).",
+      "expected_outcome": "Agent creates an RMA in the system and provides the RMA number to the retailer.",
+      "required_tools": [
+        "create_rma"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "When the returned goods arrive, inspect them to ensure they are in sellable condition.",
+      "expected_outcome": "A warehouse worker inspects the items and confirms they are undamaged.",
+      "required_tools": [
+        "inspect_returned_goods"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the returned items back into inventory.",
+      "expected_outcome": "Agent updates the inventory levels for the returned items.",
+      "required_tools": [
+        "update_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Issue a credit memo to the retailer's account for the value of the returned goods.",
+      "expected_outcome": "Agent successfully credits the retailer's account.",
+      "required_tools": [
+        "issue_credit_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

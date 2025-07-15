@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-cm-12106",
+  "title": "Pause Underperforming Ad Group",
+  "description": "While reviewing a live Google Ads campaign, an account manager notices one ad group has a very high cost-per-conversion and needs to pause it.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Campaign Monitoring & Optimization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the performance of all ad groups in the campaign for the last 14 days.",
+      "expected_outcome": "Agent retrieves the performance data for all ad groups.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the ad group with a cost-per-conversion that is 50% higher than the campaign average.",
+      "expected_outcome": "Agent correctly identifies the underperforming ad group.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Pause the identified ad group to prevent further inefficient spending.",
+      "expected_outcome": "Agent successfully pauses the correct ad group.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

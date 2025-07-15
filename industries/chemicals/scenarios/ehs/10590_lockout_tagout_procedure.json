@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-ehs-10590",
+  "title": "Perform Lockout-Tagout (LOTO)",
+  "description": "A maintenance technician needs to perform a lockout-tagout procedure to safely de-energize a piece of equipment before working on it.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Incident Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the specific LOTO procedure for the equipment being serviced.",
+      "expected_outcome": "Agent finds the correct procedure, which identifies all energy sources (electrical, pneumatic, etc.).",
+      "required_tools": [
+        "get_loto_procedure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Follow the procedure to isolate and lock all energy sources.",
+      "expected_outcome": "The technician physically applies locks and tags to all required isolation points.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the LOTO application in the electronic system, recording the lock numbers and the start time of the work.",
+      "expected_outcome": "Agent successfully creates a new entry in the LOTO log.",
+      "required_tools": [
+        "create_loto_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

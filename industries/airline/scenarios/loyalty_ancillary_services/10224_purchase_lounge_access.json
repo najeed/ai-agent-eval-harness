@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10224",
+  "title": "Purchase Lounge Access",
+  "description": "A passenger without elite status wants to purchase a one-time pass to the airline's airport lounge.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Ancillary Revenue & Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that the passenger is flying with the airline today.",
+      "expected_outcome": "Agent confirms the passenger has a valid same-day boarding pass.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the passenger of the price for a day pass.",
+      "expected_outcome": "Agent communicates the correct price.",
+      "required_tools": [
+        "get_ancillary_fee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the passenger's payment and provide them with access to the lounge.",
+      "expected_outcome": "Agent takes payment and grants access.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

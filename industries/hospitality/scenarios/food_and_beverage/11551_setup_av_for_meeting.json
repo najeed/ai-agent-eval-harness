@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-fb-11551",
+  "title": "Set up AV for a Meeting",
+  "description": "An event manager needs to ensure the audio-visual equipment is set up and working for a corporate meeting.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Event & Banquet Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the Banquet Event Order (BEO) to see the specific AV requirements (e.g., projector, screen, microphone).",
+      "expected_outcome": "The manager confirms the required equipment from the BEO.",
+      "required_tools": [
+        "ems_get_event_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign an AV technician to set up the equipment in the correct meeting room.",
+      "expected_outcome": "A technician is dispatched to perform the setup.",
+      "required_tools": [
+        "ems_assign_technician"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The technician tests all equipment to ensure it is functioning correctly before the event starts.",
+      "expected_outcome": "All AV equipment is tested and confirmed to be working.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

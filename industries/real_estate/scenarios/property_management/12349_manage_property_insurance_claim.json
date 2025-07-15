@@ -1,0 +1,54 @@
+{
+  "scenario_id": "real_estate-pm-12349",
+  "title": "Manage a Property Insurance Claim",
+  "description": "A hail storm damages the roof of a rental property. The property manager must file an insurance claim.",
+  "use_case": "Property Management",
+  "core_function": "Maintenance & Repairs",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Document the damage with photos and obtain a repair estimate from a roofing contractor.",
+      "expected_outcome": "Evidence of damage and a cost estimate are collected.",
+      "required_tools": [
+        "take_photos",
+        "request_vendor_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "File a claim with the property owner's insurance company, providing all necessary documentation.",
+      "expected_outcome": "The insurance claim is successfully filed.",
+      "required_tools": [
+        "file_insurance_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate with the insurance adjuster's inspection and oversee the approved repairs.",
+      "expected_outcome": "The roof is repaired and the claim is closed.",
+      "required_tools": [
+        "schedule_inspection",
+        "manage_vendor_work"
+      ],
+      "success_criteria": [
+        {
+          "metric": "coordination_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

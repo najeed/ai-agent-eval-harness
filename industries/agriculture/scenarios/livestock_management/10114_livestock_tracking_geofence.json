@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10114",
+  "title": "Livestock Geofence Alert",
+  "description": "A GPS ear tag on a beef steer sends an alert that it has breached a virtual geofence, indicating it has escaped its pasture.",
+  "use_case": "Livestock Management",
+  "core_function": "Health & Welfare",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the geofence breach alert.",
+      "expected_outcome": "Agent correctly identifies the specific animal and its last known location.",
+      "required_tools": [
+        "get_animal_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send an immediate SMS notification to the rancher with the animal's ID and current GPS coordinates.",
+      "expected_outcome": "Agent successfully sends the alert notification.",
+      "required_tools": [
+        "send_sms_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a map showing the animal's location relative to the breached geofence.",
+      "expected_outcome": "Agent generates and displays a map for the rancher.",
+      "required_tools": [
+        "generate_location_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

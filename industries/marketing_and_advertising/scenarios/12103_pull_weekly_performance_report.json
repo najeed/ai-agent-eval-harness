@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-ar-12103",
+  "title": "Pull Weekly Performance Report",
+  "description": "An analyst needs to compile the weekly performance report for a key client, pulling data from multiple ad platforms.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Performance Reporting",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve performance data (spend, impressions, clicks, conversions) from Google Ads for the last 7 days.",
+      "expected_outcome": "Agent successfully pulls the correct data from the Google Ads API.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve performance data from Facebook Ads for the last 7 days.",
+      "expected_outcome": "Agent successfully pulls the correct data from the Facebook Ads API.",
+      "required_tools": [
+        "facebook_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Consolidate the data into a standardized report template, calculating overall metrics like total spend and cost-per-conversion.",
+      "expected_outcome": "Agent produces a single, accurate report with all data correctly consolidated.",
+      "required_tools": [
+        "reporting_template_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

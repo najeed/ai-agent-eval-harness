@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-sc-10679",
+  "title": "Conduct Post-Abatement Air Quality Test",
+  "description": "After asbestos abatement work, a safety officer must ensure an independent air quality test is performed and passed before allowing other workers into the area.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Hazard Analysis",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule a third-party industrial hygienist to perform air monitoring in the containment area.",
+      "expected_outcome": "An appointment with a testing agency is scheduled.",
+      "required_tools": [
+        "schedule_third_party_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the air test results from the hygienist.",
+      "expected_outcome": "The test results are received.",
+      "required_tools": [
+        "get_third_party_test_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the results are below the permissible exposure limit and formally clear the area for re-entry.",
+      "expected_outcome": "Agent confirms the area is safe and updates the site status.",
+      "required_tools": [
+        "verify_test_result_compliance",
+        "update_site_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "venues-sh-13883",
+  "title": "Manage a Charity Ticket Donation",
+  "description": "A local charity requests a donation of four tickets to an upcoming family show for their fundraising auction.",
+  "use_case": "Sales & Hospitality",
+  "core_function": "Group Sales",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and log the donation request from the charity.",
+      "expected_outcome": "Agent creates a record of the request.",
+      "required_tools": [
+        "log_donation_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the charity's non-profit status.",
+      "expected_outcome": "Agent confirms the charity is a registered 501(c)(3).",
+      "required_tools": [
+        "verify_non_profit_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Get approval from the community relations manager for the donation.",
+      "expected_outcome": "Agent forwards the request and receives approval.",
+      "required_tools": [
+        "request_internal_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Issue a voucher for four tickets to the charity and mail it to them.",
+      "expected_outcome": "Agent generates and sends the ticket voucher.",
+      "required_tools": [
+        "issue_ticket_voucher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

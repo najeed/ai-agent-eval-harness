@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-pt-91",
+  "title": "Perform Full Physical Inventory Reconciliation",
+  "description": "After the annual full physical inventory count, the cost accountant needs to reconcile the count to the book inventory and post the overall adjustment.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Compliance & Cost Accounting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Upload the final physical count data into the system.",
+      "expected_outcome": "Agent successfully uploads the count for every item.",
+      "required_tools": [
+        "upload_physical_count"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a comparison report showing the variance (quantity and value) between the physical count and the book inventory for every item.",
+      "expected_outcome": "Agent generates the variance report.",
+      "required_tools": [
+        "run_inventory_variance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Investigate the largest variances to identify potential root causes (e.g., receiving errors, unrecorded scrap).",
+      "expected_outcome": "Agent identifies the top 10 largest variances for further review.",
+      "required_tools": [
+        "analyze_inventory_variances"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create and post a summary journal entry for the net inventory adjustment.",
+      "expected_outcome": "Agent posts a single journal entry to adjust the inventory account for the net gain or loss.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "ac-pt-4",
+  "title": "Process Bi-Weekly Payroll",
+  "description": "A payroll specialist needs to process the bi-weekly payroll for 500 employees.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Payroll Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import and validate timesheet data from the time and attendance system.",
+      "expected_outcome": "Agent successfully imports all hours and flags any missing or unapproved timesheets.",
+      "required_tools": [
+        "import_timesheet_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_validation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate gross pay, taxes, benefits deductions, and net pay for each employee.",
+      "expected_outcome": "Agent correctly calculates all payroll components.",
+      "required_tools": [
+        "calculate_payroll"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate payslips for all employees and a bank file for direct deposit payments.",
+      "expected_outcome": "Agent successfully generates all required output files.",
+      "required_tools": [
+        "generate_payslips",
+        "create_ach_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create the summary payroll journal entry for posting to the general ledger.",
+      "expected_outcome": "Agent generates a balanced journal entry with the correct GL accounts.",
+      "required_tools": [
+        "create_payroll_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

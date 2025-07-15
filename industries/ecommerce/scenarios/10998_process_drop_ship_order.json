@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-omf-10998",
+  "title": "Process a Drop-Ship Order",
+  "description": "A customer orders an item that is not stocked in the warehouse but is instead shipped directly from a third-party supplier (drop-shipping).",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Order Processing",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When a drop-ship item is ordered, identify the correct supplier for that item.",
+      "expected_outcome": "System identifies that the product is fulfilled by 'Supplier ABC'.",
+      "required_tools": [
+        "get_product_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically send a purchase order or fulfillment request to the supplier with the customer's shipping information.",
+      "expected_outcome": "System successfully transmits the order details to the supplier's system via API or email.",
+      "required_tools": [
+        "send_dropship_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the supplier provides a tracking number, update the customer's order with that information.",
+      "expected_outcome": "System ingests the tracking number from the supplier and updates the customer's order.",
+      "required_tools": [
+        "update_order_tracking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

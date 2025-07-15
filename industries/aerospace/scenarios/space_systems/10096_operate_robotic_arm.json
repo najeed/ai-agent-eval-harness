@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10096",
+  "title": "Operate a Robotic Arm in Space",
+  "description": "An operator on the ground needs to command a robotic arm on a satellite to grab and reposition a payload.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Operations & Control",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Plan the path of the robotic arm, ensuring it will not collide with any other part of the satellite.",
+      "expected_outcome": "Agent creates a safe, collision-free path for the arm.",
+      "required_tools": [
+        "plan_robotic_arm_path"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the commands to move the arm along the planned path.",
+      "expected_outcome": "Agent sends the commands and monitors the arm's movement via video feed.",
+      "required_tools": [
+        "send_robotic_arm_command"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Command the arm's end effector to grapple the payload and then move it to its new position.",
+      "expected_outcome": "Agent successfully grapples and moves the payload.",
+      "required_tools": [
+        "send_robotic_arm_command"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

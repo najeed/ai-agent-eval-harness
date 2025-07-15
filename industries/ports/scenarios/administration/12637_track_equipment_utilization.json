@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ports-af-12637",
+  "title": "Track Equipment Utilization",
+  "description": "A manager wants to know if they have enough straddle carriers or if they need to purchase more. An analyst must assess utilization.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Reporting & Analytics",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve operational data for the straddle carrier fleet over the last 3 months, including operating hours and downtime.",
+      "expected_outcome": "Analyst pulls a complete dataset of equipment usage.",
+      "required_tools": [
+        "get_equipment_performance_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the average utilization rate for the fleet (Operating Hours / (Total Hours - Downtime Hours)).",
+      "expected_outcome": "The analyst calculates an average utilization rate of 88%.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report concluding that the high utilization rate indicates a need for additional equipment to handle peak demand.",
+      "expected_outcome": "A report is created with a clear recommendation based on the data.",
+      "required_tools": [
+        "generate_analytical_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

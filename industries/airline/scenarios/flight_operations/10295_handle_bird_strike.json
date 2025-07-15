@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-fo-10295",
+  "title": "Handle a Bird Strike on Takeoff",
+  "description": "Shortly after takeoff, a flight experiences a bird strike on one of its engines. The crew must assess the situation and take appropriate action.",
+  "use_case": "Flight Operations",
+  "core_function": "Operations Control (OCC)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The pilots monitor the engine instruments for any signs of damage or power loss.",
+      "expected_outcome": "The instruments indicate a slight vibration but no loss of thrust.",
+      "required_tools": [
+        "monitor_engine_instruments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The crew follows the checklist for a bird strike.",
+      "expected_outcome": "Pilots complete the relevant checklist.",
+      "required_tools": [
+        "get_emergency_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "As a precaution, the pilot informs ATC of the event and decides to return to the departure airport for an inspection.",
+      "expected_outcome": "The pilot makes a safe decision to return and land.",
+      "required_tools": [
+        "contact_atc",
+        "make_operational_decision"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

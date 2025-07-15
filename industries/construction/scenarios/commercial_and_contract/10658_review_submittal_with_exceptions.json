@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-cc-10658",
+  "title": "Review Submittal Returned 'As Noted'",
+  "description": "An engineer reviews shop drawings and returns them with the status 'Approved as Noted'. The PM must review the notes and distribute them.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Submittals & RFIs",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the reviewed submittal package for the 'Steel Shop Drawings'.",
+      "expected_outcome": "The package with the engineer's markups and 'Approved as Noted' status is retrieved.",
+      "required_tools": [
+        "get_submittal_by_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Extract the engineer's notes and required changes from the document.",
+      "expected_outcome": "A list of required modifications is extracted.",
+      "required_tools": [
+        "extract_document_annotations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Forward the reviewed drawings and the extracted notes to the steel fabricator for incorporation.",
+      "expected_outcome": "The fabricator receives the required changes to proceed with their work.",
+      "required_tools": [
+        "send_document_to_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

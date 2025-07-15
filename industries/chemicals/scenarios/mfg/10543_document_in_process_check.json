@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-mfg-10543",
+  "title": "Document In-Process Check",
+  "description": "A plant operator needs to perform a required in-process check (e.g., pH measurement) and record the result in the electronic batch record.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Plant Operations",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the current step in the batch record, which requires a pH check.",
+      "expected_outcome": "Agent finds the 'Check pH' step in the active batch instructions.",
+      "required_tools": [
+        "get_batch_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Take a sample from the reactor and measure its pH.",
+      "expected_outcome": "Operator performs the physical measurement.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the result (e.g., '7.2') into the batch record. The system confirms the result is within the required range and allows the operator to proceed.",
+      "expected_outcome": "Agent enters the result, the system validates it, and the next step in the batch becomes active.",
+      "required_tools": [
+        "enter_in_process_check_result"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

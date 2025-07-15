@@ -1,0 +1,51 @@
+{
+  "scenario_id": "auto-csra-10430",
+  "title": "Stolen Vehicle Tracking Request",
+  "description": "A customer reports their vehicle has been stolen and needs assistance locating it.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Emergency & Roadside Assistance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the customer's identity with enhanced security protocols.",
+      "expected_outcome": "Agent successfully authenticates the owner.",
+      "required_tools": [
+        "verify_customer_identity_enhanced"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain the police report number from the customer, as this is required before tracking can begin.",
+      "expected_outcome": "Agent collects and validates the police report number.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Activate the vehicle's GPS tracker and provide the location data directly to the law enforcement agency handling the case.",
+      "expected_outcome": "Agent activates tracking and securely transmits the location to the police.",
+      "required_tools": [
+        "activate_vehicle_gps_tracking",
+        "share_location_with_law_enforcement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

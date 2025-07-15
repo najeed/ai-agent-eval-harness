@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10331",
+  "title": "Review Privileged Access to Servers",
+  "description": "An IT auditor reviews who has administrator-level access to critical production servers.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a list of all users with 'root' or 'administrator' access on all Tier 1 production servers.",
+      "expected_outcome": "Auditor receives the list of privileged users.",
+      "required_tools": [
+        "get_privileged_user_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the access list against the job titles and roles of the users to determine if the access is appropriate.",
+      "expected_outcome": "Auditor identifies two users in the marketing department who have administrator access to a financial server.",
+      "required_tools": [
+        "compare_access_to_job_roles"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend that the inappropriate access be revoked immediately.",
+      "expected_outcome": "A high-priority finding is issued to the IT team.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

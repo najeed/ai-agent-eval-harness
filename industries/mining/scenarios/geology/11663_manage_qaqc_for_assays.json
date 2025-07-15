@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-geo-11663",
+  "title": "Manage QA/QC for Lab Assays",
+  "description": "A geologist manages the Quality Assurance/Quality Control (QA/QC) program for drill samples by submitting standards, blanks, and duplicates to the lab.",
+  "use_case": "Geology & Exploration",
+  "core_function": "Resource Modeling",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Before sending drill samples to the lab, insert certified reference materials (standards) and blanks into the sample sequence.",
+      "expected_outcome": "QA/QC samples are correctly inserted into the sample batch.",
+      "required_tools": [
+        "insert_qaqc_samples"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the assay results from the lab for the entire batch, including the QA/QC samples.",
+      "expected_outcome": "The lab results are received and imported.",
+      "required_tools": [
+        "get_lab_assay_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the results for the standards and blanks. If a standard's result is outside the acceptable range, flag the batch for a re-assay.",
+      "expected_outcome": "The analysis shows one of the standards failed, and the corresponding batch of samples is flagged for re-assay at the lab.",
+      "required_tools": [
+        "analyze_qaqc_data",
+        "request_reassay"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

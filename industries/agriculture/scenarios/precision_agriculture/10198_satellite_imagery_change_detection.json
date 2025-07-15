@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10198",
+  "title": "Detect Field Change Using Satellite Imagery",
+  "description": "An agronomist wants to compare satellite imagery from two different dates to see where a field has been tilled.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Analytics & Insights",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve satellite images of the field from before and after the suspected tillage date.",
+      "expected_outcome": "Agent gets the two images.",
+      "required_tools": [
+        "get_satellite_imagery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a change detection analysis on the two images.",
+      "expected_outcome": "The analysis highlights the areas of the field where the soil has been disturbed.",
+      "required_tools": [
+        "run_change_detection_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a map showing only the areas that have changed (i.e., the tilled portions).",
+      "expected_outcome": "Agent creates a map that clearly visualizes the tilled area.",
+      "required_tools": [
+        "generate_change_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

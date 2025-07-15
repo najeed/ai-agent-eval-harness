@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10024",
+  "title": "Disassemble Landing Gear for Overhaul",
+  "description": "A team of MRO technicians needs to disassemble a landing gear assembly for a major overhaul.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Component Repair & Overhaul",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Follow the Component Maintenance Manual (CMM) to safely disassemble the landing gear.",
+      "expected_outcome": "Agent follows the manual's step-by-step instructions.",
+      "required_tools": [
+        "get_component_maintenance_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Tag each individual component with its part number and serial number for traceability.",
+      "expected_outcome": "Agent correctly tags all disassembled parts.",
+      "required_tools": [
+        "tag_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Route the components to their respective specialized shops (e.g., hydraulics, structures, NDT) for inspection and repair.",
+      "expected_outcome": "Agent updates the status of each component to reflect its new location in the MRO facility.",
+      "required_tools": [
+        "update_component_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

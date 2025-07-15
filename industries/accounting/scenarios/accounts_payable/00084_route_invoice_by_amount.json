@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ap-84",
+  "title": "Route an Invoice for Approval Based on Amount",
+  "description": "An invoice needs to be routed for approval, but the approver depends on the invoice amount according to the company's approval matrix.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Capture the invoice data, specifically the total amount.",
+      "expected_outcome": "Agent captures an invoice for $7,500.",
+      "required_tools": [
+        "capture_invoice_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the company's approval matrix.",
+      "expected_outcome": "Agent finds that invoices >$5k require Director approval, and >$25k require VP approval.",
+      "required_tools": [
+        "get_approval_matrix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the invoice amount and the approval matrix, route the invoice to the correct person for approval.",
+      "expected_outcome": "Agent correctly routes the $7,500 invoice to the appropriate Director.",
+      "required_tools": [
+        "route_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

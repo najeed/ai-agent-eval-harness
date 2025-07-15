@@ -1,0 +1,67 @@
+{
+  "scenario_id": "real_estate-pm-13003",
+  "title": "Screen a Rental Applicant",
+  "description": "A property manager must screen a potential tenant's application.",
+  "use_case": "Property Management",
+  "core_function": "Leasing & Tenant Screening",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a credit check and background check on the applicant.",
+      "expected_outcome": "Agent obtains the applicant's credit score and criminal history.",
+      "required_tools": [
+        "run_credit_check",
+        "run_background_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the applicant's employment and income.",
+      "expected_outcome": "Agent confirms the applicant meets the income requirement (e.g., 3x the rent).",
+      "required_tools": [
+        "contact_employer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact previous landlords for references.",
+      "expected_outcome": "Agent obtains references regarding the applicant's payment history and behavior.",
+      "required_tools": [
+        "contact_landlord_reference"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Approve or deny the application based on the screening results and company policy.",
+      "expected_outcome": "Agent makes a decision and communicates it to the applicant.",
+      "required_tools": [
+        "send_applicant_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

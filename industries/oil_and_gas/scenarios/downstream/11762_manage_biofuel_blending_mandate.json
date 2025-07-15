@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-down-11762",
+  "title": "Manage Biofuel Blending Mandate",
+  "description": "A compliance manager must ensure the company is meeting its government-mandated obligation to blend a certain percentage of ethanol into its gasoline pool.",
+  "use_case": "Downstream",
+  "core_function": "Compliance & Safety",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the total volume of gasoline sold in the last quarter and the total volume of ethanol blended.",
+      "expected_outcome": "The total sales and blending volumes are compiled.",
+      "required_tools": [
+        "get_sales_volume_data",
+        "get_blending_volume_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the actual blending percentage and compare it to the regulatory requirement (e.g., 10%).",
+      "expected_outcome": "The calculation shows the company is currently at 9.8%, slightly below the mandate.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report showing the deficit and instruct the blending schedulers to increase the ethanol ratio slightly for the current quarter.",
+      "expected_outcome": "A compliance report is generated, and an instruction is sent to operations to correct the course.",
+      "required_tools": [
+        "generate_compliance_report",
+        "send_operational_instruction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

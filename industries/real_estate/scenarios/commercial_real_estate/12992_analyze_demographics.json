@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-com-12992",
+  "title": "Analyze Demographics for a Retail Tenant",
+  "description": "A national coffee chain is considering leasing a retail space and has asked for a demographic analysis of the surrounding area.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Leasing & Tenant Representation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define a 1, 3, and 5-mile radius around the subject property.",
+      "expected_outcome": "Agent correctly defines the geographic search areas.",
+      "required_tools": [
+        "define_map_radius"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a demographic data tool (e.g., Esri) to pull data for those radii, including population, median income, and traffic counts.",
+      "expected_outcome": "Agent successfully retrieves the requested demographic data.",
+      "required_tools": [
+        "get_demographic_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the data into a professional report to provide to the prospective tenant.",
+      "expected_outcome": "Agent creates a clean, well-organized demographic report.",
+      "required_tools": [
+        "generate_demographic_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

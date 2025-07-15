@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-maint-12333",
+  "title": "Create Corrective Maintenance Work Order",
+  "description": "A field operator notices a leak on a pipeline and creates a work order in the system for maintenance to repair it.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Work Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the mobile CMMS application and select 'Create New Work Order'.",
+      "expected_outcome": "The work order creation form is displayed.",
+      "required_tools": [
+        "load_mobile_cmms_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Fill in the details, including the equipment ID of the pipeline, the location of the leak, and a description of the problem. Set the priority to 'High'.",
+      "expected_outcome": "The work order is populated with accurate and complete information.",
+      "required_tools": [
+        "complete_digital_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the work order, which is then automatically routed to the maintenance planner's queue.",
+      "expected_outcome": "The work order is created in the CMMS and is ready for planning and scheduling.",
+      "required_tools": [
+        "submit_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10123",
+  "title": "Farm Labor Scheduling for Harvest",
+  "description": "A vegetable farm manager needs to create a weekly schedule for their harvest crew, ensuring all tasks are covered.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Labor Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "List all harvesting, packing, and logistics tasks that need to be completed for the week.",
+      "expected_outcome": "Agent compiles a complete list of required tasks.",
+      "required_tools": [
+        "get_farm_tasks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the list of available employees and their skill sets (e.g., tractor operator, packer).",
+      "expected_outcome": "Agent gets the list of all available workers.",
+      "required_tools": [
+        "get_employee_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an optimized weekly schedule that assigns employees to tasks based on skills and availability, ensuring compliance with break time regulations.",
+      "expected_outcome": "Agent creates a detailed schedule for the week.",
+      "required_tools": [
+        "generate_labor_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

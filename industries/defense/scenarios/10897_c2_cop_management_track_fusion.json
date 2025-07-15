@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-c2-10897",
+  "title": "Multi-Platform Track Fusion",
+  "description": "A target is being tracked simultaneously by a ground radar, a naval ship, and an aircraft. An operator must fuse these three separate tracks into a single, high-confidence track on the COP.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Common Operating Picture (COP) Management",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the three separate sensor tracks that are all reporting on the same entity.",
+      "expected_outcome": "Operator correctly identifies the multiple tracks for the same target.",
+      "required_tools": [
+        "monitor_cop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "correlation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate the track fusion process in the C2 system.",
+      "expected_outcome": "Operator correctly uses the fusion tool.",
+      "required_tools": [
+        "initiate_track_fusion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the system has created a single, composite track with a higher quality and accuracy than any of the individual sensor inputs.",
+      "expected_outcome": "Operator confirms the creation of a high-quality fused track, improving overall situational awareness.",
+      "required_tools": [
+        "verify_fused_track_quality"
+      ],
+      "success_criteria": [
+        {
+          "metric": "fusion_quality_improvement",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

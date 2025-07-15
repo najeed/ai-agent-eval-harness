@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-las-10246",
+  "title": "Sell a Preferred Seat",
+  "description": "A customer is booking a flight and wants to select a preferred seat (e.g., exit row) that has an extra fee.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Ancillary Revenue & Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "During the booking process, display the seat map showing which seats are standard and which are preferred seats with a fee.",
+      "expected_outcome": "Agent clearly shows the available seat options and their costs.",
+      "required_tools": [
+        "get_seat_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The customer selects an exit row seat. Verify they meet the requirements to sit in an exit row.",
+      "expected_outcome": "Agent confirms the passenger is willing and able to assist in an emergency.",
+      "required_tools": [
+        "verify_exit_row_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the seat selection and the associated fee to the booking total and process the payment.",
+      "expected_outcome": "Agent successfully sells the ancillary product and assigns the seat.",
+      "required_tools": [
+        "assign_seat",
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

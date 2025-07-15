@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sf-10441",
+  "title": "Finalizing a Vehicle Sale",
+  "description": "A customer has agreed to purchase a vehicle and needs to complete the final paperwork.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Delivery & Handover",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate the final bill of sale, including the vehicle price, taxes, title, and license fees.",
+      "expected_outcome": "Agent generates an accurate and complete bill of sale.",
+      "required_tools": [
+        "generate_bill_of_sale"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Present the financing or lease agreement to the customer and obtain their signature on all required documents.",
+      "expected_outcome": "Agent clearly explains the documents and obtains all necessary signatures.",
+      "required_tools": [
+        "process_financial_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the customer's down payment.",
+      "expected_outcome": "Agent successfully processes the payment via credit card or check.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

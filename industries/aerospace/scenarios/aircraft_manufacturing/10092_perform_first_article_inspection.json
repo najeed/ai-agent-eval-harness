@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10092",
+  "title": "Perform a First Article Inspection (FAI)",
+  "description": "When a supplier produces a part for the first time, a quality engineer must perform an FAI to verify that their production process creates a part that conforms to the drawing.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Design & Engineering",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the first part produced by the supplier along with their FAI report.",
+      "expected_outcome": "Agent obtains the part and the supplier's documentation.",
+      "required_tools": [
+        "get_supplier_deliverable"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Independently measure every dimension on the part as specified on the engineering drawing.",
+      "expected_outcome": "Agent measures all dimensions.",
+      "required_tools": [
+        "measure_part_dimensions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the measurements to the drawing's requirements and the supplier's FAI report. If everything matches, approve the supplier's process.",
+      "expected_outcome": "Agent confirms all dimensions are within tolerance and approves the FAI.",
+      "required_tools": [
+        "compare_data_sets",
+        "approve_fai"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

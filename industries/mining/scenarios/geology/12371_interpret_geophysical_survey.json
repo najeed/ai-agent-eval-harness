@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-geo-12371",
+  "title": "Interpret Airborne Geophysical Survey",
+  "description": "A geophysicist interprets data from an airborne magnetic survey to identify geological structures that might host mineralization.",
+  "use_case": "Geology & Exploration",
+  "core_function": "Exploration & Targeting",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import and process the raw magnetic data from the airborne survey.",
+      "expected_outcome": "A clean, processed magnetic map of the survey area is created.",
+      "required_tools": [
+        "import_geophysical_data",
+        "process_magnetic_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_processing_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the magnetic map to identify linear features that could represent faults or dykes.",
+      "expected_outcome": "Major structural features are interpreted from the data.",
+      "required_tools": [
+        "interpret_geophysical_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "geological_interpretation_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Integrate the interpretation with the known geology to generate new exploration targets where favorable structures intersect prospective rock types.",
+      "expected_outcome": "A set of new exploration targets is generated and prioritized for follow-up.",
+      "required_tools": [
+        "generate_exploration_targets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

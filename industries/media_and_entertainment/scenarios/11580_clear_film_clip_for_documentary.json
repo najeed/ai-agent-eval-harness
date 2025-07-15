@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-cp-11580",
+  "title": "Clear Film Clip License for a Documentary",
+  "description": "A documentary filmmaker wants to use a 30-second clip from a classic movie. An agent must secure the license.",
+  "use_case": "Content Production & Management",
+  "core_function": "Rights & Royalties",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the studio that owns the rights to the classic movie.",
+      "expected_outcome": "Agent correctly identifies the rights holder.",
+      "required_tools": [
+        "lookup_film_rights_holder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the studio's licensing department with the specific clip details and request a quote.",
+      "expected_outcome": "Agent submits a formal request for a clip license.",
+      "required_tools": [
+        "request_clip_license_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Negotiate the fee and execute the licensing agreement.",
+      "expected_outcome": "Agent finalizes the agreement and secures the right to use the clip.",
+      "required_tools": [
+        "generate_licensing_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

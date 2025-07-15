@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-scl-10552",
+  "title": "Return Off-Spec Raw Material to Vendor",
+  "description": "An incoming raw material failed QC testing and needs to be returned to the supplier.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Inventory Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the quarantined, off-spec lot of material in the inventory system.",
+      "expected_outcome": "Agent locates the correct batch that needs to be returned.",
+      "required_tools": [
+        "find_inventory_by_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the supplier to obtain a Return Material Authorization (RMA) number.",
+      "expected_outcome": "Agent communicates with the supplier and receives an RMA number.",
+      "required_tools": [
+        "contact_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a return shipment in the logistics system using the RMA number and schedule a pickup.",
+      "expected_outcome": "Agent successfully processes the return order and arranges for the carrier to pick it up.",
+      "required_tools": [
+        "create_return_shipment",
+        "schedule_waste_pickup"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

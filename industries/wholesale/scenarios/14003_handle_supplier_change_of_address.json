@@ -1,0 +1,36 @@
+{
+  "scenario_id": "wholesale-sp-14003",
+  "title": "Handle a Supplier Change of Address",
+  "description": "A supplier informs the company that they have moved to a new address.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Supplier Relationship Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the change of address notification from the supplier.",
+      "expected_outcome": "Agent has the new address.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the supplier's record in the procurement system with the new address.",
+      "expected_outcome": "Agent successfully updates the supplier's information.",
+      "required_tools": [
+        "update_supplier_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

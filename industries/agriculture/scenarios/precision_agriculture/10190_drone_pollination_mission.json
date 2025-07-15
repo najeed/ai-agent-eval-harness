@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ag-pa-10190",
+  "title": "Plan a Drone Pollination Mission",
+  "description": "A greenhouse operator wants to use a small drone to pollinate their tomato plants.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Robotics & Automation",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the layout map of the greenhouse.",
+      "expected_outcome": "Agent gets the greenhouse map.",
+      "required_tools": [
+        "get_greenhouse_layout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a flight path for the drone to fly over each row of tomato plants.",
+      "expected_outcome": "Agent creates an optimized path.",
+      "required_tools": [
+        "generate_drone_mission_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Configure the drone to create gentle air turbulence (simulating wind) to distribute pollen as it flies.",
+      "expected_outcome": "Agent sets the correct parameters for the drone's propellers.",
+      "required_tools": [
+        "configure_drone_payload"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Dispatch the drone to begin the pollination mission.",
+      "expected_outcome": "Agent successfully starts the mission.",
+      "required_tools": [
+        "dispatch_robot"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

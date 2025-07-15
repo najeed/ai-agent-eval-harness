@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-sc-10613",
+  "title": "Create JHA for Roofing Work",
+  "description": "A safety officer must create a Job Hazard Analysis (JHA) for the upcoming roofing installation.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Hazard Analysis",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the primary hazards associated with roofing work, such as 'Falls from height', 'Material handling', and 'Heat exposure'.",
+      "expected_outcome": "Agent lists the key hazards for the JHA.",
+      "required_tools": [
+        "get_standard_hazard_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For the 'Falls from height' hazard, specify the preventative measure as 'Mandatory use of personal fall arrest systems (PFAS) for all workers'.",
+      "expected_outcome": "A specific, actionable control measure is documented for a key hazard.",
+      "required_tools": [
+        "create_jha_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

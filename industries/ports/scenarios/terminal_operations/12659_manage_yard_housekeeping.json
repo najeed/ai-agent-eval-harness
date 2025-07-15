@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-to-12659",
+  "title": "Manage Yard Housekeeping",
+  "description": "To improve efficiency, a planner needs to consolidate containers from several half-empty yard blocks into one.",
+  "use_case": "Terminal Operations",
+  "core_function": "Yard & Stowage Planning",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify several yard blocks with low utilization (e.g., less than 30% full).",
+      "expected_outcome": "Planner generates a report showing three under-utilized blocks.",
+      "required_tools": [
+        "get_yard_utilization_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a plan to move all containers from two of the blocks into the third block.",
+      "expected_outcome": "A consolidation plan is created, listing all the required container moves.",
+      "required_tools": [
+        "create_consolidation_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the re-stow work orders in the TOS to be executed by yard cranes during a quiet period.",
+      "expected_outcome": "A series of housekeeping work orders is created in the system to be performed overnight.",
+      "required_tools": [
+        "create_restow_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

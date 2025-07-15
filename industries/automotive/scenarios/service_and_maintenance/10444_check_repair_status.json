@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sm-10444",
+  "title": "Customer Checks on Repair Status",
+  "description": "A customer whose car is in for service is calling to get a status update.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Repair & Maintenance Execution",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their active repair order.",
+      "expected_outcome": "Agent successfully locates the repair order.",
+      "required_tools": [
+        "get_repair_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the technician's notes and the current status of the repair.",
+      "expected_outcome": "Agent sees the status is 'Awaiting Part' and the technician's note says 'Waiting for replacement alternator'.",
+      "required_tools": [
+        "get_repair_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the ETA for the required part and provide the customer with an updated timeline for when the repair will be complete.",
+      "expected_outcome": "Agent checks the part order, finds it will arrive tomorrow morning, and informs the customer the car should be ready by tomorrow afternoon.",
+      "required_tools": [
+        "track_part_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

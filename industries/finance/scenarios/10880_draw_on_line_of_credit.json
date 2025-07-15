@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-cf-10880",
+  "title": "Draw Funds from a Line of Credit",
+  "description": "A corporate client needs to draw $100,000 from their commercial line of credit to cover a temporary cash shortfall.",
+  "use_case": "Corporate Finance",
+  "core_function": "Treasury & Cash Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the requestor is an authorized user on the account.",
+      "expected_outcome": "Agent confirms the user's identity and authority to draw funds.",
+      "required_tools": [
+        "verify_authorized_user"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the available balance on the line of credit.",
+      "expected_outcome": "Agent confirms there is sufficient availability for the $100,000 draw.",
+      "required_tools": [
+        "check_credit_line_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the draw and transfer the funds to the company's operating account.",
+      "expected_outcome": "Agent successfully transfers the $100,000.",
+      "required_tools": [
+        "process_credit_line_draw"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

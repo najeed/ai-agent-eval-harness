@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-ehs-10510",
+  "title": "Update SDS Due to New Hazard Info",
+  "description": "New toxicology data has become available for a raw material, requiring an update to the Safety Data Sheet (SDS) for all products containing it.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Safety Data Sheet (SDS) Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all finished products that contain the specified raw material using the formulation system.",
+      "expected_outcome": "Agent generates a list of 15 affected products.",
+      "required_tools": [
+        "find_products_by_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For the first affected product, create a new version of its SDS and update the toxicological information in Section 11.",
+      "expected_outcome": "Agent successfully revises the SDS document with the new hazard data.",
+      "required_tools": [
+        "update_sds_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Trigger a workflow to have the updated SDS reviewed and approved by the EHS manager.",
+      "expected_outcome": "Agent submits the revised SDS into the approval workflow.",
+      "required_tools": [
+        "submit_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

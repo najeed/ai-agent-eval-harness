@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-pt-55",
+  "title": "Perform Inventory Valuation",
+  "description": "For month-end reporting, the cost accountant must value the ending inventory.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Compliance & Cost Accounting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the list of all inventory items and their on-hand quantities at the end of the month.",
+      "expected_outcome": "Agent gets the physical inventory count.",
+      "required_tools": [
+        "get_inventory_quantities"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each item, retrieve its standard cost from the item master file.",
+      "expected_outcome": "Agent gets the standard cost for each inventory item.",
+      "required_tools": [
+        "get_standard_costs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total value of the ending inventory by multiplying the quantity of each item by its standard cost.",
+      "expected_outcome": "Agent calculates the total inventory value.",
+      "required_tools": [
+        "calculate_inventory_value"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create the journal entry to adjust the inventory account in the general ledger to this new value.",
+      "expected_outcome": "Agent creates the adjusting journal entry for inventory.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

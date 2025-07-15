@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-as-11095",
+  "title": "Request Academic Integrity Consultation",
+  "description": "A faculty member suspects a student of plagiarism and wants to consult with the academic integrity office about how to proceed.",
+  "use_case": "Academic Support",
+  "core_function": "Tutoring & Academic Advising",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the faculty member.",
+      "expected_outcome": "Agent confirms the faculty member's identity.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the university's academic integrity process and the faculty member's options.",
+      "expected_outcome": "Agent clearly communicates the formal procedure for handling suspected plagiarism.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a confidential consultation for the faculty member with an academic integrity officer.",
+      "expected_outcome": "Agent successfully books a meeting.",
+      "required_tools": [
+        "schedule_consultation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

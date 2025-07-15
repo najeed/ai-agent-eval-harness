@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10347",
+  "title": "Perform Continuous Auditing",
+  "description": "An auditor sets up an automated script to continuously monitor transactions for potential exceptions.",
+  "use_case": "Internal Audit",
+  "core_function": "Testing & Analysis",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Develop and schedule an automated script that runs weekly to check for purchase orders that were approved after the invoice was received.",
+      "expected_outcome": "An automated monitoring script is created and scheduled.",
+      "required_tools": [
+        "create_monitoring_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the weekly output from the script.",
+      "expected_outcome": "The auditor receives a weekly report of any exceptions.",
+      "required_tools": [
+        "review_automated_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "When the script identifies a significant number of exceptions, launch a full investigation or audit of the process.",
+      "expected_outcome": "The continuous monitoring results are used to trigger a targeted audit.",
+      "required_tools": [
+        "initiate_audit_engagement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

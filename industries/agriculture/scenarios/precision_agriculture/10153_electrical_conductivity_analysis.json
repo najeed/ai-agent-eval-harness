@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-pa-10153",
+  "title": "Analyze Soil Electrical Conductivity (EC) Map",
+  "description": "A farmer has an EC map of their field and wants to use it to understand variations in soil texture.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Analytics & Insights",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the soil EC map for the specified field.",
+      "expected_outcome": "Agent gets the EC map data.",
+      "required_tools": [
+        "get_soil_ec_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Interpret the EC map, explaining that high EC values typically correlate with heavier, clay soils, and low EC values with lighter, sandy soils.",
+      "expected_outcome": "Agent provides a correct interpretation of the EC data.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create management zones based on the EC data that correspond to different soil textures.",
+      "expected_outcome": "Agent generates a map showing zones of clay, loam, and sand.",
+      "required_tools": [
+        "create_management_zones"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

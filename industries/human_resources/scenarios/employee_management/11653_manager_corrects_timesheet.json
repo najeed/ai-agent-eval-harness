@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hr-em-11653",
+  "title": "Manager Corrects Employee Timesheet",
+  "description": "A manager needs to correct an employee's timesheet from last week before the payroll deadline.",
+  "use_case": "Employee Management",
+  "core_function": "Time & Attendance",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the time and attendance system as a manager.",
+      "expected_outcome": "Manager successfully logs in.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the employee and the pay period that needs correction.",
+      "expected_outcome": "Manager navigates to the correct employee timesheet.",
+      "required_tools": [
+        "get_employee_timesheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the incorrect time entry and re-approve the timesheet.",
+      "expected_outcome": "Manager corrects the hours and submits the timesheet for payroll processing.",
+      "required_tools": [
+        "update_timesheet",
+        "approve_timesheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

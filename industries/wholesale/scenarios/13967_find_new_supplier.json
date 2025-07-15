@@ -1,0 +1,67 @@
+{
+  "scenario_id": "wholesale-sp-13967",
+  "title": "Find a New Supplier for a Product",
+  "description": "A current supplier is being discontinued. A procurement manager needs to find a new, alternative supplier for a key product.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Supplier Relationship Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search a supplier database for companies that manufacture the required product.",
+      "expected_outcome": "Agent finds three potential new suppliers.",
+      "required_tools": [
+        "search_supplier_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request quotes and product samples from the potential suppliers.",
+      "expected_outcome": "Agent contacts the suppliers to gather more information.",
+      "required_tools": [
+        "request_supplier_quote",
+        "request_product_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Evaluate the quotes and samples to select the best new supplier.",
+      "expected_outcome": "Agent selects a new supplier based on price and quality.",
+      "required_tools": [
+        "evaluate_supplier_quotes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Onboard the chosen company as a new supplier.",
+      "expected_outcome": "Agent sets up the new supplier in the system.",
+      "required_tools": [
+        "create_supplier_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

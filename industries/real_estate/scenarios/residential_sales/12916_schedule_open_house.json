@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-res-12916",
+  "title": "Schedule and Market an Open House",
+  "description": "An agent needs to schedule an open house for a new listing and market it online.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a date and time for the open house (e.g., Sunday, 1-4 PM) and add it to the MLS listing.",
+      "expected_outcome": "Agent successfully updates the MLS with the open house details.",
+      "required_tools": [
+        "update_mls_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a social media post and a digital flyer to promote the open house.",
+      "expected_outcome": "Agent generates marketing materials for the event.",
+      "required_tools": [
+        "create_social_media_post",
+        "generate_flyer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the social media post to be published a few days before the event.",
+      "expected_outcome": "Agent schedules the post for optimal visibility.",
+      "required_tools": [
+        "schedule_social_media_post"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

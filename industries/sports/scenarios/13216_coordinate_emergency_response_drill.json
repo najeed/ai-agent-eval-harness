@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-vo-13216",
+  "title": "Coordinate Emergency Response Drill",
+  "description": "A venue manager needs to plan and execute a fire evacuation drill at the stadium during the off-season.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Event Day Operations",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a detailed plan for the drill, including the scenario, timeline, and staff roles.",
+      "expected_outcome": "Agent produces a comprehensive drill plan document.",
+      "required_tools": [
+        "create_drill_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notify all venue staff and local emergency services (fire department) of the upcoming drill.",
+      "expected_outcome": "Agent sends out notifications to all relevant parties.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "On the day of the drill, use the PA system to announce the start of the drill.",
+      "expected_outcome": "Agent activates the public address system with the drill announcement.",
+      "required_tools": [
+        "activate_pa_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Monitor the drill and log the time it takes to evacuate the venue.",
+      "expected_outcome": "Agent logs the results of the drill for a post-event review.",
+      "required_tools": [
+        "log_drill_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

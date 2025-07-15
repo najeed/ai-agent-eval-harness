@@ -1,0 +1,65 @@
+{
+  "scenario_id": "tr-to-13705",
+  "title": "Manage a Trailer Pool at a Customer",
+  "description": "A high-volume customer has a 'trailer pool' where empty trailers are dropped for them to load at their convenience. A dispatcher must manage the pool's inventory.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Fleet Maintenance",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current number of empty trailers at the customer's location.",
+      "expected_outcome": "The system shows there are 2 empty trailers in the pool.",
+      "required_tools": [
+        "get_trailer_pool_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The customer notifies that they have just finished loading one of the trailers.",
+      "expected_outcome": "A notification is received.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The dispatcher creates a new load in the system for the loaded trailer and dispatches a driver to pick it up.",
+      "expected_outcome": "A driver is sent to retrieve the loaded trailer.",
+      "required_tools": [
+        "create_load",
+        "assign_load_to_driver"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Seeing the pool of empties is now low, the dispatcher also dispatches a driver to drop off a new empty trailer to replenish the pool.",
+      "expected_outcome": "The trailer pool is managed to ensure the customer always has empties available.",
+      "required_tools": [
+        "dispatch_empty_trailer_move"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

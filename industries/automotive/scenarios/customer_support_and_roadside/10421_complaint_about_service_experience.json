@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-csra-10421",
+  "title": "Customer Complaint About Service Experience",
+  "description": "A customer is upset because their vehicle was returned dirty after a recent service appointment.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Customer Feedback & Resolution",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Listen to the customer's complaint, empathize with their frustration, and retrieve the details of their recent service visit.",
+      "expected_outcome": "Agent shows empathy and pulls up the relevant service record.",
+      "required_tools": [
+        "get_vehicle_service_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apologize for the experience and offer a resolution, such as a voucher for a free professional car detailing service.",
+      "expected_outcome": "Agent successfully de-escalates the situation and offers appropriate compensation.",
+      "required_tools": [
+        "issue_goodwill_voucher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the complaint in the customer feedback system to be reviewed by the service manager.",
+      "expected_outcome": "Agent logs the feedback for management review and process improvement.",
+      "required_tools": [
+        "log_customer_feedback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10335",
+  "title": "Issue a Request for Information List",
+  "description": "At the start of fieldwork, an auditor sends a formal request list (sometimes called a PBC list) to the auditee.",
+  "use_case": "Internal Audit",
+  "core_function": "Fieldwork & Data Collection",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Based on the audit plan, create a detailed list of all documents and data needed from the auditee.",
+      "expected_outcome": "A comprehensive 'Provided by Client' (PBC) list is drafted.",
+      "required_tools": [
+        "create_pbc_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the PBC list to the primary audit contact for the business unit.",
+      "expected_outcome": "The auditee receives the formal request list.",
+      "required_tools": [
+        "send_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Track the status of each requested item in a tracking log, following up on overdue items.",
+      "expected_outcome": "The auditor actively manages the collection of evidence against the request list.",
+      "required_tools": [
+        "update_pbc_tracking_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "coordination_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

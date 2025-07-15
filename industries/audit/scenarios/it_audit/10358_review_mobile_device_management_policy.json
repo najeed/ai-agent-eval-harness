@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10358",
+  "title": "Review Mobile Device Management (MDM) Policy",
+  "description": "An IT auditor reviews the controls over mobile devices that connect to the corporate network.",
+  "use_case": "IT Audit",
+  "core_function": "Cybersecurity & Privacy Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the MDM policy to ensure it requires all mobile devices to have a passcode and be encrypted.",
+      "expected_outcome": "Auditor confirms the policy has the required security settings.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain a report from the MDM system to verify that all enrolled devices are compliant with the policy.",
+      "expected_outcome": "The report shows 10 devices that are not encrypted.",
+      "required_tools": [
+        "get_mdm_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the MDM system has the capability to remotely wipe a device if it is lost or stolen.",
+      "expected_outcome": "Auditor confirms the remote wipe functionality is enabled and tested.",
+      "required_tools": [
+        "check_mdm_configuration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

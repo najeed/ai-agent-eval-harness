@@ -1,0 +1,53 @@
+{
+  "scenario_id": "sports-vo-12541",
+  "title": "Monitor Stadium Surveillance for Overcrowding",
+  "description": "The venue's security operator needs to monitor surveillance cameras to identify any potential overcrowding in the stadium's concourses.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Venue Safety & Security",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the live feeds from all surveillance cameras in the stadium.",
+      "expected_outcome": "Agent is viewing the live camera feeds on a dashboard.",
+      "required_tools": [
+        "get_all_camera_feeds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use an AI-powered video analytics tool to automatically detect crowd density.",
+      "expected_outcome": "The tool flags a specific concourse area as having high crowd density.",
+      "required_tools": [
+        "analyze_crowd_density"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch security and event staff to the flagged area to help manage the crowd flow.",
+      "expected_outcome": "Agent sends staff to the location to prevent a safety issue.",
+      "required_tools": [
+        "dispatch_security_staff",
+        "dispatch_event_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

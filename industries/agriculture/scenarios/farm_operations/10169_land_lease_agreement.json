@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-fo-10169",
+  "title": "Generate a Farm Land Lease Agreement",
+  "description": "A landowner and a farmer need to generate a simple cash rent lease agreement for a parcel of land.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Financial Management & Compliance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the key terms of the agreement: landowner and tenant names, legal description of the property, annual rent per acre, and lease duration.",
+      "expected_outcome": "Agent collects all the necessary information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a standard farm lease agreement document using the provided terms.",
+      "expected_outcome": "Agent creates a draft lease agreement in PDF format.",
+      "required_tools": [
+        "generate_lease_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the agreement to both parties for review and digital signature.",
+      "expected_outcome": "Agent successfully sends the document for signature.",
+      "required_tools": [
+        "send_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

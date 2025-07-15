@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10087",
+  "title": "Rivet a Wing Skin",
+  "description": "An automated riveting machine must install thousands of rivets to attach the skin to the underlying wing structure.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Assembly & Production",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the correct riveting program for the specific wing panel into the machine.",
+      "expected_outcome": "Agent loads the correct NC program.",
+      "required_tools": [
+        "load_nc_program"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Operate the machine to drill the holes and install the rivets.",
+      "expected_outcome": "Agent oversees the automated riveting process.",
+      "required_tools": [
+        "operate_riveting_machine"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform a quality inspection to ensure all rivets are properly installed and have no defects.",
+      "expected_outcome": "Agent inspects the rivets and confirms they all meet quality standards.",
+      "required_tools": [
+        "perform_quality_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-fb-11568",
+  "title": "Cancel a Restaurant Reservation",
+  "description": "A guest calls to cancel their dinner reservation for tonight.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Restaurant Reservations",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the reservation in the system using the guest's name.",
+      "expected_outcome": "The agent locates the booking.",
+      "required_tools": [
+        "rms_lookup_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cancel the reservation in the system, freeing up the table.",
+      "expected_outcome": "The reservation is successfully canceled.",
+      "required_tools": [
+        "rms_cancel_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Thank the guest and ask if they'd like to book for another time.",
+      "expected_outcome": "The agent provides good service and attempts to retain the business.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

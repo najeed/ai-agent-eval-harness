@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-ind-12597",
+  "title": "Prepare Simple W-2 Return",
+  "description": "A single individual with one W-2 and no dependents needs their federal tax return prepared.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Data Collection & Input",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Input the taxpayer's personal information and the data from their Form W-2.",
+      "expected_outcome": "Agent correctly enters all information from the W-2 into the tax software.",
+      "required_tools": [
+        "enter_w2_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine if the taxpayer should take the standard deduction or itemize.",
+      "expected_outcome": "Agent correctly determines the standard deduction is higher.",
+      "required_tools": [
+        "calculate_standard_deduction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Finalize the return and show the taxpayer their calculated refund amount.",
+      "expected_outcome": "Agent prepares a complete and accurate return showing the final refund.",
+      "required_tools": [
+        "finalize_return"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

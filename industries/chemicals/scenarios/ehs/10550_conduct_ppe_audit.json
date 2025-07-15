@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-ehs-10550",
+  "title": "Conduct PPE Audit",
+  "description": "An EHS specialist is conducting a planned audit of a production area to ensure all employees are using the correct Personal Protective Equipment (PPE).",
+  "use_case": "EHS & Compliance",
+  "core_function": "Regulatory Compliance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the PPE requirements for the specified production area.",
+      "expected_outcome": "Agent finds the requirements are: hard hat, safety glasses, steel-toed boots, and chemical-resistant gloves.",
+      "required_tools": [
+        "get_ppe_requirements_for_area"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Observe employees in the area and note any non-compliance on an audit form.",
+      "expected_outcome": "Agent observes 10 employees and notes one is not wearing safety glasses.",
+      "required_tools": [
+        "create_audit_finding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Finalize the audit report and assign a corrective action to the area supervisor to address the finding.",
+      "expected_outcome": "Agent generates the final audit report and creates a CAPA for the supervisor.",
+      "required_tools": [
+        "finalize_audit_report",
+        "create_capa"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

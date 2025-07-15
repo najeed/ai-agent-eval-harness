@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ac-ap-72",
+  "title": "Manage Use Tax Accrual",
+  "description": "An AP clerk processes an invoice from an out-of-state vendor who did not charge sales tax. The company is required to self-assess and remit use tax.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify that the vendor invoice does not include sales tax.",
+      "expected_outcome": "Agent flags the invoice for use tax review.",
+      "required_tools": [
+        "review_invoice_for_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the correct use tax rate based on the location where the goods were delivered.",
+      "expected_outcome": "Agent finds the correct local use tax rate.",
+      "required_tools": [
+        "calculate_sales_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the use tax amount due.",
+      "expected_outcome": "Agent correctly calculates the tax amount.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Post the invoice and simultaneously post a journal entry to debit the relevant expense/asset and credit 'Use Tax Payable'.",
+      "expected_outcome": "Agent correctly posts the invoice and the use tax accrual.",
+      "required_tools": [
+        "post_ap_invoice_with_use_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

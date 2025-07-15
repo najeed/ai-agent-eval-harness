@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-sf-10422",
+  "title": "Lease Buyout Quote Request",
+  "description": "A customer nearing the end of their lease wants to know the cost to purchase their vehicle.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Financing & Leasing",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their active lease agreement.",
+      "expected_outcome": "Agent retrieves the customer's lease contract details.",
+      "required_tools": [
+        "get_customer_lease_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the lease buyout amount based on the residual value, remaining payments, and any applicable fees.",
+      "expected_outcome": "Agent calculates the precise buyout amount.",
+      "required_tools": [
+        "calculate_lease_buyout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the buyout quote to the customer and explain the steps to complete the purchase.",
+      "expected_outcome": "Agent clearly communicates the quote and the process for titling and registration.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

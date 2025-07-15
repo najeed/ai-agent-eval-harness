@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ac-ar-2",
+  "title": "Apply a Customer Payment with Remittance Advice",
+  "description": "A payment has been received from a customer via ACH, and the customer has sent a separate email with remittance advice detailing which invoices the payment covers.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Cash Application",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the incoming payment in the bank statement and the corresponding remittance advice.",
+      "expected_outcome": "Agent correctly matches the payment amount with the remittance advice.",
+      "required_tools": [
+        "get_bank_transactions",
+        "get_remittance_advice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the single payment against the multiple open invoices specified in the remittance advice.",
+      "expected_outcome": "Agent successfully applies the cash and closes all specified invoices.",
+      "required_tools": [
+        "apply_customer_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the customer's account balance reflects the payment and there is no unapplied cash remaining.",
+      "expected_outcome": "Agent confirms the customer's account is updated and the payment is fully applied.",
+      "required_tools": [
+        "get_customer_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

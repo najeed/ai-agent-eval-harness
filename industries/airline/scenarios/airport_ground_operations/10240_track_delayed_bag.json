@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10240",
+  "title": "Track a Delayed Bag",
+  "description": "A passenger whose bag was delayed is calling for a status update. An agent must check the tracking system.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Baggage Handling & Resolution",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's mishandled baggage report using their name or file reference number.",
+      "expected_outcome": "Agent finds the existing claim file.",
+      "required_tools": [
+        "get_mishandled_bag_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the baggage tracking system for the latest updates on the bag's location.",
+      "expected_outcome": "Agent finds the bag has been located and is scheduled to arrive on the next flight.",
+      "required_tools": [
+        "trace_bag"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the passenger of the update and confirm their delivery address for when the bag arrives.",
+      "expected_outcome": "Agent provides a clear update and confirms delivery details.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

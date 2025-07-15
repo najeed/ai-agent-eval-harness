@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-12441",
+  "title": "Allocate Field Production Volumes",
+  "description": "A production accountant allocates the total oil, gas, and water production measured at a central facility back to the individual wells that feed into it.",
+  "use_case": "Upstream",
+  "core_function": "Production Operations",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the total commingled production volumes from the central facility for the previous day.",
+      "expected_outcome": "The total sales volumes are retrieved.",
+      "required_tools": [
+        "get_facility_production_total"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather the latest well test data for all wells connected to the facility.",
+      "expected_outcome": "Individual well test results (oil/gas/water rates) are compiled.",
+      "required_tools": [
+        "get_well_test_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the production allocation algorithm to distribute the total facility volumes back to each well based on their test rates.",
+      "expected_outcome": "The system calculates and assigns the final allocated production volumes for each well for the day.",
+      "required_tools": [
+        "run_production_allocation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

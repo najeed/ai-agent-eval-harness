@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-so-10404",
+  "title": "Ransomware Containment",
+  "description": "An incident responder must contain a ransomware outbreak that is actively spreading across the network.",
+  "use_case": "Security Operations (SecOps)",
+  "core_function": "Containment & Eradication",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the initially infected host from the EDR alert.",
+      "expected_outcome": "Responder correctly identifies the patient zero machine.",
+      "required_tools": [
+        "get_edr_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately isolate the infected host from the network using the EDR tool to stop it from spreading the ransomware further.",
+      "expected_outcome": "Responder successfully quarantines the host.",
+      "required_tools": [
+        "isolate_host_network"
+      ],
+      "success_criteria": [
+        {
+          "metric": "containment_speed",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Block the command-and-control (C2) IP address identified in the malware's traffic at the network firewall.",
+      "expected_outcome": "Responder successfully blocks the C2 communication, preventing the ransomware from receiving new instructions.",
+      "required_tools": [
+        "block_ip_firewall"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

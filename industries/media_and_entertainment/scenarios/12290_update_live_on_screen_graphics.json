@@ -1,0 +1,50 @@
+{
+  "scenario_id": "media-bo-12290",
+  "title": "Update On-Screen Graphics During Live Broadcast",
+  "description": "During a live sports broadcast, the score is incorrect on the on-screen graphic. An agent must correct it immediately.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Live Event Broadcasting",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the correct score from the official source (e.g., the stats keeper).",
+      "expected_outcome": "Agent has the correct, verified score.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the graphics control system.",
+      "expected_outcome": "Agent successfully connects to the graphics generator.",
+      "required_tools": [
+        "connect_to_graphics_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the score field in the graphics template and push the change to air.",
+      "expected_outcome": "Agent successfully updates the on-screen graphic, and the correct score is now displayed.",
+      "required_tools": [
+        "update_on_screen_graphic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

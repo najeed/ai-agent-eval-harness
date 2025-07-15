@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-com-12909",
+  "title": "Analyze a Commercial Investment Property",
+  "description": "An investor client is considering buying a multi-tenant retail property and needs a financial analysis.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Investment & Sales Analysis",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather property financials: purchase price, gross income from rent roll, and operating expenses (taxes, insurance, maintenance).",
+      "expected_outcome": "Agent collects all necessary financial data.",
+      "required_tools": [
+        "get_property_financials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the Net Operating Income (NOI) and the Capitalization Rate (Cap Rate).",
+      "expected_outcome": "Agent correctly calculates NOI and Cap Rate.",
+      "required_tools": [
+        "calculate_financial_metrics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a pro-forma report summarizing the analysis and key investment metrics for the client.",
+      "expected_outcome": "Agent generates a clear and accurate investment analysis report.",
+      "required_tools": [
+        "generate_investment_proforma"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-ago-10259",
+  "title": "Handle Denied Boarding (Involuntary)",
+  "description": "A flight is oversold, and not enough passengers have volunteered to give up their seats. A gate agent must involuntarily deny boarding to a passenger.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Gate & Boarding",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Follow the airline's priority list to select a passenger for involuntary denied boarding (IDB).",
+      "expected_outcome": "Agent selects the lowest fare, last to check-in passenger.",
+      "required_tools": [
+        "get_idb_priority_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the passenger of the situation and explain their rights and the compensation they are entitled to under the law.",
+      "expected_outcome": "Agent clearly and politely explains the situation and the passenger's rights.",
+      "required_tools": [
+        "explain_idb_compensation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Rebook the passenger on the next available flight and provide them with the required compensation (e.g., cash, check, travel voucher).",
+      "expected_outcome": "Agent rebooks the passenger and issues their compensation.",
+      "required_tools": [
+        "rebook_passenger",
+        "issue_compensation_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

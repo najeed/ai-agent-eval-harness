@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ret-cs-13150",
+  "title": "Inquire About Material Composition",
+  "description": "A customer with a wool allergy calls to ask if a specific sweater contains any wool.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Product Inquiries",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the product name or item number from the customer.",
+      "expected_outcome": "The agent identifies the specific sweater in question.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the product in the product information management (PIM) system.",
+      "expected_outcome": "The agent finds the detailed product page.",
+      "required_tools": [
+        "lookup_product"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the material composition field and inform the customer that the sweater is made of '80% Cotton, 20% Polyester' and contains no wool.",
+      "expected_outcome": "The agent provides accurate information that helps the customer make a safe purchasing decision.",
+      "required_tools": [
+        "get_product_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

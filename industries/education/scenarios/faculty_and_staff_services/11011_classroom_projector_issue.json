@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-fs-11011",
+  "title": "Classroom Projector Not Working",
+  "description": "A professor calls from a classroom 10 minutes before class starts because the projector is not turning on.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "IT & Classroom Tech Support",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the professor and the classroom number.",
+      "expected_outcome": "Agent gets the exact location of the issue.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attempt a remote restart of the classroom's A/V system.",
+      "expected_outcome": "Agent uses the remote management tool to power cycle the projector.",
+      "required_tools": [
+        "remotely_cycle_av_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the remote restart fails, dispatch an on-site technician immediately.",
+      "expected_outcome": "Agent creates a high-priority ticket and dispatches the nearest technician.",
+      "required_tools": [
+        "dispatch_classroom_support_tech"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

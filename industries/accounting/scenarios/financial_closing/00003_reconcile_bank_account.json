@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-fc-3",
+  "title": "Reconcile a Corporate Bank Account",
+  "description": "As part of the month-end close, an accountant needs to reconcile the main corporate bank account, matching transactions in the general ledger to the bank statement.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Account Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the general ledger transactions for the bank account for the month.",
+      "expected_outcome": "Agent successfully pulls all GL entries for the cash account.",
+      "required_tools": [
+        "get_gl_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the bank statement for the same period.",
+      "expected_outcome": "Agent successfully retrieves the official bank statement.",
+      "required_tools": [
+        "get_bank_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Automatically match transactions between the GL and the bank statement.",
+      "expected_outcome": "Agent's tool matches over 95% of transactions automatically.",
+      "required_tools": [
+        "match_bank_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Identify and list any reconciling items, such as outstanding checks or deposits in transit, and prepare the final reconciliation report.",
+      "expected_outcome": "Agent correctly identifies all reconciling items and generates a balanced reconciliation report.",
+      "required_tools": [
+        "generate_reconciliation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

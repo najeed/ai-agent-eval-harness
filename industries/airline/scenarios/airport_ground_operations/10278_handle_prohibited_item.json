@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10278",
+  "title": "Handle a Prohibited Item in Checked Baggage",
+  "description": "During security screening, a prohibited item (e.g., a lithium battery) is found in a passenger's checked bag. The bag is brought to the check-in agent.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Check-in & Baggage",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Page the passenger to return to the check-in counter.",
+      "expected_outcome": "Agent successfully contacts the passenger.",
+      "required_tools": [
+        "make_pa_announcement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the passenger about the prohibited item and explain that it cannot be in their checked bag.",
+      "expected_outcome": "Agent clearly explains the policy.",
+      "required_tools": [
+        "explain_prohibited_items_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Give the passenger the option to either place the item in their carry-on (if permitted), give it to a non-traveling friend, or surrender it.",
+      "expected_outcome": "The passenger removes the item, and the bag is re-checked.",
+      "required_tools": [
+        "handle_prohibited_item"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

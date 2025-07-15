@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10214",
+  "title": "Request Wheelchair Assistance",
+  "description": "An elderly passenger calls to add a wheelchair assistance request to their existing booking.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Post-Booking Services",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's booking.",
+      "expected_outcome": "Agent finds the correct reservation.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the Special Service Request (SSR) code for wheelchair assistance to the booking.",
+      "expected_outcome": "Agent adds the correct SSR code (WCHR) to the booking.",
+      "required_tools": [
+        "add_ssr_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm with the passenger that the request has been added and explain how to get the assistance at the airport.",
+      "expected_outcome": "Agent confirms the request and provides helpful information.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

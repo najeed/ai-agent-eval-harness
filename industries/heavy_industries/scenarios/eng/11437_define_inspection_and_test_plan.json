@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-eng-11437",
+  "title": "Define an Inspection and Test Plan (ITP)",
+  "description": "A quality engineer needs to create an ITP for the fabrication of a new pressure vessel, outlining all required quality checks.",
+  "use_case": "Engineering & Design",
+  "core_function": "Quality Engineering",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new ITP document linked to the pressure vessel's equipment tag.",
+      "expected_outcome": "Agent initiates a new ITP using the standard template.",
+      "required_tools": [
+        "create_itp"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add inspection points for each stage of fabrication, such as 'Material Receiving Inspection', 'Weld Inspection', and 'Pressure Test'.",
+      "expected_outcome": "Agent adds all the required quality checkpoints to the plan.",
+      "required_tools": [
+        "add_inspection_point_to_itp"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each point, specify the acceptance criteria, the responsible party (e.g., contractor, third-party inspector), and whether it is a hold point. Submit for approval.",
+      "expected_outcome": "Agent details the requirements for each checkpoint and submits the ITP for review.",
+      "required_tools": [
+        "update_itp",
+        "submit_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

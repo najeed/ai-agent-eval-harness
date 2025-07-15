@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-pt-12",
+  "title": "Manage Daily Cash Position",
+  "description": "A treasury analyst needs to determine the company's daily cash position to decide if funds need to be moved from a money market account to the operating account.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Cash Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the closing balances from all company bank accounts from the previous day.",
+      "expected_outcome": "Agent gets all bank balances.",
+      "required_tools": [
+        "get_bank_balances"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve a forecast of today's expected cash inflows (e.g., customer payments) and outflows (e.g., vendor payments).",
+      "expected_outcome": "Agent gets the daily cash forecast.",
+      "required_tools": [
+        "get_cash_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the projected end-of-day cash position.",
+      "expected_outcome": "Agent calculates a projected deficit in the main operating account.",
+      "required_tools": [
+        "calculate_cash_position"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Initiate a wire transfer from the money market account to the operating account to cover the projected shortfall.",
+      "expected_outcome": "Agent successfully initiates the required transfer.",
+      "required_tools": [
+        "initiate_wire_transfer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

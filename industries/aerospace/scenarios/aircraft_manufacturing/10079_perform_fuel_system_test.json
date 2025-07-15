@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10079",
+  "title": "Perform a Fuel System Test",
+  "description": "On a newly built aircraft, engineers must test the entire fuel system, including pumps, valves, and gauges.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Testing & Certification",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Fill the aircraft's fuel tanks to various levels.",
+      "expected_outcome": "Agent oversees the fueling of the aircraft.",
+      "required_tools": [
+        "operate_fueling_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Operate the fuel pumps and valves to simulate transferring fuel between different tanks.",
+      "expected_outcome": "Agent runs a test script and confirms fuel transfers correctly.",
+      "required_tools": [
+        "run_system_test_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the fuel quantity gauges in the cockpit provide accurate readings for each tank.",
+      "expected_outcome": "Agent compares the gauge readings to the known fuel quantity and confirms they are accurate within tolerance.",
+      "required_tools": [
+        "check_gauge_accuracy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-sp-11454",
+  "title": "Create a Campaign Project Plan",
+  "description": "A project manager needs to create a detailed project plan for a new marketing campaign.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Campaign Strategy & Planning",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "List all major tasks required for the campaign (e.g., 'Write copy', 'Design ads', 'Set up campaign', 'Report on results').",
+      "expected_outcome": "Agent creates a comprehensive work breakdown structure.",
+      "required_tools": [
+        "project_management_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign an owner and a due date to each task.",
+      "expected_outcome": "Agent assigns all tasks to the appropriate team members.",
+      "required_tools": [
+        "project_management_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up dependencies between tasks (e.g., 'Design ads' cannot start until 'Write copy' is complete).",
+      "expected_outcome": "Agent creates a Gantt chart or timeline view with clear dependencies.",
+      "required_tools": [
+        "project_management_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

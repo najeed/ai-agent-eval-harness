@@ -1,0 +1,56 @@
+{
+  "scenario_id": "finance-rb-11202",
+  "title": "Initiate International Wire Transfer",
+  "description": "A customer needs to send $2,500 USD to a recipient in the United Kingdom.",
+  "use_case": "Retail Banking",
+  "core_function": "Payments & Transfers",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the customer and collect all required recipient and bank details (Name, Address, IBAN, SWIFT/BIC).",
+      "expected_outcome": "Agent securely verifies the customer and accurately collects all necessary transfer information.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        },
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total cost including the transfer fee and currency exchange rate, and get customer confirmation.",
+      "expected_outcome": "Agent correctly calculates the total debit amount and receives approval from the customer.",
+      "required_tools": [
+        "get_wire_transfer_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute the wire transfer and provide the customer with a confirmation number.",
+      "expected_outcome": "Agent successfully processes the transfer and provides the correct reference number.",
+      "required_tools": [
+        "execute_wire_transfer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

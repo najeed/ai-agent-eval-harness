@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-12210",
+  "title": "Track Transaction Contingency Deadline",
+  "description": "A property is under contract, and the 10-day inspection contingency period is about to expire. The agent must remind the buyer's agent.",
+  "use_case": "Residential Sales",
+  "core_function": "Offer & Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the transaction and its key dates from the transaction management system.",
+      "expected_outcome": "Agent correctly identifies the property and the upcoming contingency removal deadline.",
+      "required_tools": [
+        "get_transaction_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the buyer has not yet submitted the contingency removal form.",
+      "expected_outcome": "Agent confirms the form is still outstanding.",
+      "required_tools": [
+        "check_document_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a reminder email to the buyer's agent about the deadline in 2 days.",
+      "expected_outcome": "Agent sends a professional and timely reminder.",
+      "required_tools": [
+        "send_email_to_agent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

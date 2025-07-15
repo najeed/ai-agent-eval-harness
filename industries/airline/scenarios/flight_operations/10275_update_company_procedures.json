@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-fo-10275",
+  "title": "Update Company Operations Manual",
+  "description": "Following a change in regulations, an airline must update its company operations manual and notify all pilots.",
+  "use_case": "Flight Operations",
+  "core_function": "Crew Management",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the sections of the operations manual affected by the new regulation.",
+      "expected_outcome": "Agent finds all relevant sections.",
+      "required_tools": [
+        "search_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Revise the manual to incorporate the new procedures.",
+      "expected_outcome": "Agent accurately updates the manual.",
+      "required_tools": [
+        "edit_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Publish the revision and send a mandatory bulletin to all flight crew, requiring them to read and acknowledge the change.",
+      "expected_outcome": "Agent distributes the update and tracks acknowledgements.",
+      "required_tools": [
+        "publish_document",
+        "send_mandatory_bulletin"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10047",
+  "title": "Install an Avionics Suite",
+  "description": "An avionics technician needs to install and connect all the components of an avionics suite in an aircraft cockpit.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Assembly & Production",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Install all line-replaceable units (LRUs) such as flight displays and computers into the cockpit instrument panel racks.",
+      "expected_outcome": "Agent physically installs all hardware components.",
+      "required_tools": [
+        "install_lru"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Connect all the wiring harnesses between the LRUs according to the installation drawings.",
+      "expected_outcome": "Agent correctly connects all wiring.",
+      "required_tools": [
+        "get_installation_drawing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Power up the system and perform a built-in test (BIT) to ensure all components are communicating correctly.",
+      "expected_outcome": "Agent runs the BIT and confirms there are no fault codes.",
+      "required_tools": [
+        "perform_built_in_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "scenario_id": "cyber-iam-10774",
+  "title": "Rehired Employee Onboarding",
+  "description": "An employee who left the company six months ago is rehired. An IAM analyst must re-enable their old account and provision new access.",
+  "use_case": "Identity & Access Management (IAM)",
+  "core_function": "User Provisioning & Deprovisioning",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the rehire notification from HR.",
+      "expected_outcome": "Analyst correctly processes the request.",
+      "required_tools": [
+        "get_hr_rehire_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_processing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find the employee's old, disabled account in Active Directory and re-enable it.",
+      "expected_outcome": "Analyst successfully re-enables the existing account.",
+      "required_tools": [
+        "find_disabled_ad_account",
+        "enable_ad_user_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review and update the user's group memberships to ensure they align with their new role, removing any old, unnecessary access.",
+      "expected_outcome": "Analyst correctly provisions access for the new role while ensuring old permissions are revoked.",
+      "required_tools": [
+        "review_user_group_membership",
+        "add_user_to_group",
+        "remove_user_from_group"
+      ],
+      "success_criteria": [
+        {
+          "metric": "permissioning_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

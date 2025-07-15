@@ -1,0 +1,50 @@
+{
+  "scenario_id": "telecom-ts-12782",
+  "title": "Mobile Troubleshooting - Cannot Receive Calls",
+  "description": "A customer can make calls but cannot receive any. All incoming calls go straight to voicemail.",
+  "use_case": "Technical Support",
+  "core_function": "Mobile Device Troubleshooting",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check if the customer has accidentally enabled 'Do Not Disturb' or a similar focus mode on their device.",
+      "expected_outcome": "Agent guides the customer to check their phone's settings.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the account's call forwarding settings for any unconditional forwards.",
+      "expected_outcome": "Agent discovers an unconditional call forward to voicemail is active on the account.",
+      "required_tools": [
+        "get_call_forwarding_settings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Disable the unconditional call forwarding on the customer's line.",
+      "expected_outcome": "Agent successfully removes the setting.",
+      "required_tools": [
+        "reset_call_forwarding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

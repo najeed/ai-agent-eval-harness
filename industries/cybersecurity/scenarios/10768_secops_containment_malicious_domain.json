@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-so-10768",
+  "title": "Malicious Domain Containment",
+  "description": "Threat intelligence indicates a domain is being used to host malware. An incident responder must block access to it.",
+  "use_case": "Security Operations (SecOps)",
+  "core_function": "Containment & Eradication",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the malicious domain name from the threat intelligence platform.",
+      "expected_outcome": "Responder has the IOC that needs to be blocked.",
+      "required_tools": [
+        "get_threat_intel_ioc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the domain to the blocklist on the corporate DNS server, so any internal requests to it will fail.",
+      "expected_outcome": "Responder successfully blocks the domain at the DNS level.",
+      "required_tools": [
+        "add_to_dns_blocklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "containment_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Search historical DNS logs to see if any internal hosts have already tried to connect to the malicious domain.",
+      "expected_outcome": "Responder proactively hunts for already-compromised hosts.",
+      "required_tools": [
+        "query_dns_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "investigation_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

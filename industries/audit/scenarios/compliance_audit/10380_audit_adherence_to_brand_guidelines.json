@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10380",
+  "title": "Audit Adherence to Brand Guidelines",
+  "description": "A compliance auditor reviews marketing materials to ensure they comply with the company's official brand guidelines.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Policy & Procedure Adherence",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a sample of 25 recent marketing materials from various departments (e.g., brochures, web pages, presentations).",
+      "expected_outcome": "A diverse sample of materials is collected.",
+      "required_tools": [
+        "collect_marketing_materials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review each item to ensure it uses the correct company logo, fonts, and color palette as defined in the brand style guide.",
+      "expected_outcome": "The auditor finds several items that use an outdated version of the company logo.",
+      "required_tools": [
+        "review_against_style_guide"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Report the findings to the marketing department and recommend a centralized asset library to ensure everyone uses the correct brand assets.",
+      "expected_outcome": "A finding and recommendation are made to improve brand consistency.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

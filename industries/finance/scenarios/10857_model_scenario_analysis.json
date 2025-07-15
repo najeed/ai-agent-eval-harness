@@ -1,0 +1,53 @@
+{
+  "scenario_id": "finance-cf-10857",
+  "title": "Perform Scenario Analysis on Financial Plan",
+  "description": "An FP&A analyst needs to model the impact of a potential recession (e.g., a 10% drop in sales) on the company's financial plan.",
+  "use_case": "Corporate Finance",
+  "core_function": "Financial Planning & Analysis (FP&A)",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new 'what-if' scenario based on the current financial plan.",
+      "expected_outcome": "Agent creates a copy of the plan labeled 'Recession Scenario'.",
+      "required_tools": [
+        "create_what_if_scenario"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Adjust the key drivers in the scenario (e.g., decrease sales growth by 10%).",
+      "expected_outcome": "Agent successfully modifies the assumptions in the new scenario.",
+      "required_tools": [
+        "adjust_scenario_drivers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the scenario and compare the projected P&L against the base plan.",
+      "expected_outcome": "Agent runs the model and generates a comparison report showing the impact on profitability.",
+      "required_tools": [
+        "run_scenario_model",
+        "generate_comparison_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

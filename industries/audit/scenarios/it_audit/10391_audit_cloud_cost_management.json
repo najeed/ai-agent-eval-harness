@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10391",
+  "title": "Audit Cloud Cost Management (FinOps)",
+  "description": "An IT auditor reviews the company's management of its cloud computing costs.",
+  "use_case": "IT Audit",
+  "core_function": "Cybersecurity & Privacy Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the detailed cloud billing data for the last 6 months.",
+      "expected_outcome": "The auditor has the complete cloud spend data.",
+      "required_tools": [
+        "get_cloud_billing_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify 'zombie' resources, such as unattached storage volumes or idle virtual machines, that are incurring costs but not being used.",
+      "expected_outcome": "The analysis identifies a significant amount of monthly spend on unused resources.",
+      "required_tools": [
+        "analyze_cloud_spend_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the implementation of an automated process to identify and decommission unused cloud resources.",
+      "expected_outcome": "A recommendation is made to improve cloud cost governance.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

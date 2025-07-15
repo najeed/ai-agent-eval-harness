@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10009",
+  "title": "Conduct a Flight Test",
+  "description": "A flight test engineer needs to execute a test plan to evaluate the stall characteristics of a new aircraft.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Testing & Certification",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the approved flight test plan, including the specific maneuvers, altitudes, and data collection parameters.",
+      "expected_outcome": "Agent correctly identifies the full test plan.",
+      "required_tools": [
+        "get_flight_test_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "In real-time during the flight, guide the test pilot through the maneuvers while monitoring aircraft telemetry for safety.",
+      "expected_outcome": "Agent provides clear instructions and monitors telemetry for any limit exceedances.",
+      "required_tools": [
+        "monitor_telemetry",
+        "communicate_with_pilot"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the flight, download the flight data recorder information for analysis.",
+      "expected_outcome": "Agent successfully downloads and archives the flight data.",
+      "required_tools": [
+        "download_flight_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

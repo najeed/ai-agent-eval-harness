@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-ago-10290",
+  "title": "Check in a Pet Traveling in the Hold",
+  "description": "A passenger is traveling with a large dog that must travel as checked baggage in the temperature-controlled cargo hold.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Check-in & Baggage",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the passenger has a confirmed booking for their pet and all required health and vaccination documents.",
+      "expected_outcome": "Agent confirms the pet is booked and all paperwork is in order.",
+      "required_tools": [
+        "get_booking_details",
+        "verify_pet_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inspect the pet's travel crate to ensure it meets airline safety standards.",
+      "expected_outcome": "Agent confirms the crate is compliant.",
+      "required_tools": [
+        "inspect_pet_crate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Collect the pet travel fee, tag the crate, and direct the passenger to the special baggage handling area.",
+      "expected_outcome": "Agent completes the check-in process for the pet.",
+      "required_tools": [
+        "process_payment",
+        "tag_pet_crate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

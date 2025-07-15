@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-ms-10426",
+  "title": "Vehicle Assembly Resequencing",
+  "description": "Due to a shortage of a specific component (e.g., panoramic sunroofs), several vehicles in the production queue must be resequenced to prioritize building cars that don't require the part.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Production Planning",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all vehicles in the next 24-hour production queue that require the sunroof.",
+      "expected_outcome": "Agent generates a list of 50 VINs that are scheduled for sunroof installation.",
+      "required_tools": [
+        "get_production_queue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the production schedule to move the identified vehicles to a later build slot.",
+      "expected_outcome": "Agent successfully re-orders the production queue.",
+      "required_tools": [
+        "update_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the parts delivery system is updated to match the new build sequence.",
+      "expected_outcome": "Agent syncs the production schedule with the parts logistics system to prevent mis-delivery of components.",
+      "required_tools": [
+        "sync_logistics_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

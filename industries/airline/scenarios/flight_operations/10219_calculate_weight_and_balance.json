@@ -1,0 +1,55 @@
+{
+  "scenario_id": "airline-fo-10219",
+  "title": "Calculate Weight and Balance",
+  "description": "A loadmaster must calculate the final weight and balance for a flight before departure to ensure it is within safe limits.",
+  "use_case": "Flight Operations",
+  "core_function": "Flight Planning & Dispatch",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the final passenger count, baggage weight, and cargo weight.",
+      "expected_outcome": "Agent compiles all the final weight data.",
+      "required_tools": [
+        "get_final_passenger_count",
+        "get_total_baggage_weight",
+        "get_cargo_weight"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Input the data into a weight and balance calculator to determine the aircraft's takeoff weight and center of gravity.",
+      "expected_outcome": "Agent accurately calculates the final weight and balance.",
+      "required_tools": [
+        "calculate_weight_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the takeoff weight and center of gravity are within the aircraft's operational limits and send the final load sheet to the flight crew.",
+      "expected_outcome": "Agent confirms the aircraft is safe for departure and transmits the load sheet.",
+      "required_tools": [
+        "verify_operational_limits",
+        "send_loadsheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

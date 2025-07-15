@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-12845",
+  "title": "Purchase In-Flight Wi-Fi",
+  "description": "A passenger on a flight wants to purchase a Wi-Fi pass for the duration of the flight.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Ancillary Services & Upgrades",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the passenger's flight details (flight number, seat number).",
+      "expected_outcome": "Agent confirms the passenger's identity and location on the aircraft.",
+      "required_tools": [
+        "get_passenger_details_by_seat"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Present the available Wi-Fi pass options and their prices.",
+      "expected_outcome": "Agent offers a '1-Hour Pass' and a 'Full Flight Pass'.",
+      "required_tools": [
+        "get_ancillary_pricing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the payment for the selected 'Full Flight Pass' and provide access instructions.",
+      "expected_outcome": "Agent successfully sells the pass and guides the user on how to connect.",
+      "required_tools": [
+        "add_ancillary_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

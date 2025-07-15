@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ag-fo-10135",
+  "title": "Check Compliance with Water Quality Regulations",
+  "description": "A farmer needs to ensure their nutrient management plan complies with local water quality regulations to prevent runoff.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Financial Management & Compliance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the farmer's current nutrient management plan, including planned fertilizer application rates and timing.",
+      "expected_outcome": "Agent gets the details of the plan.",
+      "required_tools": [
+        "get_nutrient_management_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the specific water quality regulations for the farm's watershed, focusing on phosphorus and nitrogen limits.",
+      "expected_outcome": "Agent retrieves the relevant government regulations.",
+      "required_tools": [
+        "get_local_regulations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the farmer's plan against the regulations and flag any potential non-compliance issues.",
+      "expected_outcome": "Agent identifies that the planned fall phosphorus application is not permitted under the regulations.",
+      "required_tools": [
+        "compare_plan_to_regulations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Suggest modifications to the plan to ensure compliance, such as moving the phosphorus application to the spring.",
+      "expected_outcome": "Agent provides an actionable recommendation to fix the compliance issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ap-96",
+  "title": "Resolve a 3-Way Match Quantity Discrepancy",
+  "description": "An invoice fails the 3-way match because the quantity invoiced is greater than the quantity received on the goods receipt note.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system automatically places the invoice on hold due to a quantity mismatch.",
+      "expected_outcome": "Agent is notified of the hold and the reason.",
+      "required_tools": [
+        "get_system_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the PO, invoice, and goods receipt note to confirm the discrepancy.",
+      "expected_outcome": "Agent confirms the PO was for 100 units, 90 were received, but 100 were invoiced.",
+      "required_tools": [
+        "perform_3_way_match"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the warehouse to confirm if the remaining 10 units have since been received.",
+      "expected_outcome": "The warehouse confirms the remaining items have not arrived.",
+      "required_tools": [
+        "contact_warehouse"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Inform the vendor of the quantity discrepancy and request a new invoice for the quantity actually received.",
+      "expected_outcome": "Agent contacts the vendor and asks them to submit a corrected invoice for 90 units.",
+      "required_tools": [
+        "contact_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

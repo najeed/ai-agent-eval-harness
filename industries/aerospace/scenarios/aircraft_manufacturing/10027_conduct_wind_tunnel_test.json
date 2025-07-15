@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10027",
+  "title": "Conduct a Wind Tunnel Test",
+  "description": "An aerodynamics engineer needs to test a scale model of a new aircraft design in a wind tunnel to measure lift and drag.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Design & Engineering",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Mount the scale model in the wind tunnel test section and connect all data sensors.",
+      "expected_outcome": "Agent ensures the model is securely mounted and all sensors are online.",
+      "required_tools": [
+        "mount_test_model",
+        "connect_sensors"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the wind tunnel through a series of predefined airspeeds and angles of attack.",
+      "expected_outcome": "Agent follows the test plan, setting the correct tunnel conditions for each test point.",
+      "required_tools": [
+        "control_wind_tunnel"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Record the sensor data (lift, drag, pressure) for each test point and compile the results for analysis.",
+      "expected_outcome": "Agent collects and archives all test data.",
+      "required_tools": [
+        "record_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

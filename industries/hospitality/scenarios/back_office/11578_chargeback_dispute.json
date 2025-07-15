@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hosp-bo-11578",
+  "title": "Handle a Credit Card Chargeback",
+  "description": "The hotel receives a chargeback notice from a credit card company; a former guest is disputing their entire stay's charges.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Financial Reporting",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all documentation related to the guest's stay: the reservation, the signed registration card, and the itemized folio.",
+      "expected_outcome": "The agent gathers all evidence for the stay.",
+      "required_tools": [
+        "pms_lookup_reservation",
+        "pms_get_guest_folio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a formal response to the chargeback, providing the documentation as evidence that the charges were valid.",
+      "expected_outcome": "A detailed response with supporting evidence is created.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the response and evidence to the credit card company through their merchant portal.",
+      "expected_outcome": "The chargeback dispute is formally submitted.",
+      "required_tools": [
+        "acct_submit_chargeback_response"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

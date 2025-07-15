@@ -1,0 +1,67 @@
+{
+  "scenario_id": "ag-fo-10173",
+  "title": "Resolve a Supplier Invoice Discrepancy",
+  "description": "A farmer has received an invoice from a chemical supplier that does not match their own records.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Supply Chain & Inventory",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the supplier's invoice.",
+      "expected_outcome": "Agent gets the invoice details.",
+      "required_tools": [
+        "get_invoice_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the farm's corresponding purchase order and delivery receipts.",
+      "expected_outcome": "Agent gets the farm's internal records for the transaction.",
+      "required_tools": [
+        "get_purchase_order",
+        "get_delivery_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the documents and identify the discrepancy.",
+      "expected_outcome": "Agent finds the invoice incorrectly charged for 100 gallons, while the delivery receipt shows only 90 gallons were delivered.",
+      "required_tools": [
+        "compare_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Draft an email to the supplier outlining the discrepancy and requesting a corrected invoice.",
+      "expected_outcome": "Agent generates a professional email with all the relevant details and attachments.",
+      "required_tools": [
+        "draft_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-ehs-10580",
+  "title": "Track Corrective Action to Completion",
+  "description": "An EHS specialist needs to follow up on a Corrective and Preventive Action (CAPA) that was assigned after a safety audit to ensure it was completed.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Incident Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the CAPA record in the system.",
+      "expected_outcome": "Agent retrieves the CAPA related to 'machine guarding'.",
+      "required_tools": [
+        "get_capa_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of the CAPA and see that it is still 'In Progress', even though its due date has passed.",
+      "expected_outcome": "Agent identifies that the corrective action is overdue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send an automated reminder notification to the assigned owner of the CAPA.",
+      "expected_outcome": "Agent successfully triggers a reminder email to the responsible person.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

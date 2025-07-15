@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10081",
+  "title": "Manage Rotable Parts Inventory",
+  "description": "An MRO facility manages a pool of rotable parts (repairable components). An agent must track a part through its entire repair and reuse cycle.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Spares & Logistics",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a broken component from an aircraft and update its status to 'unserviceable, awaiting repair'.",
+      "expected_outcome": "Agent correctly logs the incoming broken part.",
+      "required_tools": [
+        "update_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the component to a repair shop and track its progress.",
+      "expected_outcome": "Agent sends the part for repair and monitors its status.",
+      "required_tools": [
+        "ship_for_repair"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "When the repaired component returns, update its status to 'serviceable' and place it back into the rotable inventory pool, ready for use.",
+      "expected_outcome": "Agent receives the repaired part, verifies its certification, and updates its status to available.",
+      "required_tools": [
+        "receive_repaired_part",
+        "update_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

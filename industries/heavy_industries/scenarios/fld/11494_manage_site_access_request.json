@@ -1,0 +1,51 @@
+{
+  "scenario_id": "heavy-industries-fld-11494",
+  "title": "Manage Site Access Request",
+  "description": "A new subcontractor employee needs to be granted access to the construction site.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Site Management & Logistics",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the site access request form from the subcontractor.",
+      "expected_outcome": "The site administrator has the new employee's details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the new employee has completed the mandatory site safety orientation.",
+      "expected_outcome": "Agent checks the training records and confirms the orientation is complete.",
+      "required_tools": [
+        "check_training_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new profile for the employee in the site access control system and issue them an access badge.",
+      "expected_outcome": "Agent creates the profile and activates a new badge, allowing the employee to enter the site.",
+      "required_tools": [
+        "create_personnel_profile",
+        "issue_access_badge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

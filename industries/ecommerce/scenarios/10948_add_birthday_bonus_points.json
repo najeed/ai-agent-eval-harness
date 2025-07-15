@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-mce-10948",
+  "title": "Add Birthday Bonus to Loyalty Account",
+  "description": "As part of the loyalty program, customers receive bonus points on their birthday. The system needs to automate this.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Loyalty Programs",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Each day, query the customer database for all customers whose birthday is today.",
+      "expected_outcome": "System generates a list of customers celebrating their birthday.",
+      "required_tools": [
+        "query_customer_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each customer on the list, add 100 bonus points to their loyalty account.",
+      "expected_outcome": "System successfully updates the loyalty balance for all eligible customers.",
+      "required_tools": [
+        "update_loyalty_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send each customer a 'Happy Birthday' email mentioning their bonus points.",
+      "expected_outcome": "System sends a personalized birthday email.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

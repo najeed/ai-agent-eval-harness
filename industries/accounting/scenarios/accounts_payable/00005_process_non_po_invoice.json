@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ap-5",
+  "title": "Process a Non-PO Invoice",
+  "description": "An invoice for a utility bill (e.g., electricity) has been received. These invoices do not have purchase orders.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Capture the invoice data.",
+      "expected_outcome": "Agent correctly extracts vendor, invoice number, amount, and due date.",
+      "required_tools": [
+        "capture_invoice_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Code the invoice to the correct general ledger account (e.g., 'Utilities Expense') and cost center.",
+      "expected_outcome": "Agent correctly assigns the GL code '64500-Utilities' and the 'Facilities' cost center.",
+      "required_tools": [
+        "code_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Route the invoice to the appropriate department head for approval.",
+      "expected_outcome": "Agent sends the invoice to the Facilities Manager for electronic approval.",
+      "required_tools": [
+        "route_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

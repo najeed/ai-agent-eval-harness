@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ports-hs-11904",
+  "title": "Report a Minor Safety Incident",
+  "description": "A worker reports a near-miss incident where a container was nearly dropped. A safety officer must log the incident.",
+  "use_case": "Health, Safety, Security & Environment (HSSE)",
+  "core_function": "Safety & Incident Management",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather details of the incident: time, location, equipment involved, and a description of what happened.",
+      "expected_outcome": "Officer collects all relevant facts about the near-miss.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new incident report in the safety management system.",
+      "expected_outcome": "A new report is created with all the gathered details, classified as 'Near-Miss'.",
+      "required_tools": [
+        "create_safety_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign an action item to the terminal manager to conduct a toolbox talk on safe lifting procedures with crane operators.",
+      "expected_outcome": "A corrective action is assigned to the relevant manager to prevent recurrence.",
+      "required_tools": [
+        "assign_corrective_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

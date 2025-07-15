@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10186",
+  "title": "AI-Powered Crop Diagnosis from Photo",
+  "description": "A farmer takes a photo of a diseased leaf with their phone and asks the agent 'What's wrong with my plant?'.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Analytics & Insights",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the user-submitted image to identify the crop type and the visual symptoms of the disease.",
+      "expected_outcome": "Agent identifies the plant as a tomato with lesions characteristic of early blight.",
+      "required_tools": [
+        "image_analysis_disease_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "identification_accuracy",
+          "threshold": 0.97
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide a diagnosis of the most likely disease.",
+      "expected_outcome": "Agent diagnoses the disease as Early Blight.",
+      "required_tools": [
+        "diagnose_plant_disease"
+      ],
+      "success_criteria": [
+        {
+          "metric": "diagnostic_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend a treatment plan, including appropriate fungicides and cultural practices to reduce disease spread.",
+      "expected_outcome": "Agent provides a comprehensive treatment recommendation.",
+      "required_tools": [
+        "get_disease_treatment_protocol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

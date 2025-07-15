@@ -1,0 +1,64 @@
+{
+  "scenario_id": "lw-wo-11981",
+  "title": "Manage Battery Charging for MHE",
+  "description": "A forklift's battery is low. The operator must swap it for a charged one at a battery station.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Storage & Slotting",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The forklift's terminal displays a 'Low Battery' warning and directs the operator to the nearest battery charging station.",
+      "expected_outcome": "The operator is proactively notified and guided.",
+      "required_tools": [
+        "monitor_mhe_battery_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The operator scans their forklift ID at the battery station.",
+      "expected_outcome": "The system logs that this forklift is beginning a battery swap.",
+      "required_tools": [
+        "log_battery_swap_start"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The operator removes the depleted battery, places it in a charging slot, and takes a fully charged battery.",
+      "expected_outcome": "The physical battery swap is performed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The operator scans the new battery's ID, and the system logs the completion of the swap, updating the forklift's status to 'Active'.",
+      "expected_outcome": "The system records the new battery association and shows the forklift is ready for work.",
+      "required_tools": [
+        "log_battery_swap_end"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

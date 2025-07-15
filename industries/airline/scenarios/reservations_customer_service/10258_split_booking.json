@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-res-10258",
+  "title": "Split a Booking (PNR)",
+  "description": "Two passengers are on the same booking, but one needs to change their return date while the other does not. The agent must split the booking.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Booking & Ticketing",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the original booking with the two passengers.",
+      "expected_outcome": "Agent finds the correct booking.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute the command to split the PNR, which creates a new, separate booking for the passenger who needs to make a change.",
+      "expected_outcome": "Agent successfully splits the booking into two separate PNRs.",
+      "required_tools": [
+        "split_pnr"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "With the passenger now in their own booking, proceed to change their return date, calculating any fees or fare differences.",
+      "expected_outcome": "Agent proceeds with the date change on the newly created booking.",
+      "required_tools": [
+        "calculate_change_fee",
+        "reissue_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

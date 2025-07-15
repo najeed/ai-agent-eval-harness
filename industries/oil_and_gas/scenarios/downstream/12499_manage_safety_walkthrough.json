@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-down-12499",
+  "title": "Conduct Management Safety Walkthrough",
+  "description": "A plant manager conducts a safety walkthrough, speaking with operators and looking for potential hazards to reinforce the site's safety culture.",
+  "use_case": "Downstream",
+  "core_function": "Health, Safety & Environment (HSE)",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the 'Safety Walkthrough' form on a tablet, which includes conversation prompts and observation categories.",
+      "expected_outcome": "The correct digital form for the walkthrough is loaded.",
+      "required_tools": [
+        "load_audit_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the walkthrough, log observations, both positive (e.g., good housekeeping) and negative (e.g., a small, contained oil leak).",
+      "expected_outcome": "Several observations are logged in the system.",
+      "required_tools": [
+        "log_safety_observation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For the oil leak, create an immediate work order for maintenance to clean it up and repair the source.",
+      "expected_outcome": "A high-priority work order is created and dispatched to the maintenance team.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

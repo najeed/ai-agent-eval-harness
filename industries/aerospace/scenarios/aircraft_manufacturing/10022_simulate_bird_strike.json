@@ -1,0 +1,54 @@
+{
+  "scenario_id": "aerospace-am-10022",
+  "title": "Simulate a Bird Strike on an Engine",
+  "description": "A safety engineer needs to run a computer simulation to model the structural impact of a bird strike on a new jet engine design.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Design & Engineering",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a high-fidelity finite element model of the engine nacelle and fan blades.",
+      "expected_outcome": "Agent generates a detailed and accurate model for simulation.",
+      "required_tools": [
+        "create_cad_model",
+        "create_fea_mesh"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define the simulation parameters, including the bird's mass, velocity, and impact angle, based on certification requirements.",
+      "expected_outcome": "Agent sets up the simulation with the correct parameters from FAA regulations.",
+      "required_tools": [
+        "get_certification_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the impact simulation and analyze the results to ensure the engine can safely contain the damage without a catastrophic failure.",
+      "expected_outcome": "Agent runs the simulation and the report shows that while blades are damaged, the engine case remains intact.",
+      "required_tools": [
+        "run_impact_simulation",
+        "analyze_simulation_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "heavy-industries-fld-11458",
+  "title": "Perform Soil Compaction Test",
+  "description": "After a layer of fill has been placed for a new road, a field technician must test its compaction using a nuclear density gauge.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Field Inspections & Testing",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the project specification for the required soil compaction level.",
+      "expected_outcome": "The technician finds the spec requires '95% of maximum dry density'.",
+      "required_tools": [
+        "get_technical_specification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform the test with the nuclear density gauge at a designated location.",
+      "expected_outcome": "The technician operates the gauge to get a reading.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the test result in the quality system and verify that it meets the minimum requirement.",
+      "expected_outcome": "Agent logs the result of 96%, which passes the test, and approves the area for the next layer of fill.",
+      "required_tools": [
+        "log_test_result"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

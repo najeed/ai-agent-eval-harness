@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10352",
+  "title": "Audit SaaS Application Access",
+  "description": "An IT auditor reviews user access to a critical SaaS application like Salesforce or Workday.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a user listing with their assigned permission levels directly from the SaaS application.",
+      "expected_outcome": "Auditor has a complete list of users and their roles.",
+      "required_tools": [
+        "get_saas_user_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a periodic access review by sending a list of users to the business data owner to certify that their access is still required.",
+      "expected_outcome": "The business owner reviews the list and identifies 5 users who have changed roles and no longer need access.",
+      "required_tools": [
+        "initiate_access_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the access for the 5 identified users was removed promptly after certification.",
+      "expected_outcome": "The auditor confirms that the unnecessary access was revoked.",
+      "required_tools": [
+        "get_user_access_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

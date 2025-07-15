@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-rs-13037",
+  "title": "Manage the Final Walk-Through",
+  "description": "The buyer's agent coordinates and conducts the final walk-through of the property just before closing.",
+  "use_case": "Residential Sales",
+  "core_function": "Closing & Escrow",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule the final walk-through with the buyer and the listing agent, typically 24 hours before closing.",
+      "expected_outcome": "The walk-through is scheduled at an appropriate time.",
+      "required_tools": [
+        "schedule_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the walk-through, verify that all negotiated repairs have been completed and the property is in the same condition as when the offer was made.",
+      "expected_outcome": "The agent confirms the property's condition meets contractual requirements.",
+      "required_tools": [
+        "use_inspection_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If issues are found, immediately contact the listing agent and closing attorney to resolve them before the closing appointment.",
+      "expected_outcome": "Any last-minute problems are addressed and resolved prior to closing.",
+      "required_tools": [
+        "contact_attorney"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

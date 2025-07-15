@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10594",
+  "title": "Archive Old Batch Record",
+  "description": "An electronic batch record from 10 years ago has passed its required retention period and can be moved from the live system to a long-term archive.",
+  "use_case": "R&D and Quality",
+  "core_function": "Quality Assurance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all batch records eligible for archiving.",
+      "expected_outcome": "Agent obtains a list of records older than the retention period.",
+      "required_tools": [
+        "find_records_for_archiving"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a batch record from the list and initiate the archiving process.",
+      "expected_outcome": "Agent starts the archiving workflow for a specific record.",
+      "required_tools": [
+        "archive_batch_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the record has been successfully moved to the archive and is no longer in the active database.",
+      "expected_outcome": "Agent confirms the record is now in the archive and is no longer searchable in the main system.",
+      "required_tools": [
+        "verify_archive_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

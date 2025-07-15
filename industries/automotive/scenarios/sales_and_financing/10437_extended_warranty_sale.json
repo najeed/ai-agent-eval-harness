@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sf-10437",
+  "title": "Sell Extended Warranty",
+  "description": "A customer's factory warranty is about to expire. A salesperson calls to offer an extended warranty plan.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Financing & Leasing",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify customers whose factory warranties are expiring within the next 60 days.",
+      "expected_outcome": "Agent generates a list of eligible customers.",
+      "required_tools": [
+        "get_expiring_warranties_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Call a customer, explain the benefits of an extended warranty, and present the available coverage options and pricing.",
+      "expected_outcome": "Agent clearly explains the different tiers of extended warranty plans.",
+      "required_tools": [
+        "get_extended_warranty_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the customer agrees, process the sale of the extended warranty plan.",
+      "expected_outcome": "Agent successfully sells and activates the new warranty plan for the customer.",
+      "required_tools": [
+        "sell_extended_warranty"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10176",
+  "title": "Specialty Crop Harvest Logistics",
+  "description": "A lettuce grower needs to coordinate the harvest and cooling of their crop to meet a grocery store's delivery window.",
+  "use_case": "Crop Management",
+  "core_function": "Harvesting & Logistics",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the total amount of lettuce to be harvested based on the grocery store order.",
+      "expected_outcome": "Agent gets the order quantity.",
+      "required_tools": [
+        "get_sales_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the required labor and time needed for harvesting.",
+      "expected_outcome": "Agent estimates the harvest duration.",
+      "required_tools": [
+        "calculate_harvest_time"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the harvest crew, the transport to the cooling facility, and the final refrigerated truck for delivery, ensuring the entire process from field to store is completed within the required timeframe.",
+      "expected_outcome": "Agent creates a detailed, time-sensitive logistics plan.",
+      "required_tools": [
+        "generate_logistics_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

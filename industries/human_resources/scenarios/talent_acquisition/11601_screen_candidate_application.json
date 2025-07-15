@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-ta-11601",
+  "title": "Screen Candidate Application",
+  "description": "A recruiter needs to screen a new application for an open 'Marketing Manager' role.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Sourcing & Screening",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the candidate's application and resume from the ATS for the specified job requisition.",
+      "expected_outcome": "Recruiter successfully accesses the candidate's documents.",
+      "required_tools": [
+        "get_candidate_application"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the resume against the minimum and preferred qualifications listed in the job description.",
+      "expected_outcome": "Recruiter determines the candidate meets the minimum qualifications (e.g., 5+ years of experience, Bachelor's degree).",
+      "required_tools": [
+        "get_job_description"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the candidate's status in the ATS to 'Phone Screen' and move them to the next stage in the pipeline.",
+      "expected_outcome": "Recruiter successfully updates the candidate's status.",
+      "required_tools": [
+        "update_candidate_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10116",
+  "title": "Farm Operating Loan Application Support",
+  "description": "A farmer needs to compile financial documents to apply for an annual operating loan.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Financial Management & Compliance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a balance sheet from the farm's accounting software.",
+      "expected_outcome": "Agent successfully generates the balance sheet.",
+      "required_tools": [
+        "generate_financial_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a cash flow projection for the upcoming year based on planned crops and historical expenses.",
+      "expected_outcome": "Agent generates a detailed cash flow projection.",
+      "required_tools": [
+        "generate_cash_flow_projection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the generated reports into a single loan application package.",
+      "expected_outcome": "Agent creates a zip file with all the required financial documents.",
+      "required_tools": [
+        "compile_document_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

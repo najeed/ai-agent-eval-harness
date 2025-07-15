@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10284",
+  "title": "Check Lounge Access Rules",
+  "description": "A frequent flyer with elite status wants to bring two guests into the airport lounge. The lounge agent must check the rules.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Frequent Flyer Program",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the member's frequent flyer account and verify their elite status level.",
+      "expected_outcome": "Agent confirms the member has Gold status.",
+      "required_tools": [
+        "get_frequent_flyer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the lounge access policy for Gold status members.",
+      "expected_outcome": "Agent finds that Gold status allows for one guest.",
+      "required_tools": [
+        "get_lounge_access_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the member they can bring one guest for free and the second guest will need to pay the standard entry fee.",
+      "expected_outcome": "Agent clearly explains the policy and offers to process payment for the second guest.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

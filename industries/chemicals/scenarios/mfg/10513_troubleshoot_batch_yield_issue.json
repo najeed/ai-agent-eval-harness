@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10513",
+  "title": "Troubleshoot Low Batch Yield",
+  "description": "A recently completed batch has a significantly lower yield than expected. A process engineer must investigate the cause by analyzing batch data.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Process Optimization",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the electronic batch record for the low-yield batch.",
+      "expected_outcome": "Agent successfully pulls up all recorded process parameters and material additions for the batch.",
+      "required_tools": [
+        "get_batch_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the batch's process parameters (e.g., temperature profile, agitation speed, addition times) against the standard recipe and historical successful batches.",
+      "expected_outcome": "Agent identifies that the reaction temperature was held 5 degrees lower than the setpoint for 3 hours.",
+      "required_tools": [
+        "compare_batch_data_to_golden_batch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the finding in a deviation report and recommend corrective actions for future batches.",
+      "expected_outcome": "Agent creates a deviation report linking the temperature excursion to the low yield and suggests re-calibrating the temperature probe.",
+      "required_tools": [
+        "create_deviation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-ast-11435",
+  "title": "Retire an Old Asset",
+  "description": "A piece of machinery has reached the end of its life and needs to be formally retired and removed from the asset register.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Inventory & Spares Management",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the asset in the maintenance management system.",
+      "expected_outcome": "Agent successfully locates the correct asset record.",
+      "required_tools": [
+        "find_asset_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that there are no open work orders or outstanding PMs for the asset.",
+      "expected_outcome": "Agent confirms there is no pending work on the asset.",
+      "required_tools": [
+        "check_for_open_work_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Change the asset's status to 'Retired' and enter the date of disposal.",
+      "expected_outcome": "Agent successfully retires the asset, removing it from active service and maintenance plans.",
+      "required_tools": [
+        "update_asset_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

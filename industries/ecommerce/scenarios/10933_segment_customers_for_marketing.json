@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ecommerce-mce-10933",
+  "title": "Segment Customers for a Marketing Campaign",
+  "description": "A marketer wants to create a customer segment of 'high-value' customers for an exclusive offer.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Campaign Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the criteria for a 'high-value' customer (e.g., lifetime spend > $1000 and at least 3 orders in the last year).",
+      "expected_outcome": "Agent correctly sets the filtering parameters.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the customer database to generate a list of all customers who meet these criteria.",
+      "expected_outcome": "Agent successfully generates the customer segment.",
+      "required_tools": [
+        "query_customer_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the generated list as a new audience segment named 'VIP Customers'.",
+      "expected_outcome": "Agent saves the segment for future use.",
+      "required_tools": [
+        "save_customer_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

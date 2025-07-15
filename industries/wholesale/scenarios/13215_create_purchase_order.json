@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-sp-13215",
+  "title": "Create a Purchase Order for a Supplier",
+  "description": "A procurement manager needs to create a new purchase order to replenish stock for a popular product.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Purchase Order Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify that a product's inventory has fallen below the reorder threshold.",
+      "expected_outcome": "Agent receives an alert that stock for a specific item is low.",
+      "required_tools": [
+        "get_low_stock_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new purchase order for the product from the primary supplier.",
+      "expected_outcome": "Agent successfully creates a new PO in the system.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the purchase order to the supplier.",
+      "expected_outcome": "Agent emails the PO to the supplier's sales contact.",
+      "required_tools": [
+        "send_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

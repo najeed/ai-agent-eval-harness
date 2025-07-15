@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ac-pt-47",
+  "title": "Run Monthly Fixed Asset Depreciation",
+  "description": "For the month-end close, the accountant needs to run the process that calculates and posts depreciation for all fixed assets.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Fixed Asset Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Initiate the monthly depreciation run in the fixed asset module.",
+      "expected_outcome": "Agent starts the system process.",
+      "required_tools": [
+        "run_depreciation_process"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system calculates the monthly depreciation for every asset based on its depreciation schedule.",
+      "expected_outcome": "The process calculates the total depreciation expense for the month.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system automatically creates and posts the summary journal entry to debit Depreciation Expense and credit Accumulated Depreciation.",
+      "expected_outcome": "Agent confirms the summary journal entry has been posted to the GL.",
+      "required_tools": [
+        "get_journal_entry_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

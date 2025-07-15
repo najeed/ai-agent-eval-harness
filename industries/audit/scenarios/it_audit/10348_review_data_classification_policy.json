@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10348",
+  "title": "Review Data Classification Policy Compliance",
+  "description": "An IT auditor checks if sensitive data is being handled according to the company's data classification policy.",
+  "use_case": "IT Audit",
+  "core_function": "Cybersecurity & Privacy Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use a data loss prevention (DLP) tool to scan company emails for any instances of 'Confidential' data being sent to external email addresses.",
+      "expected_outcome": "The DLP tool flags several emails containing confidential financial data sent to personal Gmail accounts.",
+      "required_tools": [
+        "run_dlp_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the access permissions on a network share drive designated for 'Highly Confidential' data.",
+      "expected_outcome": "Auditor finds that the 'Everyone' group has read access to the folder, a policy violation.",
+      "required_tools": [
+        "get_folder_permissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the findings and recommend additional employee training on data handling policies.",
+      "expected_outcome": "A finding is created with a recommendation for improved training.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

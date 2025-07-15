@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10101",
+  "title": "Create an Aircraft Modification Plan",
+  "description": "An airline wants to add a new satellite internet system to its fleet. An MRO engineer must create the plan to perform this modification.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Technical Documentation & Compliance",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the Supplemental Type Certificate (STC) and installation kit for the new internet system.",
+      "expected_outcome": "Agent gathers all the required engineering data and parts.",
+      "required_tools": [
+        "get_stc_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a detailed work package that includes step-by-step instructions for the structural modification (installing the antenna) and the avionics work (installing the routers and wiring).",
+      "expected_outcome": "Agent authors a complete and detailed work package.",
+      "required_tools": [
+        "generate_mro_work_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Plan the logistics, including the required downtime for each aircraft and the necessary tooling and ground support equipment.",
+      "expected_outcome": "Agent creates a comprehensive plan for modifying the entire fleet.",
+      "required_tools": [
+        "plan_fleet_modification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

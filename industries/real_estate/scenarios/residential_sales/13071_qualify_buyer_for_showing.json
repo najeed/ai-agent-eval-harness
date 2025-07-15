@@ -1,0 +1,50 @@
+{
+  "scenario_id": "real_estate-rs-13071",
+  "title": "Qualify a Buyer Before a Showing",
+  "description": "Before showing a property, a listing agent wants to ensure the potential buyer is qualified.",
+  "use_case": "Residential Sales",
+  "core_function": "Client Onboarding & Qualification",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When a showing is requested, ask the buyer's agent if their client is pre-approved for a mortgage.",
+      "expected_outcome": "Agent inquires about the buyer's qualification status.",
+      "required_tools": [
+        "contact_agent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request a copy of the buyer's pre-approval letter.",
+      "expected_outcome": "The listing agent receives the pre-approval letter.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the pre-approval is verified, approve the showing request.",
+      "expected_outcome": "The showing is confirmed after the buyer's financial ability is verified.",
+      "required_tools": [
+        "approve_showing_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

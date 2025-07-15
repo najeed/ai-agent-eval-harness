@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ag-fo-10181",
+  "title": "Track Employee Safety Training",
+  "description": "A farm manager needs to ensure all employees have completed their annual safety training.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Labor Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve a list of all current employees.",
+      "expected_outcome": "Agent gets the employee list.",
+      "required_tools": [
+        "get_employee_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the training records for each employee to see if they have completed the 'Annual Safety' course.",
+      "expected_outcome": "Agent checks the records against the employee list.",
+      "required_tools": [
+        "get_training_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a list of all employees who have not yet completed the training.",
+      "expected_outcome": "Agent provides a list of non-compliant employees.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send a reminder notification to the non-compliant employees and their supervisor.",
+      "expected_outcome": "Agent successfully sends the reminders.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

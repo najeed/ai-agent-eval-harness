@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-8",
+  "title": "Record a Fixed Asset Acquisition",
+  "description": "The company has purchased a new piece of machinery and the accountant needs to add it to the fixed asset register.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Fixed Asset Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the purchase invoice for the new machinery.",
+      "expected_outcome": "Agent gets the invoice showing a cost of $50,000.",
+      "required_tools": [
+        "get_ap_invoice_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new asset record in the fixed asset sub-ledger, including details like description, asset class, purchase date, and cost.",
+      "expected_outcome": "Agent successfully creates the new asset record.",
+      "required_tools": [
+        "create_fixed_asset_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up the depreciation schedule for the new asset according to company policy.",
+      "expected_outcome": "Agent sets up a 7-year straight-line depreciation schedule for the asset.",
+      "required_tools": [
+        "setup_depreciation_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

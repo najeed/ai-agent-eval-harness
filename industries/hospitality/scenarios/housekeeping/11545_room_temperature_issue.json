@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-hk-11545",
+  "title": "Maintenance Request - Room Too Cold",
+  "description": "A guest reports that their room's air conditioning is stuck on and the room is too cold.",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Maintenance Requests",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a maintenance work order for a faulty thermostat/HVAC unit.",
+      "expected_outcome": "A work order is created.",
+      "required_tools": [
+        "mms_create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch a technician to the room.",
+      "expected_outcome": "A technician is assigned to investigate.",
+      "required_tools": [
+        "mms_assign_technician"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Proactively offer the guest extra blankets while the issue is being looked at.",
+      "expected_outcome": "Agent shows empathy and provides a temporary solution.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

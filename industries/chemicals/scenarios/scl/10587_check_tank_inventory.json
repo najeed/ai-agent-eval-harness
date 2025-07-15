@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-scl-10587",
+  "title": "Check Bulk Tank Inventory Level",
+  "description": "A planner needs to check the current inventory level of a bulk storage tank to see if a new delivery can be scheduled.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Inventory Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the bulk tank for the specific raw material.",
+      "expected_outcome": "Agent correctly identifies the tank ID.",
+      "required_tools": [
+        "find_equipment_asset"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the process control system for the current level of the tank.",
+      "expected_outcome": "Agent retrieves the current level as '65% full'.",
+      "required_tools": [
+        "get_tank_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the remaining space (ullage) in the tank and determine if it's enough to receive a full tanker truck delivery.",
+      "expected_outcome": "Agent calculates that there is enough room for a standard delivery and notifies procurement to place an order.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

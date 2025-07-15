@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ag-pa-10150",
+  "title": "Create a Variable Depth Tillage Prescription",
+  "description": "A farmer wants to use variable depth tillage to break up compaction layers, but only till as deep as necessary in different parts of the field.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Analytics & Insights",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve a soil compaction map of the field, created by an on-the-go sensor.",
+      "expected_outcome": "Agent gets the map showing the depth of the compaction layer across the field.",
+      "required_tools": [
+        "get_soil_compaction_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a prescription map that instructs the tillage tool to work just below the compaction layer in each part of the field.",
+      "expected_outcome": "Agent creates a prescription file for a variable-depth tillage tool.",
+      "required_tools": [
+        "generate_tillage_prescription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

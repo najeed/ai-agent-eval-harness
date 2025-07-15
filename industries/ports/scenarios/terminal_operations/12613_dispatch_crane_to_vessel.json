@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-to-12613",
+  "title": "Dispatch Quay Crane to a Vessel",
+  "description": "A vessel has berthed and is ready to begin cargo operations. A dispatcher must assign cranes to start discharging containers.",
+  "use_case": "Terminal Operations",
+  "core_function": "Quay & Crane Operations",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm the vessel is 'all fast' (securely moored) and the gangway is down.",
+      "expected_outcome": "Dispatcher receives confirmation from the mooring gang and vessel agent that operations can begin.",
+      "required_tools": [
+        "get_vessel_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on the vessel size and required productivity, assign two available quay cranes (QCs) to the vessel.",
+      "expected_outcome": "Dispatcher assigns QC-02 and QC-03 to the 'MSC London'.",
+      "required_tools": [
+        "assign_crane_to_vessel"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the first sequence of container moves from the stowage plan to the assigned crane operators.",
+      "expected_outcome": "The first set of discharge instructions appears on the crane operators' cabin terminals.",
+      "required_tools": [
+        "send_work_instructions_to_crane"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

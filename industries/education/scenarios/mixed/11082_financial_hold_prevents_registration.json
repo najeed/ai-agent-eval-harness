@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-mx-11082",
+  "title": "Financial Hold Prevents Registration",
+  "description": "A student is trying to register for classes but is blocked by a financial hold on their account from an unpaid library fine.",
+  "use_case": "Mixed",
+  "core_function": "Registration & Course Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When registration fails, check the student's account for any holds.",
+      "expected_outcome": "Agent identifies a 'Financial Hold' from the library.",
+      "required_tools": [
+        "check_registration_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the details of the hold, finding it is for a $25 unpaid fine for a lost book.",
+      "expected_outcome": "Agent identifies the source and amount of the hold.",
+      "required_tools": [
+        "get_student_holds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Transfer the student to the library services desk to pay the fine and have the hold removed.",
+      "expected_outcome": "Agent performs a warm transfer to the correct department to resolve the root cause.",
+      "required_tools": [
+        "transfer_call"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

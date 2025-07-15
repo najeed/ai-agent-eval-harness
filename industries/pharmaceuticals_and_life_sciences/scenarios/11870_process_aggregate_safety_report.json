@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-rc-11870",
+  "title": "Process an Aggregate Safety Report (PBRER/DSUR)",
+  "description": "A safety physician is authoring a Development Safety Update Report (DSUR) for an investigational product.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Pharmacovigilance & Safety Reporting",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all relevant data for the reporting period, including clinical trial exposure data and all serious adverse events.",
+      "expected_outcome": "Agent successfully queries multiple systems to get the required data.",
+      "required_tools": [
+        "get_clinical_exposure_data",
+        "generate_case_line_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a benefit-risk assessment based on the cumulative data.",
+      "expected_outcome": "Agent analyzes the data and writes a summary concluding that the benefit-risk profile remains favorable.",
+      "required_tools": [
+        "perform_benefit_risk_assessment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Author the main body of the DSUR, incorporating the data and the benefit-risk assessment.",
+      "expected_outcome": "Agent drafts the complete DSUR document.",
+      "required_tools": [
+        "draft_regulatory_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Route the DSUR for internal approval before submitting to health authorities.",
+      "expected_outcome": "Agent routes the document for review and signature.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

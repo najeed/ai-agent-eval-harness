@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-fc-37",
+  "title": "Post a Reversing Journal Entry",
+  "description": "An accountant needs to reverse the prior month's AP accrual at the beginning of the new month.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "General Ledger & Journal Entries",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the main AP accrual journal entry from the prior month's close.",
+      "expected_outcome": "Agent finds the correct journal entry.",
+      "required_tools": [
+        "get_journal_entry_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new journal entry dated the first day of the current month that exactly reverses the original entry.",
+      "expected_outcome": "Agent creates the reversing entry (crediting expenses and debiting 'AP Accruals').",
+      "required_tools": [
+        "create_reversing_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the reversing journal entry.",
+      "expected_outcome": "Agent successfully posts the entry, clearing the accrual account.",
+      "required_tools": [
+        "post_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

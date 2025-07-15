@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-er-11669",
+  "title": "Handle an Employee's Return from Leave",
+  "description": "An employee is scheduled to return from a parental leave of absence.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Offboarding",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the employee and their scheduled return-to-work date.",
+      "expected_outcome": "HR specialist confirms the employee's return date.",
+      "required_tools": [
+        "get_employee_leave_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the employee's status from 'On Leave' to 'Active' in the HRIS.",
+      "expected_outcome": "Specialist successfully updates the employee's record.",
+      "required_tools": [
+        "update_employee_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate with IT to reactivate the employee's system access.",
+      "expected_outcome": "Specialist creates an IT ticket to re-enable all system access for the employee's return date.",
+      "required_tools": [
+        "create_it_access_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

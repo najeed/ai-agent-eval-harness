@@ -1,0 +1,51 @@
+{
+  "scenario_id": "realestate-pm-12122",
+  "title": "Process Vendor Invoice for Payment",
+  "description": "A plumbing vendor has submitted an invoice for a completed repair. The property manager must process it for payment.",
+  "use_case": "Property Management",
+  "core_function": "Maintenance & Vendor Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the vendor's invoice and the corresponding work order.",
+      "expected_outcome": "Agent finds the invoice for 'Pro Plumbers' and matches it to work order #12345.",
+      "required_tools": [
+        "get_vendor_invoice",
+        "get_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the work was completed satisfactorily and the invoice amount is correct.",
+      "expected_outcome": "Agent confirms the work order is marked 'complete' and the invoice amount matches the estimate.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the invoice for payment and submit it to accounting.",
+      "expected_outcome": "The invoice is marked as 'approved' in the system, and a payment request is sent to the accounting department.",
+      "required_tools": [
+        "approve_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

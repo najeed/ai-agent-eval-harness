@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-ms-10416",
+  "title": "Track a Shipment of Finished Vehicles",
+  "description": "A dealership is asking for the status of a shipment of 10 vehicles that was supposed to arrive today.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Logistics & Parts Tracking",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the shipment order details using the dealership's ID.",
+      "expected_outcome": "Agent finds the shipment order and the carrier details.",
+      "required_tools": [
+        "get_shipment_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the GPS location of the transport truck carrying the vehicles.",
+      "expected_outcome": "Agent pings the carrier's GPS and finds the truck is 50 miles away, delayed by traffic.",
+      "required_tools": [
+        "track_carrier_gps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the dealership with an updated estimated time of arrival.",
+      "expected_outcome": "Agent informs the dealership of the new ETA.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

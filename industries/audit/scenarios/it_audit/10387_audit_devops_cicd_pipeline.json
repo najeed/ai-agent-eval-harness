@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10387",
+  "title": "Audit the DevOps CI/CD Pipeline",
+  "description": "An IT auditor reviews the security and controls of the automated CI/CD pipeline.",
+  "use_case": "IT Audit",
+  "core_function": "System Development & Implementation Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the pipeline configuration to ensure that all code is scanned for vulnerabilities (SAST) before it can be merged.",
+      "expected_outcome": "The auditor confirms that a static code analysis tool is an integrated and required step in the pipeline.",
+      "required_tools": [
+        "get_cicd_pipeline_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that deployments to the production environment require a manual approval from a senior manager and cannot be done automatically.",
+      "expected_outcome": "The auditor confirms there is a manual approval gate for production deployments.",
+      "required_tools": [
+        "get_cicd_pipeline_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the access permissions to the pipeline tool itself to ensure that developers cannot approve their own code changes into production.",
+      "expected_outcome": "The auditor confirms that segregation of duties is enforced within the pipeline's permissions.",
+      "required_tools": [
+        "get_tool_permissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

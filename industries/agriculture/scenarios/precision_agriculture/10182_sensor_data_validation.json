@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ag-pa-10182",
+  "title": "Validate Soil Moisture Sensor Data",
+  "description": "A soil moisture sensor is giving erratic readings. The agent needs to diagnose if the sensor is faulty.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Data Collection & Sensing",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the last 48 hours of data from the suspect sensor.",
+      "expected_outcome": "Agent gets the data, which shows sudden, unrealistic jumps.",
+      "required_tools": [
+        "get_soil_moisture_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve data from a nearby, functioning sensor for comparison.",
+      "expected_outcome": "Agent gets data from a neighboring sensor, which shows normal, gradual changes.",
+      "required_tools": [
+        "get_soil_moisture_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the two datasets and flag the suspect sensor as likely faulty due to the erratic readings.",
+      "expected_outcome": "Agent diagnoses a probable sensor failure.",
+      "required_tools": [
+        "compare_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "diagnostic_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a maintenance task to replace the faulty sensor.",
+      "expected_outcome": "Agent creates a work order to replace the sensor.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

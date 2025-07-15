@@ -1,0 +1,48 @@
+{
+  "scenario_id": "auto-sm-10447",
+  "title": "Customer Declines Recommended Service",
+  "description": "During a service visit, a technician recommends a coolant flush, but the customer declines the service.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Repair & Maintenance Execution",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the customer's decision to decline the recommended coolant flush.",
+      "expected_outcome": "Agent understands the customer's choice.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the potential risks of not performing the service, without being pushy.",
+      "expected_outcome": "Agent briefly explains that old coolant can be less effective at preventing corrosion.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the repair order and the customer's service record to show that the service was recommended but declined.",
+      "expected_outcome": "Agent accurately documents the declined service for future reference and liability purposes.",
+      "required_tools": [
+        "update_repair_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

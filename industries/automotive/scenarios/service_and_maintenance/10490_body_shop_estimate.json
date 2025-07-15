@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sm-10490",
+  "title": "Provide Body Shop Estimate for Collision Repair",
+  "description": "A customer has been in a minor accident and needs an estimate for the body repair work.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Appointment & Scheduling",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule an appointment for the customer to bring their vehicle in for an estimate.",
+      "expected_outcome": "Agent books an estimate appointment.",
+      "required_tools": [
+        "schedule_body_shop_estimate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the visit, an estimator assesses the damage and identifies the parts and labor required.",
+      "expected_outcome": "The estimator documents the needed repairs.",
+      "required_tools": [
+        "create_repair_estimate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a detailed, itemized estimate for the customer and their insurance company.",
+      "expected_outcome": "A formal estimate is created and provided to the customer.",
+      "required_tools": [
+        "generate_repair_estimate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

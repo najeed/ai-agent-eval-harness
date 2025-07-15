@@ -1,0 +1,55 @@
+{
+  "scenario_id": "auto-sf-10432",
+  "title": "Post-Sale Accessory Add-On",
+  "description": "A customer who recently bought a truck wants to purchase and have a bed liner installed.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Delivery & Handover",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their vehicle to ensure the correct accessory is selected.",
+      "expected_outcome": "Agent identifies the customer and their 2023 Ranger.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check parts inventory for the correct bed liner and provide a quote for the part and installation.",
+      "expected_outcome": "Agent confirms the part is in stock and provides a total price.",
+      "required_tools": [
+        "check_parts_inventory",
+        "get_parts_price",
+        "get_labor_time_estimate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the sale and schedule a service appointment for the installation.",
+      "expected_outcome": "Agent completes the sale and books the installation appointment.",
+      "required_tools": [
+        "process_parts_sale",
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

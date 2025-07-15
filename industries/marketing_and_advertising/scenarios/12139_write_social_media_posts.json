@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-cc-12139",
+  "title": "Write Social Media Posts for a Week",
+  "description": "A social media manager needs to write and schedule a week's worth of posts for a client's Instagram account.",
+  "use_case": "Content & Creative Development",
+  "core_function": "Copywriting & Content Creation",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the content calendar for the week's themes.",
+      "expected_outcome": "Agent identifies the topics for each day.",
+      "required_tools": [
+        "content_calendar_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write engaging captions for five posts, including relevant hashtags and user tags.",
+      "expected_outcome": "Agent produces five on-brand and engaging pieces of copy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "copywriting_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule each post for its designated day and time in the social media scheduling tool.",
+      "expected_outcome": "Agent successfully schedules all content for the week.",
+      "required_tools": [
+        "social_media_scheduler_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

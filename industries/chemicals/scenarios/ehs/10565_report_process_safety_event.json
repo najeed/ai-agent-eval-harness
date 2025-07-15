@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-ehs-10565",
+  "title": "Report a Process Safety Event",
+  "description": "A rupture disk on a reactor blew, resulting in a release of material through a safety vent. This Tier 1 Process Safety Event must be reported and investigated.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Incident Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new incident report and classify it as a 'Tier 1 Process Safety Event'.",
+      "expected_outcome": "Agent correctly logs and classifies the high-severity event.",
+      "required_tools": [
+        "create_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notify site leadership and the corporate EHS department immediately, as per procedure.",
+      "expected_outcome": "Agent sends a high-priority notification to the required distribution list.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Begin a root cause investigation (RCI) for the event by assembling a team and gathering initial data from the process historian.",
+      "expected_outcome": "Agent formally initiates the RCI process and pulls the relevant process data leading up to the event.",
+      "required_tools": [
+        "initiate_root_cause_investigation",
+        "get_historical_process_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

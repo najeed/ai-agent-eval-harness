@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-log-10544",
+  "title": "Artillery Ammunition Resupply",
+  "description": "A logistics officer must manage the emergency resupply of ammunition to an artillery unit in heavy combat.",
+  "use_case": "Logistics & Sustainment",
+  "core_function": "Supply Chain & Inventory Management",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an urgent request for specific types of artillery shells from the unit.",
+      "expected_outcome": "Officer correctly logs the ammunition request.",
+      "required_tools": [
+        "process_supply_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_processing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the theater-level ammunition supply point (ASP) to check for availability of the requested shells.",
+      "expected_outcome": "Officer confirms the ASP has the required ammunition in stock.",
+      "required_tools": [
+        "check_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange for immediate transport of the ammunition to the firing unit via heavy-lift helicopter.",
+      "expected_outcome": "Officer successfully tasks a helicopter to deliver the critical supplies.",
+      "required_tools": [
+        "schedule_air_transport"
+      ],
+      "success_criteria": [
+        {
+          "metric": "delivery_scheduling_speed",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

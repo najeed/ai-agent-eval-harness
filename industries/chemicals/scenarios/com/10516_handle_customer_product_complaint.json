@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-com-10516",
+  "title": "Handle Customer Product Complaint",
+  "description": "A customer reports that a product they received is thicker than usual and causing issues in their process. A complaint record must be created and investigated.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Customer Relationship Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the customer complaint, capturing the customer, product, batch number, and a detailed description of the issue.",
+      "expected_outcome": "Agent successfully creates a new complaint record in the CRM.",
+      "required_tools": [
+        "create_customer_complaint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the retain sample for the complained-of batch and submit it to the QC lab for re-testing, specifically for viscosity.",
+      "expected_outcome": "Agent successfully requests the retain sample and creates a new lab testing order.",
+      "required_tools": [
+        "request_retains_sample",
+        "create_lab_testing_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Acknowledge the complaint with the customer and inform them that an investigation is underway.",
+      "expected_outcome": "Agent sends a formal acknowledgement email to the customer.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

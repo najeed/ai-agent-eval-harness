@@ -1,0 +1,51 @@
+{
+  "scenario_id": "media-bo-11538",
+  "title": "Troubleshoot Failed Live Stream Start",
+  "description": "A scheduled live stream for a gaming tournament fails to start at its designated time.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Live Event Broadcasting",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the connection status of the streaming encoder.",
+      "expected_outcome": "Agent finds the encoder is connected but not sending data.",
+      "required_tools": [
+        "get_encoder_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the stream key is correctly configured in the broadcasting software.",
+      "expected_outcome": "Agent identifies a mismatch between the configured stream key and the one assigned to the event.",
+      "required_tools": [
+        "get_event_stream_key",
+        "check_encoder_configuration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the tournament organizer to update the stream key in their software and restart the stream.",
+      "expected_outcome": "Agent provides the correct stream key and clear instructions, resolving the issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hosp-gs-11521",
+  "title": "Late Check-out Request",
+  "description": "A guest requests a late check-out.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Check-in & Check-out",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the guest and check their loyalty program status.",
+      "expected_outcome": "Agent finds the guest is a top-tier loyalty member.",
+      "required_tools": [
+        "pms_lookup_reservation",
+        "lms_get_member_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check hotel occupancy and housekeeping schedules to see if a late check-out is possible for their room.",
+      "expected_outcome": "Agent confirms that a 2 PM check-out can be accommodated.",
+      "required_tools": [
+        "pms_get_occupancy_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Grant the complimentary late check-out based on their loyalty status and update the reservation.",
+      "expected_outcome": "Agent approves the request and updates the expected departure time in the PMS.",
+      "required_tools": [
+        "pms_update_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

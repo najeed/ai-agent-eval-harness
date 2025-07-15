@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11456",
+  "title": "Manage Final Project Documentation",
+  "description": "As a project nears completion, a document controller must assemble the final handover package of all drawings, manuals, and certificates for the client.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Reporting & Communication",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all required handover documents from the project plan.",
+      "expected_outcome": "The system generates a checklist of all required documents.",
+      "required_tools": [
+        "get_handover_document_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each item on the checklist, retrieve the final approved version from the document management system.",
+      "expected_outcome": "The agent gathers all the final documents.",
+      "required_tools": [
+        "get_approved_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile all the documents into a single, structured handover package and transmit it to the client.",
+      "expected_outcome": "Agent creates the final documentation package and formally transmits it.",
+      "required_tools": [
+        "compile_document_package",
+        "transmit_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

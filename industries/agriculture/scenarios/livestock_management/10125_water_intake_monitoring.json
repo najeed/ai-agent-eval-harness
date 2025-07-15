@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10125",
+  "title": "Cattle Water Intake Monitoring Alert",
+  "description": "A smart water trough reports a significant drop in water consumption for a herd of cattle, suggesting a potential problem.",
+  "use_case": "Livestock Management",
+  "core_function": "Health & Welfare",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the low water intake alert and retrieve the last 7 days of consumption data.",
+      "expected_outcome": "Agent retrieves the data and confirms a sharp decline in the last 24 hours.",
+      "required_tools": [
+        "get_water_consumption_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of the water trough to ensure it is functioning correctly (e.g., no blockages, pump is working).",
+      "expected_outcome": "Agent's remote diagnostic shows the trough is functioning normally.",
+      "required_tools": [
+        "check_equipment_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Since the trough is working, generate a high-priority task for the rancher to check the herd for signs of illness and to check for alternative water sources (e.g., a leak in a pond).",
+      "expected_outcome": "Agent creates an actionable task in the farm management system.",
+      "required_tools": [
+        "create_farm_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

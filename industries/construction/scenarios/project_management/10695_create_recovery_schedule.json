@@ -1,0 +1,55 @@
+{
+  "scenario_id": "construction-pm-10695",
+  "title": "Create a Recovery Schedule",
+  "description": "After significant delays, a project is 30 days behind schedule. The PM must create a recovery schedule to make up the lost time.",
+  "use_case": "Project Management",
+  "core_function": "Project Planning & Scheduling",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify critical path tasks that can be accelerated by adding overtime or extra shifts.",
+      "expected_outcome": "A list of tasks suitable for crashing is generated.",
+      "required_tools": [
+        "get_critical_path",
+        "analyze_task_crashing_options"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the schedule to reflect the shorter durations of the crashed tasks and calculate the associated cost increase.",
+      "expected_outcome": "A new 'recovery schedule' is created that shows the project finishing on time, but with a higher cost.",
+      "required_tools": [
+        "update_project_schedule",
+        "calculate_schedule_crashing_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Present the recovery schedule and its associated costs to the project owner for approval.",
+      "expected_outcome": "The plan is submitted to the owner.",
+      "required_tools": [
+        "generate_recovery_plan_report",
+        "send_client_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

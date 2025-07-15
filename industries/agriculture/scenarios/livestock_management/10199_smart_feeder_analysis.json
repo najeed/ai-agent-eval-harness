@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ag-lm-10199",
+  "title": "Analyze Smart Feeder Data",
+  "description": "A hog farmer uses smart feeders that record how much each individual pig eats. They want to identify pigs that are not eating enough.",
+  "use_case": "Livestock Management",
+  "core_function": "Feeding & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the daily feed intake data for all pigs in a specific pen.",
+      "expected_outcome": "Agent gets the feed consumption data for each pig.",
+      "required_tools": [
+        "get_smart_feeder_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the average feed intake for the pen.",
+      "expected_outcome": "Agent calculates the average.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify any pigs whose feed intake is significantly below the pen average for the last 3 days.",
+      "expected_outcome": "Agent generates a list of 5 pigs that are potential health concerns.",
+      "required_tools": [
+        "identify_off_feed_animals"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a task for the manager to check on the flagged pigs.",
+      "expected_outcome": "Agent creates a task in the management system.",
+      "required_tools": [
+        "create_farm_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

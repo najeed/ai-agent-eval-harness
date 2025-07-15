@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10519",
+  "title": "Manage QC Sample Workflow",
+  "description": "A sample from a production batch arrives in the QC lab for testing. A lab technician must log it in and add it to the testing queue.",
+  "use_case": "R&D and Quality",
+  "core_function": "Sample Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the barcode on the sample container to identify the product and batch number.",
+      "expected_outcome": "Agent successfully scans the sample and the system retrieves the corresponding production order info.",
+      "required_tools": [
+        "scan_sample_barcode"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the sample as 'Received' in the LIMS, which automatically generates the required list of tests.",
+      "expected_outcome": "Agent logs the sample, and a list of 4 required tests (e.g., assay, purity, color) is created.",
+      "required_tools": [
+        "log_sample_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the tests to the appropriate analytical instrument queues.",
+      "expected_outcome": "Agent assigns the assay and purity tests to the HPLC queue and the color test to the spectrophotometer queue.",
+      "required_tools": [
+        "assign_tests_to_instrument_queue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "venues-sh-13818",
+  "title": "Sell a Luxury Suite for a Season",
+  "description": "A corporate client wants to lease a luxury suite for the entire upcoming football season.",
+  "use_case": "Sales & Hospitality",
+  "core_function": "Premium Seating & Suite Sales",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the availability of suites for the full season.",
+      "expected_outcome": "Agent confirms that Suite 215 is available.",
+      "required_tools": [
+        "get_suite_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the client with the season lease price and a list of included amenities.",
+      "expected_outcome": "Agent clearly communicates the price and benefits (e.g., VIP parking, catering credit).",
+      "required_tools": [
+        "get_suite_pricing_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate and send the season lease agreement to the client.",
+      "expected_outcome": "Agent sends the contract for e-signature.",
+      "required_tools": [
+        "generate_lease_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Once signed, process the deposit payment and mark the suite as 'Sold' for the season.",
+      "expected_outcome": "Agent successfully processes the payment and updates the suite's status.",
+      "required_tools": [
+        "process_payment",
+        "update_suite_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

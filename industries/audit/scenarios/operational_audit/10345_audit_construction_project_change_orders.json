@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10345",
+  "title": "Audit Construction Project Change Orders",
+  "description": "An auditor reviews the change order process for a major construction project to ensure changes are valid and properly approved.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Project & Program Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the log of all change orders submitted for the project.",
+      "expected_outcome": "Auditor has a complete list of project change orders.",
+      "required_tools": [
+        "get_change_order_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a sample of 10 high-value change orders for review.",
+      "expected_outcome": "A risk-based sample is selected.",
+      "required_tools": [
+        "select_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each sampled change order, verify that it was reviewed and approved by the project manager and a company executive, as required by the project governance policy.",
+      "expected_outcome": "Auditor confirms all sampled change orders had the required levels of approval.",
+      "required_tools": [
+        "review_change_order_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

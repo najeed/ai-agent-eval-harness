@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-cs-10468",
+  "title": "Mobile App Not Syncing with Vehicle",
+  "description": "A customer reports that their mobile app is not updating with the latest vehicle data (e.g., fuel level, location).",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Infotainment & App Support",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Instruct the customer to log out of the app and log back in, as this often resolves syncing issues.",
+      "expected_outcome": "Agent provides a basic troubleshooting step.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "If the issue persists, check the status of the vehicle's telematics unit from the backend.",
+      "expected_outcome": "Agent pings the telematics unit and sees it is online and responsive.",
+      "required_tools": [
+        "ping_telematics_unit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a 'refresh' command to the vehicle's telematics unit to force it to sync with the server.",
+      "expected_outcome": "Agent sends the refresh command, and the customer confirms the app is now showing correct data.",
+      "required_tools": [
+        "send_telematic_refresh_command"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

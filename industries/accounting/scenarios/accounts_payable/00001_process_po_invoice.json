@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ap-1",
+  "title": "Process a Purchase Order-Backed Invoice",
+  "description": "An accountant receives a standard invoice from a supplier that has a corresponding purchase order and goods receipt note.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Capture the invoice data from the received document.",
+      "expected_outcome": "Agent correctly extracts key data like invoice number, date, vendor, and line-item amounts.",
+      "required_tools": [
+        "capture_invoice_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a 3-way match by comparing the invoice against the purchase order and the goods receipt note in the ERP system.",
+      "expected_outcome": "Agent confirms that quantities, prices, and terms match across all three documents.",
+      "required_tools": [
+        "perform_3_way_match"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the invoice for payment, as the 3-way match was successful.",
+      "expected_outcome": "Agent successfully posts the invoice in the ERP system, making it ready for the next payment run.",
+      "required_tools": [
+        "post_ap_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

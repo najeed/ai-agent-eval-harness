@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-12900",
+  "title": "Generate Comparative Market Analysis (CMA)",
+  "description": "A seller client requests a CMA to determine a listing price for their home. The agent must find comparable properties and generate a report.",
+  "use_case": "Residential Sales",
+  "core_function": "Buyer & Seller Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the subject property's details (address, beds, baths, sqft).",
+      "expected_outcome": "Agent correctly identifies the key features of the seller's property.",
+      "required_tools": [
+        "get_property_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the MLS for recently sold, active, and pending comparable properties within a 1-mile radius.",
+      "expected_outcome": "Agent finds at least 3 sold, 3 active, and 2 pending comps.",
+      "required_tools": [
+        "search_mls_comps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a CMA report summarizing the comps and suggesting a price range.",
+      "expected_outcome": "Agent produces a formatted CMA report with a logical price recommendation.",
+      "required_tools": [
+        "generate_cma_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-cre-13050",
+  "title": "Review Estoppel Certificates",
+  "description": "As part of due diligence for a commercial property purchase, the buyer's agent must collect and review estoppel certificates from all tenants.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Due Diligence",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Send estoppel certificate forms to all tenants for their signature.",
+      "expected_outcome": "All tenants receive the form to be completed.",
+      "required_tools": [
+        "send_document_to_tenants"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the signed estoppel certificates from the tenants.",
+      "expected_outcome": "Signed certificates are received from all tenants.",
+      "required_tools": [
+        "track_document_signatures"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review each certificate to confirm key lease terms (e.g., rent, term, security deposit) and ensure the tenant is not claiming any defaults by the landlord.",
+      "expected_outcome": "Agent verifies that the tenants' understanding of the lease matches the lease documents, satisfying the due diligence contingency.",
+      "required_tools": [
+        "review_estoppel_certificate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

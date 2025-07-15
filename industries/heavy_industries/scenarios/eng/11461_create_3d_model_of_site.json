@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-eng-11461",
+  "title": "Create 3D Model of a Site",
+  "description": "A surveyor has captured point cloud data of an existing facility. A designer needs to convert this into a 3D CAD model.",
+  "use_case": "Engineering & Design",
+  "core_function": "Design & Simulation",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the surveyor's point cloud data into the 3D modeling software.",
+      "expected_outcome": "Agent successfully loads the point cloud data.",
+      "required_tools": [
+        "import_point_cloud_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the software's tools to identify and model major structural and equipment elements from the point cloud.",
+      "expected_outcome": "The designer models the main beams, columns, and vessels based on the point cloud.",
+      "required_tools": [
+        "model_from_point_cloud"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Export the resulting 3D model for use in new design work.",
+      "expected_outcome": "Agent successfully creates and exports a 3D model of the existing conditions.",
+      "required_tools": [
+        "export_3d_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-to-12663",
+  "title": "Find a Container for Customs Inspection",
+  "description": "Customs authorities have ordered a physical inspection of a specific container. A planner must find it and arrange for it to be moved to the inspection area.",
+  "use_case": "Terminal Operations",
+  "core_function": "Customs & Documentation",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the inspection order from customs for a specific container.",
+      "expected_outcome": "Planner receives the notification for container ZZZZ1122334.",
+      "required_tools": [
+        "get_customs_inspection_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find the container's current location in the yard.",
+      "expected_outcome": "Planner locates the container in the TOS, noting it is at the bottom of a stack.",
+      "required_tools": [
+        "find_container_in_yard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a series of work orders to 'dig out' the container and move it to the Customs Examination Station.",
+      "expected_outcome": "Work orders are created for a yard crane to remove the containers on top and then move the target container to the inspection area.",
+      "required_tools": [
+        "create_digging_work_orders",
+        "create_yard_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

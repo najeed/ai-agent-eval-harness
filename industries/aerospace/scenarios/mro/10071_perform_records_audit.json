@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10071",
+  "title": "Perform an Aircraft Records Audit",
+  "description": "An airline is leasing a used aircraft. An auditor must perform a complete records audit to ensure the aircraft is airworthy and compliant before the airline accepts it.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Technical Documentation & Compliance",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the aircraft's logbooks to verify continuous maintenance history.",
+      "expected_outcome": "Agent confirms there are no gaps in the logbook history.",
+      "required_tools": [
+        "review_logbooks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all mandatory Airworthiness Directives (ADs) have been complied with.",
+      "expected_outcome": "Agent cross-references the AD list with the maintenance records and confirms compliance for all applicable ADs.",
+      "required_tools": [
+        "check_ad_compliance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the traceability and certification paperwork for all life-limited parts installed on the aircraft.",
+      "expected_outcome": "Agent confirms all LLPs have proper documentation and are within their life limits.",
+      "required_tools": [
+        "check_llp_traceability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10316",
+  "title": "Review ISO 9001 Documentation",
+  "description": "As part of a quality audit, an auditor reviews the documentation for the company's ISO 9001 certified Quality Management System (QMS).",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Quality Assurance Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the QMS manual to ensure it has been reviewed and approved by management within the last year, as required.",
+      "expected_outcome": "Auditor confirms the manual was last updated 18 months ago, which is a non-conformance.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the records from the last management review meeting to ensure all required topics were covered.",
+      "expected_outcome": "Auditor verifies the meeting minutes are complete and compliant.",
+      "required_tools": [
+        "get_meeting_minutes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the corrective action log to ensure that all previously identified non-conformances have been addressed.",
+      "expected_outcome": "Auditor finds two corrective actions that are past their due date.",
+      "required_tools": [
+        "get_corrective_action_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

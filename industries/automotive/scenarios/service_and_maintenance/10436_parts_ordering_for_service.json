@@ -1,0 +1,53 @@
+{
+  "scenario_id": "auto-sm-10436",
+  "title": "Pre-order Parts for Upcoming Service",
+  "description": "A service advisor is preparing for a major service appointment and needs to pre-order parts that are not kept in stock.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Appointment & Scheduling",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the upcoming appointment and identify the required non-stock parts (e.g., a timing belt kit).",
+      "expected_outcome": "Agent identifies the need for a timing belt kit for the scheduled appointment.",
+      "required_tools": [
+        "get_service_appointment",
+        "get_required_parts_for_job"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the regional parts distribution center for availability.",
+      "expected_outcome": "Agent confirms the part is in stock at the regional warehouse.",
+      "required_tools": [
+        "check_parts_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place an order for the part to be delivered to the dealership before the appointment date.",
+      "expected_outcome": "Agent successfully places the order and links it to the repair order.",
+      "required_tools": [
+        "order_part"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

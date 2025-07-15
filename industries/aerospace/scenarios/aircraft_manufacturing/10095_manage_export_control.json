@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10095",
+  "title": "Manage Export Control Compliance",
+  "description": "An engineer needs to share a technical drawing with a foreign supplier, but must first ensure it complies with ITAR (International Traffic in Arms Regulations).",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Supply Chain & Procurement",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the technical data to be shared.",
+      "expected_outcome": "Agent specifies the drawing number.",
+      "required_tools": [
+        "get_document_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the drawing's classification against the U.S. Munitions List to determine if it is export-controlled.",
+      "expected_outcome": "Agent determines the drawing is controlled under ITAR.",
+      "required_tools": [
+        "check_export_classification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply for an export license or verify that a license exception is available before sending the data to the foreign supplier.",
+      "expected_outcome": "Agent determines a license is required and submits the application.",
+      "required_tools": [
+        "apply_for_export_license"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

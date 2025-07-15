@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-ms-10414",
+  "title": "Assembly Line Stoppage due to Robot Fault",
+  "description": "A welding robot on the main assembly line has faulted, causing a line stoppage. A production manager must resolve the issue.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Production Planning",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the automated alert from the line monitoring system, identifying the specific robot and fault code.",
+      "expected_outcome": "Agent acknowledges the alert for 'Robot WR-07' with fault 'Servo Overheat'.",
+      "required_tools": [
+        "get_production_line_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch the on-site robotics maintenance team to the robot's location.",
+      "expected_outcome": "Agent successfully dispatches the maintenance team via the internal system.",
+      "required_tools": [
+        "dispatch_maintenance_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the estimated downtime and adjust the daily production target accordingly.",
+      "expected_outcome": "Agent receives a 30-minute ETA, calculates the production impact, and updates the daily target.",
+      "required_tools": [
+        "update_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

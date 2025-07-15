@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-fe-13289",
+  "title": "Create a Fan Loyalty Challenge",
+  "description": "A marketing manager wants to create a challenge in the mobile app where fans earn extra loyalty points for attending three consecutive home games.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Membership & Loyalty Programs",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the rules for the new challenge in the loyalty program system.",
+      "expected_outcome": "Agent sets up the challenge: attend three consecutive home games to earn 500 bonus points.",
+      "required_tools": [
+        "create_loyalty_challenge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Promote the new challenge to fans via a push notification.",
+      "expected_outcome": "Agent sends a notification announcing the challenge.",
+      "required_tools": [
+        "send_push_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor fan attendance to track progress towards the challenge.",
+      "expected_outcome": "The system automatically tracks which fans have completed the challenge.",
+      "required_tools": [
+        "track_challenge_progress"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Automatically award the bonus points to fans who complete the challenge.",
+      "expected_outcome": "Fans who attend their third consecutive game automatically receive the bonus points.",
+      "required_tools": [
+        "award_loyalty_points"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

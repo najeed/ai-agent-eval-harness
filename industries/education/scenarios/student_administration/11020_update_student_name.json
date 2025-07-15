@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-sa-11020",
+  "title": "Update Student's Legal Name",
+  "description": "A student has legally changed their name and needs to update their official university records.",
+  "use_case": "Student Administration",
+  "core_function": "Student Records & Transcripts",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and explain the process for a legal name change.",
+      "expected_outcome": "Agent explains the need for official documentation (e.g., court order, marriage certificate).",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the student with a secure link to upload their legal documentation.",
+      "expected_outcome": "Agent sends a secure upload link to the student's email.",
+      "required_tools": [
+        "generate_secure_upload_link"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once documentation is received and verified, update the student's name in the SIS.",
+      "expected_outcome": "After verification, the agent updates the student's name in the primary system.",
+      "required_tools": [
+        "update_student_name"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

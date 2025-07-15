@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hr-os-11662",
+  "title": "Model Workforce Cost for New Location",
+  "description": "The company is considering opening a new office, and leadership needs HR to model the projected workforce costs.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Workforce Planning",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the projected headcount and roles for the new location.",
+      "expected_outcome": "Analyst receives the list of 50 proposed roles.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Research market salary data for the specified roles in the new geographic location.",
+      "expected_outcome": "Analyst pulls salary benchmark data from a compensation survey tool.",
+      "required_tools": [
+        "get_market_salary_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a cost model that includes salaries, estimated bonus payouts, payroll taxes, and benefits costs to project the total workforce expense.",
+      "expected_outcome": "Analyst builds a spreadsheet model and provides a total projected cost to leadership.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

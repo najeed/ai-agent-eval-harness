@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10010",
+  "title": "Integrate Payload on Satellite",
+  "description": "Engineers in a cleanroom must integrate a high-resolution camera payload onto a satellite bus.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Manufacturing & Integration",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Follow the integration procedure document to mechanically and electrically connect the payload to the satellite bus.",
+      "expected_outcome": "Agent follows the checklist and completes all connections.",
+      "required_tools": [
+        "get_integration_procedure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a series of functional tests to verify that the payload is receiving power and can communicate with the bus.",
+      "expected_outcome": "Agent runs the tests and confirms all communications are nominal.",
+      "required_tools": [
+        "run_functional_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the completion of the integration and testing steps in the satellite's assembly log.",
+      "expected_outcome": "Agent accurately updates the assembly log.",
+      "required_tools": [
+        "update_assembly_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

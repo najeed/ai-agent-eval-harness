@@ -1,0 +1,51 @@
+{
+  "scenario_id": "utils-go-13783",
+  "title": "Line Strike Emergency Response",
+  "description": "A third-party construction crew has struck a natural gas distribution line. The system must manage the immediate response.",
+  "use_case": "Gas Operations",
+  "core_function": "Leak Detection & Repair",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the emergency call and confirm the location of the line strike.",
+      "expected_outcome": "System logs the critical incident and its location.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately dispatch an emergency gas crew and notify the local fire department.",
+      "expected_outcome": "System dispatches a crew and sends an automated notification to first responders.",
+      "required_tools": [
+        "dispatch_emergency_crew",
+        "notify_first_responders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the valves that need to be closed to isolate the damaged section of pipe.",
+      "expected_outcome": "System displays the required valve locations on a map for the responding crew.",
+      "required_tools": [
+        "query_gis_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-75",
+  "title": "Run a Fixed Asset Roll-Forward Report",
+  "description": "For audit purposes, an accountant needs to prepare a fixed asset roll-forward, which shows the movement in the asset accounts from the beginning to the end of the year.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Fixed Asset Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the beginning of year balances for 'Fixed Assets - Cost' and 'Accumulated Depreciation'.",
+      "expected_outcome": "Agent gets the starting balances.",
+      "required_tools": [
+        "get_gl_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve all fixed asset additions, disposals, and depreciation expense for the year.",
+      "expected_outcome": "Agent gathers all the transaction data for the year.",
+      "required_tools": [
+        "get_fixed_asset_activity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the roll-forward report, which starts with the beginning balance, adds acquisitions, subtracts disposals, and calculates the ending balance, ensuring it matches the year-end GL.",
+      "expected_outcome": "Agent produces a formatted roll-forward report that reconciles all asset movements.",
+      "required_tools": [
+        "generate_roll_forward_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

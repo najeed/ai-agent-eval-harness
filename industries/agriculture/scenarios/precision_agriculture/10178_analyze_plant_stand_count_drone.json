@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10178",
+  "title": "Analyze Plant Stand Count from Drone Imagery",
+  "description": "Shortly after emergence, a farmer flies a drone over a corn field and needs the agent to count the plants to assess germination success.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Yield Forecasting & Mapping",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process the high-resolution drone imagery of the field.",
+      "expected_outcome": "Agent creates a map of the field.",
+      "required_tools": [
+        "stitch_drone_images"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_processing_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run an image recognition model to identify and count each individual corn seedling.",
+      "expected_outcome": "The model counts the plants and calculates the plant population per acre.",
+      "required_tools": [
+        "image_analysis_plant_counting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.97
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a map showing the variation in plant population across the field, highlighting areas with poor emergence.",
+      "expected_outcome": "Agent creates a map that clearly shows problem areas.",
+      "required_tools": [
+        "generate_population_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

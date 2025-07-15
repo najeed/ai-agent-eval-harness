@@ -1,0 +1,53 @@
+{
+  "scenario_id": "legal-pm-11841",
+  "title": "Issue a Litigation Hold Notice",
+  "description": "When new litigation is anticipated, an in-house counsel must issue a litigation hold notice to all relevant employees to preserve documents.",
+  "use_case": "Law Practice Management",
+  "core_function": "Case Management & Intake",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the employees and departments likely to have relevant documents for the new matter.",
+      "expected_outcome": "Agent generates a list of custodians (e.g., key engineers, sales team).",
+      "required_tools": [
+        "hr_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a litigation hold notice that clearly explains the subject of the litigation and the employees' obligation to preserve all related documents.",
+      "expected_outcome": "Agent writes a clear and comprehensive legal hold memo.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Distribute the notice to all identified custodians and track their acknowledgements.",
+      "expected_outcome": "Agent sends the notice and monitors who has acknowledged receipt.",
+      "required_tools": [
+        "email_client",
+        "tracking_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

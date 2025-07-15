@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-com-10571",
+  "title": "Handle Customer Billing Dispute",
+  "description": "A customer claims they were invoiced at the wrong price for a recent shipment.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Pricing & Quoting",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's invoice and the original sales order.",
+      "expected_outcome": "Agent pulls up both documents.",
+      "required_tools": [
+        "get_customer_invoice",
+        "get_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the customer's contract pricing that was active on the date the order was placed.",
+      "expected_outcome": "Agent finds the price on the invoice matches the contract price.",
+      "required_tools": [
+        "get_customer_pricing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain to the customer that the price was correct according to their contract and offer to send them a copy of the price agreement.",
+      "expected_outcome": "Agent clearly communicates the finding to the customer and resolves the dispute.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

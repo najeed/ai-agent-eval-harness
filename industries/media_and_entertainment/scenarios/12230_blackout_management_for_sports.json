@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-bo-12230",
+  "title": "Manage Regional Blackout for a Sports Game",
+  "description": "Due to broadcast rights, a live football game must be blacked out for viewers in a specific city. An agent must apply the blackout rule.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Live Event Broadcasting",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the live game feed and the specific geographic region (zip codes) for the blackout.",
+      "expected_outcome": "Agent correctly identifies the game and the list of affected zip codes.",
+      "required_tools": [
+        "get_event_details",
+        "get_blackout_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the blackout rule to the content delivery system, blocking access for users in the specified zip codes.",
+      "expected_outcome": "Agent successfully configures the system to enforce the blackout.",
+      "required_tools": [
+        "apply_geo_restriction_rule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Configure the system to show a 'This game is not available in your area' message to the blocked users.",
+      "expected_outcome": "Agent sets up the correct messaging for affected users.",
+      "required_tools": [
+        "set_blackout_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

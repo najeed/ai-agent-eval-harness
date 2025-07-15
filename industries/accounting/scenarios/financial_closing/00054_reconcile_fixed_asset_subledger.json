@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ac-fc-54",
+  "title": "Reconcile Fixed Asset Sub-Ledger to General Ledger",
+  "description": "An accountant needs to ensure the total cost and accumulated depreciation in the fixed asset sub-ledger agree with the balances in the corresponding GL accounts.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Account Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a report from the fixed asset sub-ledger summarizing the total cost and accumulated depreciation.",
+      "expected_outcome": "Agent generates the summary report from the sub-ledger.",
+      "required_tools": [
+        "run_fixed_asset_summary_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the month-end balances for the 'Fixed Assets - Cost' and 'Accumulated Depreciation' accounts from the general ledger.",
+      "expected_outcome": "Agent gets the corresponding GL balances.",
+      "required_tools": [
+        "get_gl_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the totals from the sub-ledger to the GL balances and confirm they match.",
+      "expected_outcome": "Agent confirms that both cost and accumulated depreciation reconcile perfectly.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

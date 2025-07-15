@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-cm-11414",
+  "title": "Segment an Email List for a Targeted Send",
+  "description": "An email marketer wants to send a promotional email to a specific segment of their audience: customers who have purchased in the last 60 days but have not opened the last two emails.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Email & Marketing Automation",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a list of all customers who made a purchase in the last 60 days.",
+      "expected_outcome": "Agent generates the initial list of recent purchasers.",
+      "required_tools": [
+        "email_marketing_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a second list of all customers who did not open the last two email campaigns.",
+      "expected_outcome": "Agent generates the list of unengaged users.",
+      "required_tools": [
+        "email_marketing_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Find the intersection of the two lists to create the final target segment.",
+      "expected_outcome": "Agent creates the final, highly-targeted segment of users.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

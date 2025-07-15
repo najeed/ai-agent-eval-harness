@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-com-10556",
+  "title": "Customer Requests Expedited Order",
+  "description": "A key customer needs an order delivered sooner than the standard lead time. Sales must check if this is possible and what the expedite fee would be.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Order Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check with production scheduling to see if the manufacturing can be expedited.",
+      "expected_outcome": "Agent communicates with the scheduling department and finds that the order can be made 2 days earlier.",
+      "required_tools": [
+        "check_production_schedule_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check with logistics for the cost of expedited freight (e.g., team drivers, air freight).",
+      "expected_outcome": "Agent gets a quote from a carrier for expedited shipping, which adds $500 to the cost.",
+      "required_tools": [
+        "get_expedited_freight_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer that the order can be expedited for an additional fee of $500 and await their approval before proceeding.",
+      "expected_outcome": "Agent clearly communicates the options and costs to the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

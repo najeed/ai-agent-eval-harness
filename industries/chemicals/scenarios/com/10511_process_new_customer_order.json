@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-com-10511",
+  "title": "Process New Customer Order",
+  "description": "A sales representative needs to enter a new order for an existing customer for 10 drums of a standard product.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Order Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer account and their default shipping location.",
+      "expected_outcome": "Agent correctly pulls up the customer's master data.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check inventory levels for the requested product to ensure availability.",
+      "expected_outcome": "Agent confirms there are sufficient drums in stock to fulfill the order.",
+      "required_tools": [
+        "check_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new sales order, applying the customer's contract pricing, and submit it for fulfillment.",
+      "expected_outcome": "Agent successfully creates the sales order, which is now visible to the logistics team.",
+      "required_tools": [
+        "create_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

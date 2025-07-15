@@ -1,0 +1,65 @@
+{
+  "scenario_id": "tr-to-12925",
+  "title": "Process Driver Settlement",
+  "description": "An owner-operator has completed several loads. A settlement specialist needs to process their pay.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Billing & Settlements",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all completed and invoiced loads for a specific driver for the settlement period.",
+      "expected_outcome": "Agent gets a list of all loads ready for payment.",
+      "required_tools": [
+        "get_driver_payable_loads"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total revenue for the loads.",
+      "expected_outcome": "The total linehaul revenue is correctly calculated.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deduct standard items like fuel advances, insurance, and equipment rental fees.",
+      "expected_outcome": "All deductions are correctly applied.",
+      "required_tools": [
+        "get_driver_deductions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Finalize the settlement and generate a statement for the driver, then schedule the payment.",
+      "expected_outcome": "The final net pay is calculated, and the payment is queued.",
+      "required_tools": [
+        "finalize_driver_settlement",
+        "schedule_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

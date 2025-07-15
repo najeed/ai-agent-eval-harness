@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-rs-12302",
+  "title": "Manage Inspection Contingency",
+  "description": "After a home inspection reveals issues, the buyer's agent must negotiate repairs or credits with the seller's agent.",
+  "use_case": "Residential Sales",
+  "core_function": "Closing & Escrow",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the inspection report and review it with the buyer to identify key issues.",
+      "expected_outcome": "Agent identifies the most critical repair items for negotiation.",
+      "required_tools": [
+        "review_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a repair request addendum listing the requested repairs or a credit in lieu of repairs.",
+      "expected_outcome": "Agent creates a formal addendum to the purchase agreement.",
+      "required_tools": [
+        "generate_contract_addendum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Negotiate the terms of the repair addendum with the listing agent until an agreement is reached.",
+      "expected_outcome": "Both parties sign the addendum, resolving the inspection contingency.",
+      "required_tools": [
+        "send_document_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "negotiation_success",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

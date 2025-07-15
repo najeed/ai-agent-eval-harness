@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-cy-10521",
+  "title": "Cyber Forensics and Attribution",
+  "description": "Following a network breach, a cyber forensics analyst must analyze the attacker's malware to determine its capabilities and origin.",
+  "use_case": "Cybersecurity & Information Warfare",
+  "core_function": "Cyber Forensics & Attribution",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Safely extract the malware sample from the compromised system.",
+      "expected_outcome": "Analyst successfully obtains the malware in a secure, isolated environment.",
+      "required_tools": [
+        "extract_malware_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform static and dynamic analysis of the malware to identify its functions (e.g., keylogging, data exfiltration).",
+      "expected_outcome": "Analyst correctly identifies all of the malware's capabilities.",
+      "required_tools": [
+        "run_static_malware_analysis",
+        "run_dynamic_malware_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the malware's code and behavior to a database of known threat actors to make a preliminary attribution.",
+      "expected_outcome": "Analyst finds a match and attributes the attack to a known nation-state adversary.",
+      "required_tools": [
+        "compare_to_threat_actor_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "attribution_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

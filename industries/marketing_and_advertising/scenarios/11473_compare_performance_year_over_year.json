@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-ar-11473",
+  "title": "Compare Performance Year-over-Year",
+  "description": "An analyst needs to compare website traffic for the last quarter to the same quarter in the previous year.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Data Analysis & Insights",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "In the analytics tool, select the date range for the last quarter.",
+      "expected_outcome": "Agent sets the correct date range.",
+      "required_tools": [
+        "google_analytics_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the 'compare to' feature to select the same date range from the previous year.",
+      "expected_outcome": "The tool is now configured to show a year-over-year comparison.",
+      "required_tools": [
+        "google_analytics_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the results to determine the percentage change in key metrics like users, sessions, and conversion rate.",
+      "expected_outcome": "Agent produces a summary of the year-over-year growth or decline.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

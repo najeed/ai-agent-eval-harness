@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-cs-10411",
+  "title": "Customer Locked Keys in Car",
+  "description": "A customer calls because they have locked their keys inside their vehicle and need it unlocked remotely.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Remote Vehicle Operations",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their vehicle.",
+      "expected_outcome": "Agent correctly identifies the customer's account.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the customer's identity using security questions to prevent unauthorized access.",
+      "expected_outcome": "Agent successfully authenticates the customer's identity.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a remote command to unlock the vehicle's doors.",
+      "expected_outcome": "Agent sends the unlock command, and the customer confirms the vehicle is unlocked.",
+      "required_tools": [
+        "send_remote_vehicle_command"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

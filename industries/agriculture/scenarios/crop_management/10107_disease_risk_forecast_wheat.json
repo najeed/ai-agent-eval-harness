@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ag-cm-10107",
+  "title": "Disease Risk Forecast for Wheat",
+  "description": "A farmer wants to know the risk of fusarium head blight developing in their wheat field based on weather conditions.",
+  "use_case": "Crop Management",
+  "core_function": "Pest & Disease Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the current growth stage of the wheat crop.",
+      "expected_outcome": "Agent identifies the crop is at the critical flowering stage.",
+      "required_tools": [
+        "get_crop_growth_stage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the weather forecast for the next 10 days, focusing on temperature, humidity, and rainfall during the flowering period.",
+      "expected_outcome": "Agent retrieves the relevant weather data.",
+      "required_tools": [
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a disease risk model using the weather data and crop stage.",
+      "expected_outcome": "The model returns a 'High Risk' assessment for fusarium head blight.",
+      "required_tools": [
+        "run_disease_risk_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Recommend a preventative fungicide application.",
+      "expected_outcome": "Agent advises the farmer to apply a fungicide within the next 48 hours.",
+      "required_tools": [
+        "get_fungicide_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

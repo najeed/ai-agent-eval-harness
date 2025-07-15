@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10059",
+  "title": "Perform a Lightning Strike Test",
+  "description": "Engineers must test a composite fuselage section to ensure it can safely dissipate the energy from a lightning strike without damaging critical systems.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Testing & Certification",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Attach high-voltage generators to the test article (fuselage section).",
+      "expected_outcome": "Agent ensures all test equipment is properly connected.",
+      "required_tools": [
+        "connect_test_equipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply a simulated lightning strike (a high-voltage, high-current pulse) to the test article.",
+      "expected_outcome": "Agent safely conducts the simulated strike.",
+      "required_tools": [
+        "conduct_lightning_strike_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inspect the test article for any structural damage and check the connected avionics systems for any electrical upset or damage.",
+      "expected_outcome": "Agent finds no structural damage and confirms all systems are still operational.",
+      "required_tools": [
+        "inspect_test_article",
+        "run_functional_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

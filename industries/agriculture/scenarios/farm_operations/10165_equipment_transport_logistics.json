@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10165",
+  "title": "Plan Equipment Transport Logistics",
+  "description": "A farmer needs to move a large combine harvester between two farms and must check the route for any restrictions.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Equipment Management & Maintenance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the dimensions (height, width, weight) of the combine harvester.",
+      "expected_outcome": "Agent retrieves the machine's specifications.",
+      "required_tools": [
+        "get_equipment_specifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Plan a route between the two farm locations.",
+      "expected_outcome": "Agent generates the shortest driving route.",
+      "required_tools": [
+        "plan_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the planned route for any low bridges, weight-restricted roads, or other transport hazards.",
+      "expected_outcome": "Agent identifies a low bridge on the planned route and suggests an alternative.",
+      "required_tools": [
+        "check_route_for_restrictions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

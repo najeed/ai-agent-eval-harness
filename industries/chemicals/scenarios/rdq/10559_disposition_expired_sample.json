@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10559",
+  "title": "Disposition Expired Retain Sample",
+  "description": "A retain sample has passed its required retention period and must be disposed of.",
+  "use_case": "R&D and Quality",
+  "core_function": "Sample Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all retain samples that are past their disposition date.",
+      "expected_outcome": "Agent retrieves a list of samples to be destroyed.",
+      "required_tools": [
+        "get_expired_samples_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For the first sample on the list, update its status in the LIMS to 'Pending Disposal'.",
+      "expected_outcome": "Agent changes the sample's status.",
+      "required_tools": [
+        "update_sample_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After physically disposing of the sample according to procedure, log the disposal date and method in the LIMS.",
+      "expected_outcome": "Agent records the final disposition details, completing the sample's lifecycle.",
+      "required_tools": [
+        "log_sample_disposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

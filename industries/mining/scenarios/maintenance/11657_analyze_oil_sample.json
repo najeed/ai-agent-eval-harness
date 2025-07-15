@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-maint-11657",
+  "title": "Analyze Haul Truck Oil Sample",
+  "description": "A technician takes an oil sample from a haul truck's engine. The sample is sent to a lab to check for wear metals that could indicate an engine problem.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Reliability & Condition Monitoring",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a request in the system for an oil sample to be taken from truck HT-51's engine.",
+      "expected_outcome": "A work order for the sample collection is generated.",
+      "required_tools": [
+        "create_sample_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the analysis results from the lab.",
+      "expected_outcome": "The lab report is received electronically and attached to the equipment record in the CMMS.",
+      "required_tools": [
+        "get_oil_analysis_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the results, which show high levels of iron and copper. Flag the engine for an internal inspection at the next service.",
+      "expected_outcome": "The abnormal result is identified, and a follow-up inspection is planned to investigate the source of the wear.",
+      "required_tools": [
+        "analyze_oil_analysis_data",
+        "create_maintenance_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

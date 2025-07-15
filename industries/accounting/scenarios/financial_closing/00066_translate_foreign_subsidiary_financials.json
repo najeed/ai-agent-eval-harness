@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-fc-66",
+  "title": "Translate Foreign Subsidiary Financials",
+  "description": "For consolidation, the financial statements of a European subsidiary (in EUR) need to be translated into the parent company's reporting currency (USD).",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Period-End Close Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the subsidiary's trial balance in the local currency (EUR).",
+      "expected_outcome": "Agent gets the EUR trial balance.",
+      "required_tools": [
+        "get_trial_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the correct foreign exchange rates: average rate for P&L accounts, and closing rate for balance sheet accounts.",
+      "expected_outcome": "Agent gets the required historical exchange rates.",
+      "required_tools": [
+        "get_exchange_rates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Translate the subsidiary's trial balance from EUR to USD using the appropriate rates.",
+      "expected_outcome": "Agent successfully translates all account balances.",
+      "required_tools": [
+        "translate_financials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Calculate and post the resulting Cumulative Translation Adjustment (CTA) to the equity section.",
+      "expected_outcome": "Agent calculates the translation gain/loss and includes it in Other Comprehensive Income (OCI).",
+      "required_tools": [
+        "calculate_cta"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

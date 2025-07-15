@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-12839",
+  "title": "Onboard a New Management Property",
+  "description": "A new landlord has signed a property management agreement. The PM must set up the property in the system.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management & Reporting",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new property profile in the management software with all relevant details (address, owner info, etc.).",
+      "expected_outcome": "A new property record is successfully created.",
+      "required_tools": [
+        "create_new_property"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set up the property's bank account and financial ledgers for rent collection and expenses.",
+      "expected_outcome": "Financial accounts for the new property are established in the system.",
+      "required_tools": [
+        "setup_property_financials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the property is tenanted, enter all existing lease information and tenant details.",
+      "expected_outcome": "All current lease data, including rent, deposits, and lease end dates, is accurately entered.",
+      "required_tools": [
+        "create_lease_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

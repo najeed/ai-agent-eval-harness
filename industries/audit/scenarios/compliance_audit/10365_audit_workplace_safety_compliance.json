@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10365",
+  "title": "Audit Workplace Safety (OSHA) Compliance",
+  "description": "A compliance auditor performs a safety audit of a manufacturing plant.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Regulatory Compliance Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Perform a physical walkthrough of the plant to identify any immediate safety hazards.",
+      "expected_outcome": "The auditor observes that several emergency exits are partially blocked.",
+      "required_tools": [
+        "perform_physical_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the plant's injury and illness logs to identify any trends.",
+      "expected_outcome": "The auditor finds a high number of back injuries in the shipping department.",
+      "required_tools": [
+        "get_safety_incident_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that all forklift operators have a current, valid certification.",
+      "expected_outcome": "The auditor reviews training records and confirms all operators are certified.",
+      "required_tools": [
+        "review_training_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

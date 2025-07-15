@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-13592",
+  "title": "Modify a Rental Car Booking",
+  "description": "A customer needs to extend their car rental by two days.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Itinerary Planning & Booking",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's existing car rental booking.",
+      "expected_outcome": "Agent locates the correct reservation.",
+      "required_tools": [
+        "get_rental_car_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if the vehicle is available for the two extra days.",
+      "expected_outcome": "Agent confirms the car is not booked by another customer and can be extended.",
+      "required_tools": [
+        "check_vehicle_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the booking with the new return date and inform the customer of the additional cost.",
+      "expected_outcome": "Agent successfully modifies the booking and communicates the new total price.",
+      "required_tools": [
+        "modify_rental_car_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-las-10257",
+  "title": "Claim Missing Miles from a Hotel Partner",
+  "description": "A frequent flyer member stayed at a partner hotel but did not receive miles for it. They are requesting a manual credit.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Partnerships & Interlining",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the member's frequent flyer number and a copy of their hotel receipt.",
+      "expected_outcome": "Agent collects the required information and proof of stay.",
+      "required_tools": [
+        "get_member_details",
+        "get_hotel_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the hotel stay and calculate the number of miles that should have been awarded based on the partnership agreement.",
+      "expected_outcome": "Agent confirms the stay and calculates the correct mileage.",
+      "required_tools": [
+        "verify_partner_activity",
+        "calculate_partner_miles"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually credit the miles to the member's account.",
+      "expected_outcome": "Agent successfully adds the miles to the member's account.",
+      "required_tools": [
+        "credit_miles_manually"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

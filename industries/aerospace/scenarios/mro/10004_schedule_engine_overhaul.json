@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10004",
+  "title": "Schedule an Engine Overhaul",
+  "description": "An MRO planner needs to schedule an engine for a complete overhaul based on its accumulated flight hours.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Maintenance Planning",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the engine's maintenance history and current flight hours to confirm it is due for an overhaul.",
+      "expected_outcome": "Agent confirms the engine has exceeded the threshold for a scheduled overhaul.",
+      "required_tools": [
+        "get_engine_maintenance_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the MRO facility's capacity and schedule the engine for an available slot.",
+      "expected_outcome": "Agent books a slot for the engine overhaul in the MRO schedule.",
+      "required_tools": [
+        "check_mro_capacity",
+        "schedule_mro_job"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work package for the overhaul, including all required service bulletins and airworthiness directives.",
+      "expected_outcome": "Agent generates a complete and compliant work package for the technicians.",
+      "required_tools": [
+        "generate_mro_work_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

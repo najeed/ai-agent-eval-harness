@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-csra-10491",
+  "title": "Customer Lost in Remote Area with No Cell Service",
+  "description": "A customer in an area with no cell service uses the car's satellite-based emergency button to ask for directions.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Emergency & Roadside Assistance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the satellite emergency alert, including the vehicle's GPS coordinates.",
+      "expected_outcome": "Agent receives the alert and location.",
+      "required_tools": [
+        "get_telematics_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Establish a voice call with the driver via the satellite link.",
+      "expected_outcome": "Agent successfully connects to the driver.",
+      "required_tools": [
+        "initiate_in_vehicle_call"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Using the vehicle's location and the driver's destination, provide turn-by-turn directions to get them back to a main road.",
+      "expected_outcome": "Agent acts as a human GPS to guide the driver to safety.",
+      "required_tools": [
+        "get_map_routing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

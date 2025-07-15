@@ -1,0 +1,55 @@
+{
+  "scenario_id": "airline-las-10242",
+  "title": "Book an Award Flight with Miles",
+  "description": "A frequent flyer member wants to book a round-trip flight using their miles.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Frequent Flyer Program",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for award seat availability for the member's desired route and dates.",
+      "expected_outcome": "Agent finds available award seats.",
+      "required_tools": [
+        "search_award_flights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the member of the required mileage and any taxes/fees.",
+      "expected_outcome": "Agent clearly communicates the total cost in miles and money.",
+      "required_tools": [
+        "get_award_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the booking, deduct the miles from the member's account, process payment for the taxes/fees, and issue the ticket.",
+      "expected_outcome": "Agent successfully completes the award booking.",
+      "required_tools": [
+        "create_award_booking",
+        "deduct_miles",
+        "process_payment",
+        "issue_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

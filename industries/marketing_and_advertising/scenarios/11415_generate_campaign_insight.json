@@ -1,0 +1,62 @@
+{
+  "scenario_id": "marketing-ar-11415",
+  "title": "Generate Campaign Insight from Report",
+  "description": "An analyst is reviewing a performance report and needs to provide an actionable insight beyond just stating the numbers.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Data Analysis & Insights",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review a campaign report, noting that the overall click-through rate (CTR) has declined.",
+      "expected_outcome": "Agent identifies a negative trend in a key metric.",
+      "required_tools": [
+        "get_performance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dig deeper into the data, segmenting by device type.",
+      "expected_outcome": "Agent runs a new query to break down performance by device.",
+      "required_tools": [
+        "query_analytics_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Discover that the CTR decline is entirely due to poor performance on mobile devices.",
+      "expected_outcome": "Agent pinpoints the root cause of the problem.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Provide the insight: 'The campaign's CTR is dropping due to mobile performance. We should review our mobile ad creative and landing page experience.'",
+      "expected_outcome": "Agent provides a clear, actionable insight that suggests a next step.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "insight_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

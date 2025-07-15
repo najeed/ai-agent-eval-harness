@@ -1,0 +1,51 @@
+{
+  "scenario_id": "mfg-sc-12094",
+  "title": "Resolve an Invoice Dispute",
+  "description": "A customer is disputing an item on their invoice, claiming they were overcharged.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Customer Support & Issue Resolution",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's invoice and the original sales order.",
+      "expected_outcome": "Agent pulls up both the invoice and the sales order for comparison.",
+      "required_tools": [
+        "get_customer_invoice",
+        "find_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the pricing on the order with the pricing on the invoice.",
+      "expected_outcome": "Agent finds that the price on the invoice matches the price on the order the customer signed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the charge to the customer, referencing the agreed-upon price on the sales order, and provide a copy of the order.",
+      "expected_outcome": "Agent clarifies the charge for the customer, resolving the dispute.",
+      "required_tools": [
+        "send_email_to_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

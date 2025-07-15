@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-omf-10627",
+  "title": "Issue Store Credit for a Return",
+  "description": "A customer returns an item without a receipt and opts for store credit instead of a refund.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Returns & Exchanges",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the product being returned and its current selling price.",
+      "expected_outcome": "Agent finds the product and its price.",
+      "required_tools": [
+        "get_product_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate store credit for the value of the returned item.",
+      "expected_outcome": "Agent creates a store credit voucher for the correct amount.",
+      "required_tools": [
+        "issue_store_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "transaction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the store credit to the customer's account and email them the confirmation.",
+      "expected_outcome": "Agent successfully applies the credit and notifies the customer.",
+      "required_tools": [
+        "update_customer_profile",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

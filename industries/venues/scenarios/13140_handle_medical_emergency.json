@@ -1,0 +1,64 @@
+{
+  "scenario_id": "venues-vo-13140",
+  "title": "Handle a Medical Emergency",
+  "description": "A staff member reports that a guest has collapsed and requires medical attention.",
+  "use_case": "Venue Operations & Logistics",
+  "core_function": "Security & Emergency Response",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the exact location of the patient.",
+      "expected_outcome": "Agent confirms the location.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch the in-house EMT/paramedic team to the location.",
+      "expected_outcome": "Agent sends an urgent dispatch to the medical team.",
+      "required_tools": [
+        "dispatch_medical_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a security team to clear a path for the medical team and create a privacy perimeter.",
+      "expected_outcome": "Agent dispatches security to assist.",
+      "required_tools": [
+        "dispatch_security_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "If directed by the medical team, call 911 for an ambulance.",
+      "expected_outcome": "Agent contacts external emergency services and provides a clear access point for them.",
+      "required_tools": [
+        "contact_emergency_services"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

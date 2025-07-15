@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hosp-gs-11595",
+  "title": "Request Connecting Rooms",
+  "description": "A family booking two rooms requests that they be connecting rooms.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Reservations & Booking",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check availability for a pair of connecting rooms for the requested dates.",
+      "expected_outcome": "The agent finds an available connecting pair of rooms.",
+      "required_tools": [
+        "pms_check_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Book both rooms and use the system to link the two reservations together.",
+      "expected_outcome": "Two reservations are created and linked.",
+      "required_tools": [
+        "pms_create_booking",
+        "pms_link_reservations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add a note to the booking confirming the connecting room request, ensuring they are not separated.",
+      "expected_outcome": "A clear note is added to prevent accidental room changes.",
+      "required_tools": [
+        "pms_update_booking_notes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

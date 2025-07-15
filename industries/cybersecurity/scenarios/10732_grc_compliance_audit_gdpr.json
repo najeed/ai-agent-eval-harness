@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-grc-10732",
+  "title": "GDPR Data Deletion Audit",
+  "description": "A GRC analyst must audit the process for handling 'right to be forgotten' requests to ensure compliance with GDPR.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Compliance Auditing & Reporting",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a random sample of recent data deletion requests from the ticketing system.",
+      "expected_outcome": "Analyst selects a representative sample of requests.",
+      "required_tools": [
+        "get_gdpr_request_tickets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "sampling_randomness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each request, trace the process to ensure the user's data was deleted from all relevant systems (e.g., CRM, marketing database, backups).",
+      "expected_outcome": "Analyst follows the data trail to verify deletion across multiple systems.",
+      "required_tools": [
+        "trace_data_deletion_process"
+      ],
+      "success_criteria": [
+        {
+          "metric": "audit_thoroughness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document any findings where data was not properly deleted and create a corrective action plan to fix the process.",
+      "expected_outcome": "Analyst identifies a gap in the process (backups were not wiped) and creates a plan to fix it.",
+      "required_tools": [
+        "document_audit_finding",
+        "create_corrective_action_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "finding_accuracy_and_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

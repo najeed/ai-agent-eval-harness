@@ -1,0 +1,51 @@
+{
+  "scenario_id": "ports-go-11957",
+  "title": "Update a Trucking Company's Information",
+  "description": "A trucking company calls to update their insurance information on file with the port.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Customs & Documentation",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the trucking company in the port's system.",
+      "expected_outcome": "Gate admin finds the record for 'Speedy Logistics'.",
+      "required_tools": [
+        "get_trucking_company_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the new certificate of insurance from the company via email.",
+      "expected_outcome": "The admin receives the new document.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload the new certificate to their profile and update the policy expiration date.",
+      "expected_outcome": "The new document is saved in the system, and the company's profile is updated, ensuring their access to the port remains active.",
+      "required_tools": [
+        "upload_company_document",
+        "update_company_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-log-10874",
+  "title": "Medical Personnel Readiness",
+  "description": "A hospital ship commander needs to verify that all medical staff have the required certifications and immunizations for an upcoming humanitarian mission.",
+  "use_case": "Logistics & Sustainment",
+  "core_function": "Personnel & Readiness Management",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query the medical personnel database for the records of all staff assigned to the ship.",
+      "expected_outcome": "Commander retrieves all relevant personnel records.",
+      "required_tools": [
+        "get_medical_personnel_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify any staff with expired certifications or missing immunizations required for the destination country.",
+      "expected_outcome": "Commander generates a list of all medical readiness deficiencies.",
+      "required_tools": [
+        "identify_readiness_deficiencies"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the necessary training and immunizations to ensure the entire medical staff is 100% ready for the mission.",
+      "expected_outcome": "Commander creates an actionable plan to resolve all readiness issues.",
+      "required_tools": [
+        "schedule_training",
+        "schedule_immunizations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

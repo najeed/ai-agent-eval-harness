@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ar-65",
+  "title": "Create a Pro Forma Invoice",
+  "description": "A customer requires a pro forma invoice to arrange for financing before a large order is placed.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Billing & Invoicing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the request for a pro forma invoice, including the list of products and quantities.",
+      "expected_outcome": "Agent gets the details of the proposed order.",
+      "required_tools": [
+        "get_pro_forma_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a pro forma invoice document, which looks like a real invoice but is clearly marked 'Pro Forma' and is not posted to accounts receivable.",
+      "expected_outcome": "Agent creates the pro forma invoice.",
+      "required_tools": [
+        "create_pro_forma_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the pro forma invoice to the customer.",
+      "expected_outcome": "Agent successfully emails the document to the customer.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

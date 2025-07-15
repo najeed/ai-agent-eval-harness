@@ -1,0 +1,55 @@
+{
+  "scenario_id": "chemicals-scl-10502",
+  "title": "Emergency Sourcing of Critical Raw Material",
+  "description": "A key supplier has declared force majeure, and a critical raw material must be sourced from an alternative, approved supplier to prevent a production shutdown.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Raw Material Procurement",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify current inventory of the critical raw material and calculate the run-out time.",
+      "expected_outcome": "Agent correctly determines the number of production days remaining.",
+      "required_tools": [
+        "get_inventory_levels",
+        "get_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the vendor management system for all approved, secondary suppliers for the material.",
+      "expected_outcome": "Agent retrieves a list of at least two alternative suppliers.",
+      "required_tools": [
+        "find_approved_suppliers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the top alternative supplier, confirm available stock and lead time, and issue an emergency purchase order.",
+      "expected_outcome": "Agent successfully places a purchase order to cover the production gap.",
+      "required_tools": [
+        "get_supplier_contact",
+        "check_supplier_inventory",
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

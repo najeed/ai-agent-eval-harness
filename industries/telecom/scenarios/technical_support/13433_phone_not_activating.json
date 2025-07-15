@@ -1,0 +1,50 @@
+{
+  "scenario_id": "telecom-ts-13433",
+  "title": "Mobile Troubleshooting - New Phone Not Activating",
+  "description": "A customer received a new phone but it's stuck on the activation screen.",
+  "use_case": "Technical Support",
+  "core_function": "Mobile Device Troubleshooting",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the IMEI of the new phone and the ICCID of the new SIM card from the customer.",
+      "expected_outcome": "Agent correctly collects the device and SIM identifiers.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the activation system to see the status of the IMEI/ICCID pair.",
+      "expected_outcome": "Agent finds the activation is 'pending' due to a mismatch.",
+      "required_tools": [
+        "check_activation_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually push the activation for the correct device and SIM pair.",
+      "expected_outcome": "Agent uses the manual activation tool to resolve the issue.",
+      "required_tools": [
+        "manual_activate_device"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

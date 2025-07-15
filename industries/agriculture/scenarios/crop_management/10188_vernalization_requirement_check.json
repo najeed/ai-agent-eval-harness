@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10188",
+  "title": "Check Vernalization Requirement Fulfillment",
+  "description": "A fruit grower needs to know if their cherry orchard has received enough 'chill hours' over the winter to ensure a good bloom.",
+  "use_case": "Crop Management",
+  "core_function": "Planting & Seeding",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the hourly temperature data from the local weather station for the entire winter period.",
+      "expected_outcome": "Agent gets the complete temperature dataset.",
+      "required_tools": [
+        "get_weather_station_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total number of chill hours (hours below a certain temperature threshold, e.g., 45\u00b0F or 7\u00b0C).",
+      "expected_outcome": "Agent calculates the accumulated chill hours.",
+      "required_tools": [
+        "calculate_chill_hours"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the accumulated chill hours to the known requirement for the specific cherry variety.",
+      "expected_outcome": "Agent determines that the chill hour requirement has been met.",
+      "required_tools": [
+        "get_crop_vernalization_requirement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

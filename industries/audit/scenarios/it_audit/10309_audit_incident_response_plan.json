@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10309",
+  "title": "Audit the Cybersecurity Incident Response Plan",
+  "description": "An IT auditor assesses the company's cybersecurity incident response (IR) plan.",
+  "use_case": "IT Audit",
+  "core_function": "Cybersecurity & Privacy Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the IR plan documentation to ensure it includes key components like roles and responsibilities, communication protocols, and escalation procedures.",
+      "expected_outcome": "Auditor confirms the plan is well-documented and comprehensive.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the logs from the last tabletop IR exercise to see how the team performed.",
+      "expected_outcome": "Auditor identifies that the exercise revealed a weakness in the communication plan.",
+      "required_tools": [
+        "get_meeting_minutes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the issues identified in the tabletop exercise have been remediated.",
+      "expected_outcome": "Auditor confirms that the IR plan was updated based on the lessons learned.",
+      "required_tools": [
+        "track_remediation_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

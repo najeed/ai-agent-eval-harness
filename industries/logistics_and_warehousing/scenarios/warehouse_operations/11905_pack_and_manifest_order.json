@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-wo-11905",
+  "title": "Pack and Manifest an Order",
+  "description": "A packer at a packing station needs to pack a picked order, select the correct box size, and generate a shipping label.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Outbound & Shipping",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the barcode on the picked tote to retrieve the order details.",
+      "expected_outcome": "Agent correctly retrieves the order items and shipping address.",
+      "required_tools": [
+        "get_order_by_tote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on the items, select the appropriate box size from the available options.",
+      "expected_outcome": "Agent chooses a cost-effective and appropriately sized box.",
+      "required_tools": [
+        "get_box_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Pack the items, weigh the package, and generate the final shipping label from the integrated shipping system.",
+      "expected_outcome": "Agent successfully generates and prints a carrier-compliant shipping label.",
+      "required_tools": [
+        "generate_shipping_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "heavy-industries-ast-11487",
+  "title": "Manage Asset Decontamination",
+  "description": "A piece of equipment that was in radioactive service needs to be decontaminated before it can be sent for repair.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Maintenance Planning & Execution",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the decontamination procedure for the specific asset.",
+      "expected_outcome": "Agent finds the approved procedure for cleaning the equipment.",
+      "required_tools": [
+        "get_decontamination_procedure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a work order for the decontamination, ensuring the assigned personnel have the required radiation safety training.",
+      "expected_outcome": "Agent creates the work order and verifies the qualifications of the assigned crew.",
+      "required_tools": [
+        "create_maintenance_work_order",
+        "check_employee_qualifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After cleaning, perform a radiation survey to confirm the asset is clean, and document the results before releasing it for repair.",
+      "expected_outcome": "Agent logs the successful radiation survey results, clearing the equipment for general maintenance.",
+      "required_tools": [
+        "log_radiation_survey",
+        "update_asset_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

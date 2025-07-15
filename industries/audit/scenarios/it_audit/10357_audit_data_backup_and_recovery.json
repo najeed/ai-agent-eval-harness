@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10357",
+  "title": "Audit Data Backup and Recovery",
+  "description": "An IT auditor tests the company's data backup and recovery process.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the backup policy to understand the required frequency and retention period for backups.",
+      "expected_outcome": "Auditor understands the backup requirements (e.g., daily backups, retained for 30 days).",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the backup job logs for the last month to verify that backups of critical servers completed successfully every day.",
+      "expected_outcome": "Auditor finds that the backup job for a critical database server has been failing intermittently.",
+      "required_tools": [
+        "review_backup_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Request that the IT team perform a test restore of a specific file from a recent backup to ensure the backups are viable.",
+      "expected_outcome": "The IT team successfully restores the requested file, confirming the backups are working.",
+      "required_tools": [
+        "request_test_restore"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

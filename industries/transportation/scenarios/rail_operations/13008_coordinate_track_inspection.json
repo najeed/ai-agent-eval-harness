@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-ro-13008",
+  "title": "Coordinate a Track Inspection",
+  "description": "A section of track is due for its mandated quarterly inspection. A manager must schedule the inspection.",
+  "use_case": "Rail Operations",
+  "core_function": "Safety & Compliance",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a system alert that a track segment is due for inspection.",
+      "expected_outcome": "The manager is aware of the upcoming compliance task.",
+      "required_tools": [
+        "get_maintenance_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule a track inspection crew for the task.",
+      "expected_outcome": "A crew is assigned.",
+      "required_tools": [
+        "schedule_maintenance_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange for a track maintenance window with the network dispatchers so the inspectors can work safely.",
+      "expected_outcome": "A work window is granted by dispatch.",
+      "required_tools": [
+        "request_maintenance_window"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The crew performs the inspection and logs their findings in the system, marking the task as complete.",
+      "expected_outcome": "The inspection is completed and documented, ensuring regulatory compliance.",
+      "required_tools": [
+        "log_inspection_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

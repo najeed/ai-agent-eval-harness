@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-ta-11671",
+  "title": "Manage a Campus Hiring Event",
+  "description": "A university recruiting team is managing a career fair, including registering candidates and tracking applications.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Sourcing & Screening",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Set up a landing page for students to pre-register for the event.",
+      "expected_outcome": "Recruiter creates an event registration page.",
+      "required_tools": [
+        "create_event_landing_page"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "At the event, use a tablet to have students sign in and upload their resumes directly into the ATS.",
+      "expected_outcome": "Recruiters at the event successfully capture candidate information.",
+      "required_tools": [
+        "capture_candidate_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the event, review all collected resumes and tag them with the 'Career Fair' source code.",
+      "expected_outcome": "Recruiting team processes all leads from the event, ensuring they are correctly tracked.",
+      "required_tools": [
+        "bulk_update_candidate_tags"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

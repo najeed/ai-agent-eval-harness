@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hosp-fb-11571",
+  "title": "Last-Minute Change to Banquet Order",
+  "description": "On the morning of an event, the client calls to add 10 more guests to their banquet.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Event & Banquet Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the BEO and check the maximum capacity of the event space.",
+      "expected_outcome": "The agent confirms the room can accommodate 10 more guests.",
+      "required_tools": [
+        "ems_get_event_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the kitchen immediately to see if they can accommodate the increased food order.",
+      "expected_outcome": "The chef confirms they can handle the extra meals.",
+      "required_tools": [
+        "contact_kitchen"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the BEO with the new guest count and final price, and inform the banquet setup team to add another table.",
+      "expected_outcome": "All systems and teams are updated to reflect the change.",
+      "required_tools": [
+        "ems_update_beo",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "telecom-cs-13406",
+  "title": "Request to Cancel Service with Retention Offer",
+  "description": "A customer wants to cancel due to high price. The agent must attempt a retention offer.",
+  "use_case": "Customer Service",
+  "core_function": "Service Lifecycle",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the customer and understand the reason for cancellation (price).",
+      "expected_outcome": "Agent verifies the customer's identity and logs 'Price' as the cancellation reason.",
+      "required_tools": [
+        "verify_customer_identity",
+        "log_cancellation_reason"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the system for any available retention offers for this customer's profile.",
+      "expected_outcome": "Agent finds a '20% off for 12 months' retention offer.",
+      "required_tools": [
+        "get_retention_offers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Present the retention offer to the customer. If accepted, apply it. If declined, proceed with cancellation.",
+      "expected_outcome": "Agent clearly presents the offer. Customer accepts. Agent applies the promotional discount.",
+      "required_tools": [
+        "apply_promotion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

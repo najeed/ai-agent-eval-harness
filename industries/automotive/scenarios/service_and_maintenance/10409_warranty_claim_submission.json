@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sm-10409",
+  "title": "Process Warranty Claim for Faulty Sensor",
+  "description": "A vehicle's transmission sensor failed and was replaced. The vehicle is still under the powertrain warranty, so a claim must be submitted.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Billing & Warranty Claims",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the closed repair order, noting the part number of the failed sensor and the labor hours.",
+      "expected_outcome": "Agent has all necessary details from the repair order.",
+      "required_tools": [
+        "get_repair_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the vehicle's warranty status and confirm the repair is covered.",
+      "expected_outcome": "Agent confirms the vehicle's powertrain warranty is active and covers the specific part.",
+      "required_tools": [
+        "get_vehicle_warranty_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create and submit a warranty claim to the manufacturer with all required documentation (repair order, diagnostic codes, technician notes).",
+      "expected_outcome": "Agent successfully submits the claim through the manufacturer's portal.",
+      "required_tools": [
+        "submit_warranty_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

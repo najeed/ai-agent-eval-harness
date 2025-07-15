@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-scl-10567",
+  "title": "Reconcile Physical vs. System Inventory",
+  "description": "Following a full physical inventory count, a planner must reconcile discrepancies between the physical count and the system's records.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Inventory Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate an inventory variance report, highlighting all items with discrepancies.",
+      "expected_outcome": "Agent obtains a report showing 10 materials with variances.",
+      "required_tools": [
+        "generate_inventory_variance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For the first discrepancy, investigate potential causes, such as recent shipments or production consumption that were not recorded correctly.",
+      "expected_outcome": "Agent reviews recent transactions and finds a data entry error on a production consumption.",
+      "required_tools": [
+        "review_inventory_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post an inventory adjustment to correct the system quantity to match the physical count, providing a reason code for the adjustment.",
+      "expected_outcome": "Agent successfully adjusts the system inventory, and the variance report now shows one less discrepancy.",
+      "required_tools": [
+        "post_inventory_adjustment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

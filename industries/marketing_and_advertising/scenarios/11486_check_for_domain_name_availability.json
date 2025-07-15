@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-sp-11486",
+  "title": "Check for Domain Name Availability",
+  "description": "For a new product launch, a brand manager needs to see if a desired domain name is available.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Brand Management",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the desired domain name.",
+      "expected_outcome": "Agent has the name to be checked (e.g., 'newproduct.com').",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a domain registrar's WHOIS lookup tool to check the availability of the domain.",
+      "expected_outcome": "Agent finds that the domain is already registered.",
+      "required_tools": [
+        "whois_lookup_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Brainstorm alternative domain names or TLDs (e.g., '.io', '.co') and check their availability.",
+      "expected_outcome": "Agent finds an available alternative, 'newproduct.io'.",
+      "required_tools": [
+        "whois_lookup_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

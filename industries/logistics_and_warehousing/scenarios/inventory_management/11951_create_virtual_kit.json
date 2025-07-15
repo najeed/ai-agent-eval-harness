@@ -1,0 +1,50 @@
+{
+  "scenario_id": "lw-im-11951",
+  "title": "Create a Virtual Kit (Bill of Materials)",
+  "description": "A marketing team wants to sell a new product bundle online. An inventory analyst must create a virtual kit in the system so that when the kit is sold, the system allocates the component inventory.",
+  "use_case": "Inventory Management",
+  "core_function": "Inventory Analysis",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new SKU for the product bundle (the 'parent' item).",
+      "expected_outcome": "A new product SKU is created.",
+      "required_tools": [
+        "create_product_sku"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define a Bill of Materials (BOM) for the new parent SKU, linking it to the component SKUs and their required quantities.",
+      "expected_outcome": "Agent successfully defines the relationship between the parent kit and its children components.",
+      "required_tools": [
+        "define_bill_of_materials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Activate the kit. Now, when an order for the parent SKU is placed, the system will automatically check and reserve inventory for the component SKUs.",
+      "expected_outcome": "The virtual kit is now live and sellable.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

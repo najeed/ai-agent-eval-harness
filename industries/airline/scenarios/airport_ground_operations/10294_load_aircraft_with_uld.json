@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10294",
+  "title": "Load Aircraft with Unit Load Devices (ULDs)",
+  "description": "Ramp agents must load several ULDs (standardized cargo containers) into the hold of a wide-body aircraft.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Ramp & Turnaround Management",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use a cargo loader to lift the ULDs to the height of the aircraft's cargo door.",
+      "expected_outcome": "Agent operates the cargo loader correctly.",
+      "required_tools": [
+        "operate_cargo_loader"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Push the ULDs into the hold and move them into their designated positions using the aircraft's internal power drive units.",
+      "expected_outcome": "Agent correctly positions the ULDs inside the hold.",
+      "required_tools": [
+        "position_uld"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Engage the floor locks to secure the ULDs in place for the flight.",
+      "expected_outcome": "Agent confirms all ULDs are locked and secure.",
+      "required_tools": [
+        "engage_floor_locks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

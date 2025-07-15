@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-om-11260",
+  "title": "Send Advance Ship Notice (ASN)",
+  "description": "After a shipment for a major retail partner has been dispatched, an EDI 856 (Advance Ship Notice) must be sent.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Reporting & Documentation",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system detects that a shipment has been marked as 'Shipped'.",
+      "expected_outcome": "A trigger is fired to initiate the ASN process.",
+      "required_tools": [
+        "monitor_shipment_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system gathers all required data for the ASN, including PO number, item details, quantities, and SSCC codes for each pallet.",
+      "expected_outcome": "All necessary data for the EDI document is compiled.",
+      "required_tools": [
+        "get_asn_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system constructs and sends the EDI 856 document to the trading partner.",
+      "expected_outcome": "The ASN is successfully transmitted to the retail partner.",
+      "required_tools": [
+        "send_edi_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

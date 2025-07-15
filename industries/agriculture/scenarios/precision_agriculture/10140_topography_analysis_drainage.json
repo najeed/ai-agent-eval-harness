@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10140",
+  "title": "Analyze Field Topography for Drainage",
+  "description": "A farmer wants to analyze a high-resolution elevation map of a field to identify areas where water ponds and plan for drainage tile installation.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Analytics & Insights",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the LiDAR-based digital elevation model (DEM) for the field.",
+      "expected_outcome": "Agent retrieves the high-resolution elevation data.",
+      "required_tools": [
+        "get_elevation_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the DEM to identify all depressions and low-lying areas where water is likely to accumulate.",
+      "expected_outcome": "Agent generates a map highlighting all potential ponding areas.",
+      "required_tools": [
+        "analyze_topography_for_ponding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a preliminary layout plan for drainage tile lines to effectively drain the identified problem areas.",
+      "expected_outcome": "Agent creates a map showing a proposed drainage tile layout.",
+      "required_tools": [
+        "generate_drainage_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

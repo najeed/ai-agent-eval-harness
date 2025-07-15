@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-plan-13353",
+  "title": "Advise on Tax Implications of Home Sale",
+  "description": "A couple is selling their primary residence and wants to know if they will owe capital gains tax.",
+  "use_case": "Tax Planning & Advisory",
+  "core_function": "Individual & Family Planning",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the home's cost basis (purchase price + improvements).",
+      "expected_outcome": "Agent accurately calculates the cost basis.",
+      "required_tools": [
+        "determine_cost_basis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the couple meets the ownership and use tests to qualify for the Section 121 exclusion.",
+      "expected_outcome": "Agent confirms the couple has lived in the home as their main residence for at least 2 of the last 5 years.",
+      "required_tools": [
+        "verify_section_121_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the gain on the sale and apply the maximum exclusion ($500,000 for a married couple) to determine if any gain is taxable.",
+      "expected_outcome": "Agent determines the entire gain is excluded from income and no tax is due.",
+      "required_tools": [
+        "calculate_taxable_gain_on_home_sale"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-rd-12599",
+  "title": "Search Literature for a Predictive Biomarker",
+  "description": "A translational scientist is searching for a potential predictive biomarker that could identify patients most likely to respond to a new drug.",
+  "use_case": "Research & Development",
+  "core_function": "Research Data Analysis",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Formulate a search query for literature databases (e.g., PubMed) combining the drug's mechanism of action and the disease indication.",
+      "expected_outcome": "Agent creates a comprehensive search query.",
+      "required_tools": [
+        "define_literature_search_strategy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute the search and screen the results for papers discussing biomarkers.",
+      "expected_outcome": "Agent screens the abstracts and identifies several papers that mention potential genetic biomarkers.",
+      "required_tools": [
+        "execute_literature_search",
+        "screen_abstracts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Synthesize the findings from the relevant papers.",
+      "expected_outcome": "Agent summarizes the evidence, noting that a mutation in the 'GENE-Y' is consistently associated with response in similar drugs.",
+      "required_tools": [
+        "summarize_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summary_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a report recommending that 'GENE-Y' mutation status be explored as a biomarker in the next clinical trial.",
+      "expected_outcome": "Agent creates a report with a clear recommendation for the clinical team.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

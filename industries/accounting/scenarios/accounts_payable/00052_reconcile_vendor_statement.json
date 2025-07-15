@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ap-52",
+  "title": "Reconcile a Vendor Statement",
+  "description": "A key supplier has sent their monthly statement of account. An AP clerk needs to reconcile it with the company's own records to ensure everything is aligned.",
+  "use_case": "Accounts Payable",
+  "core_function": "Vendor Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the vendor statement.",
+      "expected_outcome": "Agent retrieves the document sent by the vendor.",
+      "required_tools": [
+        "get_vendor_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the vendor's account history (invoices and payments) from the company's ERP system for the same period.",
+      "expected_outcome": "Agent pulls the internal record of transactions for the vendor.",
+      "required_tools": [
+        "get_vendor_ledger"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the two documents to identify any discrepancies, such as missing invoices or unapplied payments.",
+      "expected_outcome": "Agent identifies that the vendor has not yet applied a payment that the company made last week.",
+      "required_tools": [
+        "compare_vendor_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Contact the vendor with the payment details to have them apply the payment and resolve the discrepancy.",
+      "expected_outcome": "Agent drafts an email to the vendor with the payment date, amount, and check number.",
+      "required_tools": [
+        "draft_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

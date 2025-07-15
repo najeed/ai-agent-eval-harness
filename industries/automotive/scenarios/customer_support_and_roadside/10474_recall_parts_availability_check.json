@@ -1,0 +1,66 @@
+{
+  "scenario_id": "auto-csra-10474",
+  "title": "Check Parts Availability for a Recall",
+  "description": "A customer who needs a recall service performed wants to ensure the dealership has the necessary parts before they bring their car in.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Recall Management",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific recall the customer is referring to.",
+      "expected_outcome": "Agent identifies the recall for the airbag inflator.",
+      "required_tools": [
+        "check_vin_for_recalls"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the part number for the recall kit.",
+      "expected_outcome": "Agent retrieves the part number for the recall remedy kit.",
+      "required_tools": [
+        "get_recall_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the dealership's parts inventory for the recall kit.",
+      "expected_outcome": "Agent confirms the part is in stock at the dealership.",
+      "required_tools": [
+        "check_parts_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Inform the customer that the part is in stock and proceed with scheduling their appointment.",
+      "expected_outcome": "Agent reassures the customer and books the appointment.",
+      "required_tools": [
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

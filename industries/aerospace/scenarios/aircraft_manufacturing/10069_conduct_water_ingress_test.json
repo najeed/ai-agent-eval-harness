@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10069",
+  "title": "Conduct a Water Ingress Test",
+  "description": "After an aircraft is fully assembled, it must be tested to ensure the fuselage, windows, and doors are properly sealed against rain.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Testing & Certification",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Position the aircraft in a water test booth.",
+      "expected_outcome": "Agent moves the aircraft into the test facility.",
+      "required_tools": [
+        "position_aircraft"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Spray the aircraft with water at specified pressures and angles to simulate heavy rain.",
+      "expected_outcome": "Agent operates the water spray system according to the test procedure.",
+      "required_tools": [
+        "operate_water_test_booth"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inspect the interior of the aircraft for any signs of water leaks.",
+      "expected_outcome": "Agent performs a thorough internal inspection and finds no leaks.",
+      "required_tools": [
+        "inspect_aircraft_interior"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

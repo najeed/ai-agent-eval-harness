@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-scl-10537",
+  "title": "Update Supply Plan for Production Outage",
+  "description": "A major equipment failure will take a production unit offline for 2 weeks. The supply planner must adjust the supply plan to mitigate customer impact.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Demand & Supply Planning",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the unplanned outage notification and its expected duration.",
+      "expected_outcome": "Agent identifies the affected production unit and the 2-week downtime.",
+      "required_tools": [
+        "get_production_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the impact of the lost production on finished product inventory and open sales orders.",
+      "expected_outcome": "Agent identifies 5 customer orders that will be delayed if no action is taken.",
+      "required_tools": [
+        "run_supply_chain_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check for alternative production lines or inventory at other sites and update the supply plan to use these sources to cover the shortfall.",
+      "expected_outcome": "Agent reallocates inventory from another warehouse to cover the most critical orders.",
+      "required_tools": [
+        "check_alternate_sourcing_options",
+        "update_supply_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

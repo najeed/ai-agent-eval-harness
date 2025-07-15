@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10110",
+  "title": "Autonomous Weed Detection and Spot Spraying",
+  "description": "An autonomous drone identifies weeds in a cotton field and needs to generate a spot spraying mission.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Robotics & Automation",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process the drone imagery to identify and map the locations of specific weed species.",
+      "expected_outcome": "Agent generates a map with GPS coordinates for all detected weeds.",
+      "required_tools": [
+        "image_analysis_weed_detection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "identification_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the appropriate herbicide for the identified weeds and crop type.",
+      "expected_outcome": "Agent selects a herbicide that is effective on the weeds and safe for cotton.",
+      "required_tools": [
+        "get_herbicide_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a spot spraying flight plan for a spraying drone, targeting only the weed locations.",
+      "expected_outcome": "Agent generates an optimized flight path and spraying commands.",
+      "required_tools": [
+        "generate_drone_mission_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

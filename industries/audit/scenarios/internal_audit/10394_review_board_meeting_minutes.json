@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10394",
+  "title": "Review Board Meeting Minutes",
+  "description": "As part of planning, an auditor reviews the minutes of Board of Directors meetings to identify strategic risks.",
+  "use_case": "Internal Audit",
+  "core_function": "Audit Planning & Scoping",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the approved minutes for all Board of Directors meetings for the past year.",
+      "expected_outcome": "The auditor has the meeting minutes.",
+      "required_tools": [
+        "get_board_meeting_minutes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the minutes to identify key strategic initiatives, major decisions, and any significant risks or concerns discussed by the board.",
+      "expected_outcome": "The review highlights a board-level concern about cybersecurity risks from a new international expansion.",
+      "required_tools": [
+        "review_meeting_minutes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use this information to propose a new, high-priority audit of the international expansion's cybersecurity readiness to the CAE.",
+      "expected_outcome": "The auditor uses the board-level information to make a timely and relevant audit proposal.",
+      "required_tools": [
+        "propose_new_audit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

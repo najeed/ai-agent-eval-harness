@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-sm-10494",
+  "title": "Schedule a Vehicle Detailing Service",
+  "description": "A customer wants to book a full interior and exterior detailing service for their car.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Appointment & Scheduling",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Present the available detailing packages and their prices (e.g., Basic Wash, Interior Detail, Full Detail).",
+      "expected_outcome": "Agent clearly explains the options.",
+      "required_tools": [
+        "get_detailing_packages"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The customer selects the 'Full Detail' package.",
+      "expected_outcome": "Agent notes the customer's selection.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the detailing appointment, noting that it will take approximately 4 hours.",
+      "expected_outcome": "Agent successfully books the appointment and informs the customer of the duration.",
+      "required_tools": [
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

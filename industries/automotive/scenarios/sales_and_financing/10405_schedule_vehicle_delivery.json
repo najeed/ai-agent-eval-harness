@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sf-10405",
+  "title": "Schedule New Vehicle Delivery",
+  "description": "A customer has completed a purchase and needs to schedule the delivery and handover of their new car.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Delivery & Handover",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm the vehicle is on-site, has passed its pre-delivery inspection (PDI), and is ready for handover.",
+      "expected_outcome": "Agent verifies the vehicle status is 'Ready for Delivery'.",
+      "required_tools": [
+        "check_vehicle_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate with the customer to find a suitable date and time for the delivery appointment.",
+      "expected_outcome": "Agent successfully schedules the delivery appointment in the dealership calendar.",
+      "required_tools": [
+        "schedule_delivery_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the appointment with the customer and remind them to bring necessary items like their driver's license and proof of insurance.",
+      "expected_outcome": "Agent sends a confirmation email with all necessary details.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

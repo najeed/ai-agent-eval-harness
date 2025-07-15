@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10303",
+  "title": "Conduct a Procure-to-Pay Process Walkthrough",
+  "description": "As part of a procurement audit, an auditor conducts a walkthrough of the process with a procurement specialist.",
+  "use_case": "Internal Audit",
+  "core_function": "Fieldwork & Data Collection",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare a list of questions for the walkthrough covering vendor selection, purchase order creation, and invoice approval.",
+      "expected_outcome": "A comprehensive list of interview questions is prepared.",
+      "required_tools": [
+        "create_interview_questionnaire"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the walkthrough, ask the specialist to demonstrate how a new vendor is set up in the system.",
+      "expected_outcome": "Auditor observes the process and identifies that no check is performed for duplicate vendors.",
+      "required_tools": [
+        "log_observation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Request a sample of 25 new vendor setup forms for later testing.",
+      "expected_outcome": "A formal data request is logged and sent to the auditee.",
+      "required_tools": [
+        "create_data_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

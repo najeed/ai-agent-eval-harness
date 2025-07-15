@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-pa-10901",
+  "title": "Schedule a Follow-up Appointment",
+  "description": "A patient is checking out and needs to schedule a 3-month follow-up appointment with their physician.",
+  "use_case": "Patient Administration",
+  "core_function": "Patient Registration & Scheduling",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the patient's record and the provider they need to see.",
+      "expected_outcome": "Agent correctly identifies the patient and the specified physician.",
+      "required_tools": [
+        "get_patient_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "View the provider's schedule to find the next available appointments in approximately three months.",
+      "expected_outcome": "Agent finds and offers the patient several available time slots.",
+      "required_tools": [
+        "view_provider_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the selected appointment and provide the patient with an appointment reminder card.",
+      "expected_outcome": "Agent successfully schedules the appointment and confirms the details with the patient.",
+      "required_tools": [
+        "schedule_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

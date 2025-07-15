@@ -1,0 +1,50 @@
+{
+  "scenario_id": "wholesale-om-13229",
+  "title": "Handle an Overdue Invoice",
+  "description": "A customer's invoice is past its due date. A collections agent needs to contact the customer to secure payment.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Invoicing & Payments",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all invoices that are more than 30 days overdue.",
+      "expected_outcome": "Agent generates a list of delinquent accounts.",
+      "required_tools": [
+        "get_overdue_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact a customer from the list to inquire about the overdue payment.",
+      "expected_outcome": "Agent calls the customer and discusses the overdue invoice.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the payment over the phone or agree to a payment plan.",
+      "expected_outcome": "The customer agrees to pay immediately, and the agent processes the credit card payment.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

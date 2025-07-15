@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-fo-10291",
+  "title": "Handle a Cabin Pressurization Issue",
+  "description": "In-flight, a warning light indicates an issue with the cabin pressurization system. The flight crew must take immediate action.",
+  "use_case": "Flight Operations",
+  "core_function": "In-Flight Services & Safety",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The crew follows the emergency checklist for a pressurization failure.",
+      "expected_outcome": "Pilots follow the correct emergency procedure.",
+      "required_tools": [
+        "get_emergency_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "If the cabin altitude continues to climb, the passenger oxygen masks will deploy automatically. The crew initiates an emergency descent to a safe altitude (typically 10,000 feet).",
+      "expected_outcome": "Pilots perform an emergency descent.",
+      "required_tools": [
+        "perform_emergency_descent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The pilot declares an emergency with ATC and diverts to the nearest suitable airport.",
+      "expected_outcome": "The flight is safely diverted to resolve the technical issue.",
+      "required_tools": [
+        "contact_atc",
+        "authorize_diversion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

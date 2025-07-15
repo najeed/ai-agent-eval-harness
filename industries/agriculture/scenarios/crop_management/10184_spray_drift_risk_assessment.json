@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10184",
+  "title": "Assess Spray Drift Risk",
+  "description": "A farmer is about to spray a field and needs to assess the risk of spray drift to a neighboring sensitive crop.",
+  "use_case": "Crop Management",
+  "core_function": "Pest & Disease Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the real-time wind speed and direction from an on-farm weather station.",
+      "expected_outcome": "Agent retrieves the current weather conditions.",
+      "required_tools": [
+        "get_weather_station_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the location of any sensitive areas, such as an organic vegetable field, downwind from the target field.",
+      "expected_outcome": "Agent identifies a sensitive area within the potential drift zone.",
+      "required_tools": [
+        "get_sensitive_area_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the wind speed and direction, advise the farmer to either wait for calmer conditions or use a drift-reducing nozzle and maintain a larger buffer zone.",
+      "expected_outcome": "Agent provides a clear recommendation to mitigate the drift risk.",
+      "required_tools": [
+        "get_pesticide_label_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

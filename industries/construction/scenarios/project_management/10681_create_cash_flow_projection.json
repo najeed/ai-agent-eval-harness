@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-pm-10681",
+  "title": "Create a Project Cash Flow Projection",
+  "description": "A PM needs to create a cash flow projection to show the expected timing of expenses and client payments throughout the project.",
+  "use_case": "Project Management",
+  "core_function": "Budgeting & Cost Control",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the cost-loaded project schedule, which shows the expected spending over time.",
+      "expected_outcome": "The cost-loaded schedule is retrieved.",
+      "required_tools": [
+        "get_project_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the client payment schedule from the prime contract.",
+      "expected_outcome": "The schedule of client payments is retrieved.",
+      "required_tools": [
+        "get_contract_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a cash flow curve by plotting the cumulative expenses against the cumulative income over the project timeline.",
+      "expected_outcome": "A cash flow projection graph is created, highlighting periods of negative cash flow.",
+      "required_tools": [
+        "generate_cash_flow_projection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

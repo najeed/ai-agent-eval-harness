@@ -1,0 +1,55 @@
+{
+  "scenario_id": "airline-fo-10204",
+  "title": "Create a Flight Plan",
+  "description": "A flight dispatcher needs to create the operational flight plan for a flight from London (LHR) to Dubai (DXB).",
+  "use_case": "Flight Operations",
+  "core_function": "Flight Planning & Dispatch",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the most efficient route, considering current weather, winds aloft, and any restricted airspace.",
+      "expected_outcome": "Agent selects an optimal route for the flight.",
+      "required_tools": [
+        "get_weather_data",
+        "get_airspace_restrictions",
+        "select_flight_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the required fuel load, including trip fuel, contingency fuel, and fuel for a designated alternate airport.",
+      "expected_outcome": "Agent accurately calculates the total fuel needed.",
+      "required_tools": [
+        "calculate_fuel_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the final flight plan document and file it with air traffic control (ATC).",
+      "expected_outcome": "Agent creates the official flight plan and successfully files it with ATC.",
+      "required_tools": [
+        "generate_flight_plan",
+        "file_with_atc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10544",
+  "title": "Manage Retain Sample",
+  "description": "A batch of finished product has been produced, and a retain sample must be logged and stored in the archive.",
+  "use_case": "R&D and Quality",
+  "core_function": "Sample Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new retain sample record for the finished product batch.",
+      "expected_outcome": "Agent successfully creates a new sample record linked to the batch number.",
+      "required_tools": [
+        "create_retains_sample_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a unique barcode label for the retain sample container.",
+      "expected_outcome": "Agent prints a label with a unique sample ID.",
+      "required_tools": [
+        "generate_sample_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Scan the sample's barcode and the barcode of a location in the retain archive to log its storage position.",
+      "expected_outcome": "Agent successfully updates the sample's location in the LIMS to 'Archive Shelf C-5'.",
+      "required_tools": [
+        "update_sample_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

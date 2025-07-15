@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-pm-10701",
+  "title": "Conduct a Project Lessons Learned Meeting",
+  "description": "After a project is complete, the PM holds a 'lessons learned' meeting with the team to identify successes and failures to improve future projects.",
+  "use_case": "Project Management",
+  "core_function": "Risk & Issue Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule a lessons learned meeting with the key project team members.",
+      "expected_outcome": "A meeting is scheduled.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the meeting, document what went well and what could be improved.",
+      "expected_outcome": "A list of successes and areas for improvement is documented.",
+      "required_tools": [
+        "log_meeting_minutes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Archive the lessons learned document in the company's knowledge base for future reference.",
+      "expected_outcome": "The document is successfully archived and tagged for future projects.",
+      "required_tools": [
+        "upload_to_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

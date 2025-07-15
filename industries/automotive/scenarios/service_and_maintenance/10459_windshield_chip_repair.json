@@ -1,0 +1,48 @@
+{
+  "scenario_id": "auto-sm-10459",
+  "title": "Schedule Windshield Chip Repair",
+  "description": "A customer has a small chip in their windshield and wants to know if it can be repaired.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Appointment & Scheduling",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the customer about the size and location of the chip to determine if it's repairable (e.g., smaller than a quarter, not in the driver's line of sight).",
+      "expected_outcome": "Agent determines the chip is likely repairable based on the customer's description.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if the customer's auto insurance covers glass repair.",
+      "expected_outcome": "Agent advises the customer that many insurance policies cover chip repair with no deductible.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule an appointment with the dealership's glass repair specialist.",
+      "expected_outcome": "Agent successfully books the repair appointment.",
+      "required_tools": [
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

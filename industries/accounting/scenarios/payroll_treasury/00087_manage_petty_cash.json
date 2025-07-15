@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-pt-87",
+  "title": "Manage a Petty Cash Fund",
+  "description": "An office manager needs to be reimbursed for the petty cash they spent during the month.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Cash Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the petty cash reimbursement request and all supporting receipts from the office manager.",
+      "expected_outcome": "Agent gets the request form and receipts.",
+      "required_tools": [
+        "get_petty_cash_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the receipts and ensure they are for valid business expenses.",
+      "expected_outcome": "Agent validates all the receipts.",
+      "required_tools": [
+        "review_receipts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a journal entry to record the expenses, debiting the various expense accounts (e.g., office supplies, postage) and crediting 'Cash'.",
+      "expected_outcome": "Agent creates the journal entry to record the expenses.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Issue a check to the office manager to replenish the petty cash fund.",
+      "expected_outcome": "Agent processes a check to bring the fund back to its original amount.",
+      "required_tools": [
+        "generate_physical_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

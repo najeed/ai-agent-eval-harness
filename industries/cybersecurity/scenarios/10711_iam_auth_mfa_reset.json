@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-iam-10711",
+  "title": "MFA Token Reset",
+  "description": "A user who lost their phone needs their multi-factor authentication (MFA) token reset so they can log in.",
+  "use_case": "Identity & Access Management (IAM)",
+  "core_function": "Authentication & Authorization",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the user's request for an MFA reset.",
+      "expected_outcome": "Analyst acknowledges the user's request.",
+      "required_tools": [
+        "get_user_support_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the user's identity through a series of challenge questions or by video call with their manager.",
+      "expected_outcome": "Analyst successfully and securely verifies the user's identity before proceeding.",
+      "required_tools": [
+        "verify_user_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reset the user's MFA token in the IAM system and guide them through enrolling their new device.",
+      "expected_outcome": "Analyst successfully resets the token and the user is able to log in again.",
+      "required_tools": [
+        "reset_mfa_token"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

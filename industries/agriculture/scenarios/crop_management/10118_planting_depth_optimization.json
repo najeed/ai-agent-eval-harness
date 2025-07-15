@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10118",
+  "title": "Optimize Corn Planting Depth",
+  "description": "A farmer wants to know the optimal planting depth for their corn based on soil moisture and temperature.",
+  "use_case": "Crop Management",
+  "core_function": "Planting & Seeding",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the soil moisture and temperature readings at various depths (1, 2, 3 inches).",
+      "expected_outcome": "Agent gets the current soil condition data.",
+      "required_tools": [
+        "get_soil_condition_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the short-term weather forecast to assess near-term planting conditions.",
+      "expected_outcome": "Agent retrieves the 3-day forecast.",
+      "required_tools": [
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend an optimal planting depth to ensure the seed is placed into adequate moisture but is warm enough for germination.",
+      "expected_outcome": "Agent recommends planting at a depth of 2 inches.",
+      "required_tools": [
+        "recommend_planting_depth"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

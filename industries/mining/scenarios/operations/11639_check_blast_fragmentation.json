@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-ops-11639",
+  "title": "Check Blast Fragmentation",
+  "description": "After a blast, an engineer uses a photo-analysis system to check the rock fragmentation to ensure it is suitable for the shovel and crusher.",
+  "use_case": "Mine Operations",
+  "core_function": "Drilling & Blasting",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Take several photos of the muckpile (the pile of blasted rock) from different angles.",
+      "expected_outcome": "High-resolution images of the muckpile are captured.",
+      "required_tools": [
+        "capture_muckpile_images"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the images to a fragmentation analysis software.",
+      "expected_outcome": "The images are successfully uploaded for processing.",
+      "required_tools": [
+        "upload_images_for_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The software analyzes the images and generates a particle size distribution curve, showing the percentage of fine and coarse rock.",
+      "expected_outcome": "A report is generated showing the P80 (80% passing) size is 30cm, which meets the target for efficient digging.",
+      "required_tools": [
+        "run_fragmentation_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-fc-46",
+  "title": "Review and Post a Manual Journal Entry",
+  "description": "A staff accountant has prepared a manual journal entry. A senior accountant needs to review it for accuracy and post it.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "General Ledger & Journal Entries",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the unposted journal entry from the system.",
+      "expected_outcome": "Agent opens the journal entry prepared by the staff accountant.",
+      "required_tools": [
+        "get_unposted_journal_entries"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the journal entry for correctness, ensuring it has proper supporting documentation, the debits and credits are correct, and the amounts are accurate.",
+      "expected_outcome": "Agent reviews the entry and its support and confirms it is correct.",
+      "required_tools": [
+        "review_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the journal entry to the general ledger.",
+      "expected_outcome": "Agent successfully posts the entry.",
+      "required_tools": [
+        "post_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

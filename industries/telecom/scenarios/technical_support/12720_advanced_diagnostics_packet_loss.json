@@ -1,0 +1,66 @@
+{
+  "scenario_id": "telecom-ts-12720",
+  "title": "Advanced Diagnostics - Intermittent Packet Loss",
+  "description": "A customer with a business account reports intermittent packet loss affecting their VoIP service.",
+  "use_case": "Technical Support",
+  "core_function": "Advanced Diagnostics",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the business customer and their service details.",
+      "expected_outcome": "Agent correctly identifies the account and service.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate a 15-minute remote line monitoring session to capture real-time quality metrics.",
+      "expected_outcome": "Agent successfully starts the line monitoring tool.",
+      "required_tools": [
+        "run_extended_line_monitor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the monitoring results to confirm packet loss and identify the network segment where it originates.",
+      "expected_outcome": "Agent analyzes the report and determines the packet loss is occurring at a specific network node.",
+      "required_tools": [
+        "analyze_line_monitor_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a high-priority trouble ticket for the network engineering team with the monitoring logs attached.",
+      "expected_outcome": "Agent creates a detailed ticket and assigns it to the correct engineering queue.",
+      "required_tools": [
+        "create_trouble_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "scenario_id": "auto-csra-10458",
+  "title": "Customer Complaint About Salesperson",
+  "description": "A customer calls to complain that they felt pressured and misled by a salesperson during their visit.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Customer Feedback & Resolution",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Listen to the customer's full complaint without interruption and express empathy.",
+      "expected_outcome": "Agent allows the customer to voice their concerns fully.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather details about the incident, including the date of the visit and the salesperson's name.",
+      "expected_outcome": "Agent collects all relevant details of the incident.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apologize on behalf of the dealership, log the complaint, and assure the customer that the sales manager will investigate and contact them directly.",
+      "expected_outcome": "Agent successfully de-escalates the situation and creates a formal complaint ticket for the manager.",
+      "required_tools": [
+        "log_customer_feedback",
+        "create_escalation_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

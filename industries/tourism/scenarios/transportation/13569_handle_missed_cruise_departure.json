@@ -1,0 +1,51 @@
+{
+  "scenario_id": "tourism-tr-13569",
+  "title": "Handle Missed Cruise Departure",
+  "description": "A passenger missed their cruise ship's departure. They need to know their options for joining the cruise at the next port.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Disruption Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's cruise booking and the ship's itinerary.",
+      "expected_outcome": "Agent identifies the passenger and the ship's next port of call.",
+      "required_tools": [
+        "get_cruise_booking",
+        "get_ship_itinerary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Advise the passenger on options for traveling to the next port (e.g., booking a flight).",
+      "expected_outcome": "Agent provides helpful advice on how to rejoin the cruise, clarifying that the travel is at the passenger's own expense.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the ship's guest services of the passenger's intention to join at the next port.",
+      "expected_outcome": "Agent successfully sends a notification to the ship.",
+      "required_tools": [
+        "notify_ship_personnel"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

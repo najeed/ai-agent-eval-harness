@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10389",
+  "title": "Audit Website ADA Compliance",
+  "description": "A compliance auditor tests the company's public website for compliance with the Americans with Disabilities Act (ADA) accessibility standards.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Policy & Procedure Adherence",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use an automated accessibility scanning tool to scan the website for common issues.",
+      "expected_outcome": "The tool identifies multiple issues, such as low-contrast text and missing alt-text for images.",
+      "required_tools": [
+        "run_accessibility_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Manually test the website's keyboard navigation to ensure all interactive elements can be accessed without a mouse.",
+      "expected_outcome": "The auditor finds that the main navigation menu cannot be operated using only a keyboard.",
+      "required_tools": [
+        "perform_manual_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the findings and recommend that the web development team remediate the issues to avoid potential legal action.",
+      "expected_outcome": "A report is created detailing the accessibility issues.",
+      "required_tools": [
+        "generate_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

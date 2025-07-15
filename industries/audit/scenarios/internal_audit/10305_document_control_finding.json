@@ -1,0 +1,66 @@
+{
+  "scenario_id": "audit-ia-10305",
+  "title": "Document a Control Weakness Finding",
+  "description": "Following testing, an auditor must document a finding related to inadequate segregation of duties.",
+  "use_case": "Internal Audit",
+  "core_function": "Workpaper & Finding Documentation",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft the 'Condition' part of the finding, stating that the same employee can both create a new vendor and approve payments to that vendor.",
+      "expected_outcome": "The 'what is' part of the finding is clearly written.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the 'Criteria' part, citing the company's policy on segregation of duties.",
+      "expected_outcome": "The 'what should be' part of the finding is correctly cited.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft the 'Cause' and 'Effect' (Risk), explaining that this weakness could lead to fraudulent payments.",
+      "expected_outcome": "The root cause and potential impact are clearly articulated.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Link the finding to the supporting workpaper that contains the evidence from testing.",
+      "expected_outcome": "The finding is properly cross-referenced to the evidence.",
+      "required_tools": [
+        "link_to_workpaper"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

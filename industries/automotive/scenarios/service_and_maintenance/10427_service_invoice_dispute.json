@@ -1,0 +1,53 @@
+{
+  "scenario_id": "auto-sm-10427",
+  "title": "Service Invoice Charge Dispute",
+  "description": "A customer is disputing a charge on their service invoice, claiming they did not approve a specific line item (e.g., an engine air filter replacement).",
+  "use_case": "Service & Maintenance",
+  "core_function": "Billing & Warranty Claims",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's final, signed repair order and the detailed invoice.",
+      "expected_outcome": "Agent pulls up all documentation for the specified service visit.",
+      "required_tools": [
+        "get_repair_order_details",
+        "get_service_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the technician's notes and any recorded communication where the additional work was recommended and approved.",
+      "expected_outcome": "Agent finds a note 'Customer approved air filter replacement via phone'.",
+      "required_tools": [
+        "get_customer_communication_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the findings to the customer. If no proof of approval exists, offer to credit the disputed amount as a goodwill gesture.",
+      "expected_outcome": "Agent explains the note, but as there is no recording, offers to waive the charge to maintain customer satisfaction.",
+      "required_tools": [
+        "issue_goodwill_voucher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

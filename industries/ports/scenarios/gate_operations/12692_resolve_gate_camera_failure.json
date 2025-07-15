@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-go-12692",
+  "title": "Resolve Gate Camera Failure",
+  "description": "The OCR camera that reads container numbers at a gate lane fails. A technician must troubleshoot it.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Asset Management & Maintenance",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a high-priority ticket that the OCR camera at Lane 2 is not reading containers.",
+      "expected_outcome": "Technician is assigned a ticket for the camera failure.",
+      "required_tools": [
+        "get_it_ticket_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Remotely connect to the camera's diagnostic software to check its status.",
+      "expected_outcome": "The technician logs in and sees a 'No Network Connection' error.",
+      "required_tools": [
+        "run_remote_diagnostics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Go to the physical location and find that the camera's network cable is unplugged. Plug it back in and verify the system is working.",
+      "expected_outcome": "The technician resolves the physical issue, reboots the camera, and confirms with the gate clerk that it is now working correctly.",
+      "required_tools": [
+        "update_it_ticket_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

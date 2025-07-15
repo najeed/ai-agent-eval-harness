@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-sf-10457",
+  "title": "Home Delivery and Feature Setup",
+  "description": "A customer has opted for home delivery of their new EV. A delivery specialist must transport the vehicle and walk the customer through its key features.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Delivery & Handover",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Transport the new vehicle to the customer's home at the scheduled time.",
+      "expected_outcome": "The vehicle is delivered safely and on time.",
+      "required_tools": [
+        "transport_vehicle"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Help the customer set up their mobile app and pair it with the vehicle.",
+      "expected_outcome": "The customer's phone is successfully paired, and they are logged into the app.",
+      "required_tools": [
+        "provide_pairing_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a personalized tutorial on key EV features, such as charging, regenerative braking, and one-pedal driving.",
+      "expected_outcome": "The customer understands and is comfortable with the basic operation of their new EV.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

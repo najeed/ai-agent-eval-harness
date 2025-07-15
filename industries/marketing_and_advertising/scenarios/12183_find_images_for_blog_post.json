@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-cc-12183",
+  "title": "Find Images for a Blog Post",
+  "description": "A content manager needs to find 2-3 licensed stock photos to include in a new blog post.",
+  "use_case": "Content & Creative Development",
+  "core_function": "Creative Asset Development",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the main theme and keywords of the blog post.",
+      "expected_outcome": "Agent understands the visual style needed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search a stock photography website for relevant images using the identified keywords.",
+      "expected_outcome": "Agent generates a list of potential images.",
+      "required_tools": [
+        "stock_photo_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select and download 2-3 high-quality, on-brand images.",
+      "expected_outcome": "Agent acquires the necessary visual assets for the blog post.",
+      "required_tools": [
+        "stock_photo_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

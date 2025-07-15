@@ -1,0 +1,54 @@
+{
+  "scenario_id": "audit-it-10319",
+  "title": "Review IT Change Management Process",
+  "description": "An IT auditor reviews the process for making changes to production systems.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a sample of 20 recent changes from the change management system log.",
+      "expected_outcome": "A sample of changes is selected for testing.",
+      "required_tools": [
+        "get_change_management_log",
+        "select_random_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each change, verify that it was tested and approved in a formal change advisory board (CAB) meeting before being deployed.",
+      "expected_outcome": "Auditor finds one emergency change that bypassed the standard approval process.",
+      "required_tools": [
+        "get_change_request_ticket",
+        "get_meeting_minutes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the documentation for the emergency change to ensure it was approved by executive management, as per policy.",
+      "expected_outcome": "Auditor confirms the emergency change had the required VP-level approval.",
+      "required_tools": [
+        "get_change_request_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

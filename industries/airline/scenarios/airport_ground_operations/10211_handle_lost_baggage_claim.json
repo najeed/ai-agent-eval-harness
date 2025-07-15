@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10211",
+  "title": "Handle a Lost Baggage Claim",
+  "description": "A passenger has arrived at their destination, but their checked bag did not. An agent at the baggage service office must create a claim.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Baggage Handling & Resolution",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the passenger's baggage claim receipt and flight details.",
+      "expected_outcome": "Agent collects the necessary information.",
+      "required_tools": [
+        "get_passenger_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the baggage tracking system to trace the bag's last known location.",
+      "expected_outcome": "Agent finds the bag was last scanned at the departure airport but not loaded onto the connecting flight.",
+      "required_tools": [
+        "trace_bag"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new mishandled baggage report, provide the passenger with a file reference number, and explain the process for delivery.",
+      "expected_outcome": "Agent creates the report and clearly explains the next steps to the passenger.",
+      "required_tools": [
+        "create_mishandled_bag_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

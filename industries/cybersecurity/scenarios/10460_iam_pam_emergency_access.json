@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-iam-10460",
+  "title": "Emergency 'Break Glass' Access",
+  "description": "A critical system is down, and the normal administrator is unavailable. A different administrator needs emergency 'break glass' access to fix it.",
+  "use_case": "Identity & Access Management (IAM)",
+  "core_function": "Privileged Access Management (PAM)",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the emergency break-glass access request, including justification for the emergency.",
+      "expected_outcome": "Analyst receives the high-priority request.",
+      "required_tools": [
+        "get_emergency_access_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_processing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Manually verify the request with a second manager to confirm the emergency.",
+      "expected_outcome": "Analyst follows the two-person approval process for emergency access.",
+      "required_tools": [
+        "verify_request_with_manager"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually grant the administrator temporary access to the system and ensure their session is being recorded.",
+      "expected_outcome": "Analyst successfully grants the temporary, monitored access needed to resolve the emergency.",
+      "required_tools": [
+        "grant_temporary_privileged_access",
+        "enable_session_recording"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

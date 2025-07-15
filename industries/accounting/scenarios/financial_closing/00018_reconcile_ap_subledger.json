@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ac-fc-18",
+  "title": "Reconcile AP Sub-Ledger to General Ledger",
+  "description": "At month-end, an accountant needs to ensure the total of the Accounts Payable aging report ties to the AP account balance in the general ledger.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Account Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run the Accounts Payable aging report as of the last day of the month.",
+      "expected_outcome": "Agent generates the report showing a total AP balance of $550,123.",
+      "required_tools": [
+        "run_ap_aging_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the month-end balance for the Accounts Payable account from the general ledger.",
+      "expected_outcome": "Agent finds the GL balance is $550,123.",
+      "required_tools": [
+        "get_gl_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the two totals and confirm that they match.",
+      "expected_outcome": "Agent confirms the sub-ledger reconciles to the general ledger.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

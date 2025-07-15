@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-cm-12508",
+  "title": "Review Promotional Material for Compliance",
+  "description": "An agent must facilitate the review of a new sales aid for a drug product, ensuring it gets approval from the medical, legal, and regulatory departments.",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Promotional Material Review",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Upload the draft sales aid to the promotional review system.",
+      "expected_outcome": "Agent successfully uploads the document and initiates a new review cycle.",
+      "required_tools": [
+        "upload_document_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Route the document to the predefined list of reviewers (Medical, Legal, Regulatory).",
+      "expected_outcome": "Agent correctly assigns the review task to all required stakeholders.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Collate the feedback from all reviewers.",
+      "expected_outcome": "Agent consolidates comments, noting that Legal requires a change to a claim and Medical requests a new reference.",
+      "required_tools": [
+        "collate_feedback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Return the document to the marketing team with the consolidated feedback for revision.",
+      "expected_outcome": "Agent sends the document back for edits with clear instructions.",
+      "required_tools": [
+        "return_document_for_revision"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

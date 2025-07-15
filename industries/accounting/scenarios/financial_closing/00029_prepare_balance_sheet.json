@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-fc-29",
+  "title": "Prepare a Monthly Balance Sheet",
+  "description": "The controller needs a draft of the monthly balance sheet for the board package.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Financial Reporting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the final month-end balances for all asset, liability, and equity accounts from the trial balance.",
+      "expected_outcome": "Agent successfully retrieves the required GL balances.",
+      "required_tools": [
+        "get_trial_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the balance sheet, ensuring that total assets equal total liabilities plus equity.",
+      "expected_outcome": "Agent produces a formatted and balanced balance sheet.",
+      "required_tools": [
+        "generate_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a comparative balance sheet that shows the current month's balances against the prior month's balances.",
+      "expected_outcome": "Agent creates the comparative report and calculates the variance.",
+      "required_tools": [
+        "generate_comparative_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

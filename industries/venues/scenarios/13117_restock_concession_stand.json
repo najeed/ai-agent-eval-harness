@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-fb-13117",
+  "title": "Restock a Concession Stand",
+  "description": "A concession stand manager reports they are running low on hot dog buns during a sold-out event.",
+  "use_case": "Food & Beverage (Concessions)",
+  "core_function": "Inventory Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the request for more hot dog buns from the concession stand.",
+      "expected_outcome": "Agent logs the request from Stand 14.",
+      "required_tools": [
+        "log_inventory_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the inventory level of hot dog buns in the central storeroom.",
+      "expected_outcome": "Agent confirms there are sufficient buns in stock.",
+      "required_tools": [
+        "check_central_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a runner to deliver two cases of buns from the storeroom to the concession stand.",
+      "expected_outcome": "Agent creates and assigns a delivery task to an available runner.",
+      "required_tools": [
+        "dispatch_runner"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

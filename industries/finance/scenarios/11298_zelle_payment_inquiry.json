@@ -1,0 +1,48 @@
+{
+  "scenario_id": "finance-rb-11298",
+  "title": "Zelle / P2P Payment Inquiry",
+  "description": "A customer sent a Zelle payment to a friend, but the friend claims they never received it.",
+  "use_case": "Retail Banking",
+  "core_function": "Payments & Transfers",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the specific Zelle transaction.",
+      "expected_outcome": "Agent locates the transaction in the customer's history.",
+      "required_tools": [
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the recipient's contact information (phone number or email) used for the payment.",
+      "expected_outcome": "Agent confirms the phone number with the customer, who realizes they entered one digit incorrectly.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain that Zelle payments are like cash and cannot be canceled if the recipient's contact is valid, and advise the customer on next steps.",
+      "expected_outcome": "Agent clearly explains the bank cannot retrieve the funds and advises the customer to contact the unintended recipient if possible.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

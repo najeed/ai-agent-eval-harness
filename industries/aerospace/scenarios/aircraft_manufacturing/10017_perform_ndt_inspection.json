@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10017",
+  "title": "Perform Non-Destructive Testing (NDT)",
+  "description": "An NDT technician must inspect a critical composite fuselage panel for internal defects using ultrasonic equipment.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Assembly & Production",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calibrate the ultrasonic inspection equipment according to the established procedure.",
+      "expected_outcome": "Agent successfully calibrates the equipment.",
+      "required_tools": [
+        "calibrate_ndt_equipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan the entire surface of the fuselage panel with the ultrasonic probe.",
+      "expected_outcome": "Agent completes the scan of the designated area.",
+      "required_tools": [
+        "perform_ultrasonic_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the scan data for any anomalies that could indicate delamination or voids, and generate a report of the findings.",
+      "expected_outcome": "Agent analyzes the data, finds no defects, and generates a 'pass' report.",
+      "required_tools": [
+        "analyze_ndt_data",
+        "generate_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

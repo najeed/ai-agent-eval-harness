@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tourism-ha-12817",
+  "title": "Enroll in Guest Loyalty Program",
+  "description": "A new customer wants to enroll in the hotel's loyalty program.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Loyalty & Guest Relations",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the benefits of the loyalty program (e.g., points, free nights, upgrades).",
+      "expected_outcome": "Agent clearly communicates the program's value proposition.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the customer's personal information to create a new loyalty profile.",
+      "expected_outcome": "Agent gathers all necessary details for enrollment.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the new loyalty account and provide the customer with their member number.",
+      "expected_outcome": "Agent successfully creates the account and provides the member ID.",
+      "required_tools": [
+        "create_loyalty_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

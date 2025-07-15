@@ -1,0 +1,48 @@
+{
+  "scenario_id": "education-as-11099",
+  "title": "Check Tutoring Center Hours",
+  "description": "A student wants to know the operating hours for the campus writing center.",
+  "use_case": "Academic Support",
+  "core_function": "Tutoring & Academic Advising",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific tutoring center the student is asking about.",
+      "expected_outcome": "Agent confirms the student means the 'Writing Center'.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the hours for the Writing Center on the university website or internal knowledge base.",
+      "expected_outcome": "Agent finds the hours are M-F, 9 AM - 5 PM.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Communicate the hours to the student and ask if they need to schedule an appointment.",
+      "expected_outcome": "Agent provides the information and offers further assistance.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

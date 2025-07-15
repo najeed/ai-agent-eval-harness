@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11404",
+  "title": "Process Subcontractor Progress Invoice",
+  "description": "A subcontractor has submitted an invoice for work completed last month. The project controls team must verify the progress claimed before approving payment.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Cost Engineering & Control",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the subcontractor's invoice and the associated contract.",
+      "expected_outcome": "Agent pulls up the invoice and the subcontract agreement.",
+      "required_tools": [
+        "get_supplier_invoice",
+        "get_contract_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the progress claimed on the invoice against the daily progress reports submitted by the field engineer.",
+      "expected_outcome": "Agent verifies that the claimed work (e.g., '1000 cubic meters of concrete poured') matches the field reports.",
+      "required_tools": [
+        "get_daily_progress_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the invoice for the verified amount and route it to accounts payable for payment.",
+      "expected_outcome": "Agent approves the invoice, which is then sent to the AP department.",
+      "required_tools": [
+        "approve_invoice_for_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

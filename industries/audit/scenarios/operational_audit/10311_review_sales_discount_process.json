@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10311",
+  "title": "Review Sales Discounting Process",
+  "description": "An operational auditor analyzes the process for applying discounts to sales orders to identify potential revenue leakage.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Process Efficiency Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze sales data for the past year to identify which sales reps are applying the highest average discounts.",
+      "expected_outcome": "Auditor identifies two reps who are outliers with significantly higher discount rates.",
+      "required_tools": [
+        "analyze_sales_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the discount approval process and find that discounts under 15% do not require manager approval.",
+      "expected_outcome": "Auditor identifies a potential control weakness in the approval threshold.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend a lower approval threshold and additional training for the sales team on the discount policy.",
+      "expected_outcome": "The auditor proposes a concrete recommendation to improve the process.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

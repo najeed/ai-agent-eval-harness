@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10191",
+  "title": "Prepare for an Animal Welfare Audit",
+  "description": "A pork producer is preparing for a third-party animal welfare audit and needs to ensure all documentation is in order.",
+  "use_case": "Livestock Management",
+  "core_function": "Health & Welfare",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the checklist for the specific animal welfare audit standard (e.g., PQA Plus).",
+      "expected_outcome": "Agent gets the official audit checklist.",
+      "required_tools": [
+        "get_audit_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each item on the checklist, retrieve the corresponding farm records, such as treatment records, training logs, and SOPs.",
+      "expected_outcome": "Agent gathers all the required documentation from the farm's records.",
+      "required_tools": [
+        "get_farm_records_for_audit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile all the documents into an organized package for the auditor and flag any areas where documentation is missing.",
+      "expected_outcome": "Agent creates a complete package and identifies one missing training log.",
+      "required_tools": [
+        "compile_document_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

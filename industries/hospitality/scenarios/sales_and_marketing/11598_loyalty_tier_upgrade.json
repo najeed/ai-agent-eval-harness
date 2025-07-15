@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-sm-11598",
+  "title": "Loyalty Member Tier Upgrade",
+  "description": "A guest's current stay qualifies them to be upgraded to the next tier in the loyalty program.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Loyalty Program Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "During the night audit, the system automatically identifies members who have met the criteria for a tier upgrade.",
+      "expected_outcome": "The system flags a guest for upgrade.",
+      "required_tools": [
+        "lms_run_tier_evaluation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically updates the member's status to the new, higher tier.",
+      "expected_outcome": "The guest's profile is updated to the 'Gold' tier.",
+      "required_tools": [
+        "lms_update_member_tier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system sends an automated congratulations email to the guest, outlining their new benefits.",
+      "expected_outcome": "A notification email is sent to the guest.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

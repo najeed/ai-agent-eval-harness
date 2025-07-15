@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sl-12027",
+  "title": "Generate a Packing Slip",
+  "description": "A shipping clerk has picked all items for a customer order and needs to generate the packing slip.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Outbound & Shipping",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the sales order that has been picked.",
+      "expected_outcome": "Agent selects the correct sales order from the list of picked orders.",
+      "required_tools": [
+        "find_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all items and quantities on the order have been picked.",
+      "expected_outcome": "Agent confirms that the picked quantities match the order quantities.",
+      "required_tools": [
+        "verify_picked_items"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate and print the official packing slip for the shipment.",
+      "expected_outcome": "Agent successfully generates and prints the document.",
+      "required_tools": [
+        "generate_packing_slip"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

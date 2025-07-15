@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-ms-10465",
+  "title": "Andon Cord Pull by Assembly Worker",
+  "description": "An assembly line worker pulls the Andon cord to stop the line because they've noticed a misaligned part on a vehicle.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Quality Assurance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the Andon alert from the specific workstation.",
+      "expected_outcome": "Agent sees the alert from workstation 'D-37'.",
+      "required_tools": [
+        "get_production_line_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately dispatch the workstation's team lead to investigate the issue.",
+      "expected_outcome": "Agent notifies the team lead to go to the workstation.",
+      "required_tools": [
+        "dispatch_team_lead"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the issue is resolved (e.g., part realigned), authorize the line to be restarted.",
+      "expected_outcome": "The team lead confirms the fix, and the agent restarts the line in the system.",
+      "required_tools": [
+        "restart_assembly_line_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

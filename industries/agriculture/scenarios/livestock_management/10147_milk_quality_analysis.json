@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10147",
+  "title": "Analyze Bulk Tank Milk Quality",
+  "description": "A dairy co-op has flagged a farmer's milk shipment for a high somatic cell count (SCC), indicating a potential herd health issue.",
+  "use_case": "Livestock Management",
+  "core_function": "Milking & Production",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the individual SCC data for all cows from the last milking.",
+      "expected_outcome": "Agent retrieves the SCC data for every cow in the herd.",
+      "required_tools": [
+        "get_milking_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the top 10 cows with the highest SCC that are contributing most to the bulk tank average.",
+      "expected_outcome": "Agent generates a list of the 10 problem cows.",
+      "required_tools": [
+        "identify_high_scc_cows"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a task for the farm manager to check the identified cows for mastitis and potentially divert their milk from the bulk tank.",
+      "expected_outcome": "Agent creates an actionable task to address the issue.",
+      "required_tools": [
+        "create_farm_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

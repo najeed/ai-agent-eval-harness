@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-grc-10778",
+  "title": "Policy Violation Investigation",
+  "description": "A DLP tool flags an employee for attempting to email a sensitive document to their personal email address, violating policy. A GRC analyst must investigate.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Security Policy Management",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the DLP alert, confirming the user, the document classification, and the recipient email address.",
+      "expected_outcome": "Analyst confirms a policy violation occurred.",
+      "required_tools": [
+        "get_dlp_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Interview the employee and their manager to understand the reason for the policy violation.",
+      "expected_outcome": "The employee states they were trying to work from home and were unaware of the policy.",
+      "required_tools": [
+        "conduct_interview"
+      ],
+      "success_criteria": [
+        {
+          "metric": "investigation_thoroughness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the violation, confirm the employee has been re-trained on the correct policy, and close the case.",
+      "expected_outcome": "Analyst follows the standard procedure for handling a minor, unintentional policy violation.",
+      "required_tools": [
+        "document_policy_violation",
+        "assign_remedial_training"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

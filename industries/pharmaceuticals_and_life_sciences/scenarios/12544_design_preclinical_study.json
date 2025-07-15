@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-rd-12544",
+  "title": "Design a Preclinical Animal Study",
+  "description": "A research scientist needs to design a protocol for a new preclinical toxicology study in rats.",
+  "use_case": "Research & Development",
+  "core_function": "Preclinical Research",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the study objectives, such as determining the maximum tolerated dose (MTD).",
+      "expected_outcome": "Agent clearly states the primary objective of the study.",
+      "required_tools": [
+        "define_study_objectives"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the animal model, dose levels, and duration of the study.",
+      "expected_outcome": "Agent designs a study with 4 dose groups (including control) to be run for 28 days.",
+      "required_tools": [
+        "design_study_parameters"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Define the study endpoints, including clinical observations, body weights, and terminal histopathology.",
+      "expected_outcome": "Agent creates a comprehensive list of all data points to be collected.",
+      "required_tools": [
+        "define_study_endpoints"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Draft the study protocol document and submit it for review by the Institutional Animal Care and Use Committee (IACUC).",
+      "expected_outcome": "Agent writes the full protocol and submits it for ethical review.",
+      "required_tools": [
+        "draft_protocol",
+        "submit_for_iacuc_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

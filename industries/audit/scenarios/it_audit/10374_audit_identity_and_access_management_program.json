@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10374",
+  "title": "Audit Identity and Access Management (IAM) Program",
+  "description": "An IT auditor performs a high-level review of the entire IAM program.",
+  "use_case": "IT Audit",
+  "core_function": "System Development & Implementation Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that a formal IAM policy exists and has been approved by management.",
+      "expected_outcome": "Auditor confirms the existence of an approved policy.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if a centralized IAM solution is in use, or if access is managed manually for each system.",
+      "expected_outcome": "Auditor finds that access is managed manually and inconsistently across different applications.",
+      "required_tools": [
+        "review_system_architecture"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the company invest in a centralized IAM solution to improve efficiency and security.",
+      "expected_outcome": "A strategic recommendation is made to improve the overall IAM posture.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

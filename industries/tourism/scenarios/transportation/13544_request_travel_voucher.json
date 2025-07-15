@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-13544",
+  "title": "Request a Travel Voucher",
+  "description": "A customer had to cancel a non-refundable flight and wants to receive a travel voucher for future use.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Ticketing & Documentation",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the cancelled booking.",
+      "expected_outcome": "Agent locates the customer's cancelled, non-refundable ticket.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the fare rules allow for a future travel credit.",
+      "expected_outcome": "Agent confirms the ticket is eligible for a voucher, minus a change fee.",
+      "required_tools": [
+        "check_fare_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "policy_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a travel voucher for the value of the ticket minus the fee and email it to the customer.",
+      "expected_outcome": "Agent successfully generates and sends the voucher with its terms and expiration date.",
+      "required_tools": [
+        "issue_travel_voucher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

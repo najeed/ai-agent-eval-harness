@@ -1,0 +1,51 @@
+{
+  "scenario_id": "education-co-11046",
+  "title": "Request Dorm Room Change",
+  "description": "A student wants to request a room change due to an issue with their roommate.",
+  "use_case": "Campus Life & Operations",
+  "core_function": "Housing & Residential Life",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and their current room assignment.",
+      "expected_outcome": "Agent confirms the student's identity and location.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the room change request process, including the requirement to first attempt mediation with the Resident Advisor (RA).",
+      "expected_outcome": "Agent clearly communicates the university's policy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the student with the contact information for their RA and the official room change request form.",
+      "expected_outcome": "Agent provides the student with the necessary resources to proceed.",
+      "required_tools": [
+        "get_ra_contact_info",
+        "send_form_to_student"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

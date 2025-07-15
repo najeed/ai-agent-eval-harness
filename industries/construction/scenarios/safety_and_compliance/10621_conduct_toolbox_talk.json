@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-sc-10621",
+  "title": "Document a Weekly Toolbox Talk",
+  "description": "A foreman conducts a weekly toolbox talk on ladder safety and needs to log it for compliance.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Safety Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new entry in the safety meeting log.",
+      "expected_outcome": "A new log entry is created for today's date.",
+      "required_tools": [
+        "create_safety_meeting_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set the topic to 'Ladder Safety' and list the 12 attendees by name.",
+      "expected_outcome": "The log entry is updated with the topic and a list of all attendees.",
+      "required_tools": [
+        "update_safety_meeting_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

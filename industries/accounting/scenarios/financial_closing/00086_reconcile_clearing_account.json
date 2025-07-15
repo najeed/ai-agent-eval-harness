@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-fc-86",
+  "title": "Reconcile a GR/IR Clearing Account",
+  "description": "An accountant needs to reconcile the Goods Receipt / Invoice Receipt (GR/IR) clearing account, which should theoretically have a zero balance.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Account Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all transactions in the GR/IR clearing account for the month.",
+      "expected_outcome": "Agent gets a list of all debits (goods receipts) and credits (invoice receipts).",
+      "required_tools": [
+        "get_gl_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify any items that have a goods receipt but no matching invoice receipt (and vice versa) that are causing the account to have a non-zero balance.",
+      "expected_outcome": "Agent finds several old items for which goods were received but an invoice was never processed.",
+      "required_tools": [
+        "analyze_clearing_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a task for the AP department to investigate the old items and either chase the vendor for an invoice or reverse the goods receipt if it was made in error.",
+      "expected_outcome": "Agent creates actionable tasks to clear the reconciling items.",
+      "required_tools": [
+        "create_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

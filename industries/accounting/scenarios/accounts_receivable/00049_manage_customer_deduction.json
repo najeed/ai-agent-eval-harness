@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ac-ar-49",
+  "title": "Investigate and Resolve a Customer Deduction",
+  "description": "A collections specialist is investigating a large deduction taken by a major customer for a disputed marketing co-op fee.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Collections & Deductions",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the details of the deduction case, including the amount and customer reason.",
+      "expected_outcome": "Agent gets the case details for the co-op fee deduction.",
+      "required_tools": [
+        "get_deduction_case_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the customer's marketing agreement to verify the terms of the co-op program.",
+      "expected_outcome": "Agent finds the agreement and confirms the fee is valid.",
+      "required_tools": [
+        "get_customer_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deny the deduction as invalid and communicate this to the customer, providing the contract as proof.",
+      "expected_outcome": "Agent updates the case status to 'Denied' and sends a communication to the customer requesting payment of the deducted amount.",
+      "required_tools": [
+        "update_deduction_case_status",
+        "send_customer_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

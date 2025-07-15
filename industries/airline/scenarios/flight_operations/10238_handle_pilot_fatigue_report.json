@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-fo-10238",
+  "title": "Handle a Pilot Fatigue Report",
+  "description": "A pilot reports they are too fatigued to safely operate their next scheduled flight. A crew scheduler must handle the situation.",
+  "use_case": "Flight Operations",
+  "core_function": "Crew Management",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Accept the pilot's fatigue report without question, as per safety policy.",
+      "expected_outcome": "Agent accepts the report.",
+      "required_tools": [
+        "accept_fatigue_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Remove the pilot from their flight assignment and mark them as unavailable for a mandatory rest period.",
+      "expected_outcome": "Agent updates the pilot's status and schedule.",
+      "required_tools": [
+        "update_crew_assignment",
+        "schedule_crew_rest"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Find a reserve pilot to cover the flight.",
+      "expected_outcome": "Agent successfully finds a replacement pilot for the flight.",
+      "required_tools": [
+        "get_reserve_crew_list",
+        "update_crew_assignment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

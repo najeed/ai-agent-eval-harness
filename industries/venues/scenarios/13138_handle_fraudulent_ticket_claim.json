@@ -1,0 +1,62 @@
+{
+  "scenario_id": "venues-tb-13138",
+  "title": "Handle Fraudulent Ticket Claim",
+  "description": "A guest presents a ticket that has already been scanned, claiming their ticket must be the valid one.",
+  "use_case": "Ticketing & Box Office",
+  "core_function": "Ticket Administration",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the ticket's unique barcode in the access control system.",
+      "expected_outcome": "Agent finds the ticket was already scanned 20 minutes prior at a different gate.",
+      "required_tools": [
+        "get_ticket_scan_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the 'first scan is the only valid scan' policy to the guest.",
+      "expected_outcome": "Agent clearly and calmly explains the venue policy regarding duplicate tickets.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the guest to contact their original point of purchase, as the venue cannot honor a duplicated ticket.",
+      "expected_outcome": "Agent provides the correct advice to the guest.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Log the incident, including the ticket details, as a potential fraud case.",
+      "expected_outcome": "Agent creates a record of the incident for security and ticketing review.",
+      "required_tools": [
+        "log_fraud_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

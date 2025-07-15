@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sm-10498",
+  "title": "EV Battery Health Check",
+  "description": "An EV owner is concerned about battery degradation and wants to know its current state of health.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Vehicle Diagnostics",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule a service appointment for a battery health check.",
+      "expected_outcome": "Agent books the appointment.",
+      "required_tools": [
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "At the dealership, a technician connects the vehicle to a specialized diagnostic tool to analyze the battery's state of health (SOH).",
+      "expected_outcome": "The technician performs the battery analysis.",
+      "required_tools": [
+        "run_ev_battery_diagnostic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report showing the battery's SOH percentage and provide it to the customer, explaining what the result means.",
+      "expected_outcome": "Agent clearly explains the report to the customer.",
+      "required_tools": [
+        "generate_battery_health_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

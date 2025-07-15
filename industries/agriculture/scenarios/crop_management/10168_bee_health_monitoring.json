@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10168",
+  "title": "Monitor Beehive Health",
+  "description": "A beekeeper who provides pollination services receives an alert from a smart hive sensor indicating a sudden drop in hive weight and bee activity.",
+  "use_case": "Crop Management",
+  "core_function": "Pest & Disease Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the alert and retrieve the hive's sensor data (weight, temperature, bee traffic).",
+      "expected_outcome": "Agent retrieves the data confirming the anomaly.",
+      "required_tools": [
+        "get_beehive_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data and suggest potential causes, such as a swarming event or a pesticide poisoning incident.",
+      "expected_outcome": "Agent lists the most likely causes for the beekeeper to investigate.",
+      "required_tools": [
+        "diagnose_beehive_issue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "diagnostic_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check for any recent pesticide application records in nearby fields.",
+      "expected_outcome": "Agent finds that a neighboring field was sprayed with an insecticide yesterday, suggesting poisoning as a likely cause.",
+      "required_tools": [
+        "get_application_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-com-10576",
+  "title": "Set Up New Shipping Lane Pricing",
+  "description": "The company is starting to ship to a new state, and standard freight pricing needs to be set up for this new shipping lane.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Pricing & Quoting",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get rate tables from several approved LTL carriers for the new lane (e.g., from California to Nevada).",
+      "expected_outcome": "Agent obtains pricing information from freight carriers.",
+      "required_tools": [
+        "get_carrier_rate_tables"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the new freight pricing into the system, so it can be automatically calculated on future sales orders to that state.",
+      "expected_outcome": "Agent successfully updates the freight pricing matrix.",
+      "required_tools": [
+        "update_freight_pricing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a test quote for an order to the new state to verify the freight cost is calculated correctly.",
+      "expected_outcome": "Agent creates a test quote and confirms the new freight logic is working.",
+      "required_tools": [
+        "calculate_quote_price"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-em-11608",
+  "title": "Approve a PTO Request",
+  "description": "A manager needs to approve a vacation request submitted by one of their direct reports.",
+  "use_case": "Employee Management",
+  "core_function": "Time & Attendance",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the pending time-off requests in the HRIS manager self-service portal.",
+      "expected_outcome": "Manager successfully navigates to the approval queue.",
+      "required_tools": [
+        "view_pending_approvals"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the employee's request and check the team calendar for potential conflicts.",
+      "expected_outcome": "Manager sees no conflicts with other team members' time off.",
+      "required_tools": [
+        "view_team_calendar"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the time-off request in the system.",
+      "expected_outcome": "Manager clicks 'Approve', which notifies the employee and updates their leave balance.",
+      "required_tools": [
+        "approve_time_off_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

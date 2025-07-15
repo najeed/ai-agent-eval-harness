@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-ms-11886",
+  "title": "Manage Return and Destruction of Clinical Supplies",
+  "description": "At the end of a clinical trial, a supply manager must arrange for unused investigational product to be returned from all sites and destroyed.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Supply Chain & Traceability",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Perform a final reconciliation of all investigational product shipped, dispensed, and remaining at each site.",
+      "expected_outcome": "Agent generates a final accountability log for each clinical site.",
+      "required_tools": [
+        "perform_drug_accountability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Arrange for the return shipment of all unused product from the sites to a central depot.",
+      "expected_outcome": "Agent coordinates with a logistics vendor to schedule the return shipments.",
+      "required_tools": [
+        "schedule_return_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once received, verify the returned quantities against the accountability logs.",
+      "expected_outcome": "Agent confirms that all unused product has been returned.",
+      "required_tools": [
+        "verify_returned_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Arrange for the final destruction of the product and obtain a certificate of destruction.",
+      "expected_outcome": "Agent schedules the destruction with a certified vendor and files the certificate of destruction in the TMF.",
+      "required_tools": [
+        "schedule_product_destruction",
+        "upload_to_etmf"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

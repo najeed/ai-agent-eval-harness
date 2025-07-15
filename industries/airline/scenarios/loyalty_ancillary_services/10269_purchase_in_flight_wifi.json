@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-las-10269",
+  "title": "Purchase In-Flight Wi-Fi",
+  "description": "A passenger on board a flight wants to purchase Wi-Fi access.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Ancillary Revenue & Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The passenger connects to the onboard Wi-Fi network and is directed to a payment portal.",
+      "expected_outcome": "Passenger accesses the portal.",
+      "required_tools": [
+        "access_wifi_portal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The portal displays the available Wi-Fi packages and their prices (e.g., 1-hour pass, full-flight pass).",
+      "expected_outcome": "Passenger sees the options.",
+      "required_tools": [
+        "display_wifi_packages"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The passenger selects a package, enters their payment information, and their device is granted internet access.",
+      "expected_outcome": "Passenger successfully purchases and connects to the Wi-Fi.",
+      "required_tools": [
+        "process_payment",
+        "grant_wifi_access"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

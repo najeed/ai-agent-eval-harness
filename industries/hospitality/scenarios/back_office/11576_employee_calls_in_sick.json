@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-bo-11576",
+  "title": "Employee Calls in Sick",
+  "description": "A front desk agent calls in sick for their shift, and the manager needs to find a replacement.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Staff Scheduling",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The manager logs the employee's absence in the scheduling system.",
+      "expected_outcome": "The absence is recorded.",
+      "required_tools": [
+        "ss_log_absence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The manager uses the system to find available employees who are not scheduled and can cover the shift.",
+      "expected_outcome": "The system generates a list of available staff.",
+      "required_tools": [
+        "ss_find_replacement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The manager contacts an available employee who agrees to take the shift, and updates the schedule.",
+      "expected_outcome": "The shift is covered, and the schedule is updated.",
+      "required_tools": [
+        "ss_update_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

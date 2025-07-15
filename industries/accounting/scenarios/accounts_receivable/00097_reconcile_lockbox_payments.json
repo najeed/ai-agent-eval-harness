@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ar-97",
+  "title": "Reconcile a Bank Lockbox File",
+  "description": "The company uses a bank lockbox service where customer checks are sent. The bank provides a daily file of all payments received, which needs to be processed.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Cash Application",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the daily lockbox file from the bank's portal.",
+      "expected_outcome": "Agent successfully downloads the file containing payment and remittance data.",
+      "required_tools": [
+        "download_lockbox_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Parse the lockbox file and automatically apply payments to invoices where remittance information is clear.",
+      "expected_outcome": "The system automatically applies 80% of the payments.",
+      "required_tools": [
+        "process_lockbox_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a list of exceptions for payments that could not be automatically applied (e.g., no remittance advice, payment doesn't match an invoice).",
+      "expected_outcome": "Agent generates a report of payments requiring manual investigation.",
+      "required_tools": [
+        "generate_exception_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

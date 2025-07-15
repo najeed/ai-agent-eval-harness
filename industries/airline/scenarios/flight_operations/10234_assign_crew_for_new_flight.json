@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-fo-10234",
+  "title": "Assign Crew for a New Flight",
+  "description": "A new flight has been added to the schedule. A crew scheduler must assign a full crew (pilots and cabin crew) to it.",
+  "use_case": "Flight Operations",
+  "core_function": "Crew Management",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the aircraft type for the new flight to determine the required crew qualifications and number.",
+      "expected_outcome": "Agent determines the flight requires 2 pilots and 4 cabin crew qualified on the A320.",
+      "required_tools": [
+        "get_flight_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find available and legal crew members based at the flight's origin city.",
+      "expected_outcome": "Agent generates a list of available crew members.",
+      "required_tools": [
+        "search_for_available_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the crew members to the flight and publish the updated roster.",
+      "expected_outcome": "Agent successfully builds a crew for the flight and updates the schedule.",
+      "required_tools": [
+        "update_crew_assignment",
+        "publish_roster"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

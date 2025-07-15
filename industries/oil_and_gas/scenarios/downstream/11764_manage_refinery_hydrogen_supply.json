@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-down-11764",
+  "title": "Manage Refinery Hydrogen Supply",
+  "description": "A refinery operator manages the hydrogen plant and distribution network to ensure a reliable supply for hydrotreating and hydrocracking units.",
+  "use_case": "Downstream",
+  "core_function": "Refinery Operations & Optimization",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current production rate and purity of the steam methane reformer (SMR) hydrogen plant.",
+      "expected_outcome": "The operator confirms the plant is running stably and producing on-spec hydrogen.",
+      "required_tools": [
+        "get_plant_operating_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the hydrogen consumption of the main user units and the pressure in the hydrogen supply header.",
+      "expected_outcome": "The review shows that demand is increasing and header pressure is starting to drop.",
+      "required_tools": [
+        "get_hydrogen_consumer_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Increase the production rate of the SMR to meet the higher demand and stabilize the header pressure.",
+      "expected_outcome": "The SMR's production is ramped up, and the hydrogen network pressure returns to normal.",
+      "required_tools": [
+        "set_plant_production_rate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

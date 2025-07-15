@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-rs-12831",
+  "title": "Request Showing Feedback",
+  "description": "An agent has shown a property to several buyers. They need to request feedback from the buyers' agents to share with the seller.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Property Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all agents who have shown the property in the last week.",
+      "expected_outcome": "Agent retrieves a list of agent names and contact information from the showing service.",
+      "required_tools": [
+        "get_showing_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send an automated feedback request form to each agent.",
+      "expected_outcome": "A standardized feedback request email/form is sent to all agents on the list.",
+      "required_tools": [
+        "send_feedback_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the received feedback into a summary report for the seller.",
+      "expected_outcome": "A report summarizing all feedback (e.g., comments on price, condition) is generated.",
+      "required_tools": [
+        "compile_feedback_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

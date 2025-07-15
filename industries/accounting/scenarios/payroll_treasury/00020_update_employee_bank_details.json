@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-20",
+  "title": "Update Employee Bank Details for Payroll",
+  "description": "An employee has requested to change the bank account where their pay is deposited.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Payroll Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the employee's request and new bank account details via a secure form.",
+      "expected_outcome": "Agent receives the new routing and account numbers.",
+      "required_tools": [
+        "get_employee_change_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Authenticate the employee's identity to prevent fraud.",
+      "expected_outcome": "Agent successfully verifies the employee's identity through a two-factor authentication process.",
+      "required_tools": [
+        "verify_employee_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the employee's direct deposit information in the payroll system.",
+      "expected_outcome": "Agent successfully updates the banking details.",
+      "required_tools": [
+        "update_employee_payroll_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

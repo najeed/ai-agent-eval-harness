@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ap-9",
+  "title": "Process a New Vendor Setup Request",
+  "description": "A department wants to purchase from a new vendor. AP needs to set up the vendor in the system before a PO can be issued.",
+  "use_case": "Accounts Payable",
+  "core_function": "Vendor Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the new vendor request form, which includes the vendor's name, address, and banking information.",
+      "expected_outcome": "Agent receives all necessary vendor details.",
+      "required_tools": [
+        "get_vendor_setup_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the vendor's tax ID against the IRS database to ensure legitimacy.",
+      "expected_outcome": "Agent confirms the vendor's tax ID is valid.",
+      "required_tools": [
+        "verify_vendor_tax_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the new vendor record in the ERP system's vendor master file.",
+      "expected_outcome": "Agent successfully creates the new vendor record.",
+      "required_tools": [
+        "create_vendor_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Notify the requesting department that the vendor has been set up and they can now request a purchase order.",
+      "expected_outcome": "Agent sends a confirmation email.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

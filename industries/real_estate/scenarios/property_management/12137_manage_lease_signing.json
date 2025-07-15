@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-12137",
+  "title": "Coordinate New Lease Signing",
+  "description": "An approved applicant is ready to sign their lease. The PM needs to prepare and send the lease agreement.",
+  "use_case": "Property Management",
+  "core_function": "Leasing & Tenant Relations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft the lease agreement with the correct tenant names, property address, rent amount, and lease dates.",
+      "expected_outcome": "A legally compliant lease agreement is accurately generated.",
+      "required_tools": [
+        "draft_lease_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the lease agreement to the new tenant for signature via an e-signature platform.",
+      "expected_outcome": "The lease is sent for signature.",
+      "required_tools": [
+        "send_document_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once signed, countersign the lease on behalf of the landlord and provide a fully executed copy to the tenant.",
+      "expected_outcome": "The lease is fully executed and a copy is stored and sent to the tenant.",
+      "required_tools": [
+        "countersign_document",
+        "log_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

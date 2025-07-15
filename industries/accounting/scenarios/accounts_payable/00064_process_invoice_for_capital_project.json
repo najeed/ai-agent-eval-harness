@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ap-64",
+  "title": "Process an Invoice for a Capital Project",
+  "description": "An invoice has been received from a contractor for work on a new building. The cost needs to be capitalized, not expensed.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Capture the invoice data.",
+      "expected_outcome": "Agent captures the invoice details.",
+      "required_tools": [
+        "capture_invoice_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Instead of an expense account, code the invoice to the 'Construction in Progress' (CIP) balance sheet account.",
+      "expected_outcome": "Agent correctly codes the invoice to the CIP asset account.",
+      "required_tools": [
+        "code_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Route the invoice to the project manager for approval.",
+      "expected_outcome": "Agent routes the invoice for the required approval.",
+      "required_tools": [
+        "route_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

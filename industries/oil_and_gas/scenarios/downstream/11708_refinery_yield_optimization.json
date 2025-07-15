@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-down-11708",
+  "title": "Refinery Crude Slate Optimization",
+  "description": "A refinery economist uses an LP model to decide the optimal blend of crude oils to purchase for next month to maximize gasoline production.",
+  "use_case": "Downstream",
+  "core_function": "Refinery Operations & Optimization",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather current market prices for available crude oils (e.g., WTI, Brent, Mars).",
+      "expected_outcome": "A list of crudes and their current spot prices is compiled.",
+      "required_tools": [
+        "get_crude_market_prices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Input the crude prices and their assay data into the refinery's Linear Programming (LP) model.",
+      "expected_outcome": "The LP model is correctly populated with the latest data.",
+      "required_tools": [
+        "update_lp_model_inputs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the LP model to determine the most profitable crude slate and generate a purchase recommendation.",
+      "expected_outcome": "The model outputs a recommended blend of crudes that maximizes the refinery's gross margin.",
+      "required_tools": [
+        "run_lp_optimization"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-ct-11881",
+  "title": "Manage Institutional Review Board (IRB) Submission",
+  "description": "A CRA must submit a new clinical trial protocol to the Institutional Review Board (IRB) for a specific hospital.",
+  "use_case": "Clinical Trials",
+  "core_function": "Trial Operations & Monitoring",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all required documents for the IRB submission package (protocol, ICF, investigator's brochure).",
+      "expected_outcome": "Agent assembles the complete package of documents.",
+      "required_tools": [
+        "get_required_document_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Complete the specific IRB submission form for that institution.",
+      "expected_outcome": "Agent accurately fills out the hospital's required submission form.",
+      "required_tools": [
+        "complete_submission_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the package to the IRB via their online portal.",
+      "expected_outcome": "Agent successfully uploads and submits the documents.",
+      "required_tools": [
+        "submit_document_to_portal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Track the submission status and respond to any queries from the IRB.",
+      "expected_outcome": "Agent monitors the portal, receives the approval letter, and files it in the TMF.",
+      "required_tools": [
+        "track_submission_status",
+        "upload_to_etmf"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

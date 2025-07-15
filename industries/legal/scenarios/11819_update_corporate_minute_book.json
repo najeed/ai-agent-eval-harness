@@ -1,0 +1,50 @@
+{
+  "scenario_id": "legal-ct-11819",
+  "title": "Update a Corporate Minute Book",
+  "description": "Following an annual shareholder meeting, a corporate paralegal needs to update the official corporate minute book.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Corporate Governance & Compliance",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all relevant documents from the annual meeting: agenda, signed minutes, and any resolutions passed.",
+      "expected_outcome": "Agent has all the necessary documents.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the new documents to the corporate minute book in the correct section and chronological order.",
+      "expected_outcome": "Agent correctly files the new records.",
+      "required_tools": [
+        "document_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the index of the minute book to reflect the newly added documents.",
+      "expected_outcome": "The minute book's index is now current.",
+      "required_tools": [
+        "document_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

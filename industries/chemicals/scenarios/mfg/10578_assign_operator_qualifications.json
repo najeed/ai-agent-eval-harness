@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10578",
+  "title": "Assign Operator Qualifications",
+  "description": "A production supervisor needs to certify that an operator is now qualified to run a specific complex process after completing their training.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Maintenance Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the operator in the training management system.",
+      "expected_outcome": "Agent finds the operator's profile.",
+      "required_tools": [
+        "get_employee_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the operator has completed all required training modules for the process.",
+      "expected_outcome": "Agent confirms all prerequisite training is complete.",
+      "required_tools": [
+        "get_employee_training_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the operator's profile to add the 'Reactor Unit 2 Operator' qualification.",
+      "expected_outcome": "Agent successfully updates the operator's qualifications, allowing them to be scheduled for that work.",
+      "required_tools": [
+        "update_employee_qualifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-res-10254",
+  "title": "Add a Pet in Cabin to a Booking",
+  "description": "A customer wants to add their small dog, which will travel in a carrier under the seat, to their booking.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Post-Booking Services",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the booking and check the airline's pet policy, including any flight-specific restrictions.",
+      "expected_outcome": "Agent confirms the flight allows pets in the cabin.",
+      "required_tools": [
+        "get_booking_details",
+        "get_pet_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if the flight's quota for in-cabin pets has already been reached.",
+      "expected_outcome": "Agent confirms there is still space for another pet.",
+      "required_tools": [
+        "check_pet_quota"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the pet to the booking, collect the pet-in-cabin fee, and inform the customer of the requirements (e.g., carrier size, health documents).",
+      "expected_outcome": "Agent successfully adds the pet, takes payment, and provides all necessary information.",
+      "required_tools": [
+        "add_pet_to_booking",
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

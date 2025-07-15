@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10245",
+  "title": "Handle a Last-Minute Maintenance Issue",
+  "description": "Just before pushback, a pilot reports a minor maintenance issue. The OCC controller must coordinate a resolution.",
+  "use_case": "Flight Operations",
+  "core_function": "Operations Control (OCC)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the pilot's report and get details on the maintenance issue.",
+      "expected_outcome": "Agent understands the nature of the technical problem.",
+      "required_tools": [
+        "receive_pilot_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the airport's maintenance team and dispatch a technician to the aircraft.",
+      "expected_outcome": "Agent successfully dispatches a technician.",
+      "required_tools": [
+        "contact_maintenance_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the technician's diagnosis, decide whether to accept a delay for the repair or swap to a different aircraft.",
+      "expected_outcome": "The technician reports a quick fix is possible. Agent accepts a 30-minute delay.",
+      "required_tools": [
+        "make_operational_decision"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

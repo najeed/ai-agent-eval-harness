@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-fc-10",
+  "title": "Prepare a Monthly Income Statement",
+  "description": "The controller needs a draft of the monthly income statement for management review.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Financial Reporting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the trial balance from the general ledger after all closing entries have been posted.",
+      "expected_outcome": "Agent successfully retrieves the final trial balance for the month.",
+      "required_tools": [
+        "get_trial_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Map the general ledger accounts to the lines of the income statement (e.g., Revenue, COGS, SG&A).",
+      "expected_outcome": "Agent correctly maps all P&L accounts.",
+      "required_tools": [
+        "map_accounts_to_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the income statement, showing current month actuals, budget, and variance.",
+      "expected_outcome": "Agent produces a formatted income statement with all required columns.",
+      "required_tools": [
+        "generate_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

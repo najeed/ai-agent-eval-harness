@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-scl-10522",
+  "title": "Qualify New Logistics Provider",
+  "description": "A logistics manager needs to add a new freight carrier to the system, including their certifications for handling hazardous materials.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Logistics & Distribution",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new vendor profile for the logistics provider.",
+      "expected_outcome": "Agent successfully creates the new vendor record with their address and contact information.",
+      "required_tools": [
+        "create_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the carrier's insurance certificate and their DOT hazardous material transportation license.",
+      "expected_outcome": "Agent attaches the required compliance documents to the vendor profile.",
+      "required_tools": [
+        "upload_vendor_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Activate the vendor in the system, making them available for selection on future shipments.",
+      "expected_outcome": "Agent changes the vendor status to 'Approved'.",
+      "required_tools": [
+        "update_vendor_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

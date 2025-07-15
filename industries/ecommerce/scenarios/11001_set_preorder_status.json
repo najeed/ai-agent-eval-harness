@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-osm-11001",
+  "title": "Set a Product to Pre-Order Status",
+  "description": "A highly anticipated new product is not yet released, but the company wants to allow customers to pre-order it.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Inventory Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the new product in the system.",
+      "expected_outcome": "Agent finds the correct product SKU.",
+      "required_tools": [
+        "get_product_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Change the product's status to 'Pre-Order' and set the expected release/shipping date.",
+      "expected_outcome": "Agent successfully updates the product status and release date.",
+      "required_tools": [
+        "update_product_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the product page clearly communicates that it is a pre-order with an estimated ship date.",
+      "expected_outcome": "The product page displays the 'Pre-Order' button and the expected ship date.",
+      "required_tools": [
+        "preview_product_page"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

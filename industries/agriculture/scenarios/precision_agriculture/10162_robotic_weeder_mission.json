@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10162",
+  "title": "Autonomous Robotic Weeder Mission",
+  "description": "A vegetable grower wants to dispatch an autonomous robotic weeder to a field.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Robotics & Automation",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the boundary map for the field to be weeded.",
+      "expected_outcome": "Agent gets the correct field boundary.",
+      "required_tools": [
+        "get_field_boundary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a path plan for the robot to efficiently cover the entire field.",
+      "expected_outcome": "Agent creates an optimized path for the robot to follow.",
+      "required_tools": [
+        "generate_robot_mission_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the mission plan to the robotic weeder and command it to start.",
+      "expected_outcome": "Agent successfully dispatches the robot.",
+      "required_tools": [
+        "dispatch_robot"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tourism-ta-13609",
+  "title": "Inquire About Photography Policy",
+  "description": "A visitor wants to know if flash photography is allowed inside an art museum.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Visitor Information & Support",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the attraction (art museum) and the query (flash photography).",
+      "expected_outcome": "Agent understands the user's question.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the museum's photography policy from its knowledge base.",
+      "expected_outcome": "Agent finds the policy which states that non-flash photography is allowed, but flash is strictly prohibited.",
+      "required_tools": [
+        "get_attraction_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Clearly communicate the policy to the visitor.",
+      "expected_outcome": "Agent accurately explains that flash photography is not permitted.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

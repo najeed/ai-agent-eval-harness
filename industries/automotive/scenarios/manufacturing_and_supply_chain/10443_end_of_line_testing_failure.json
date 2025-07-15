@@ -1,0 +1,53 @@
+{
+  "scenario_id": "auto-ms-10443",
+  "title": "End-of-Line (EOL) Testing Failure",
+  "description": "A newly assembled vehicle has failed the EOL diagnostic test for an ABS fault.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Quality Assurance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the EOL test failure alert and identify the specific DTC.",
+      "expected_outcome": "Agent receives alert for VIN ending in 12345 with DTC C1155 - 'Wheel Speed Sensor LF Input Circuit Failure'.",
+      "required_tools": [
+        "get_qa_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the defect and route the vehicle to the on-site rectification center.",
+      "expected_outcome": "Agent logs the defect and updates the vehicle's routing.",
+      "required_tools": [
+        "log_quality_defect",
+        "update_vehicle_routing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign a technician to diagnose and repair the fault.",
+      "expected_outcome": "Agent creates a repair order and assigns it to a technician in the rectification center.",
+      "required_tools": [
+        "create_repair_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

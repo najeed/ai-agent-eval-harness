@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10183",
+  "title": "Automated Feed Inventory Reorder",
+  "description": "A sensor in a feed bin reports that the level of a specific feed ingredient is below the reorder point.",
+  "use_case": "Livestock Management",
+  "core_function": "Feeding & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a low-level alert from the feed bin sensor.",
+      "expected_outcome": "Agent confirms the inventory level is below the 20% threshold.",
+      "required_tools": [
+        "get_feed_bin_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically generate a purchase order for a standard truckload of the feed ingredient from the preferred supplier.",
+      "expected_outcome": "Agent creates the PO for the correct ingredient and supplier.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the purchase order to the supplier via email.",
+      "expected_outcome": "Agent successfully sends the order.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

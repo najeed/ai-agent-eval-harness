@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hr-os-11660",
+  "title": "Create an Ad-Hoc Report",
+  "description": "A business leader needs an ad-hoc report of all employees in their division who have a specific certification.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Reporting & Analytics",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Clarify the reporting requirements: division, certification name.",
+      "expected_outcome": "Analyst confirms the request is for the 'Sales' division and the 'PMP' certification.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Build a custom query in the HRIS reporting tool to filter for the specified criteria.",
+      "expected_outcome": "Analyst successfully builds and runs the query.",
+      "required_tools": [
+        "build_custom_hris_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate and deliver the list of employees to the business leader.",
+      "expected_outcome": "Analyst provides the requested list.",
+      "required_tools": [
+        "export_report",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

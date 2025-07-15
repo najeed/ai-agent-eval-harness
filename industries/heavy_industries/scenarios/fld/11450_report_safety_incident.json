@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-fld-11450",
+  "title": "Report a Safety Incident",
+  "description": "A worker has suffered a minor injury on site. The site supervisor must log an incident report.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Safety & Permitting",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new incident report in the safety management system.",
+      "expected_outcome": "Agent successfully initiates a new report.",
+      "required_tools": [
+        "create_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the details of the incident: person involved, location, date, description of the injury, and initial treatment provided.",
+      "expected_outcome": "Agent correctly fills in all the required incident details.",
+      "required_tools": [
+        "update_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the report, which is then routed to the project EHS manager for investigation.",
+      "expected_outcome": "Agent submits the report, and it is assigned to the EHS manager.",
+      "required_tools": [
+        "submit_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-ms-10417",
+  "title": "Quality Assurance Flag for Paint Defect",
+  "description": "An automated optical inspection system has flagged a newly painted car door for a paint defect (orange peel).",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Quality Assurance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the QA alert and retrieve the high-resolution image of the defect.",
+      "expected_outcome": "Agent reviews the image and confirms the presence of a paint defect.",
+      "required_tools": [
+        "get_qa_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the defect against the vehicle's VIN in the quality management system.",
+      "expected_outcome": "Agent successfully logs the defect.",
+      "required_tools": [
+        "log_quality_defect"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Route the vehicle to the paint rectification area for rework.",
+      "expected_outcome": "Agent updates the vehicle's routing in the factory logistics system to send it for rework.",
+      "required_tools": [
+        "update_vehicle_routing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

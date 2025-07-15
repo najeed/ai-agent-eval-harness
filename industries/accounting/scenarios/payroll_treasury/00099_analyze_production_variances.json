@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-99",
+  "title": "Analyze Production Cost Variances",
+  "description": "A manufacturing company's results show a significant unfavorable material variance. A cost accountant needs to investigate.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Compliance & Cost Accounting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the production variance report for the month.",
+      "expected_outcome": "Agent gets the report showing the total material variance.",
+      "required_tools": [
+        "get_production_variance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Break down the total material variance into its price and quantity components.",
+      "expected_outcome": "Agent calculates that the variance is primarily due to a price variance, not a usage variance.",
+      "required_tools": [
+        "calculate_cost_variances"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Drill down to find which specific raw materials had the largest price variances by comparing actual purchase prices to standard costs.",
+      "expected_outcome": "Agent discovers that the price of a key raw material increased by 15% during the month, causing most of the variance.",
+      "required_tools": [
+        "analyze_purchase_price_variance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

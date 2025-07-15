@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ac-pt-16",
+  "title": "Record the Disposal of a Fixed Asset",
+  "description": "The company has sold an old piece of equipment and the accountant needs to remove it from the books.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Fixed Asset Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the asset's record from the fixed asset register, noting its original cost and accumulated depreciation.",
+      "expected_outcome": "Agent finds the asset had a cost of $20,000 and accumulated depreciation of $18,000.",
+      "required_tools": [
+        "get_fixed_asset_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Record the cash received from the sale of the asset.",
+      "expected_outcome": "Agent notes the company received $3,000 from the sale.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate and record the gain or loss on the disposal of the asset.",
+      "expected_outcome": "Agent correctly calculates a gain on disposal of $1,000 ($3,000 cash - ($20,000 cost - $18,000 accum. dep.)).",
+      "required_tools": [
+        "calculate_gain_loss_on_disposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create and post the journal entry to remove the asset and its accumulated depreciation from the books and record the gain/loss.",
+      "expected_outcome": "Agent posts the correct multi-leg journal entry.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

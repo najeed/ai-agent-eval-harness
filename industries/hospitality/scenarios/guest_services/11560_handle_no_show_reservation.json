@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-gs-11560",
+  "title": "Handle a No-Show Reservation",
+  "description": "A guest with a guaranteed reservation did not arrive. The night auditor must process the no-show.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Reservations & Booking",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all guaranteed reservations that have not yet checked in after the cutoff time.",
+      "expected_outcome": "The auditor identifies one reservation as a potential no-show.",
+      "required_tools": [
+        "pms_get_arrivals_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Change the reservation status to 'No-Show'.",
+      "expected_outcome": "The booking is marked as a no-show in the PMS.",
+      "required_tools": [
+        "pms_update_booking_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the no-show penalty charge (typically one night's room and tax) to the guest's credit card on file.",
+      "expected_outcome": "The penalty fee is successfully charged.",
+      "required_tools": [
+        "pms_process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

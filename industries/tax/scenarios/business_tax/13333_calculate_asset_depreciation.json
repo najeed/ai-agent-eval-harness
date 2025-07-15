@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-bus-13333",
+  "title": "Calculate Asset Depreciation",
+  "description": "A business needs to calculate the annual depreciation expense for a vehicle it purchased during the year.",
+  "use_case": "Business Tax Services",
+  "core_function": "Corporate & Partnership Tax",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the vehicle's cost basis, date placed in service, and percentage of business use.",
+      "expected_outcome": "Agent collects all necessary information for the calculation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the correct depreciation method and recovery period under MACRS.",
+      "expected_outcome": "Agent correctly identifies the asset class and depreciation schedule.",
+      "required_tools": [
+        "determine_macrs_class"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the annual depreciation deduction using Form 4562.",
+      "expected_outcome": "Agent accurately calculates the allowable depreciation for the year.",
+      "required_tools": [
+        "prepare_form_4562"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-hs-12636",
+  "title": "Manage an Emergency Response Drill (Fire)",
+  "description": "The port is conducting a full-scale fire drill at a warehouse. The emergency manager must coordinate the response.",
+  "use_case": "Health, Safety, Security & Environment (HSSE)",
+  "core_function": "Emergency Response",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Activate the port's emergency alert system with a 'DRILL' message.",
+      "expected_outcome": "The alert system is activated, notifying all port personnel of the drill.",
+      "required_tools": [
+        "activate_emergency_alert_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate the response of the port's internal fire brigade and the local city fire department.",
+      "expected_outcome": "The manager communicates with both teams, directing them to the scene as per the plan.",
+      "required_tools": [
+        "coordinate_emergency_responders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log all actions and communications during the drill and conduct a debrief afterwards to assess performance.",
+      "expected_outcome": "A complete log of the drill is created, and a debriefing meeting is scheduled.",
+      "required_tools": [
+        "log_emergency_response_actions",
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

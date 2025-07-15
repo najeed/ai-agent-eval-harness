@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10057",
+  "title": "Manage Aircraft Weight and Balance",
+  "description": "An engineer must track the weight of every component added to an aircraft during assembly to ensure the final weight and center of gravity are within limits.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Assembly & Production",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For each part installed, retrieve its official weight from the parts database.",
+      "expected_outcome": "Agent gets the correct weight for each component.",
+      "required_tools": [
+        "get_part_weight"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the part's weight and its location (moment arm) to the aircraft's master weight and balance sheet.",
+      "expected_outcome": "Agent accurately updates the master sheet.",
+      "required_tools": [
+        "update_weight_balance_sheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Continuously recalculate the aircraft's total weight and center of gravity to ensure it remains within the design envelope.",
+      "expected_outcome": "Agent's calculations show the current center of gravity is within acceptable limits.",
+      "required_tools": [
+        "calculate_weight_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10157",
+  "title": "Execute a Grain Sales Contract",
+  "description": "A farmer has decided to sell 5,000 bushels of corn to a local ethanol plant.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Supply Chain & Inventory",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the current cash price for corn from the specified ethanol plant.",
+      "expected_outcome": "Agent retrieves the current price.",
+      "required_tools": [
+        "get_commodity_prices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a grain sales contract for 5,000 bushels at the current price for a specific delivery period.",
+      "expected_outcome": "Agent creates a formal sales contract.",
+      "required_tools": [
+        "generate_sales_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the contract to the farmer for digital signature.",
+      "expected_outcome": "Agent successfully sends the contract.",
+      "required_tools": [
+        "send_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

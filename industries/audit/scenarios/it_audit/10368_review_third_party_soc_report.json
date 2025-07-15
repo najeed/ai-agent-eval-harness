@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10368",
+  "title": "Review a Third-Party SOC 1 Report",
+  "description": "An IT auditor reviews the SOC 1 report for the company's payroll provider.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the latest SOC 1 Type II report from the payroll provider.",
+      "expected_outcome": "The auditor has the correct report.",
+      "required_tools": [
+        "get_soc_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the 'User Control Considerations' section to identify controls that the company is responsible for implementing.",
+      "expected_outcome": "The auditor identifies that the company is responsible for reviewing and approving payroll registers before they are processed.",
+      "required_tools": [
+        "review_soc_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Test to ensure the company is effectively performing the user control considerations, such as the payroll register review.",
+      "expected_outcome": "The auditor confirms that the payroll manager signs off on the register each pay period, satisfying the control requirement.",
+      "required_tools": [
+        "perform_control_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

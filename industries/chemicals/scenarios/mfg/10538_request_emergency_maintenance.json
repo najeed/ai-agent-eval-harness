@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10538",
+  "title": "Request Emergency Maintenance",
+  "description": "A plant operator notices a severe leak from a valve and must create an emergency maintenance work order.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Plant Operations",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the maintenance request form.",
+      "expected_outcome": "Agent accesses the new work order screen.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the equipment ID for the leaking valve and select 'Emergency' as the priority.",
+      "expected_outcome": "Agent correctly identifies the asset and sets the priority level.",
+      "required_tools": [
+        "update_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Describe the problem ('Severe leak from valve body') and submit the request, which should automatically page the on-call maintenance technician.",
+      "expected_outcome": "Agent submits the work order, and an alert is sent to the technician.",
+      "required_tools": [
+        "submit_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

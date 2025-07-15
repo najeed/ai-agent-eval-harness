@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10241",
+  "title": "Monitor Flight Progress",
+  "description": "An OCC controller is monitoring a trans-oceanic flight to ensure it remains on its planned route and schedule.",
+  "use_case": "Flight Operations",
+  "core_function": "Operations Control (OCC)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Track the flight's position in real-time on a map display.",
+      "expected_outcome": "Agent observes the flight's progress.",
+      "required_tools": [
+        "get_flight_position"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive periodic position reports from the flight crew via satellite datalink.",
+      "expected_outcome": "Agent receives and acknowledges the reports.",
+      "required_tools": [
+        "receive_position_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the flight's actual fuel burn to the planned fuel burn and note any significant deviations.",
+      "expected_outcome": "Agent confirms the fuel burn is nominal and the flight has enough fuel to reach its destination.",
+      "required_tools": [
+        "compare_fuel_burn"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-com-10526",
+  "title": "Provide Technical Application Support",
+  "description": "A customer is using a new adhesive product and asks for advice on the optimal curing temperature and time for their specific substrate.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Technical Support",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the specific adhesive product they are using.",
+      "expected_outcome": "Agent correctly identifies the product in question.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the internal technical knowledge base for application guides related to this product and substrate type.",
+      "expected_outcome": "Agent finds a technical data sheet (TDS) with recommended curing profiles.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Relay the recommended curing conditions (e.g., '120\u00b0C for 30 minutes') to the customer and offer to email them the TDS.",
+      "expected_outcome": "Agent clearly communicates the technical advice and sends the supporting document.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

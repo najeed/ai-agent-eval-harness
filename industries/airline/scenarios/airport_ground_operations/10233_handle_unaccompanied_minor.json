@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10233",
+  "title": "Handle an Unaccompanied Minor (UM)",
+  "description": "A parent is checking in their child to fly as an unaccompanied minor. A ground agent must handle the process.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Check-in & Baggage",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the child's age and the flight's eligibility for UM travel.",
+      "expected_outcome": "Agent confirms the child and flight meet the UM policy requirements.",
+      "required_tools": [
+        "check_um_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the required UM form, including the contact information for the person dropping them off and picking them up.",
+      "expected_outcome": "Agent ensures the form is complete and accurate.",
+      "required_tools": [
+        "collect_um_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Escort the child through security and to the gate, handing them off to the cabin crew for boarding.",
+      "expected_outcome": "Agent provides continuous supervision until the child is safely on board.",
+      "required_tools": [
+        "escort_unaccompanied_minor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-res-10262",
+  "title": "Handle a Duplicate Booking",
+  "description": "The system has flagged that a passenger appears to have two identical bookings. An agent must investigate and resolve the issue.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Customer Support",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the two flagged bookings and confirm they are for the same passenger on the same flight.",
+      "expected_outcome": "Agent verifies that the bookings are duplicates.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the passenger to ask which booking they would like to keep.",
+      "expected_outcome": "Agent communicates with the passenger to understand their intent.",
+      "required_tools": [
+        "contact_passenger"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Cancel the unwanted booking and process a refund according to the fare rules.",
+      "expected_outcome": "Agent cancels one booking and processes any applicable refund.",
+      "required_tools": [
+        "cancel_booking",
+        "process_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

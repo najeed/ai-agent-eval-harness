@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-las-10288",
+  "title": "Handle a Group Travel Disruption",
+  "description": "A flight carrying a school group has been cancelled. An agent must rebook the entire group together on a new flight.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Corporate & Group Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the cancelled flight and retrieve the group booking associated with it.",
+      "expected_outcome": "Agent finds the group booking.",
+      "required_tools": [
+        "get_group_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for alternative flights that have enough available seats to accommodate the entire group.",
+      "expected_outcome": "Agent finds a later flight with enough seats.",
+      "required_tools": [
+        "search_flights_with_group_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Rebook the entire group onto the new flight and ensure they are still seated together.",
+      "expected_outcome": "Agent successfully rebooks the group and assigns them seats together on the new flight.",
+      "required_tools": [
+        "rebook_group",
+        "assign_group_seats"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

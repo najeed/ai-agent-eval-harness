@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10014",
+  "title": "Generate a Certification Document",
+  "description": "An engineer needs to prepare a document for the FAA demonstrating that a new avionics system complies with DO-178C standards.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Testing & Certification",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all software requirements, design documents, and test results for the avionics system.",
+      "expected_outcome": "Agent compiles all necessary supporting documents.",
+      "required_tools": [
+        "get_engineering_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a template to generate the compliance report, mapping each requirement to its corresponding design and test case.",
+      "expected_outcome": "Agent creates a complete traceability matrix and compliance report.",
+      "required_tools": [
+        "generate_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the report to the internal certification authority for review before sending it to the FAA.",
+      "expected_outcome": "Agent follows the correct procedure for internal review.",
+      "required_tools": [
+        "submit_for_internal_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

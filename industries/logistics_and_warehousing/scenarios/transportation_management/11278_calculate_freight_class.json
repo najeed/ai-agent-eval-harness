@@ -1,0 +1,50 @@
+{
+  "scenario_id": "lw-tm-11278",
+  "title": "Calculate Freight Class",
+  "description": "A shipper needs to determine the correct National Motor Freight Classification (NMFC) freight class for a new item to get accurate LTL shipping rates.",
+  "use_case": "Transportation Management",
+  "core_function": "Shipment Planning & Execution",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Enter the dimensions (length, width, height) and weight of the item being shipped.",
+      "expected_outcome": "Agent accurately inputs the item's physical characteristics.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system calculates the item's density (pounds per cubic foot).",
+      "expected_outcome": "The density is calculated correctly.",
+      "required_tools": [
+        "calculate_density"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the density and the item's commodity type, the system looks up the correct freight class from an NMFC table.",
+      "expected_outcome": "The system returns the correct freight class (e.g., Class 70).",
+      "required_tools": [
+        "get_freight_class"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

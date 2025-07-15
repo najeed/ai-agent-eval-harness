@@ -1,0 +1,51 @@
+{
+  "scenario_id": "cyber-so-10451",
+  "title": "Threat Hunting for New Services",
+  "description": "A threat hunter is looking for malware persistence by searching for newly created, unauthorized services on workstations.",
+  "use_case": "Security Operations (SecOps)",
+  "core_function": "Threat Hunting",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Formulate a hypothesis: 'An attacker has installed malware that runs as a persistent service'.",
+      "expected_outcome": "Analyst defines a clear, testable hypothesis.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "hypothesis_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query endpoint logs across the enterprise for any new services created in the last 24 hours.",
+      "expected_outcome": "Analyst writes an effective query to find newly registered services.",
+      "required_tools": [
+        "query_endpoint_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "query_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the list of new services against a baseline of known-good services, identifying a suspicious service named 'WinUpdateSvc' and flagging the host for investigation.",
+      "expected_outcome": "Analyst discovers a masquerading malware persistence mechanism.",
+      "required_tools": [
+        "compare_to_baseline",
+        "flag_host_for_investigation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "threat_discovery_rate",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

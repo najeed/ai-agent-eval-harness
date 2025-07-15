@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-bm-13220",
+  "title": "Create Social Media Graphics for Game Day",
+  "description": "A team's social media manager needs to create graphics for game day, including a 'starting lineup' graphic.",
+  "use_case": "Broadcasting & Media",
+  "core_function": "Digital Content & Streaming",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the official starting lineup for today's game.",
+      "expected_outcome": "Agent gets the list of starting players.",
+      "required_tools": [
+        "get_starting_lineup"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a 'starting lineup' graphic template.",
+      "expected_outcome": "Agent chooses the correct template from a library.",
+      "required_tools": [
+        "get_graphic_templates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Populate the template with the player names and headshots.",
+      "expected_outcome": "Agent automatically generates the final graphic.",
+      "required_tools": [
+        "populate_graphic_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Post the graphic to the team's social media accounts.",
+      "expected_outcome": "Agent successfully posts the lineup graphic to Twitter and Instagram.",
+      "required_tools": [
+        "post_to_social_media"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

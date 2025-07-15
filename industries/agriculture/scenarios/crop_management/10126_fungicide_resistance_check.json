@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10126",
+  "title": "Check for Fungicide Resistance",
+  "description": "A farmer plans to spray a fungicide and wants to check if there is known resistance to that chemical group in their region.",
+  "use_case": "Crop Management",
+  "core_function": "Pest & Disease Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the active ingredient and FRAC group of the planned fungicide.",
+      "expected_outcome": "Agent correctly identifies the chemical and its mode of action group.",
+      "required_tools": [
+        "get_pesticide_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query a regional pesticide resistance database for any reported resistance to that FRAC group for the target disease.",
+      "expected_outcome": "Agent finds reports of moderate resistance in the farmer's county.",
+      "required_tools": [
+        "query_resistance_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend an alternative fungicide from a different FRAC group to ensure effectiveness and manage resistance.",
+      "expected_outcome": "Agent suggests a suitable alternative product.",
+      "required_tools": [
+        "get_pesticide_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

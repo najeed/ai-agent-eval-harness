@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-sa-11094",
+  "title": "Apply to Graduate",
+  "description": "A student in their final semester needs to formally apply for graduation.",
+  "use_case": "Student Administration",
+  "core_function": "Student Records & Transcripts",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and guide them to the online graduation application.",
+      "expected_outcome": "Agent provides the correct URL from the registrar's website.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a preliminary degree audit to ensure the student is on track to complete all requirements.",
+      "expected_outcome": "The audit shows the student will meet all requirements upon successful completion of their current courses.",
+      "required_tools": [
+        "run_degree_audit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assist the student in completing the application, including confirming the name they want printed on their diploma.",
+      "expected_outcome": "Agent helps the student submit the application successfully.",
+      "required_tools": [
+        "submit_graduation_application"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

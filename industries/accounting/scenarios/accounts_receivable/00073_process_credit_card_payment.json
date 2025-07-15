@@ -1,0 +1,67 @@
+{
+  "scenario_id": "ac-ar-73",
+  "title": "Process a Customer Credit Card Payment",
+  "description": "A customer wants to pay their open invoice using a credit card over the phone.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Cash Application",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the invoice they wish to pay.",
+      "expected_outcome": "Agent retrieves the correct open invoice.",
+      "required_tools": [
+        "get_customer_open_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Securely capture the customer's credit card information.",
+      "expected_outcome": "Agent uses a secure payment portal to enter the card details.",
+      "required_tools": [
+        "capture_credit_card_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the credit card transaction through the payment gateway.",
+      "expected_outcome": "Agent receives a successful authorization code from the gateway.",
+      "required_tools": [
+        "process_payment_gateway_transaction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Apply the payment to close the invoice and record the credit card processing fee as an expense.",
+      "expected_outcome": "Agent applies the cash and posts the associated bank fee.",
+      "required_tools": [
+        "apply_customer_payment",
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

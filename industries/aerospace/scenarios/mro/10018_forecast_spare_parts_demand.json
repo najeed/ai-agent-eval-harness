@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10018",
+  "title": "Forecast Spare Parts Demand",
+  "description": "A logistics planner needs to forecast the demand for a specific type of landing gear brake assembly for the next year.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Spares & Logistics",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the historical consumption data for the brake assembly for the past 5 years.",
+      "expected_outcome": "Agent gathers all historical usage data for the part.",
+      "required_tools": [
+        "get_part_consumption_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data along with the future flight schedules for the fleet to create a demand forecast.",
+      "expected_outcome": "Agent generates a forecast predicting the need for 50 brake assemblies over the next 12 months.",
+      "required_tools": [
+        "get_fleet_flight_schedule",
+        "generate_demand_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "forecasting_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Adjust inventory reorder points based on the new forecast to ensure parts availability.",
+      "expected_outcome": "Agent updates the inventory management system with new reorder points.",
+      "required_tools": [
+        "update_inventory_reorder_point"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

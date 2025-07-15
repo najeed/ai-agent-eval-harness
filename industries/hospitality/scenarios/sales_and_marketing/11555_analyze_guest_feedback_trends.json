@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-sm-11555",
+  "title": "Analyze Guest Feedback Trends",
+  "description": "A general manager wants to analyze guest feedback from the past quarter to identify common themes or recurring issues.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Guest Feedback & Reviews",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a report from the guest feedback platform for the previous quarter.",
+      "expected_outcome": "A report containing all survey responses and online reviews is generated.",
+      "required_tools": [
+        "gfm_generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use text analytics to identify the most frequently mentioned keywords and topics.",
+      "expected_outcome": "The analysis shows that 'slow check-in' and 'breakfast variety' are common negative themes.",
+      "required_tools": [
+        "gfm_analyze_text_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a summary presentation of the findings to share with department heads.",
+      "expected_outcome": "A clear, concise presentation is created to drive operational improvements.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

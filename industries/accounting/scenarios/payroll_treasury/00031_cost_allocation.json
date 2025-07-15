@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-pt-31",
+  "title": "Allocate Corporate Overheads",
+  "description": "At month-end, an accountant needs to allocate shared corporate costs (e.g., rent, IT) to the different business units based on headcount.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Compliance & Cost Accounting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the total corporate overhead costs for the month.",
+      "expected_outcome": "Agent gets the total amount to be allocated.",
+      "required_tools": [
+        "get_gl_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the month-end headcount for each business unit.",
+      "expected_outcome": "Agent gets the headcount for Sales, Marketing, and R&D.",
+      "required_tools": [
+        "get_headcount_by_department"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the allocation percentage for each business unit based on its share of the total headcount.",
+      "expected_outcome": "Agent correctly calculates the allocation percentages.",
+      "required_tools": [
+        "calculate_allocation_percentages"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create and post the journal entry to allocate the costs from the corporate cost center to the business unit cost centers.",
+      "expected_outcome": "Agent posts the correct allocation journal entry.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

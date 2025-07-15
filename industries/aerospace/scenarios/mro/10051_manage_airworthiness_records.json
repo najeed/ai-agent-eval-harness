@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10051",
+  "title": "Manage Aircraft Airworthiness Records",
+  "description": "A records administrator is responsible for maintaining the complete and compliant set of maintenance and airworthiness records for an aircraft.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Technical Documentation & Compliance",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and file all incoming maintenance logbook entries, work orders, and component repair certifications.",
+      "expected_outcome": "Agent correctly files all new records.",
+      "required_tools": [
+        "file_maintenance_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Audit the records to ensure compliance with all applicable regulations and to track life-limited parts.",
+      "expected_outcome": "Agent performs an audit and confirms all records are complete and all life-limited parts are tracked.",
+      "required_tools": [
+        "audit_aircraft_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare a records package for an upcoming sale or lease transfer of the aircraft.",
+      "expected_outcome": "Agent compiles a complete and organized set of records for the transaction.",
+      "required_tools": [
+        "generate_records_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

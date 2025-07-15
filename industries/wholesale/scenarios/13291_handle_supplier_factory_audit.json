@@ -1,0 +1,66 @@
+{
+  "scenario_id": "wholesale-sp-13291",
+  "title": "Handle a Supplier Factory Audit",
+  "description": "As part of a corporate responsibility program, a company needs to conduct an audit of a new supplier's factory.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Quality Assurance & Compliance",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule the factory audit with the supplier.",
+      "expected_outcome": "A date for the audit is agreed upon.",
+      "required_tools": [
+        "schedule_supplier_audit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "An auditor visits the factory and uses a digital checklist to assess compliance with labor laws, safety standards, and environmental regulations.",
+      "expected_outcome": "The auditor completes the audit.",
+      "required_tools": [
+        "conduct_factory_audit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an audit report with the findings.",
+      "expected_outcome": "A report is created, noting any areas of non-compliance.",
+      "required_tools": [
+        "generate_audit_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "If issues are found, work with the supplier on a corrective action plan.",
+      "expected_outcome": "A plan is created to address the issues found in the audit.",
+      "required_tools": [
+        "issue_corrective_action_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

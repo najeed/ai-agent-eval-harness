@@ -1,0 +1,55 @@
+{
+  "scenario_id": "heavy-industries-pmc-11412",
+  "title": "Generate Monthly Project Progress Report",
+  "description": "A project manager needs to generate the official monthly progress report for project stakeholders.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Reporting & Communication",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the latest schedule update, cost report, and safety statistics for the month.",
+      "expected_outcome": "Agent retrieves the required data from various systems.",
+      "required_tools": [
+        "get_project_schedule",
+        "get_cost_report",
+        "get_safety_statistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a reporting template to populate the data into a standard format.",
+      "expected_outcome": "Agent successfully populates the monthly report template.",
+      "required_tools": [
+        "populate_report_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the final report as a PDF and distribute it to the project stakeholder mailing list.",
+      "expected_outcome": "Agent creates the final PDF and emails it to the correct recipients.",
+      "required_tools": [
+        "generate_pdf_report",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

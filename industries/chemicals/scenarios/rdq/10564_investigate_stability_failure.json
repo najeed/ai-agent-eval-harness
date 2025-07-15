@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-rdq-10564",
+  "title": "Investigate Stability Study Failure",
+  "description": "A product fails its 6-month stability test point, with impurity levels exceeding the specification. QA must investigate.",
+  "use_case": "R&D and Quality",
+  "core_function": "Quality Assurance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the stability test failure alert in the LIMS.",
+      "expected_outcome": "Agent identifies the product, study, and failing test result.",
+      "required_tools": [
+        "get_stability_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a formal investigation report for the stability failure.",
+      "expected_outcome": "Agent successfully initiates the investigation record.",
+      "required_tools": [
+        "create_lab_investigation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the product's formulation and manufacturing record to search for potential causes of instability.",
+      "expected_outcome": "Agent reviews the product data to support the investigation.",
+      "required_tools": [
+        "get_product_formulation",
+        "get_batch_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

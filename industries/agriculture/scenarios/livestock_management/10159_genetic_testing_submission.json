@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10159",
+  "title": "Submit Sample for Genetic Testing",
+  "description": "A cattle breeder has taken a tissue sample from a prize bull and needs to submit it to a lab for genetic testing.",
+  "use_case": "Livestock Management",
+  "core_function": "Breeding & Genetics",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the animal the sample was taken from.",
+      "expected_outcome": "Agent selects the correct bull from the database.",
+      "required_tools": [
+        "get_animal_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the desired genetic tests to be performed (e.g., parentage verification, genetic defect screening).",
+      "expected_outcome": "Agent selects the correct panel of tests.",
+      "required_tools": [
+        "get_available_genetic_tests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a lab submission form with all the required animal and test information.",
+      "expected_outcome": "Agent creates a printable PDF submission form.",
+      "required_tools": [
+        "generate_lab_submission_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

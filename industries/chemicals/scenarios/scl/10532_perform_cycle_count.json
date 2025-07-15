@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-scl-10532",
+  "title": "Perform Inventory Cycle Count",
+  "description": "A warehouse operator is tasked with performing a cycle count for a specific section of the warehouse to verify inventory accuracy.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Inventory Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a cycle count sheet for a specific warehouse aisle.",
+      "expected_outcome": "Agent prints or downloads a list of materials and their expected quantities for Aisle 5.",
+      "required_tools": [
+        "generate_cycle_count_sheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Physically count the inventory in the aisle and record the actual quantities.",
+      "expected_outcome": "Agent performs the physical count.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the count results into the system. The system flags a discrepancy for one material.",
+      "expected_outcome": "Agent enters the counts, and the system shows one material has a variance that requires investigation.",
+      "required_tools": [
+        "enter_cycle_count_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

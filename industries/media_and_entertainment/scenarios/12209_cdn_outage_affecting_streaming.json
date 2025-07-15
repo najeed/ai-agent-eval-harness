@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-bo-12209",
+  "title": "CDN Outage Affecting Video Streaming",
+  "description": "Multiple users report widespread video playback failures. The agent must diagnose the issue, suspecting a CDN problem.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Content Delivery & CDN",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the high volume of user complaints about playback errors.",
+      "expected_outcome": "Agent identifies a spike in playback error reports.",
+      "required_tools": [
+        "get_customer_support_ticket_volume"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status dashboards of all primary CDN providers.",
+      "expected_outcome": "Agent finds that a major CDN provider is reporting a partial outage in North America.",
+      "required_tools": [
+        "check_cdn_provider_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute a command to reroute all North American traffic to the secondary CDN provider.",
+      "expected_outcome": "Agent successfully updates the CDN traffic management configuration.",
+      "required_tools": [
+        "reroute_cdn_traffic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

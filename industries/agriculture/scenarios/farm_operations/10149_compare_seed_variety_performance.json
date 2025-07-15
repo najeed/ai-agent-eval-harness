@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ag-fo-10149",
+  "title": "Compare On-Farm Seed Variety Trial Performance",
+  "description": "A farmer planted several different corn hybrids in trial strips across a field and wants to analyze the yield data to see which performed best.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Supply Chain & Inventory",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the yield map from the combine harvester.",
+      "expected_outcome": "Agent gets the yield data for the field.",
+      "required_tools": [
+        "get_historical_yield_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the as-planted map, which shows where each hybrid was planted.",
+      "expected_outcome": "Agent gets the map of the trial layout.",
+      "required_tools": [
+        "get_as_planted_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Overlay the yield and as-planted maps and calculate the average yield for each hybrid.",
+      "expected_outcome": "Agent calculates the average yield for each specific seed variety.",
+      "required_tools": [
+        "analyze_trial_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a report ranking the hybrids by yield and calculating the return on investment for each, considering seed cost.",
+      "expected_outcome": "Agent provides a report showing which hybrid was the most profitable.",
+      "required_tools": [
+        "generate_trial_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

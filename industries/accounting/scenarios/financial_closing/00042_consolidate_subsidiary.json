@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-fc-42",
+  "title": "Consolidate a Subsidiary's Financials",
+  "description": "A parent company needs to consolidate the financial results of a wholly-owned subsidiary into its own financial statements.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Period-End Close Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the final trial balances for both the parent company and the subsidiary.",
+      "expected_outcome": "Agent gets both trial balances.",
+      "required_tools": [
+        "get_trial_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify and prepare the necessary elimination entries for intercompany transactions (e.g., loans, sales).",
+      "expected_outcome": "Agent prepares all required elimination entries.",
+      "required_tools": [
+        "identify_intercompany_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Combine the trial balances and post the elimination entries to produce a consolidated trial balance.",
+      "expected_outcome": "Agent successfully generates the consolidated trial balance.",
+      "required_tools": [
+        "run_consolidation_process"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-res-12923",
+  "title": "Onboard a New Seller Client",
+  "description": "An agent has secured a new listing. They need to onboard the client, including signing the listing agreement.",
+  "use_case": "Residential Sales",
+  "core_function": "Buyer & Seller Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new client profile in the CRM with the seller's contact information and property details.",
+      "expected_outcome": "Agent accurately enters the new client's data into the CRM.",
+      "required_tools": [
+        "create_client_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a listing agreement with the agreed-upon commission rate and listing term.",
+      "expected_outcome": "Agent creates a correct and complete listing agreement.",
+      "required_tools": [
+        "generate_listing_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the listing agreement to the seller for electronic signature and provide a welcome packet.",
+      "expected_outcome": "Agent successfully sends the agreement and a welcome packet email.",
+      "required_tools": [
+        "send_for_e_signature",
+        "send_welcome_packet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

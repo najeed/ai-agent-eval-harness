@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10280",
+  "title": "Handle Disruption on a Partner Airline",
+  "description": "A passenger booked through Airline A is affected by a cancellation on a connecting flight operated by partner Airline B. Airline A's agent must assist.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Partnerships & Interlining",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the cancellation on the partner-operated flight.",
+      "expected_outcome": "Agent identifies the disruption.",
+      "required_tools": [
+        "get_flight_status_update"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the partner airline's liaison desk to find rebooking options.",
+      "expected_outcome": "Agent coordinates with the partner to find a solution.",
+      "required_tools": [
+        "contact_partner_airline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Re-issue the passenger's ticket on the new itinerary provided by the partner airline.",
+      "expected_outcome": "Agent successfully updates the ticket to reflect the new flights.",
+      "required_tools": [
+        "reissue_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-ago-10244",
+  "title": "Handle an Overweight Bag",
+  "description": "A passenger's checked bag is over the standard weight limit. The agent must handle the situation.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Check-in & Baggage",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Weigh the bag and inform the passenger that it is overweight.",
+      "expected_outcome": "Agent clearly communicates the issue.",
+      "required_tools": [
+        "weigh_bag"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the options: they can either remove items to reduce the weight or pay an overweight baggage fee.",
+      "expected_outcome": "Agent clearly presents the passenger's options.",
+      "required_tools": [
+        "get_ancillary_fee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The passenger chooses to pay the fee. Process the payment and check the bag.",
+      "expected_outcome": "Agent takes payment for the fee and accepts the bag for travel.",
+      "required_tools": [
+        "process_payment",
+        "print_bag_tag"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

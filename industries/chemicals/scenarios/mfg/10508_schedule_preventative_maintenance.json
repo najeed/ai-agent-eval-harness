@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10508",
+  "title": "Schedule Preventative Maintenance on a Pump",
+  "description": "A maintenance planner needs to schedule a required 6-month preventative maintenance (PM) task on a critical process pump, minimizing production downtime.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Maintenance Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the next due date for the pump's PM task from the maintenance system.",
+      "expected_outcome": "Agent finds the PM is due within the next 30 days.",
+      "required_tools": [
+        "get_maintenance_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult the production schedule to find a planned downtime window for the associated process unit.",
+      "expected_outcome": "Agent identifies a 2-day planned shutdown for a product changeover in three weeks.",
+      "required_tools": [
+        "get_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for the PM task and schedule it during the identified downtime window.",
+      "expected_outcome": "Agent successfully schedules the work order, assigns resources, and links it to the production downtime.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-it-10325",
+  "title": "Test Application Data Processing Controls",
+  "description": "An IT auditor tests a financial application to ensure it correctly calculates sales commissions.",
+  "use_case": "IT Audit",
+  "core_function": "Application Controls Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the commission calculation logic and policy from the business.",
+      "expected_outcome": "Auditor understands the rules for how commissions should be calculated.",
+      "required_tools": [
+        "get_business_requirements_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a test dataset with various sales scenarios (e.g., different products, discount levels).",
+      "expected_outcome": "A comprehensive test deck is created.",
+      "required_tools": [
+        "create_test_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the test data through the application and compare the system's output to a manually calculated result.",
+      "expected_outcome": "Auditor confirms the application calculates commissions correctly in all test scenarios.",
+      "required_tools": [
+        "perform_application_test",
+        "recalculate_manually"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

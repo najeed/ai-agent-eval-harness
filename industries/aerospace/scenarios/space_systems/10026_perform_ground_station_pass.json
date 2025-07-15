@@ -1,0 +1,54 @@
+{
+  "scenario_id": "aerospace-ss-10026",
+  "title": "Perform a Ground Station Pass",
+  "description": "A satellite operator needs to upload a new command file and download scientific data during a scheduled pass over a ground station.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Operations & Control",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Predict the exact time of the satellite's upcoming pass and configure the ground station antenna to track it.",
+      "expected_outcome": "Agent gets the pass schedule and pre-positions the antenna.",
+      "required_tools": [
+        "get_pass_schedule",
+        "configure_antenna"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Once the link is established, upload the new command file to the satellite.",
+      "expected_outcome": "Agent successfully uploads the file and receives a confirmation checksum.",
+      "required_tools": [
+        "upload_command_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Command the satellite to transmit its stored scientific data and monitor the download progress.",
+      "expected_outcome": "Agent initiates the download and verifies that all data packets are received without error.",
+      "required_tools": [
+        "send_spacecraft_command",
+        "monitor_data_download"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

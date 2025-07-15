@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-omf-10631",
+  "title": "Process a BOPIS Order",
+  "description": "A customer places an order online for in-store pickup (BOPIS - Buy Online, Pick up In Store).",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Order Processing",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the new BOPIS order and check local store inventory for the requested items.",
+      "expected_outcome": "Agent confirms the local store has the items in stock.",
+      "required_tools": [
+        "get_new_orders",
+        "check_store_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a 'pick ticket' to the local store's staff to gather the items.",
+      "expected_outcome": "Agent successfully transmits the order to the store's fulfillment system.",
+      "required_tools": [
+        "send_pick_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the store confirms the order is picked, send an 'Order Ready for Pickup' notification to the customer.",
+      "expected_outcome": "Agent sends the correct notification to the customer.",
+      "required_tools": [
+        "send_customer_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

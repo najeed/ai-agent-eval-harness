@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-scl-10592",
+  "title": "Manage Demurrage Charges",
+  "description": "A railcar of raw material was not unloaded in time, and the railroad has issued a demurrage charge (a late fee).",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Logistics & Distribution",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the demurrage invoice from the railroad.",
+      "expected_outcome": "Agent acknowledges receipt of the charge.",
+      "required_tools": [
+        "get_supplier_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Investigate the cause of the delay in unloading the railcar.",
+      "expected_outcome": "Agent reviews logs and finds the delay was due to a plant shutdown.",
+      "required_tools": [
+        "review_unloading_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the demurrage charge for payment, as it was not the carrier's fault.",
+      "expected_outcome": "Agent approves the invoice for payment by Accounts Payable.",
+      "required_tools": [
+        "approve_invoice_for_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

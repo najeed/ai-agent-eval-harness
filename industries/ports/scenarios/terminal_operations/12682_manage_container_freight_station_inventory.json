@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-to-12682",
+  "title": "Manage CFS Warehouse Inventory",
+  "description": "A customer wants to pick up their LCL (Less than Container Load) cargo from the CFS warehouse. The clerk must locate it.",
+  "use_case": "Terminal Operations",
+  "core_function": "Warehouse & CFS Operations",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the customer's Bill of Lading to identify the cargo.",
+      "expected_outcome": "Clerk identifies the cargo details from the customer's paperwork.",
+      "required_tools": [
+        "get_bill_of_lading_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the Warehouse Management System (WMS) to find the cargo's storage location.",
+      "expected_outcome": "The WMS shows the cargo is in Rack 1, Bay 5.",
+      "required_tools": [
+        "find_cargo_in_wms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for a forklift operator to retrieve the cargo and bring it to the loading dock for the customer.",
+      "expected_outcome": "A work order is generated, and the forklift operator retrieves the correct cargo.",
+      "required_tools": [
+        "create_warehouse_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

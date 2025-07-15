@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-fo-10268",
+  "title": "Manage a Minimum Equipment List (MEL) Item",
+  "description": "A pilot discovers a non-critical system is inoperative before a flight (e.g., a coffee maker). They must consult the MEL to see if the flight can legally depart.",
+  "use_case": "Flight Operations",
+  "core_function": "Flight Planning & Dispatch",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the inoperative system.",
+      "expected_outcome": "Pilot identifies the broken coffee maker.",
+      "required_tools": [
+        "identify_inoperative_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult the aircraft's Minimum Equipment List (MEL) to see if dispatch is permitted with this item inoperative.",
+      "expected_outcome": "Pilot finds the MEL entry for the coffee maker, which allows dispatch.",
+      "required_tools": [
+        "get_mel"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Follow any required procedures in the MEL (e.g., placarding the item as 'inoperative') and record the MEL item in the aircraft's technical log.",
+      "expected_outcome": "Pilot applies the placard and makes the logbook entry, allowing the flight to depart.",
+      "required_tools": [
+        "placard_item",
+        "update_technical_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

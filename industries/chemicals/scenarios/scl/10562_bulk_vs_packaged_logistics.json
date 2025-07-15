@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-scl-10562",
+  "title": "Analyze Bulk vs. Packaged Logistics Cost",
+  "description": "A planner needs to decide whether it's more cost-effective to ship a large order as a full bulk tanker or as packaged drums.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Logistics & Distribution",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get a freight quote for a full bulk tanker shipment to the customer's location.",
+      "expected_outcome": "Agent obtains a quote of $3,000 for a bulk shipment.",
+      "required_tools": [
+        "get_bulk_freight_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total cost for a packaged shipment, including the cost of drums, palletizing labor, and less-than-truckload (LTL) freight.",
+      "expected_outcome": "Agent calculates the total packaged cost to be $4,500.",
+      "required_tools": [
+        "calculate_packaged_shipping_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the costs and recommend the more economical bulk shipping option.",
+      "expected_outcome": "Agent correctly identifies the bulk option as cheaper and makes the recommendation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

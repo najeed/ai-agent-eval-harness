@@ -1,0 +1,54 @@
+{
+  "scenario_id": "insurance-pc-11011",
+  "title": "Set Up Automatic EFT Payments",
+  "description": "A customer wants to have their monthly premium automatically deducted from their checking account.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Billing & Collections",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and their policy.",
+      "expected_outcome": "Agent correctly identifies the customer.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Securely collect the customer's bank routing and account number.",
+      "expected_outcome": "Agent accurately captures the bank account information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        },
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up the recurring EFT payment plan and confirm the first withdrawal date with the customer.",
+      "expected_outcome": "Agent successfully sets up the automated payment and informs the customer of the start date.",
+      "required_tools": [
+        "setup_eft_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10282",
+  "title": "Handle a Lost Boarding Pass",
+  "description": "A passenger has lost their boarding pass after checking in. A gate agent needs to re-issue it.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Gate & Boarding",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's booking using their name and photo ID.",
+      "expected_outcome": "Agent finds the passenger's booking and confirms they are checked in.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the passenger's identity against their photo ID.",
+      "expected_outcome": "Agent confirms the identity matches.",
+      "required_tools": [
+        "verify_passenger_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Re-print the boarding pass for the passenger.",
+      "expected_outcome": "Agent successfully provides the passenger with a new boarding pass.",
+      "required_tools": [
+        "print_boarding_pass"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "venues-fb-13135",
+  "title": "Order Concessions Inventory",
+  "description": "A food and beverage manager needs to place the weekly order for non-perishable items like popcorn kernels, cups, and napkins.",
+  "use_case": "Food & Beverage (Concessions)",
+  "core_function": "Inventory Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the current inventory levels and the schedule of events for the next two weeks.",
+      "expected_outcome": "Agent assesses current stock and future demand.",
+      "required_tools": [
+        "check_central_inventory",
+        "get_booking_calendar"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the required order quantities for each item based on par levels and expected attendance.",
+      "expected_outcome": "Agent determines the exact quantities to order for each item.",
+      "required_tools": [
+        "calculate_order_quantities"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create purchase orders for the items from the approved vendors.",
+      "expected_outcome": "Agent generates and sends purchase orders to the appropriate suppliers.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

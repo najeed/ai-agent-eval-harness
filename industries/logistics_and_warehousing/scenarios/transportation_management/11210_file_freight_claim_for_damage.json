@@ -1,0 +1,51 @@
+{
+  "scenario_id": "lw-tm-11210",
+  "title": "File Freight Claim for Damage",
+  "description": "A shipment was delivered with visible damage. A claims specialist must file a claim with the carrier.",
+  "use_case": "Transportation Management",
+  "core_function": "Freight & Carrier Management",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the shipment record and the signed Proof of Delivery (POD) where the damage was noted.",
+      "expected_outcome": "Agent gathers the necessary shipment details and POD document.",
+      "required_tools": [
+        "get_shipment_details",
+        "get_pod_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect documentation of the damage, including photos and a commercial invoice for the value of the goods.",
+      "expected_outcome": "Agent compiles all required supporting documents.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the claim to the carrier through their claims portal, attaching all documentation.",
+      "expected_outcome": "Agent successfully files the claim and receives a claim number from the carrier.",
+      "required_tools": [
+        "submit_carrier_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

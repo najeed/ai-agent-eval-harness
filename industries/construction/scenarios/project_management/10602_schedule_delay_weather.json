@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-pm-10602",
+  "title": "Project Schedule Delay Due to Weather",
+  "description": "A project manager must update the project schedule to account for three days of lost work due to severe weather.",
+  "use_case": "Project Management",
+  "core_function": "Project Planning & Scheduling",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all tasks on the critical path affected by the 3-day weather delay.",
+      "expected_outcome": "A list of critical path tasks that were scheduled during the lost days is generated.",
+      "required_tools": [
+        "get_project_schedule",
+        "get_critical_path"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the Gantt chart by shifting the affected tasks and their dependencies forward by three days.",
+      "expected_outcome": "The project schedule is correctly updated to reflect the delay.",
+      "required_tools": [
+        "update_project_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify all project stakeholders of the revised project completion date.",
+      "expected_outcome": "A notification is sent to all relevant stakeholders with the new timeline.",
+      "required_tools": [
+        "send_stakeholder_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

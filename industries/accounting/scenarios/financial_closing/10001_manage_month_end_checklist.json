@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-fc-10001",
+  "title": "Manage the Month-End Close Checklist",
+  "description": "The accounting manager needs to track the progress of all tasks in the month-end close process.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Period-End Close Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Display the month-end close checklist, showing the status of each task (Not Started, In Progress, Completed).",
+      "expected_outcome": "Agent displays the checklist dashboard.",
+      "required_tools": [
+        "get_close_checklist_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify any tasks that are behind schedule.",
+      "expected_outcome": "Agent flags the 'AP Accrual' task as overdue.",
+      "required_tools": [
+        "identify_overdue_tasks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a reminder notification to the accountant assigned to the overdue task.",
+      "expected_outcome": "Agent successfully sends a reminder.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

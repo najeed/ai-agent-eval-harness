@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-pm-10691",
+  "title": "Resolve Stakeholder Disagreement",
+  "description": "The architect and the structural engineer disagree on a design detail. The PM must facilitate a resolution.",
+  "use_case": "Project Management",
+  "core_function": "Risk & Issue Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the design conflict in the project issue tracker.",
+      "expected_outcome": "The disagreement is formally documented as an issue.",
+      "required_tools": [
+        "create_issue_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule a meeting with the architect and the structural engineer to discuss the conflict.",
+      "expected_outcome": "A meeting is scheduled to resolve the issue.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the agreed-upon resolution from the meeting and distribute it to the project team.",
+      "expected_outcome": "The resolution is documented and communicated to prevent confusion.",
+      "required_tools": [
+        "log_meeting_minutes",
+        "send_stakeholder_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

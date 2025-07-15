@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-er-11611",
+  "title": "Investigate an Employee Misconduct Claim",
+  "description": "An employee files a formal complaint alleging harassment by a coworker. An HR business partner must investigate.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Disciplinary Actions",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Document the initial complaint from the employee in the case management system.",
+      "expected_outcome": "HRBP creates a new investigation case with all the initial details.",
+      "required_tools": [
+        "create_investigation_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule and conduct confidential interviews with the complainant, the accused, and any witnesses.",
+      "expected_outcome": "HRBP conducts and documents all interviews.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review relevant evidence (e.g., emails, chat logs) and make a recommendation based on the findings.",
+      "expected_outcome": "After a thorough review, the HRBP concludes the claim is substantiated and recommends disciplinary action.",
+      "required_tools": [
+        "review_employee_communications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

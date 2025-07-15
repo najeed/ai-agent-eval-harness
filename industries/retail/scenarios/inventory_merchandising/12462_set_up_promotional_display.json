@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-im-12462",
+  "title": "Set Up a Promotional Display",
+  "description": "An associate needs to set up a promotional end-cap display for a new product launch.",
+  "use_case": "Inventory & Merchandising",
+  "core_function": "Merchandising & Planograms",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the instructions for the new promotional display in the task management system.",
+      "expected_outcome": "The associate finds the task which includes a picture and instructions.",
+      "required_tools": [
+        "view_task_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather the necessary product and signage from the backroom.",
+      "expected_outcome": "The associate collects all materials needed for the display.",
+      "required_tools": [
+        "check_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assemble the display at the designated end-cap location according to the instructions and mark the task as complete.",
+      "expected_outcome": "The promotional display is correctly set up to attract customers.",
+      "required_tools": [
+        "complete_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "policy_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

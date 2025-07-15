@@ -1,0 +1,51 @@
+{
+  "scenario_id": "finance-cf-10894",
+  "title": "Respond to a Regulatory Inquiry",
+  "description": "A financial regulator has sent an inquiry requesting trade data for a specific time period.",
+  "use_case": "Corporate Finance",
+  "core_function": "Risk & Compliance",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Parse the regulator's request to identify the exact data and time period required.",
+      "expected_outcome": "Agent correctly identifies the scope of the data request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the trade database to pull all relevant trade records.",
+      "expected_outcome": "Agent successfully extracts the requested trade data from the archive.",
+      "required_tools": [
+        "query_trade_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Format the data according to the regulator's specifications and submit it through the secure portal.",
+      "expected_outcome": "Agent prepares and submits the data package to the regulator.",
+      "required_tools": [
+        "format_regulatory_data",
+        "submit_to_secure_portal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

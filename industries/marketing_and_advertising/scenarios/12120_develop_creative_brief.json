@@ -1,0 +1,53 @@
+{
+  "scenario_id": "marketing-cc-12120",
+  "title": "Develop a Creative Brief",
+  "description": "A project manager needs to write a creative brief for the design team for an upcoming social media campaign.",
+  "use_case": "Content & Creative Development",
+  "core_function": "Creative Asset Development",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all campaign details: objective, target audience, key message, and deliverables.",
+      "expected_outcome": "Agent collects all necessary information from the main campaign plan.",
+      "required_tools": [
+        "get_campaign_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Fill out a standardized creative brief template with the gathered information.",
+      "expected_outcome": "Agent populates all sections of the brief, including background, goals, and specs.",
+      "required_tools": [
+        "creative_brief_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Share the completed brief with the creative team and schedule a kickoff meeting.",
+      "expected_outcome": "Agent distributes the brief and sets up the required meeting.",
+      "required_tools": [
+        "send_notification",
+        "calendar_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

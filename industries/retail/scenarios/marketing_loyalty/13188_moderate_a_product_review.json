@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ml-13188",
+  "title": "Moderate a Product Review",
+  "description": "A new product review has been submitted and is waiting for moderation before it appears on the website.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Customer Feedback & Reviews",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the review moderation queue.",
+      "expected_outcome": "An agent sees the list of pending reviews.",
+      "required_tools": [
+        "get_review_moderation_queue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Read the review to ensure it does not contain inappropriate language or personal information.",
+      "expected_outcome": "The agent confirms the review complies with site policies.",
+      "required_tools": [
+        "review_product_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "policy_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the review.",
+      "expected_outcome": "The review is now visible on the product's page on the website.",
+      "required_tools": [
+        "approve_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

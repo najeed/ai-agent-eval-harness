@@ -1,0 +1,53 @@
+{
+  "scenario_id": "sports-fe-13284",
+  "title": "Run a Flash Sale on Merchandise",
+  "description": "To clear out old inventory, a team's marketing department wants to run a 24-hour flash sale on last season's merchandise.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Merchandise & Concessions",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific items to be included in the sale.",
+      "expected_outcome": "Agent has a list of all items from last season.",
+      "required_tools": [
+        "get_inventory_by_season"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply a discount to all the selected items in the e-commerce system.",
+      "expected_outcome": "Agent successfully applies a 50% discount to all sale items.",
+      "required_tools": [
+        "apply_bulk_discount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Announce the flash sale on social media and through an email blast to fans.",
+      "expected_outcome": "Agent successfully promotes the sale.",
+      "required_tools": [
+        "post_to_social_media",
+        "send_email_to_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

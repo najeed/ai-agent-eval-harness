@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10194",
+  "title": "Plan an Interseeding Mission for Cover Crops",
+  "description": "A farmer wants to use a high-clearance robot to seed a cover crop into their standing corn crop.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Robotics & Automation",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the as-planted map for the corn field to get the exact location of the rows.",
+      "expected_outcome": "Agent gets the row guidance lines.",
+      "required_tools": [
+        "get_as_planted_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a path plan for the robot to drive between the corn rows.",
+      "expected_outcome": "Agent creates a precise guidance path for the robot.",
+      "required_tools": [
+        "generate_robot_mission_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch the interseeder robot to begin the mission.",
+      "expected_outcome": "Agent successfully dispatches the robot.",
+      "required_tools": [
+        "dispatch_robot"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

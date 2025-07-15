@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-fc-98",
+  "title": "Reconcile an Intercompany Loan",
+  "description": "Subsidiary A has an 'Intercompany Loan Receivable' from Subsidiary B. This must be reconciled with Subsidiary B's 'Intercompany Loan Payable' to A.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Account Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the ending balance and transaction detail for the loan receivable from Subsidiary A's books.",
+      "expected_outcome": "Agent gets the loan receivable details.",
+      "required_tools": [
+        "get_intercompany_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the ending balance and transaction detail for the loan payable from Subsidiary B's books.",
+      "expected_outcome": "Agent gets the loan payable details.",
+      "required_tools": [
+        "get_intercompany_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the balances and transactions, including accrued interest, to identify any discrepancies.",
+      "expected_outcome": "Agent finds that Subsidiary B has not yet accrued for the current month's interest, causing a mismatch.",
+      "required_tools": [
+        "identify_intercompany_discrepancy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Instruct Subsidiary B to post the interest accrual entry so the accounts will match for consolidation.",
+      "expected_outcome": "Agent sends an instruction to the accountant at Subsidiary B.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

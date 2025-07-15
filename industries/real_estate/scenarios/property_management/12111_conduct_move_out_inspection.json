@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-12111",
+  "title": "Conduct Move-Out Inspection",
+  "description": "A tenant has moved out. The property manager needs to conduct an inspection and process the security deposit.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the move-in inspection report for the unit.",
+      "expected_outcome": "Agent pulls up the original inspection report with photos to compare against.",
+      "required_tools": [
+        "get_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Document the current condition of the unit, noting any damage beyond normal wear and tear.",
+      "expected_outcome": "Agent logs new damages (e.g., 'Large stain on carpet', 'Hole in wall') in a new inspection report.",
+      "required_tools": [
+        "create_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate deductions from the security deposit for repairs and generate a disposition letter.",
+      "expected_outcome": "Agent itemizes repair costs, calculates the security deposit refund, and generates the legal disposition letter.",
+      "required_tools": [
+        "calculate_security_deposit_disposition",
+        "generate_legal_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

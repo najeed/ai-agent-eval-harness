@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10142",
+  "title": "Analyze Equipment Fuel Consumption",
+  "description": "A farm manager wants to analyze the fuel consumption of their tractors to identify inefficient machines or operators.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Equipment Management & Maintenance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve fuel consumption and operating hour data from the telematics system for all tractors over the last month.",
+      "expected_outcome": "Agent retrieves the complete dataset.",
+      "required_tools": [
+        "get_equipment_telemetry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the average fuel consumption (gallons per hour) for each tractor.",
+      "expected_outcome": "Agent calculates the fuel efficiency for each machine.",
+      "required_tools": [
+        "calculate_fuel_efficiency"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report that benchmarks each tractor against the fleet average and flags any machines with abnormally high fuel consumption for inspection.",
+      "expected_outcome": "Agent identifies one tractor that is 20% less efficient than the others and recommends it be checked for maintenance issues.",
+      "required_tools": [
+        "generate_benchmark_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

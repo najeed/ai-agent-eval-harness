@@ -1,0 +1,66 @@
+{
+  "scenario_id": "media-ae-12261",
+  "title": "A/B Test Thumbnail Images for a VOD Title",
+  "description": "A streaming service wants to determine which thumbnail image for a new movie generates a higher click-through rate.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Personalization & Recommendation",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the movie and the two candidate thumbnail images (A and B).",
+      "expected_outcome": "Agent has the asset ID and the two image files.",
+      "required_tools": [
+        "find_asset_by_title"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set up an A/B test to show thumbnail A to 50% of users and thumbnail B to the other 50%.",
+      "expected_outcome": "Agent successfully configures the A/B test in the system.",
+      "required_tools": [
+        "setup_ab_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After 24 hours, analyze the click-through rate for both thumbnails.",
+      "expected_outcome": "Agent finds that thumbnail B has a 15% higher click-through rate.",
+      "required_tools": [
+        "get_ab_test_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Set the winning thumbnail (B) as the default for all users.",
+      "expected_outcome": "Agent updates the movie's metadata to use the winning thumbnail.",
+      "required_tools": [
+        "update_asset_metadata"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

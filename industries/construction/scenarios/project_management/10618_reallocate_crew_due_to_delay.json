@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-pm-10618",
+  "title": "Reallocate Crew Due to Material Delay",
+  "description": "The delivery of structural steel is delayed by a week. The project manager must reallocate the steel erection crew to another task.",
+  "use_case": "Project Management",
+  "core_function": "Resource Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify that the 'Steel Erection Crew' is scheduled for a task that is now blocked.",
+      "expected_outcome": "Agent confirms the crew's current task is blocked by the material delay.",
+      "required_tools": [
+        "get_resource_schedule",
+        "get_task_dependencies"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find an available, non-dependent task that the crew can perform, such as 'Site Safety Improvements'.",
+      "expected_outcome": "Agent identifies a suitable task that can be started immediately.",
+      "required_tools": [
+        "find_available_tasks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reassign the 'Steel Erection Crew' to the 'Site Safety Improvements' task for the next 5 days.",
+      "expected_outcome": "The crew's schedule is updated in the project plan.",
+      "required_tools": [
+        "assign_resource_to_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

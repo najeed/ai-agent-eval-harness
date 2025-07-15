@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-vo-12694",
+  "title": "Handle an Emergency Unmooring",
+  "description": "A fire breaks out on a vessel at berth. The harbormaster orders an emergency unmooring to move the vessel away from the quay.",
+  "use_case": "Vessel Operations",
+  "core_function": "Mooring & Unmooring Operations",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the emergency order from the harbormaster to cast off the vessel immediately.",
+      "expected_outcome": "The mooring gang supervisor receives the urgent command.",
+      "required_tools": [
+        "get_emergency_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use emergency release hooks or, if necessary, cut the mooring lines to free the vessel.",
+      "expected_outcome": "The mooring lines are released as quickly as possible.",
+      "required_tools": [
+        "activate_emergency_release"
+      ],
+      "success_criteria": [
+        {
+          "metric": "operational_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm to the tugboats and pilot that the vessel is free so it can be towed away from the berth to a safe location.",
+      "expected_outcome": "The supervisor confirms 'all lines gone' so the emergency towage can begin.",
+      "required_tools": [
+        "report_lines_gone"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

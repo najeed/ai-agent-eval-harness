@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-csra-10464",
+  "title": "Roadside Assistance for Out of Fuel",
+  "description": "A customer has run out of fuel and is stranded on the side of the road.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Emergency & Roadside Assistance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the customer's plan includes fuel delivery service.",
+      "expected_outcome": "Agent confirms the plan covers delivery of up to 2 gallons of fuel.",
+      "required_tools": [
+        "get_roadside_assistance_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain the customer's location and confirm the fuel type needed (e.g., regular unleaded, diesel).",
+      "expected_outcome": "Agent gets the location and confirms the vehicle needs regular unleaded.",
+      "required_tools": [
+        "get_caller_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a service provider to deliver fuel and provide an ETA.",
+      "expected_outcome": "Agent dispatches a provider and gives a 40-minute ETA.",
+      "required_tools": [
+        "dispatch_roadside_assistance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "scenario_id": "ag-cm-10152",
+  "title": "Scout for Soybean Aphids",
+  "description": "An agronomist needs to scout a soybean field to determine if the aphid population has reached the economic threshold for treatment.",
+  "use_case": "Crop Management",
+  "core_function": "Pest & Disease Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Guide the agronomist on the proper method for scouting soybean aphids (e.g., check 20-30 plants, count aphids per plant).",
+      "expected_outcome": "Agent provides clear, standard scouting instructions.",
+      "required_tools": [
+        "get_scouting_protocol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the aphid counts from the agronomist and calculate the average number of aphids per plant.",
+      "expected_outcome": "Agent calculates the average population.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the average to the established economic threshold of 250 aphids per plant.",
+      "expected_outcome": "Agent determines the population is below the threshold.",
+      "required_tools": [
+        "get_pest_economic_threshold"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Recommend not to spray at this time, but to scout again in 5-7 days.",
+      "expected_outcome": "Agent provides a financially and environmentally sound recommendation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "chemicals-scl-10507",
+  "title": "Resolve Shipping Document Discrepancy",
+  "description": "A shipment is held at a port because the batch number on the bill of lading does not match the batch number on the container. Logistics must resolve this urgently.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Logistics & Distribution",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the original sales order and the shipping documents generated for the shipment.",
+      "expected_outcome": "Agent pulls up the sales order, packing list, and bill of lading.",
+      "required_tools": [
+        "get_sales_order",
+        "get_shipping_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the documents to the batch record to identify the source of the typo.",
+      "expected_outcome": "Agent confirms the correct batch number from the manufacturing record and finds the typo was on the bill of lading.",
+      "required_tools": [
+        "get_batch_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the freight forwarder, provide the correct information, and request an amended bill of lading to release the shipment.",
+      "expected_outcome": "Agent successfully communicates with the carrier and gets the documentation corrected.",
+      "required_tools": [
+        "contact_freight_forwarder",
+        "request_document_amendment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

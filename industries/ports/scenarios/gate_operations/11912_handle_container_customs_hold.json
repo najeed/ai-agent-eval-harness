@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ports-go-11912",
+  "title": "Handle a Container with a Customs Hold",
+  "description": "A truck arrives to pick up a container, but the system shows it has a hold placed on it by customs.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Customs & Documentation",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the container has a 'Customs Hold' status in the TOS.",
+      "expected_outcome": "Clerk confirms the system shows a hold and the container cannot be released.",
+      "required_tools": [
+        "check_container_customs_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the driver that the container is on hold and cannot be picked up.",
+      "expected_outcome": "Clerk clearly explains the situation to the driver.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the driver to contact the cargo's customs broker to resolve the hold.",
+      "expected_outcome": "Clerk provides the correct instructions for the driver/broker to clear the hold with customs.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

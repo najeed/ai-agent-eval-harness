@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-em-11637",
+  "title": "Correct an Employee's PTO Balance",
+  "description": "An employee believes their Paid Time Off (PTO) balance is incorrect.",
+  "use_case": "Employee Management",
+  "core_function": "Time & Attendance",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the employee and retrieve their current PTO balance and recent accrual/usage history.",
+      "expected_outcome": "HR specialist pulls up the employee's leave history.",
+      "required_tools": [
+        "get_employee_leave_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the history and identify a discrepancy (e.g., a day off was recorded as 2 days).",
+      "expected_outcome": "Specialist finds an error in a past time-off entry.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Make a manual adjustment to the employee's PTO balance in the HRIS to correct the error.",
+      "expected_outcome": "Specialist successfully corrects the leave balance in the system.",
+      "required_tools": [
+        "adjust_leave_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "auto-sm-10423",
+  "title": "Reschedule Service Appointment",
+  "description": "A customer needs to reschedule an existing service appointment for next week.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Appointment & Scheduling",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's existing appointment in the scheduling system.",
+      "expected_outcome": "Agent locates the appointment for this Thursday at 10 AM.",
+      "required_tools": [
+        "get_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cancel the existing appointment to free up the service bay and technician.",
+      "expected_outcome": "Agent successfully cancels the original appointment.",
+      "required_tools": [
+        "cancel_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Find a new available slot next week and book the rescheduled appointment.",
+      "expected_outcome": "Agent finds a slot for next Tuesday at 2 PM and confirms it with the customer.",
+      "required_tools": [
+        "get_service_bay_availability",
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

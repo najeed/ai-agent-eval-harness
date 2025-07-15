@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cc-12143",
+  "title": "Proofread a Blog Post",
+  "description": "Before publishing, a content manager needs to proofread a blog post for spelling, grammar, and adherence to brand voice.",
+  "use_case": "Content & Creative Development",
+  "core_function": "Copywriting & Content Creation",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Read through the draft of the blog post.",
+      "expected_outcome": "Agent reviews the entire text.",
+      "required_tools": [
+        "document_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a grammar and spell-checking tool to identify any errors.",
+      "expected_outcome": "Agent identifies and corrects all grammatical and spelling mistakes.",
+      "required_tools": [
+        "grammar_checker_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "copywriting_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the post against the brand voice guidelines to ensure the tone is appropriate.",
+      "expected_outcome": "Agent verifies that the writing style aligns with the brand's persona.",
+      "required_tools": [
+        "get_brand_guidelines"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

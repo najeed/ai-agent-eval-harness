@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-fb-11597",
+  "title": "Set up a Private Dining Room",
+  "description": "A VIP guest has requested a private dining experience in a separate room.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Event & Banquet Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Book the private dining room in the event management system for the requested date and time.",
+      "expected_outcome": "The room is reserved.",
+      "required_tools": [
+        "ems_create_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Work with the guest to create a custom, pre-set menu for their dinner.",
+      "expected_outcome": "A custom menu is created and added to the event order.",
+      "required_tools": [
+        "ems_create_menu_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a BEO for the event, assigning a dedicated server and notifying the kitchen of the special menu.",
+      "expected_outcome": "A BEO is created and distributed to ensure flawless execution.",
+      "required_tools": [
+        "ems_generate_beo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

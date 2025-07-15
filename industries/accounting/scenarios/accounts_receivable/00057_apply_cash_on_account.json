@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ar-57",
+  "title": "Apply Cash on Account to an Invoice",
+  "description": "A customer has a credit on their account from a previous overpayment. They have now requested that this credit be applied to a new open invoice.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Cash Application",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the amount of unapplied cash or credit on the customer's account.",
+      "expected_outcome": "Agent confirms the customer has a $250 credit on account.",
+      "required_tools": [
+        "get_customer_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the open invoice that the customer wants to apply the credit to.",
+      "expected_outcome": "Agent finds the specified open invoice.",
+      "required_tools": [
+        "get_customer_open_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply the on-account credit to the invoice.",
+      "expected_outcome": "Agent successfully applies the credit, reducing the invoice balance.",
+      "required_tools": [
+        "apply_on_account_cash"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

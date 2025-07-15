@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-grc-10716",
+  "title": "PCI DSS Compliance Audit",
+  "description": "A GRC analyst must gather evidence to demonstrate compliance with a specific PCI DSS requirement for an upcoming audit.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Compliance Auditing & Reporting",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific evidence required for PCI DSS Requirement 8.2 (related to user identification and authentication).",
+      "expected_outcome": "Analyst correctly lists the required evidence, such as password policy documents and screenshots of system settings.",
+      "required_tools": [
+        "get_pci_dss_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather the required evidence from policy repositories and by taking screenshots of the Active Directory configuration.",
+      "expected_outcome": "Analyst successfully collects all necessary evidence.",
+      "required_tools": [
+        "get_policy_document",
+        "get_system_configuration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "evidence_gathering_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Organize the evidence and upload it to the audit management portal for the auditor to review.",
+      "expected_outcome": "Analyst correctly prepares and submits the evidence for the audit.",
+      "required_tools": [
+        "upload_audit_evidence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

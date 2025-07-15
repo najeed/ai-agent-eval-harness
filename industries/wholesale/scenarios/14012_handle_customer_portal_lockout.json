@@ -1,0 +1,53 @@
+{
+  "scenario_id": "wholesale-cr-14012",
+  "title": "Handle Customer Portal Account Lockout",
+  "description": "A retailer's employee has been locked out of the online ordering portal after too many failed login attempts.",
+  "use_case": "Customer & Retailer Support",
+  "core_function": "Retailer Onboarding & Training",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a call from the user who is locked out.",
+      "expected_outcome": "Agent identifies the user's account.",
+      "required_tools": [
+        "get_portal_user_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the user's identity.",
+      "expected_outcome": "Agent confirms the user is who they say they are.",
+      "required_tools": [
+        "verify_user_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Unlock the user's account and trigger a password reset.",
+      "expected_outcome": "Agent unlocks the account and sends a password reset link to the user's email.",
+      "required_tools": [
+        "unlock_portal_user_account",
+        "send_password_reset_link"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

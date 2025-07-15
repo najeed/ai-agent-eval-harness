@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-ph-10995",
+  "title": "View Patient Cost and Utilization",
+  "description": "A care manager is reviewing a high-risk patient and wants to see their healthcare cost and utilization over the past year.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Reporting & Analytics",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient's record in the population health platform.",
+      "expected_outcome": "The care manager finds the correct patient.",
+      "required_tools": [
+        "get_patient_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Navigate to the cost and utilization dashboard for the patient.",
+      "expected_outcome": "The care manager opens the patient's financial and utilization summary.",
+      "required_tools": [
+        "open_patient_utilization_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the data, which shows the patient has had three ED visits and one inpatient admission in the last 12 months.",
+      "expected_outcome": "The care manager uses the data to understand the patient's history and identify opportunities to reduce unnecessary utilization.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

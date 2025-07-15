@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-it-10324",
+  "title": "Review User Access Termination Process",
+  "description": "An IT auditor checks if employee access is promptly removed upon termination.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a list of all employees who left the company in the last 6 months.",
+      "expected_outcome": "Auditor has a list of terminated employees.",
+      "required_tools": [
+        "get_termination_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For a sample of 30 terminated employees, check the system access logs to verify their access was disabled on their last day of employment.",
+      "expected_outcome": "Auditor finds 3 cases where access remained active for more than 24 hours after termination.",
+      "required_tools": [
+        "get_user_access_log",
+        "log_test_exception"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the exceptions as a control failure, as it creates a risk of unauthorized post-termination activity.",
+      "expected_outcome": "A finding is drafted detailing the control weakness.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

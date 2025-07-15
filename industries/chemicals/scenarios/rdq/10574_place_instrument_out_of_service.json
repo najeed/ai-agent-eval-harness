@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10574",
+  "title": "Place Instrument Out of Service",
+  "description": "An analytical instrument is malfunctioning and giving erratic results. A lab analyst must take it out of service until it can be repaired.",
+  "use_case": "R&D and Quality",
+  "core_function": "Lab Information Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the instrument in the LIMS.",
+      "expected_outcome": "Agent correctly selects the malfunctioning instrument.",
+      "required_tools": [
+        "find_instrument"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Change the instrument's status to 'Out of Service', which should prevent it from being assigned new tests.",
+      "expected_outcome": "Agent successfully updates the instrument status.",
+      "required_tools": [
+        "update_instrument_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a maintenance request for the instrument, describing the problem.",
+      "expected_outcome": "Agent logs a new service request for the instrument with the service department or vendor.",
+      "required_tools": [
+        "create_instrument_service_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

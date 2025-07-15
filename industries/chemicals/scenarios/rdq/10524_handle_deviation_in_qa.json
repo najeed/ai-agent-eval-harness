@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10524",
+  "title": "Handle Manufacturing Deviation in QA",
+  "description": "A deviation was recorded during manufacturing (e.g., a mixing time was exceeded). QA must assess the impact on product quality.",
+  "use_case": "R&D and Quality",
+  "core_function": "Quality Assurance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the deviation record that is pending QA assessment.",
+      "expected_outcome": "Agent retrieves the details of the manufacturing deviation.",
+      "required_tools": [
+        "get_deviation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the final QC test results for the affected batch to see if the deviation impacted key quality attributes.",
+      "expected_outcome": "Agent finds that despite the deviation, all final QC tests are within specification.",
+      "required_tools": [
+        "get_lab_results_for_batch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the assessment, conclude that there was no quality impact, and close the deviation report.",
+      "expected_outcome": "Agent adds a formal QA assessment to the report and changes its status to 'Closed'.",
+      "required_tools": [
+        "update_deviation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

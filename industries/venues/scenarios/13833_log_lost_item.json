@@ -1,0 +1,50 @@
+{
+  "scenario_id": "venues-gs-13833",
+  "title": "Log a Lost Item",
+  "description": "A guest calls the day after a concert to report that they lost their wallet at the venue.",
+  "use_case": "Guest & Patron Services",
+  "core_function": "Lost & Found",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get a detailed description of the lost wallet and its contents from the guest.",
+      "expected_outcome": "Agent gathers all relevant details (color, brand, contents).",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the lost and found database for any matching items that were turned in.",
+      "expected_outcome": "Agent searches the database but finds no matching wallet.",
+      "required_tools": [
+        "search_lost_and_found"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new lost item report in the database with the guest's description and contact information.",
+      "expected_outcome": "Agent successfully creates a new report so they can be contacted if the wallet is found.",
+      "required_tools": [
+        "create_lost_item_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

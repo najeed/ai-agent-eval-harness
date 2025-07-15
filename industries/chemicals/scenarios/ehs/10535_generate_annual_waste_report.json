@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-ehs-10535",
+  "title": "Generate Annual Hazardous Waste Report",
+  "description": "An EHS manager needs to generate the EPA's biennial hazardous waste report, summarizing all hazardous waste shipped from the site.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Waste Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query the system for all hazardous waste manifests from the reporting period.",
+      "expected_outcome": "Agent retrieves a list of all waste shipments from the last two years.",
+      "required_tools": [
+        "get_waste_manifests_by_date"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Aggregate the data by waste code and quantity.",
+      "expected_outcome": "Agent correctly sums the total weight for each distinct EPA waste code.",
+      "required_tools": [
+        "aggregate_waste_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the report in the official EPA format.",
+      "expected_outcome": "Agent successfully creates the formatted report ready for submission.",
+      "required_tools": [
+        "generate_epa_biennial_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

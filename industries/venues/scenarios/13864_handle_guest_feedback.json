@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-gs-13864",
+  "title": "Handle Post-Event Guest Feedback",
+  "description": "A guest sends an email after an event complaining about long lines for the restrooms.",
+  "use_case": "Guest & Patron Services",
+  "core_function": "General Inquiries & Support",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the guest's feedback in the customer feedback system.",
+      "expected_outcome": "Agent creates a new feedback record and categorizes it as 'Facility/Cleanliness'.",
+      "required_tools": [
+        "log_customer_feedback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a response to the guest, thanking them for their feedback and acknowledging their concern.",
+      "expected_outcome": "Agent writes a polite and empathetic response.",
+      "required_tools": [
+        "draft_email_response"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Forward the feedback to the venue operations manager for their awareness and review.",
+      "expected_outcome": "Agent sends a notification to the operations manager.",
+      "required_tools": [
+        "send_internal_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

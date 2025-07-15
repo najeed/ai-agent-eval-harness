@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cm-11496",
+  "title": "Archive Old Campaigns",
+  "description": "To clean up the ad account, a manager needs to archive all campaigns that ended more than a year ago.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Campaign Monitoring & Optimization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Filter the list of all campaigns to show only those with an end date more than 365 days in the past.",
+      "expected_outcome": "Agent generates a list of old, completed campaigns.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select all the campaigns in the filtered list.",
+      "expected_outcome": "Agent highlights all the correct campaigns.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Change the status of the selected campaigns to 'Archived'.",
+      "expected_outcome": "Agent successfully archives the old campaigns, hiding them from the default view.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

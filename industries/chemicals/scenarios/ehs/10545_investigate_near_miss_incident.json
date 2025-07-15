@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-ehs-10545",
+  "title": "Investigate Near-Miss Incident",
+  "description": "A worker reports a near miss where a pallet almost fell from a high rack. An EHS specialist must investigate the root cause.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Incident Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the near-miss incident report, capturing the reporter's description of events.",
+      "expected_outcome": "Agent creates a new incident report with all available details.",
+      "required_tools": [
+        "create_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the maintenance records for the forklift and the racking in that area.",
+      "expected_outcome": "Agent finds no issues with the equipment maintenance history.",
+      "required_tools": [
+        "get_maintenance_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Interview the forklift operator and determine the root cause was improper pallet placement. Assign a corrective action to retrain all warehouse staff on safe loading.",
+      "expected_outcome": "Agent documents the root cause and creates a corrective and preventive action (CAPA) for retraining.",
+      "required_tools": [
+        "update_incident_report",
+        "create_capa"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-os-10657",
+  "title": "Photo-document Project Progress",
+  "description": "A project engineer needs to take weekly progress photos from established photo points around the site.",
+  "use_case": "On-Site Operations",
+  "core_function": "Daily Operations & Reporting",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the list of established photo documentation points for the project.",
+      "expected_outcome": "Agent retrieves a map with 8 designated photo locations.",
+      "required_tools": [
+        "get_photo_documentation_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Capture a photo from 'Photo Point #1' and tag it with the location and date.",
+      "expected_outcome": "A photo is taken and correctly tagged with metadata.",
+      "required_tools": [
+        "capture_photo",
+        "tag_photo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload the tagged photo to the project's photo archive.",
+      "expected_outcome": "The photo is successfully stored in the correct folder in the project's document management system.",
+      "required_tools": [
+        "upload_photo_to_archive"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-down-12444",
+  "title": "Simulate a Refinery Process Unit",
+  "description": "A process engineer uses a simulation model to predict how a change in feed quality will impact the product output of a hydrocracker unit.",
+  "use_case": "Downstream",
+  "core_function": "Refinery Operations & Optimization",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the hydrocracker's process simulation model and calibrate it with current operating data.",
+      "expected_outcome": "The simulation model is loaded and reflects current plant performance.",
+      "required_tools": [
+        "load_process_simulation_model",
+        "calibrate_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new case in the simulation by changing the properties of the feed stream to match the new, proposed feed.",
+      "expected_outcome": "A new simulation case is set up with the modified input.",
+      "required_tools": [
+        "modify_simulation_inputs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the simulation and analyze the predicted changes in product yields (e.g., diesel, jet fuel) and quality.",
+      "expected_outcome": "The simulation results are generated, showing a predicted 2% decrease in diesel yield.",
+      "required_tools": [
+        "run_process_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

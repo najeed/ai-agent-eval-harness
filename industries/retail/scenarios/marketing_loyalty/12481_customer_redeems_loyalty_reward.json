@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ml-12481",
+  "title": "Customer Redeems Loyalty Reward",
+  "description": "A loyalty member has enough points for a $5 discount and wants to apply it to their purchase.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Loyalty Program Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "At checkout, the associate looks up the customer's loyalty account.",
+      "expected_outcome": "The loyalty account is linked to the transaction.",
+      "required_tools": [
+        "lookup_loyalty_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The POS displays the customer's available rewards, including a '$5 Off' coupon.",
+      "expected_outcome": "The associate sees the reward the customer is eligible for.",
+      "required_tools": [
+        "get_available_rewards"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The associate applies the $5 reward to the transaction, which deducts the points from the customer's account and reduces the sale total.",
+      "expected_outcome": "The customer successfully redeems their reward, and their points balance is updated.",
+      "required_tools": [
+        "apply_loyalty_reward"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

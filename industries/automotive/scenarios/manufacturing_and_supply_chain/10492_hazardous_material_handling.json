@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-ms-10492",
+  "title": "Hazardous Material Handling in Factory",
+  "description": "A drum of solvent is found to be leaking in the factory's chemical storage area.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Quality Assurance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "An employee reports the leak to the plant safety officer.",
+      "expected_outcome": "The safety officer is notified.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The safety officer consults the Material Safety Data Sheet (MSDS) for the solvent to determine the proper handling and cleanup procedure.",
+      "expected_outcome": "Agent retrieves the MSDS for the specific chemical.",
+      "required_tools": [
+        "get_msds_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch the on-site hazardous materials team to contain and clean up the spill.",
+      "expected_outcome": "The hazmat team is dispatched to the location.",
+      "required_tools": [
+        "dispatch_hazmat_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

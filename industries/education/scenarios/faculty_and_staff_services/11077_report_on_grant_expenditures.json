@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-fs-11077",
+  "title": "Report on Grant Expenditures",
+  "description": "A PI needs an official report of all expenditures for a grant that is ending to submit to the funding agency.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "Grant & Research Administration",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the PI and the grant account.",
+      "expected_outcome": "Agent confirms the identity of the PI and the grant.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a complete financial report for the entire grant period from the financial system.",
+      "expected_outcome": "Agent successfully generates the detailed expenditure report.",
+      "required_tools": [
+        "generate_grant_financial_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the report with the PI to ensure accuracy before they submit it.",
+      "expected_outcome": "Agent and PI review the report together and confirm its accuracy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

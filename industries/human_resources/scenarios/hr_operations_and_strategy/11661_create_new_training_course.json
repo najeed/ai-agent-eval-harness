@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11661",
+  "title": "Create a New Training Course in LMS",
+  "description": "The L&D team is launching a new 'Project Management' workshop and needs to add it to the LMS.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Learning & Development",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the course details: title, description, learning objectives, instructor, schedule.",
+      "expected_outcome": "Specialist collects all necessary information for the new course.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new course and session in the LMS.",
+      "expected_outcome": "Specialist successfully builds the new course shell in the system.",
+      "required_tools": [
+        "create_lms_course"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Publish the course to the LMS catalog so that employees can enroll.",
+      "expected_outcome": "Specialist makes the course visible and available for enrollment.",
+      "required_tools": [
+        "publish_lms_course"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

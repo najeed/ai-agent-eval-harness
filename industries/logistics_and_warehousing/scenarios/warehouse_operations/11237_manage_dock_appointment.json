@@ -1,0 +1,66 @@
+{
+  "scenario_id": "lw-wo-11237",
+  "title": "Manage a Dock Appointment",
+  "description": "A carrier calls to reschedule their delivery appointment for a later time.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Inbound & Receiving",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the carrier's existing appointment using their PO number.",
+      "expected_outcome": "Agent locates the current appointment scheduled for 10 AM.",
+      "required_tools": [
+        "find_dock_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cancel the existing appointment.",
+      "expected_outcome": "Agent successfully cancels the 10 AM appointment, freeing up the slot.",
+      "required_tools": [
+        "cancel_dock_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "View the dock schedule and find a new available time slot for the carrier.",
+      "expected_outcome": "Agent finds an open slot at 2 PM.",
+      "required_tools": [
+        "view_dock_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Book the new appointment for the carrier at 2 PM and send a confirmation.",
+      "expected_outcome": "Agent successfully reschedules the appointment and confirms with the carrier.",
+      "required_tools": [
+        "book_dock_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

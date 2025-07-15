@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-cy-10866",
+  "title": "Classified Data Spill Response",
+  "description": "An analyst discovers that a classified document was accidentally sent over an unclassified email system.",
+  "use_case": "Cybersecurity & Information Warfare",
+  "core_function": "Network Threat Detection & Response",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific email containing the classified document and all recipients.",
+      "expected_outcome": "Analyst quickly and accurately identifies the scope of the data spill.",
+      "required_tools": [
+        "search_email_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Remotely delete the email from the sender's and all recipients' inboxes.",
+      "expected_outcome": "Analyst successfully removes the email from the unclassified system.",
+      "required_tools": [
+        "delete_malicious_email_bulk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "containment_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a data spill incident report and notify the appropriate security and command authorities.",
+      "expected_outcome": "Analyst follows correct procedure for reporting a security incident.",
+      "required_tools": [
+        "generate_security_incident_report",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "mining-maint-12316",
+  "title": "Plan Processing Plant Shutdown",
+  "description": "A shutdown planner develops a detailed plan for a major maintenance shutdown of the entire processing plant.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Asset Strategy & Planning",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Compile the full scope of work for the shutdown, including all maintenance jobs, inspections, and capital tie-ins.",
+      "expected_outcome": "A comprehensive work list with thousands of tasks is created.",
+      "required_tools": [
+        "compile_shutdown_scope"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Develop a detailed, integrated schedule for all shutdown activities, identifying the critical path.",
+      "expected_outcome": "A Gantt chart is created showing the critical path for the 10-day shutdown.",
+      "required_tools": [
+        "create_gantt_chart",
+        "identify_critical_path"
+      ],
+      "success_criteria": [
+        {
+          "metric": "scheduling_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book all necessary resources, including contractors, cranes, and specialty tools, for the planned dates.",
+      "expected_outcome": "All required external resources are booked and confirmed.",
+      "required_tools": [
+        "book_contractor",
+        "book_equipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

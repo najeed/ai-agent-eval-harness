@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10128",
+  "title": "Analyze Multispectral Drone Imagery",
+  "description": "An agronomist has flown a field with a multispectral drone and needs the agent to process the data and identify areas of crop stress.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Analytics & Insights",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Stitch the individual drone images together to create a single orthomosaic map of the field.",
+      "expected_outcome": "Agent successfully creates the orthomosaic.",
+      "required_tools": [
+        "stitch_drone_images"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_processing_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate various vegetation indices from the multispectral data, such as NDVI, NDRE, and OSAVI.",
+      "expected_outcome": "Agent generates multiple index maps.",
+      "required_tools": [
+        "generate_vegetation_indices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the different index maps to identify and delineate specific areas of crop stress that may not be visible in a standard NDVI map.",
+      "expected_outcome": "Agent identifies areas of stress using the NDRE map that were not apparent in the NDVI map, suggesting a nutrient issue.",
+      "required_tools": [
+        "compare_index_maps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

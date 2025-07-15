@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ac-pt-79",
+  "title": "Analyze Inventory Turnover",
+  "description": "A financial analyst wants to calculate the inventory turnover ratio to assess how efficiently the company is managing its inventory.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Compliance & Cost Accounting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the total Cost of Goods Sold (COGS) for the year from the income statement.",
+      "expected_outcome": "Agent gets the annual COGS.",
+      "required_tools": [
+        "get_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the beginning and ending inventory balances for the year from the balance sheets.",
+      "expected_outcome": "Agent gets the inventory values.",
+      "required_tools": [
+        "get_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the average inventory.",
+      "expected_outcome": "Agent correctly calculates the average inventory.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Calculate the inventory turnover ratio by dividing COGS by the average inventory.",
+      "expected_outcome": "Agent calculates the final ratio.",
+      "required_tools": [
+        "calculate_financial_ratio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

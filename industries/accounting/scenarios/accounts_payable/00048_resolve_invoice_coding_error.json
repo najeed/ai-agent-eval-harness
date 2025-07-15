@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ap-48",
+  "title": "Resolve an Invoice GL Coding Error",
+  "description": "A department manager has rejected a non-PO invoice approval request because it was coded to the wrong GL account.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the rejected invoice notification, noting the reason 'Incorrect GL Code'.",
+      "expected_outcome": "Agent identifies the rejected invoice and the reason for rejection.",
+      "required_tools": [
+        "get_rejected_invoice_notifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the invoice and the manager's comment to determine the correct GL account.",
+      "expected_outcome": "Agent determines the invoice for 'Software Subscription' should be coded to 'IT Expenses', not 'Office Supplies'.",
+      "required_tools": [
+        "get_invoice_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the GL code on the invoice.",
+      "expected_outcome": "Agent successfully changes the GL code.",
+      "required_tools": [
+        "code_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Resubmit the invoice to the department manager for approval.",
+      "expected_outcome": "Agent re-routes the corrected invoice for approval.",
+      "required_tools": [
+        "route_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10332",
+  "title": "Audit GDPR Data Privacy Controls",
+  "description": "An auditor tests the company's compliance with GDPR requirements, specifically the 'right to be forgotten'.",
+  "use_case": "IT Audit",
+  "core_function": "Cybersecurity & Privacy Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Submit a test request through the company's public privacy portal to have a test user's data deleted.",
+      "expected_outcome": "A data deletion request is submitted.",
+      "required_tools": [
+        "submit_privacy_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Track the request through the internal ticketing system to ensure it is handled within the 30-day requirement.",
+      "expected_outcome": "Auditor confirms the request is processed within the required timeframe.",
+      "required_tools": [
+        "track_ticket_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the request is closed, perform a search of the production databases to ensure the test user's data has actually been deleted.",
+      "expected_outcome": "Auditor confirms the data has been successfully purged from all systems.",
+      "required_tools": [
+        "query_production_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

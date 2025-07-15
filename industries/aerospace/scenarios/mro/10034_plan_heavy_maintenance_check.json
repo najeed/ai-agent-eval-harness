@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10034",
+  "title": "Plan a C-Check (Heavy Maintenance)",
+  "description": "A maintenance planner is creating the work package for an upcoming C-check on a commercial airliner.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Maintenance Planning",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate the list of all routine maintenance tasks required for a C-check from the aircraft's maintenance program.",
+      "expected_outcome": "Agent creates a master list of all standard C-check tasks.",
+      "required_tools": [
+        "get_maintenance_program_tasks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Incorporate any outstanding non-routine repair tasks and service bulletins for that specific aircraft.",
+      "expected_outcome": "Agent adds aircraft-specific repairs to the work package.",
+      "required_tools": [
+        "get_deferred_maintenance_items"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Estimate the total man-hours and required ground support equipment, and schedule the C-check in an available MRO hangar.",
+      "expected_outcome": "Agent generates a complete plan and books the maintenance event.",
+      "required_tools": [
+        "estimate_man_hours",
+        "schedule_mro_job"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

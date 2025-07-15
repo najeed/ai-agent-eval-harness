@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-osm-10669",
+  "title": "Transfer Inventory Between Warehouses",
+  "description": "To balance stock, a logistics manager needs to process an inventory transfer of 50 units of a product from the West Coast warehouse to the East Coast warehouse.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Inventory Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Decrement the inventory count for the product by 50 at the West Coast warehouse.",
+      "expected_outcome": "Agent successfully reduces the stock level at the source.",
+      "required_tools": [
+        "update_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create an 'in-transit' inventory record for the 50 units.",
+      "expected_outcome": "Agent logs the stock as in-transit, so it's not available for sale.",
+      "required_tools": [
+        "create_in_transit_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upon arrival, receive the stock and increment the inventory count by 50 at the East Coast warehouse.",
+      "expected_outcome": "Agent increases the stock level at the destination and removes the in-transit record.",
+      "required_tools": [
+        "update_inventory_levels",
+        "remove_in_transit_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

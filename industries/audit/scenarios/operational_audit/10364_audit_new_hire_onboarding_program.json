@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-op-10364",
+  "title": "Audit the New Hire Onboarding Program",
+  "description": "An operational auditor reviews the HR onboarding program to assess its effectiveness and efficiency.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Process Efficiency Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Survey a sample of employees hired in the last 6 months to get their feedback on the onboarding experience.",
+      "expected_outcome": "Survey results indicate that new hires feel unprepared for their roles after the standard one-week onboarding.",
+      "required_tools": [
+        "distribute_survey",
+        "analyze_survey_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the onboarding curriculum and identify that it lacks role-specific training.",
+      "expected_outcome": "The auditor identifies a gap in the onboarding content.",
+      "required_tools": [
+        "review_training_materials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend that HR develop role-specific training paths to be included in the onboarding program.",
+      "expected_outcome": "A recommendation is made to improve the effectiveness of onboarding.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

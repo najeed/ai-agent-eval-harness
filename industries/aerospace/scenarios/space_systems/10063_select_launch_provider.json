@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-ss-10063",
+  "title": "Select a Launch Provider",
+  "description": "A satellite program manager needs to select a launch provider to get their new satellite into orbit.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Mission Design & Analysis",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the satellite's requirements for launch, including its mass, volume, and target orbit.",
+      "expected_outcome": "Agent lists all key launch requirements.",
+      "required_tools": [
+        "get_satellite_specs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the capabilities, cost, and reliability of available launch providers (e.g., SpaceX, Arianespace, ULA).",
+      "expected_outcome": "Agent creates a trade study comparing the different providers.",
+      "required_tools": [
+        "analyze_launch_providers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select the best-value provider and begin contract negotiations.",
+      "expected_outcome": "Agent makes a data-driven recommendation and initiates the procurement process.",
+      "required_tools": [
+        "make_recommendation",
+        "draft_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

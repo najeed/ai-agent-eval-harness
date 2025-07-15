@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-mr-12078",
+  "title": "Add a New Spare Part to the System",
+  "description": "A new type of sensor will be used on several machines. It needs to be added to the spare parts inventory system.",
+  "use_case": "Maintenance & Repair",
+  "core_function": "Asset & Spares Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new part number record in the inventory system.",
+      "expected_outcome": "Agent successfully creates a new item master record.",
+      "required_tools": [
+        "create_new_spare_part"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter details for the part, such as description, primary supplier, cost, and reorder point.",
+      "expected_outcome": "Agent populates all required fields for the new part.",
+      "required_tools": [
+        "update_spare_part_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the new part record and confirm it is now searchable in the system.",
+      "expected_outcome": "Agent saves the record and successfully finds it using the search function.",
+      "required_tools": [
+        "check_spare_part_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

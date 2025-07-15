@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-res-10236",
+  "title": "Book a Multi-City Trip",
+  "description": "A customer wants to book a trip with three legs: Dallas to Denver, then Denver to Seattle, then Seattle back to Dallas.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Booking & Ticketing",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for flights for each of the three individual legs of the journey.",
+      "expected_outcome": "Agent finds available flights for all three legs.",
+      "required_tools": [
+        "search_flights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Combine the selected flights into a single multi-city booking.",
+      "expected_outcome": "Agent successfully creates one booking containing all three flights.",
+      "required_tools": [
+        "create_multi_city_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total price, process payment, and issue the ticket for the entire itinerary.",
+      "expected_outcome": "Agent completes the booking and ticketing process.",
+      "required_tools": [
+        "calculate_total_fare",
+        "process_payment",
+        "issue_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

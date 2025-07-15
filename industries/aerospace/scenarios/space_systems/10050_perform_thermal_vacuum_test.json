@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-ss-10050",
+  "title": "Perform a Thermal Vacuum (TVAC) Test",
+  "description": "A satellite must undergo TVAC testing to ensure it can operate in the vacuum and extreme temperatures of space.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Manufacturing & Integration",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Place the satellite inside the TVAC chamber and connect all test umbilicals.",
+      "expected_outcome": "Agent correctly installs the satellite in the chamber.",
+      "required_tools": [
+        "install_in_tvac_chamber"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Evacuate the air from the chamber to create a vacuum and cycle the temperature between its hot and cold operational limits.",
+      "expected_outcome": "Agent operates the chamber to simulate the space environment.",
+      "required_tools": [
+        "control_tvac_chamber"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "During the temperature cycles, operate the satellite and monitor its telemetry to verify all systems function correctly.",
+      "expected_outcome": "Agent runs functional tests and confirms the satellite operates nominally at both temperature extremes.",
+      "required_tools": [
+        "monitor_telemetry",
+        "run_functional_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

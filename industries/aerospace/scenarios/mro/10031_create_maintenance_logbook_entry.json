@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10031",
+  "title": "Create a Maintenance Logbook Entry",
+  "description": "After replacing a tire on an aircraft, a mechanic must create a formal entry in the aircraft's official logbook.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Technical Documentation & Compliance",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the aircraft tail number and the date of the maintenance action.",
+      "expected_outcome": "Agent correctly identifies the aircraft and date.",
+      "required_tools": [
+        "get_work_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a clear and concise description of the work performed: 'Removed and replaced No. 3 main landing gear tire due to wear'.",
+      "expected_outcome": "Agent writes a description that meets regulatory standards.",
+      "required_tools": [
+        "generate_logbook_entry_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Make the logbook entry, including the part number of the new tire and a reference to the maintenance manual task, and apply a digital signature.",
+      "expected_outcome": "Agent creates a complete, compliant, and signed logbook entry.",
+      "required_tools": [
+        "create_logbook_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

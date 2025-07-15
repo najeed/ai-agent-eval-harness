@@ -1,0 +1,39 @@
+{
+  "scenario_id": "construction-pm-10677",
+  "title": "Compare Current Schedule to Baseline",
+  "description": "A PM wants to understand the project's schedule variance by comparing the current schedule to the original baseline schedule.",
+  "use_case": "Project Management",
+  "core_function": "Project Planning & Scheduling",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the current project schedule and the baseline schedule.",
+      "expected_outcome": "Both schedules are retrieved.",
+      "required_tools": [
+        "get_project_schedule",
+        "get_baseline_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a schedule variance report comparing the finish dates of major milestones between the two schedules.",
+      "expected_outcome": "A report is generated showing that the project is currently running 15 days behind the baseline.",
+      "required_tools": [
+        "generate_schedule_variance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

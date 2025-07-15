@@ -1,0 +1,50 @@
+{
+  "scenario_id": "energy-cs-10709",
+  "title": "EV Charging Billing Dispute",
+  "description": "A customer claims they were overcharged for a public EV charging session.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "EV Charging Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the charging session details using the customer's account ID and the date of the session.",
+      "expected_outcome": "Agent pulls the session record showing start time, end time, and kWh delivered.",
+      "required_tools": [
+        "get_charging_session_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the pricing rate applied during the session against the published rates for that charger and time.",
+      "expected_outcome": "Agent confirms the correct time-of-use rate was applied.",
+      "required_tools": [
+        "get_charger_rate_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the charges to the customer, breaking down the cost based on energy consumed and any session fees.",
+      "expected_outcome": "Agent clearly communicates the calculation of the final bill.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

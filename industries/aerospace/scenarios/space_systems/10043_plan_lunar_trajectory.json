@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10043",
+  "title": "Plan a Lunar Mission Trajectory",
+  "description": "A mission designer needs to plot a fuel-efficient trajectory for a robotic lander traveling from Earth orbit to a specific landing site on the Moon.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Mission Design & Analysis",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the mission constraints, including launch window, travel time, and target landing coordinates.",
+      "expected_outcome": "Agent lists all critical mission constraints.",
+      "required_tools": [
+        "get_mission_constraints"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate a free-return trajectory or a low-energy transfer orbit to minimize fuel consumption.",
+      "expected_outcome": "Agent designs a trajectory that meets all constraints while using the least amount of propellant.",
+      "required_tools": [
+        "calculate_interplanetary_trajectory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Plan all necessary trajectory correction maneuvers (TCMs) to ensure the spacecraft arrives at the correct location for lunar orbit insertion.",
+      "expected_outcome": "Agent schedules a series of small corrective burns in the mission plan.",
+      "required_tools": [
+        "plan_correction_maneuvers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

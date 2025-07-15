@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hosp-fb-11511",
+  "title": "Finalize a Banquet Event Order (BEO)",
+  "description": "An event manager is finalizing the BEO for a wedding reception, including menu choices, timeline, and AV requirements.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Event & Banquet Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the draft event contract and confirm the final guest count with the client.",
+      "expected_outcome": "Agent pulls the contract and confirms a final count of 150 guests.",
+      "required_tools": [
+        "ems_get_event_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the BEO with the final menu selections (chicken or fish) and special dietary needs.",
+      "expected_outcome": "Agent updates the BEO with all food and beverage details.",
+      "required_tools": [
+        "ems_update_beo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the final BEO and send it to the client for signature and to the kitchen and operations teams for execution.",
+      "expected_outcome": "Agent generates and distributes the final BEO to all stakeholders.",
+      "required_tools": [
+        "ems_generate_beo",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

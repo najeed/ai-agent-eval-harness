@@ -1,0 +1,50 @@
+{
+  "scenario_id": "mfg-mr-11367",
+  "title": "View Asset Maintenance History",
+  "description": "A technician is investigating a recurring problem with a machine and wants to review its entire maintenance history.",
+  "use_case": "Maintenance & Repair",
+  "core_function": "Technical Documentation & Support",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the asset in the CMMS.",
+      "expected_outcome": "Agent scans the asset's barcode or enters its ID to pull up its record.",
+      "required_tools": [
+        "find_asset"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve a list of all past maintenance work orders for that asset.",
+      "expected_outcome": "Agent generates a complete history of all PMs and repairs.",
+      "required_tools": [
+        "get_asset_maintenance_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Filter the history to show only corrective maintenance for 'motor faults' in the last year.",
+      "expected_outcome": "Agent finds that the same motor fault has been reported three times in the past six months.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

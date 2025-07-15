@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10133",
+  "title": "Poultry House Environmental Control",
+  "description": "Sensors in a poultry house show that the temperature and ammonia levels are rising above the acceptable thresholds.",
+  "use_case": "Livestock Management",
+  "core_function": "Health & Welfare",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the environmental alert and retrieve real-time data for temperature, humidity, and ammonia.",
+      "expected_outcome": "Agent confirms the parameters are out of the safe range.",
+      "required_tools": [
+        "get_environment_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically activate the ventilation fans and cooling systems to bring the temperature down.",
+      "expected_outcome": "Agent successfully sends commands to the environmental control system.",
+      "required_tools": [
+        "control_hvac_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send an alert to the farm manager to notify them of the situation and the automated action taken.",
+      "expected_outcome": "Agent sends a clear notification message.",
+      "required_tools": [
+        "send_sms_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

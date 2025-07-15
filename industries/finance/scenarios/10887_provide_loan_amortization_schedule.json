@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-rb-10887",
+  "title": "Provide Loan Amortization Schedule",
+  "description": "A customer wants to see a full amortization schedule for their auto loan.",
+  "use_case": "Retail Banking",
+  "core_function": "Loan & Mortgage Services",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their auto loan account.",
+      "expected_outcome": "Agent correctly locates the customer's loan.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the complete amortization schedule showing the breakdown of each payment into principal and interest.",
+      "expected_outcome": "Agent successfully generates the schedule for the life of the loan.",
+      "required_tools": [
+        "generate_amortization_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the schedule to the customer.",
+      "expected_outcome": "Agent sends the amortization schedule to the customer's email.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

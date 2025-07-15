@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10070",
+  "title": "Maintain Cleanroom Environment",
+  "description": "A cleanroom technician must monitor and maintain the environment where a satellite is being assembled to prevent contamination.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Manufacturing & Integration",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the cleanroom's particle counters, temperature, and humidity levels to ensure they remain within the specified limits (e.g., ISO 8).",
+      "expected_outcome": "Agent observes all environmental parameters are nominal.",
+      "required_tools": [
+        "monitor_cleanroom_environment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform regular wipe-downs of surfaces with approved cleaning solutions.",
+      "expected_outcome": "Agent follows the standard cleaning procedure.",
+      "required_tools": [
+        "perform_cleanroom_cleaning"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log all environmental data and cleaning activities in the cleanroom logbook.",
+      "expected_outcome": "Agent maintains a complete and accurate log.",
+      "required_tools": [
+        "update_cleanroom_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

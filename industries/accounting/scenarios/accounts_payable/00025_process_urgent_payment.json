@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ap-25",
+  "title": "Process an Urgent Vendor Payment",
+  "description": "A critical supplier has put a hold on shipments due to an overdue invoice. The department head has requested an urgent, off-cycle payment be made.",
+  "use_case": "Accounts Payable",
+  "core_function": "Payment Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the overdue invoice and confirm it is approved for payment.",
+      "expected_outcome": "Agent finds the approved but unpaid invoice in the system.",
+      "required_tools": [
+        "get_invoice_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a single-item payment proposal for the urgent invoice.",
+      "expected_outcome": "Agent creates an ad-hoc payment proposal outside of the normal weekly run.",
+      "required_tools": [
+        "create_payment_proposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute the payment via wire transfer to ensure the vendor receives the funds same-day.",
+      "expected_outcome": "Agent successfully processes the wire payment.",
+      "required_tools": [
+        "execute_payment_run"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send proof of payment to the vendor to get the shipping hold released.",
+      "expected_outcome": "Agent emails the wire transfer confirmation to the vendor.",
+      "required_tools": [
+        "send_payment_confirmation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

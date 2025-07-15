@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-com-10551",
+  "title": "Resolve Damaged Shipment Claim",
+  "description": "A customer reports that a shipment arrived with several damaged drums. The company needs to process the claim and send a replacement.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Customer Relationship Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the customer complaint and ask for photos of the damage and a list of affected drums.",
+      "expected_outcome": "Agent creates a complaint record and attaches the customer's photos.",
+      "required_tools": [
+        "create_customer_complaint",
+        "upload_document_to_complaint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "File a claim with the freight carrier responsible for the shipment.",
+      "expected_outcome": "Agent successfully submits a freight claim with the supporting evidence.",
+      "required_tools": [
+        "file_freight_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a no-charge replacement sales order to ship the damaged quantity again to the customer.",
+      "expected_outcome": "Agent creates a new sales order for the replacement material with a zero-dollar value.",
+      "required_tools": [
+        "create_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

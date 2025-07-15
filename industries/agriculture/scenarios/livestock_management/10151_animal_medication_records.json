@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10151",
+  "title": "Record Animal Medication Treatment",
+  "description": "A veterinarian has treated a sick animal and needs to record the medication administered to maintain compliance and track withdrawal times.",
+  "use_case": "Livestock Management",
+  "core_function": "Health & Welfare",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific animal that was treated.",
+      "expected_outcome": "Agent selects the correct animal from the herd database.",
+      "required_tools": [
+        "get_animal_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Record the details of the treatment: medication name, dosage, date, and administering veterinarian.",
+      "expected_outcome": "Agent correctly enters all treatment details into the animal's health record.",
+      "required_tools": [
+        "record_medication_treatment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Automatically calculate and record the meat and/or milk withdrawal period based on the medication's label.",
+      "expected_outcome": "Agent calculates the correct withdrawal date and flags the animal in the system.",
+      "required_tools": [
+        "calculate_withdrawal_period"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

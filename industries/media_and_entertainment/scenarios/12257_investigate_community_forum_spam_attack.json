@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-ae-12257",
+  "title": "Investigate Community Forum Spam Attack",
+  "description": "A game's official community forum is hit by a large number of spam posts from newly created accounts.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Customer & Community Support",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the spam posts and the accounts that created them.",
+      "expected_outcome": "Agent identifies a pattern of posts with malicious links from accounts created within the last hour.",
+      "required_tools": [
+        "get_recent_forum_posts",
+        "get_user_account_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a script to bulk-delete all posts and ban all accounts originating from the spammer's IP block.",
+      "expected_outcome": "Agent successfully cleans the forum and bans the spam accounts.",
+      "required_tools": [
+        "run_bulk_spam_cleanup_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Temporarily enable stricter posting requirements for new accounts to prevent a recurrence.",
+      "expected_outcome": "Agent updates the forum settings to require email verification for new posters.",
+      "required_tools": [
+        "update_forum_settings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

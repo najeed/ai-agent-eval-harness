@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-ae-12249",
+  "title": "User Login from New Device Flagged as Suspicious",
+  "description": "A user's login attempt from a new device in a different country is automatically flagged as suspicious, and their account is temporarily locked.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Customer & Community Support",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the security alert for the user's account.",
+      "expected_outcome": "Agent retrieves the details of the suspicious login attempt.",
+      "required_tools": [
+        "get_security_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a verification code to the user's registered email address or phone number.",
+      "expected_outcome": "Agent successfully sends the verification code.",
+      "required_tools": [
+        "send_2fa_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the user provides the correct code, remove the temporary lock from their account.",
+      "expected_outcome": "Agent verifies the code and successfully unlocks the account.",
+      "required_tools": [
+        "verify_2fa_code",
+        "remove_account_lock"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

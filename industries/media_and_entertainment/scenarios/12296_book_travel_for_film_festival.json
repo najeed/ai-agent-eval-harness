@@ -1,0 +1,55 @@
+{
+  "scenario_id": "media-cp-12296",
+  "title": "Book Travel for Film Festival",
+  "description": "A film has been accepted into an international film festival. An agent needs to book flights and hotels for the director and two lead actors.",
+  "use_case": "Content Production & Management",
+  "core_function": "Asset Management & Logistics",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the travel dates and the list of attendees.",
+      "expected_outcome": "Agent has the required travel details.",
+      "required_tools": [
+        "get_event_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for flights and hotels that meet the company's travel policy and budget.",
+      "expected_outcome": "Agent finds suitable flight and hotel options.",
+      "required_tools": [
+        "search_flights",
+        "search_hotels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the selected flights and hotels and send the itineraries to the attendees.",
+      "expected_outcome": "Agent successfully completes all bookings and sends confirmations.",
+      "required_tools": [
+        "book_flight",
+        "book_hotel",
+        "send_itinerary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-log-10529",
+  "title": "Tank Engine Predictive Maintenance",
+  "description": "An onboard sensor in a main battle tank predicts imminent engine failure based on oil analysis and temperature data.",
+  "use_case": "Logistics & Sustainment",
+  "core_function": "Predictive Maintenance",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the predictive failure alert from the tank.",
+      "expected_outcome": "Maintenance officer acknowledges the alert.",
+      "required_tools": [
+        "get_vehicle_sensor_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_acknowledgement_time",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the specific sensor readings to confirm the high probability of failure.",
+      "expected_outcome": "Officer verifies the data indicates a critical problem.",
+      "required_tools": [
+        "analyze_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_interpretation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Order the tank crew to return to base for maintenance and schedule a 'power pack' (engine and transmission) replacement.",
+      "expected_outcome": "Officer issues the correct orders to prevent failure in the field and schedules the major repair.",
+      "required_tools": [
+        "issue_maintenance_order",
+        "schedule_major_component_replacement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

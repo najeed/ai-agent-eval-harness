@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-plan-12369",
+  "title": "Design Underground Decline Access",
+  "description": "A mining engineer designs the main decline (a spiral tunnel) that will serve as the primary access for trucks and equipment into a new underground mine.",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Ventilation & Services Design",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the starting point of the decline on the surface (the portal) and the target endpoint deep in the orebody.",
+      "expected_outcome": "The start and end points of the decline are set.",
+      "required_tools": [
+        "define_decline_endpoints"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a design tool to automatically generate an optimal decline alignment between the two points, respecting constraints like maximum gradient and minimum turning radius.",
+      "expected_outcome": "An optimized 3D alignment for the decline is generated.",
+      "required_tools": [
+        "generate_decline_alignment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "optimization_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Finalize the design, including the dimensions of the tunnel and the locations for passing bays and service cutouts.",
+      "expected_outcome": "A complete, practical design for the main access decline is created.",
+      "required_tools": [
+        "finalize_decline_design"
+      ],
+      "success_criteria": [
+        {
+          "metric": "engineering_design_compliance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

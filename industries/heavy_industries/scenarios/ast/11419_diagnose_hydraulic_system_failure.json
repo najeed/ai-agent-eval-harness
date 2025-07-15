@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-ast-11419",
+  "title": "Diagnose Hydraulic System Failure",
+  "description": "The hydraulic system on a large excavator is operating sluggishly. A maintenance technician must diagnose the problem.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Maintenance Planning & Execution",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Connect a diagnostic tool to the excavator's control system to read fault codes.",
+      "expected_outcome": "Agent connects the tool and retrieves a 'Low Hydraulic Pressure' fault code.",
+      "required_tools": [
+        "read_diagnostic_fault_codes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult the equipment's troubleshooting manual for the 'Low Hydraulic Pressure' code.",
+      "expected_outcome": "Agent finds the manual suggests checking the hydraulic filter for clogs as a primary cause.",
+      "required_tools": [
+        "get_troubleshooting_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inspect the hydraulic filter and find that it is clogged. Create a work order to replace the filter and the hydraulic fluid.",
+      "expected_outcome": "Agent correctly identifies the root cause and creates a work order to fix it.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

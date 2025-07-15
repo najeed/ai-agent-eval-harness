@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-scl-10577",
+  "title": "Create Monthly Supply Plan",
+  "description": "A supply planner needs to create the supply plan for a product family for the next month, balancing demand forecasts with production capacity.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Demand & Supply Planning",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the latest demand forecast for the product family.",
+      "expected_outcome": "Agent successfully loads the demand data into the planning tool.",
+      "required_tools": [
+        "import_demand_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the available production capacity for the relevant manufacturing lines.",
+      "expected_outcome": "Agent gets the available production hours for the next month.",
+      "required_tools": [
+        "get_production_capacity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the planning engine to generate a feasible master production schedule (MPS) that meets the forecast without exceeding capacity.",
+      "expected_outcome": "Agent generates a valid MPS, detailing which products to make, in what quantity, and when.",
+      "required_tools": [
+        "run_supply_planning_engine"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

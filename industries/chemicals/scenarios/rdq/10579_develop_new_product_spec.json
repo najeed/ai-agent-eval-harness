@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-rdq-10579",
+  "title": "Develop New Product Specification",
+  "description": "An R&D chemist needs to create the official quality specification for a new product that is moving from development to commercialization.",
+  "use_case": "R&D and Quality",
+  "core_function": "Formulation & Product Development",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new specification document in the quality management system.",
+      "expected_outcome": "Agent initiates a new spec document linked to the product code.",
+      "required_tools": [
+        "create_specification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define the quality attributes to be tested (e.g., Purity, Water Content, Color).",
+      "expected_outcome": "Agent adds the required tests to the specification.",
+      "required_tools": [
+        "update_specification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each attribute, define the test method to be used and the acceptable range (e.g., 'Purity, Method GC-101, NLT 99.5%'). Submit for approval.",
+      "expected_outcome": "Agent defines the limits for each test and submits the new specification into the approval workflow.",
+      "required_tools": [
+        "update_specification",
+        "submit_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

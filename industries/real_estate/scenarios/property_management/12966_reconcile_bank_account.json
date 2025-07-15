@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-12966",
+  "title": "Reconcile Property Trust Account",
+  "description": "At month-end, the property manager must reconcile the property's bank trust account with the records in the software.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Download the monthly bank statement for the property trust account.",
+      "expected_outcome": "Agent successfully retrieves the bank statement.",
+      "required_tools": [
+        "download_bank_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare each transaction on the bank statement to the transactions recorded in the property management software.",
+      "expected_outcome": "Agent systematically checks off matching transactions.",
+      "required_tools": [
+        "compare_financial_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify and resolve any discrepancies (e.g., a bank fee not recorded, a cleared check not marked as such).",
+      "expected_outcome": "Agent finds and corrects all discrepancies, resulting in a balanced reconciliation.",
+      "required_tools": [
+        "enter_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

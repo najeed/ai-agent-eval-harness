@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-cf-10881",
+  "title": "Create Board of Directors Financial Report",
+  "description": "An FP&A director needs to create the financial package for the upcoming quarterly board of directors meeting.",
+  "use_case": "Corporate Finance",
+  "core_function": "Financial Planning & Analysis (FP&A)",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate all standard financial reports for the quarter (P&L, Balance Sheet, Cash Flow Statement).",
+      "expected_outcome": "Agent successfully generates all required reports.",
+      "required_tools": [
+        "get_financial_statements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a summary dashboard with key performance indicators (KPIs) and variance analysis.",
+      "expected_outcome": "Agent creates a visual dashboard highlighting key financial metrics.",
+      "required_tools": [
+        "create_kpi_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile all reports and the dashboard into a single presentation deck for the board.",
+      "expected_outcome": "Agent assembles the final board package.",
+      "required_tools": [
+        "compile_presentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

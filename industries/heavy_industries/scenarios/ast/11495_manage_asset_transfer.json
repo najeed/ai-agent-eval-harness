@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-ast-11495",
+  "title": "Manage Asset Transfer Between Sites",
+  "description": "A piece of mobile equipment (e.g., a crane) is being permanently transferred from one project site to another.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Inventory & Spares Management",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the asset in the maintenance system.",
+      "expected_outcome": "Agent retrieves the crane's asset record.",
+      "required_tools": [
+        "find_asset_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate an asset transfer request.",
+      "expected_outcome": "Agent starts the transfer workflow.",
+      "required_tools": [
+        "create_asset_transfer_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the asset's 'home location' from the old site to the new site in the asset master data.",
+      "expected_outcome": "Agent successfully updates the asset's location, which also transfers its maintenance and cost data to the new site.",
+      "required_tools": [
+        "update_asset_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

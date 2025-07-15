@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-com-10506",
+  "title": "Customer Request for Certificate of Analysis",
+  "description": "A customer calls requesting the Certificate of Analysis (CoA) for a specific batch of product they recently received.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Technical Support",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and ask for the product name and batch number.",
+      "expected_outcome": "Agent correctly identifies the customer account and the specific batch in question.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the final, approved CoA for that batch from the quality system.",
+      "expected_outcome": "Agent successfully finds and downloads the correct CoA PDF.",
+      "required_tools": [
+        "get_certificate_of_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Email the CoA to the registered contact for the customer's account.",
+      "expected_outcome": "Agent successfully sends the email with the CoA attached.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

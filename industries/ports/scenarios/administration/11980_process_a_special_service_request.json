@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-af-11980",
+  "title": "Process a Special Service Request",
+  "description": "A customer requests a service not covered by the standard tariff, such as providing a floating crane for a heavy lift. A manager must price and approve the service.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Customer Service & Claims",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the request for the special service.",
+      "expected_outcome": "Manager understands the customer's requirement for a floating crane.",
+      "required_tools": [
+        "log_service_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the cost of providing the service by getting quotes from subcontractors or calculating internal costs.",
+      "expected_outcome": "Manager determines the cost of the service will be $10,000.",
+      "required_tools": [
+        "calculate_service_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a formal quotation to the customer for their approval before arranging the service.",
+      "expected_outcome": "A quote is sent to the customer for the special service.",
+      "required_tools": [
+        "generate_quotation",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

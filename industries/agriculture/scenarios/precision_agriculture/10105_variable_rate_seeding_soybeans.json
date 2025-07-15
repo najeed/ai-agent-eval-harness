@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ag-pa-10105",
+  "title": "Variable Rate Seeding Prescription for Soybeans",
+  "description": "A farmer wants to create a variable rate seeding prescription for a soybean field based on historical yield data and soil type zones.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Analytics & Insights",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the last 3 years of yield maps for the specified field.",
+      "expected_outcome": "Agent successfully retrieves all requested yield maps.",
+      "required_tools": [
+        "get_historical_yield_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the soil type map for the field.",
+      "expected_outcome": "Agent retrieves the correct soil map.",
+      "required_tools": [
+        "get_soil_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create management zones based on a combination of yield potential and soil type.",
+      "expected_outcome": "Agent generates a map with 3-5 distinct management zones.",
+      "required_tools": [
+        "create_management_zones"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a variable rate seeding prescription file compatible with a John Deere planter.",
+      "expected_outcome": "Agent creates a downloadable prescription file in the correct format.",
+      "required_tools": [
+        "generate_seeding_prescription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

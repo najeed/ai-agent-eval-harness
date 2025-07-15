@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10279",
+  "title": "Dispatch Flight with an MEL Item",
+  "description": "A flight is departing with an inoperative system under the MEL. The dispatcher must ensure all operational restrictions are followed.",
+  "use_case": "Flight Operations",
+  "core_function": "Flight Planning & Dispatch",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the MEL item and its operational restrictions (e.g., flight cannot exceed a certain altitude).",
+      "expected_outcome": "Dispatcher understands the limitations.",
+      "required_tools": [
+        "get_mel_restrictions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a flight plan that respects the operational restriction, even if it's less efficient.",
+      "expected_outcome": "Dispatcher creates a compliant flight plan.",
+      "required_tools": [
+        "generate_flight_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Brief the flight crew on the MEL item and the required operational procedures before they depart.",
+      "expected_outcome": "Dispatcher ensures the crew is aware of the situation and limitations.",
+      "required_tools": [
+        "brief_flight_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

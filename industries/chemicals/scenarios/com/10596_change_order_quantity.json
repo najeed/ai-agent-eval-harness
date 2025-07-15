@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-com-10596",
+  "title": "Change Quantity on Sales Order",
+  "description": "A customer calls to increase the quantity on an order they just placed, before it ships.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Order Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the sales order and verify it has not yet shipped.",
+      "expected_outcome": "Agent locates the order and confirms its status is 'Processing'.",
+      "required_tools": [
+        "get_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check inventory to ensure the additional quantity is available.",
+      "expected_outcome": "Agent confirms there is enough stock to cover the increased order size.",
+      "required_tools": [
+        "check_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the quantity on the sales order line item and resend the order confirmation to the customer.",
+      "expected_outcome": "Agent successfully modifies the order and the customer receives an updated confirmation.",
+      "required_tools": [
+        "update_sales_order_quantity",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

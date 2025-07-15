@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-pt-71",
+  "title": "Perform Job Costing Analysis",
+  "description": "A construction company needs to analyze the costs for a completed project to determine its profitability.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Compliance & Cost Accounting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all costs posted to the specific job number, including labor, materials, and subcontractor costs.",
+      "expected_outcome": "Agent compiles a complete list of all costs for the job.",
+      "required_tools": [
+        "get_job_cost_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the total revenue billed for the job.",
+      "expected_outcome": "Agent gets the total contract revenue.",
+      "required_tools": [
+        "get_job_revenue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the final profit and profit margin for the job.",
+      "expected_outcome": "Agent correctly calculates the job's profitability.",
+      "required_tools": [
+        "calculate_job_profitability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Compare the actual costs to the original budget and highlight any significant variances.",
+      "expected_outcome": "Agent's analysis shows that labor costs were 15% over budget.",
+      "required_tools": [
+        "compare_actuals_to_budget"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

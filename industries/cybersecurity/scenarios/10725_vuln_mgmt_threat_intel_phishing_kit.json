@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-vm-10725",
+  "title": "Analyzing a New Phishing Kit",
+  "description": "A threat intelligence analyst discovers a new phishing kit being sold on a dark web forum and must analyze it to develop countermeasures.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Threat Intelligence Integration",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Safely acquire the phishing kit from the dark web forum.",
+      "expected_outcome": "Analyst successfully and securely downloads the kit.",
+      "required_tools": [
+        "acquire_threat_artifact"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the kit's source code to understand how it works and what brands it is designed to impersonate.",
+      "expected_outcome": "Analyst determines the kit impersonates Microsoft 365 and uses a novel technique to bypass MFA.",
+      "required_tools": [
+        "analyze_source_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Write a detailed intelligence report on the new phishing kit and share it with industry partners and internal security teams.",
+      "expected_outcome": "Analyst produces a valuable report that helps the broader community defend against this new threat.",
+      "required_tools": [
+        "generate_threat_intel_report",
+        "share_intelligence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_utility",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

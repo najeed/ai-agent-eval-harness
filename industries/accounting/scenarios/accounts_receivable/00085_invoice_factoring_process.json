@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ar-85",
+  "title": "Process Invoice Factoring",
+  "description": "To improve cash flow, the company has an agreement to sell some of its accounts receivable to a factoring company.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Credit Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of eligible invoices to be sold to the factoring company.",
+      "expected_outcome": "Agent creates a list of current, undisputed invoices from creditworthy customers.",
+      "required_tools": [
+        "get_eligible_invoices_for_factoring"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Transmit the list of invoices to the factoring company.",
+      "expected_outcome": "Agent successfully sends the invoice data to the factor.",
+      "required_tools": [
+        "send_invoice_data_to_factor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive the cash advance from the factor (e.g., 85% of the invoice face value).",
+      "expected_outcome": "Agent identifies the incoming cash receipt from the factor.",
+      "required_tools": [
+        "get_bank_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a journal entry to record the cash received, reduce accounts receivable, and record the factoring fee expense.",
+      "expected_outcome": "Agent posts the correct journal entry for the factoring transaction.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

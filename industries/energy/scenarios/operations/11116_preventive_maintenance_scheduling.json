@@ -1,0 +1,67 @@
+{
+  "scenario_id": "energy-op-11116",
+  "title": "Solar Farm Preventive Maintenance Scheduling",
+  "description": "An operations planner needs to schedule the annual preventive maintenance for a portfolio of solar farms, minimizing production loss.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Maintenance & Outage Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all assets due for annual maintenance in the next quarter.",
+      "expected_outcome": "Agent produces a list of 5 solar farms requiring maintenance.",
+      "required_tools": [
+        "get_maintenance_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each farm, analyze historical generation data and forward price forecasts to identify the lowest-revenue weeks.",
+      "expected_outcome": "Agent identifies optimal maintenance windows for each asset.",
+      "required_tools": [
+        "get_historical_generation",
+        "get_forward_price_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the availability of maintenance crews for the identified optimal windows.",
+      "expected_outcome": "Agent aligns asset downtime with crew availability.",
+      "required_tools": [
+        "get_crew_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a final maintenance schedule and create the corresponding work orders.",
+      "expected_outcome": "Agent produces a schedule and dispatches work orders to the maintenance team.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

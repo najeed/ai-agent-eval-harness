@@ -1,0 +1,53 @@
+{
+  "scenario_id": "auto-ms-10415",
+  "title": "Critical Parts Shortage Alert",
+  "description": "The inventory system alerts that the stock of a critical part (touchscreen displays) will be depleted in 4 hours, potentially halting production.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Supplier Management",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the part number and the supplier for the component.",
+      "expected_outcome": "Agent identifies the part and the supplier 'DisplayTech Inc'.",
+      "required_tools": [
+        "get_part_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of any in-transit shipments of that part from the supplier.",
+      "expected_outcome": "Agent finds the next shipment is delayed and now scheduled for tomorrow.",
+      "required_tools": [
+        "track_supplier_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the supplier to request an expedited, emergency shipment and search for alternative, certified suppliers.",
+      "expected_outcome": "Agent contacts the supplier to arrange an emergency air freight shipment.",
+      "required_tools": [
+        "contact_supplier",
+        "find_alternative_suppliers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

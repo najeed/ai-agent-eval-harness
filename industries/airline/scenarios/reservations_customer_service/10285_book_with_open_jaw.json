@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-res-10285",
+  "title": "Book an Open-Jaw Itinerary",
+  "description": "A customer wants to book a flight from New York to London, and then return from Paris back to New York.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Booking & Ticketing",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for flights for the two legs of the journey: JFK to LHR and CDG to JFK.",
+      "expected_outcome": "Agent finds available flights for both legs.",
+      "required_tools": [
+        "search_flights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Combine the two flights into a single open-jaw booking.",
+      "expected_outcome": "Agent successfully creates one booking with the specified itinerary.",
+      "required_tools": [
+        "create_multi_city_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total price, process payment, and issue the ticket.",
+      "expected_outcome": "Agent completes the booking and ticketing process.",
+      "required_tools": [
+        "calculate_total_fare",
+        "process_payment",
+        "issue_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

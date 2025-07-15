@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ac-fc-70",
+  "title": "Prepare Segment Reporting",
+  "description": "For external financial reporting, a public company needs to prepare segment information, breaking down its revenue and profit by business segment.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Financial Reporting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve revenue and cost of goods sold data broken down by business segment from the general ledger.",
+      "expected_outcome": "Agent gets the financial data for each defined segment.",
+      "required_tools": [
+        "get_gl_data_by_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the gross profit for each business segment.",
+      "expected_outcome": "Agent correctly calculates the gross profit per segment.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report in the format required for the footnote disclosure in the 10-K report.",
+      "expected_outcome": "Agent produces a formatted table showing revenue and profit by reportable segment.",
+      "required_tools": [
+        "generate_segment_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

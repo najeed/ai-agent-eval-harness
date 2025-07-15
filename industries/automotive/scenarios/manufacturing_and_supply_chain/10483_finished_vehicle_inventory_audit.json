@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-ms-10483",
+  "title": "Finished Vehicle Inventory Audit",
+  "description": "A manager needs to perform an audit to reconcile the list of finished vehicles in the system with the physical vehicles in the storage lot.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Logistics & Parts Tracking",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all vehicles currently listed as being in the 'Finished Goods - Lot G' status.",
+      "expected_outcome": "Agent generates a list of 500 VINs.",
+      "required_tools": [
+        "get_vehicle_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch a team with handheld scanners to scan the VIN of every vehicle physically present in Lot G.",
+      "expected_outcome": "A team is dispatched to perform the physical scan.",
+      "required_tools": [
+        "dispatch_audit_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the system list with the scanned list and flag any discrepancies (missing or extra vehicles).",
+      "expected_outcome": "The comparison shows one vehicle is physically present but not in the system list, and one is in the system list but not physically present.",
+      "required_tools": [
+        "compare_data_lists"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

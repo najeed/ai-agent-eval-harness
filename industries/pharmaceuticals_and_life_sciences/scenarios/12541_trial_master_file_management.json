@@ -1,0 +1,64 @@
+{
+  "scenario_id": "pharma-ct-12541",
+  "title": "Manage Trial Master File (TMF)",
+  "description": "A clinical trial assistant must upload and index documents into the electronic Trial Master File (eTMF) for a study.",
+  "use_case": "Clinical Trials",
+  "core_function": "Trial Operations & Monitoring",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a new document from a clinical site (e.g., an updated investigator brochure signature page).",
+      "expected_outcome": "Agent receives the document via email or a portal.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a quality check on the document to ensure it is complete and legible.",
+      "expected_outcome": "Agent confirms the document is signed, dated, and scanned correctly.",
+      "required_tools": [
+        "perform_document_qc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload the document to the eTMF system.",
+      "expected_outcome": "Agent successfully uploads the file.",
+      "required_tools": [
+        "upload_to_etmf"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Index the document by assigning the correct TMF reference model code, country, site, and document date.",
+      "expected_outcome": "Agent correctly applies all required metadata to the document in the eTMF.",
+      "required_tools": [
+        "index_etmf_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

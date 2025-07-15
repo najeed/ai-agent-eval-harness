@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-csra-10419",
+  "title": "Check if Vehicle is Affected by a Recall",
+  "description": "A customer heard about a recall on the news and wants to check if their specific vehicle is affected.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Recall Management",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the customer for their Vehicle Identification Number (VIN).",
+      "expected_outcome": "Agent correctly collects the 17-digit VIN.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the VIN against the national recall database and the manufacturer's internal records.",
+      "expected_outcome": "Agent finds an open recall for 'Takata Airbag Inflator Replacement' for this VIN.",
+      "required_tools": [
+        "check_vin_for_recalls"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer about the recall, explain that the repair is free, and help them schedule the service at their nearest dealership.",
+      "expected_outcome": "Agent clearly explains the recall and successfully books the required service.",
+      "required_tools": [
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

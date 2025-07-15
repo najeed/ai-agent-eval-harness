@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-em-11625",
+  "title": "Process an Employee Promotion",
+  "description": "A manager wants to promote a direct report, which includes a title change and a salary increase.",
+  "use_case": "Employee Management",
+  "core_function": "Performance Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the promotion request from the manager, including the new title and proposed salary.",
+      "expected_outcome": "HRBP receives the promotion details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the proposed salary against the company's compensation bands for the new role to ensure equity.",
+      "expected_outcome": "HRBP confirms the proposed salary is within the approved range.",
+      "required_tools": [
+        "get_compensation_bands"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the promotion in the HRIS, updating the employee's title, salary, and reporting structure, effective on the specified date.",
+      "expected_outcome": "HRBP successfully updates the employee's record with all the promotion details.",
+      "required_tools": [
+        "update_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

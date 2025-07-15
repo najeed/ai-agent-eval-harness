@@ -1,0 +1,53 @@
+{
+  "scenario_id": "pharma-rd-11869",
+  "title": "Manage Lab Instrument Calibration",
+  "description": "A lab technician must ensure a critical analytical balance is calibrated correctly before use.",
+  "use_case": "Research & Development",
+  "core_function": "Lab & Sample Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the calibration status of the analytical balance in the equipment log.",
+      "expected_outcome": "Agent confirms that the daily calibration check is due.",
+      "required_tools": [
+        "get_equipment_calibration_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform the calibration check using a set of certified weights.",
+      "expected_outcome": "Agent performs the check and finds the balance is reading outside of the acceptable tolerance.",
+      "required_tools": [
+        "perform_calibration_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place an 'Out of Service' tag on the balance and log the failure in the equipment management system.",
+      "expected_outcome": "Agent tags the equipment and creates a maintenance request.",
+      "required_tools": [
+        "update_equipment_status",
+        "create_maintenance_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

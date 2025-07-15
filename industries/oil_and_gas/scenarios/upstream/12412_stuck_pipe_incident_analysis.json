@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-12412",
+  "title": "Analyze Stuck Pipe Incident",
+  "description": "While drilling, the drill string becomes stuck. A remote operations engineer must analyze real-time data to determine the cause and recommend a course of action.",
+  "use_case": "Upstream",
+  "core_function": "Drilling & Completions",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the last hour of real-time drilling data, including weight on bit, torque, and mud properties.",
+      "expected_outcome": "A complete dataset leading up to the incident is retrieved.",
+      "required_tools": [
+        "get_realtime_drilling_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to diagnose the likely sticking mechanism (e.g., differential sticking, wellbore collapse).",
+      "expected_outcome": "The engineer correctly identifies 'differential sticking' as the probable cause.",
+      "required_tools": [
+        "analyze_drilling_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend immediate actions to the rig crew, such as spotting a freeing agent and working the pipe.",
+      "expected_outcome": "Clear, actionable recommendations are sent to the rig to resolve the issue.",
+      "required_tools": [
+        "send_operational_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

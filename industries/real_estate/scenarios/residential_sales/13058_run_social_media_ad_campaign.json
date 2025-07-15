@@ -1,0 +1,54 @@
+{
+  "scenario_id": "real_estate-rs-13058",
+  "title": "Run a 'Just Listed' Social Media Ad Campaign",
+  "description": "An agent wants to run a paid ad campaign on Facebook and Instagram for a new luxury listing.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the target audience for the ad based on demographics, interests (e.g., luxury goods), and location.",
+      "expected_outcome": "A specific target audience profile is created for the ad campaign.",
+      "required_tools": [
+        "define_ad_audience"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create compelling ad copy and select the best photos or a video for the ad creative.",
+      "expected_outcome": "All components for the ad are prepared.",
+      "required_tools": [
+        "write_ad_copy",
+        "select_ad_creative"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Launch the ad campaign with a set budget and duration, and monitor its performance (reach, clicks, leads).",
+      "expected_outcome": "The ad campaign is live and its analytics are being tracked.",
+      "required_tools": [
+        "launch_social_media_ad",
+        "track_ad_analytics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

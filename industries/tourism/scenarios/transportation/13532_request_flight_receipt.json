@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-13532",
+  "title": "Request Flight Itinerary and Receipt",
+  "description": "A business traveler needs a copy of their flight itinerary and a detailed receipt for an expense report.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Ticketing & Documentation",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the traveler's past booking using their name and travel date.",
+      "expected_outcome": "Agent locates the correct past flight booking.",
+      "required_tools": [
+        "get_past_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a detailed financial receipt for the booking.",
+      "expected_outcome": "Agent creates a receipt showing the fare breakdown, taxes, and fees.",
+      "required_tools": [
+        "generate_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Email the itinerary and the receipt to the traveler.",
+      "expected_outcome": "Agent successfully sends the requested documents.",
+      "required_tools": [
+        "send_travel_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

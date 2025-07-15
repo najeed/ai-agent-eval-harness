@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-ago-10229",
+  "title": "Handle a Standby Passenger",
+  "description": "A flight is full, but an employee is listed for standby travel. The gate agent must clear the standby list if seats become available.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Gate & Boarding",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "After all ticketed passengers have boarded, check for any no-shows.",
+      "expected_outcome": "Agent finds that two passengers did not show up, freeing two seats.",
+      "required_tools": [
+        "reconcile_passenger_count"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the standby list and clear the first person on the list for a seat.",
+      "expected_outcome": "Agent identifies the highest-priority standby passenger.",
+      "required_tools": [
+        "get_standby_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the passenger a seat, issue them a boarding pass, and allow them to board.",
+      "expected_outcome": "Agent successfully gets the standby passenger on the flight.",
+      "required_tools": [
+        "assign_seat",
+        "print_boarding_pass"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

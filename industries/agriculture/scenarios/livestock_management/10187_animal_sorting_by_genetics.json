@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-lm-10187",
+  "title": "Sort Heifers by Genetic Merit",
+  "description": "A dairy farmer wants to sort a group of replacement heifers, keeping the ones with the highest genetic merit for milk production.",
+  "use_case": "Livestock Management",
+  "core_function": "Breeding & Genetics",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the genomic test results for all heifers in the group, specifically the value for 'Predicted Transmitting Ability for Milk' (PTAM).",
+      "expected_outcome": "Agent gets the genetic data for all animals.",
+      "required_tools": [
+        "get_animal_genetic_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Rank the heifers from highest to lowest based on their PTAM value.",
+      "expected_outcome": "Agent creates a ranked list of the heifers.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create two lists: a 'keep' list for the top 80% of heifers and a 'sell' list for the bottom 20%.",
+      "expected_outcome": "Agent generates the two sorting lists for the farmer.",
+      "required_tools": [
+        "create_sorting_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

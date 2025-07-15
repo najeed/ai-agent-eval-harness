@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ecommerce-mce-10656",
+  "title": "Unsubscribe Customer from Marketing Emails",
+  "description": "A customer requests to be removed from all promotional email lists.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Campaign Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's profile using their email address.",
+      "expected_outcome": "Agent locates the customer's account.",
+      "required_tools": [
+        "get_customer_by_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the customer's communication preferences to unsubscribe them from all marketing communications.",
+      "expected_outcome": "Agent successfully updates the customer's subscription status.",
+      "required_tools": [
+        "update_communication_preferences"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm with the customer that they have been unsubscribed but may still receive transactional emails (like order confirmations).",
+      "expected_outcome": "Agent clearly sets expectations about the types of emails they will still receive.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

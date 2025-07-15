@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ecommerce-mce-10952",
+  "title": "Generate a List of Top-Selling Products",
+  "description": "A marketing manager needs a report of the top 10 best-selling products from the last quarter to plan a new campaign.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Customer Analytics",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query the sales database for all orders placed in the last quarter.",
+      "expected_outcome": "Agent retrieves all relevant sales data.",
+      "required_tools": [
+        "query_sales_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Aggregate the data to count the total units sold for each product.",
+      "expected_outcome": "Agent correctly calculates the sales volume per SKU.",
+      "required_tools": [
+        "aggregate_sales_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Sort the products by units sold in descending order and return the top 10.",
+      "expected_outcome": "Agent generates an accurate report of the top 10 best-sellers.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

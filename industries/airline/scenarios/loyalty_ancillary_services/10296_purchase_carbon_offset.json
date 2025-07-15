@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10296",
+  "title": "Purchase a Carbon Offset",
+  "description": "During the booking process, a customer wants to purchase a carbon offset to mitigate the environmental impact of their flight.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Ancillary Revenue & Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the carbon emissions for the customer's specific itinerary.",
+      "expected_outcome": "The system calculates the emissions for the flight.",
+      "required_tools": [
+        "calculate_carbon_emissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Present the customer with the option to purchase a carbon offset for a specific price to make their trip carbon neutral.",
+      "expected_outcome": "Agent clearly presents the offset option and cost.",
+      "required_tools": [
+        "offer_carbon_offset"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The customer agrees. Add the cost of the offset to their booking and process the payment.",
+      "expected_outcome": "Agent successfully sells the carbon offset.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "scenario_id": "tr-ro-13696",
+  "title": "Manage Private Railcar Storage",
+  "description": "A customer wants to store their private railcars in the railroad's yard. An agent must process the request and bill for storage.",
+  "use_case": "Rail Operations",
+  "core_function": "Yard & Terminal Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a request from a customer to store 10 of their railcars.",
+      "expected_outcome": "The agent understands the customer's needs.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for available storage track space in the yard.",
+      "expected_outcome": "The agent confirms there is enough space.",
+      "required_tools": [
+        "get_yard_capacity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a storage agreement, log the arrival of the cars, and move them to a designated storage track.",
+      "expected_outcome": "The cars are received and stored.",
+      "required_tools": [
+        "create_storage_agreement",
+        "move_car_to_storage_track"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The system automatically bills the customer a daily storage fee for each car.",
+      "expected_outcome": "Billing for the storage service is initiated.",
+      "required_tools": [
+        "initiate_recurring_billing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

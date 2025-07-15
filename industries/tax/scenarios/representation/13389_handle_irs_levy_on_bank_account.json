@@ -1,0 +1,53 @@
+{
+  "scenario_id": "tax-rep-13389",
+  "title": "Handle IRS Levy on a Bank Account",
+  "description": "A taxpayer's bank account has been levied by the IRS for an outstanding tax debt. They need immediate help.",
+  "use_case": "Taxpayer Representation & Resolution",
+  "core_function": "Collections & Appeals",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Immediately contact the IRS agent assigned to the case to request a temporary hold on the levy.",
+      "expected_outcome": "Agent makes contact with the IRS to begin negotiations.",
+      "required_tools": [
+        "contact_irs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather financial information to demonstrate that the levy is causing an economic hardship.",
+      "expected_outcome": "Agent compiles evidence of the hardship.",
+      "required_tools": [
+        "prepare_form_433f"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Negotiate a release of the levy in exchange for setting up an installment agreement or other payment arrangement.",
+      "expected_outcome": "Agent successfully gets the levy released and establishes a payment plan for the client.",
+      "required_tools": [
+        "negotiate_levy_release",
+        "setup_installment_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

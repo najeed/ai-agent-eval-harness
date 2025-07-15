@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-as-10970",
+  "title": "Manage Pharmacy Inventory",
+  "description": "A pharmacy technician notices that the stock of a common antibiotic is low and needs to order more.",
+  "use_case": "Ancillary Services",
+  "core_function": "Pharmacy Operations",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current on-hand quantity of the antibiotic in the pharmacy system.",
+      "expected_outcome": "Technician confirms the stock is below the designated par level.",
+      "required_tools": [
+        "check_drug_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a purchase order for the medication from the primary wholesaler.",
+      "expected_outcome": "The system creates a purchase order for the standard reorder quantity.",
+      "required_tools": [
+        "create_drug_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Transmit the purchase order to the wholesaler.",
+      "expected_outcome": "The order is successfully sent, and an electronic confirmation is received.",
+      "required_tools": [
+        "send_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

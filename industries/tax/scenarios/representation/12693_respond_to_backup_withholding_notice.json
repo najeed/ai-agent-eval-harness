@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-rep-12693",
+  "title": "Respond to Backup Withholding Notice",
+  "description": "A business receives a notice from the IRS (CP2100) indicating that a contractor's name and TIN on a 1099-NEC do not match IRS records, and the business may need to start backup withholding.",
+  "use_case": "Taxpayer Representation & Resolution",
+  "core_function": "Notice & Correspondence Management",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the notice to identify the contractor with the mismatched information.",
+      "expected_outcome": "Agent finds the specific contractor in question.",
+      "required_tools": [
+        "analyze_irs_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the contractor to request a new Form W-9 to obtain the correct information.",
+      "expected_outcome": "Agent reaches out to the contractor to resolve the discrepancy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the business's records with the corrected information and advise on whether backup withholding is now required.",
+      "expected_outcome": "Agent updates the vendor file and confirms that backup withholding is not necessary once the information is corrected.",
+      "required_tools": [
+        "update_vendor_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

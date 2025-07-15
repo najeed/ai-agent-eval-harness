@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10533",
+  "title": "Optimize Blending Time",
+  "description": "A process engineer wants to determine if the blending time for a product can be reduced without affecting homogeneity, in order to increase throughput.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Process Optimization",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve historical data for the last 20 batches of the product, including blending time and final QC results for homogeneity.",
+      "expected_outcome": "Agent successfully gathers the required historical data.",
+      "required_tools": [
+        "get_historical_batch_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to see if there is a correlation between blending time and homogeneity.",
+      "expected_outcome": "Agent's analysis shows that homogeneity is achieved well before the standard 60-minute blend time.",
+      "required_tools": [
+        "analyze_process_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit a change request to reduce the standard blending time in the recipe from 60 minutes to 45 minutes for a trial period.",
+      "expected_outcome": "Agent successfully creates a change control request to update the master recipe.",
+      "required_tools": [
+        "create_change_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-12981",
+  "title": "Update Property Owner Contact Information",
+  "description": "A property owner has a new phone number. They've emailed the property manager to update their file.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the email from the property owner with their new contact information.",
+      "expected_outcome": "Agent correctly identifies the owner and their new phone number.",
+      "required_tools": [
+        "get_owner_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the owner's profile in the property management software with the new phone number.",
+      "expected_outcome": "Agent successfully updates the contact record.",
+      "required_tools": [
+        "update_owner_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a confirmation email back to the owner stating that their information has been updated.",
+      "expected_outcome": "Agent sends a professional confirmation.",
+      "required_tools": [
+        "send_email_to_owner"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

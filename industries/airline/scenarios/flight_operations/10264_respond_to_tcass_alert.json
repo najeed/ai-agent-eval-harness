@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10264",
+  "title": "Respond to a TCAS Alert",
+  "description": "While in-flight, the Traffic Collision Avoidance System (TCAS) issues a 'Climb, Climb' resolution advisory (RA) to the flight crew.",
+  "use_case": "Flight Operations",
+  "core_function": "Operations Control (OCC)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The pilot flying immediately and manually disconnects the autopilot.",
+      "expected_outcome": "Pilot takes manual control of the aircraft.",
+      "required_tools": [
+        "disconnect_autopilot"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The pilot follows the TCAS RA by initiating a climb at the required rate, even if it conflicts with ATC instructions.",
+      "expected_outcome": "Pilot prioritizes the TCAS command over ATC instructions to avoid a collision.",
+      "required_tools": [
+        "perform_evasive_maneuver"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the conflict is resolved and the TCAS announces 'Clear of conflict', the pilot informs ATC of the deviation and returns to their assigned altitude.",
+      "expected_outcome": "The crew safely manages the conflict and communicates with ATC.",
+      "required_tools": [
+        "contact_atc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

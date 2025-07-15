@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10518",
+  "title": "Handle Critical Equipment Breakdown",
+  "description": "A main circulation pump has failed, halting production. A maintenance technician must respond to the emergency work order.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Maintenance Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the high-priority work order for the pump failure.",
+      "expected_outcome": "Agent accepts the work order, changing its status to 'In Progress'.",
+      "required_tools": [
+        "get_maintenance_work_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the spare parts inventory to see if a replacement pump or motor is in stock.",
+      "expected_outcome": "Agent finds a complete replacement pump assembly is available in the warehouse.",
+      "required_tools": [
+        "check_spare_parts_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the cause of failure and the parts used, and close the work order upon completion of the replacement.",
+      "expected_outcome": "Agent updates the work order with failure analysis, confirms the repair, and formally closes it.",
+      "required_tools": [
+        "update_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

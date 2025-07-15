@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-pt-51",
+  "title": "Process a Payroll Garnishment",
+  "description": "The company has received a legal order to garnish an employee's wages for child support.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Payroll Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and validate the garnishment order from the court.",
+      "expected_outcome": "Agent confirms the order is legitimate and contains all necessary information.",
+      "required_tools": [
+        "get_garnishment_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set up the garnishment as a post-tax deduction in the employee's payroll record.",
+      "expected_outcome": "Agent successfully adds the garnishment to the employee's profile.",
+      "required_tools": [
+        "setup_payroll_deduction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the calculated garnishment amount complies with the legal limits (e.g., Consumer Credit Protection Act).",
+      "expected_outcome": "Agent verifies the calculated deduction does not exceed the legal maximum.",
+      "required_tools": [
+        "check_garnishment_compliance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "During the payroll run, remit the garnished amount to the appropriate state agency.",
+      "expected_outcome": "Agent ensures the payment is made to the correct recipient.",
+      "required_tools": [
+        "remit_garnishment_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

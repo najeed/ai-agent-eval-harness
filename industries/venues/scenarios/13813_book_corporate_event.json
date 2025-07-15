@@ -1,0 +1,53 @@
+{
+  "scenario_id": "venues-em-13813",
+  "title": "Book a Corporate Conference",
+  "description": "A corporate event planner wants to book a two-day conference at the venue.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Event Booking & Contracting",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the availability of the main hall and three breakout rooms for the requested dates.",
+      "expected_outcome": "Agent confirms that the requested spaces are available.",
+      "required_tools": [
+        "get_booking_calendar"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a quote based on room rental, standard A/V package, and estimated catering costs.",
+      "expected_outcome": "Agent creates and sends a detailed quote to the client.",
+      "required_tools": [
+        "generate_event_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place a temporary hold on the spaces and send the standard rental contract to the client for signature.",
+      "expected_outcome": "Agent successfully places a 14-day hold and sends the contract.",
+      "required_tools": [
+        "place_booking_hold",
+        "send_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

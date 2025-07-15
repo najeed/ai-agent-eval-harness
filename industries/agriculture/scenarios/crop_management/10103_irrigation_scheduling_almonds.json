@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10103",
+  "title": "Irrigation Scheduling for Almonds",
+  "description": "A farmer needs to determine the optimal irrigation schedule for their almond orchard based on soil moisture data and weather forecasts.",
+  "use_case": "Crop Management",
+  "core_function": "Irrigation Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest soil moisture readings from in-field sensors.",
+      "expected_outcome": "Agent successfully retrieves data from all active sensors.",
+      "required_tools": [
+        "get_soil_moisture_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the 7-day weather forecast, focusing on temperature, humidity, and precipitation.",
+      "expected_outcome": "Agent retrieves the relevant weather forecast data.",
+      "required_tools": [
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the crop's evapotranspiration (ETc) and recommend an irrigation duration and frequency for the next week.",
+      "expected_outcome": "Agent provides a precise irrigation schedule in hours and days.",
+      "required_tools": [
+        "calculate_irrigation_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

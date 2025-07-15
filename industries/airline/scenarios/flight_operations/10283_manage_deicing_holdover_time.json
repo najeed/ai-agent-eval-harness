@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-fo-10283",
+  "title": "Manage De-icing Holdover Time",
+  "description": "After being de-iced, a flight is delayed on the ground. The pilot must track the holdover time to ensure the de-icing fluid remains effective.",
+  "use_case": "Flight Operations",
+  "core_function": "In-Flight Services & Safety",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Note the start time of the de-icing procedure and the type of fluid used.",
+      "expected_outcome": "Pilot records the critical information.",
+      "required_tools": [
+        "record_deicing_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult the holdover time chart for the specific fluid type and current weather conditions (e.g., light snow, freezing rain).",
+      "expected_outcome": "Pilot determines the maximum time they can wait before takeoff.",
+      "required_tools": [
+        "get_holdover_time_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the ground delay exceeds the holdover time, coordinate with ATC and ground crew to return to the gate for re-application of de-icing fluid.",
+      "expected_outcome": "The delay is long, and the pilot makes the decision to return for re-treatment.",
+      "required_tools": [
+        "contact_atc",
+        "request_ground_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

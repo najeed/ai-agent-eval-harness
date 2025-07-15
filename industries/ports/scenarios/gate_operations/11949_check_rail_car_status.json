@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ports-go-11949",
+  "title": "Check Rail Car Status",
+  "description": "A customer calls to ask if a specific container has been loaded onto a train that departed yesterday.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Rail Operations",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the container number from the customer.",
+      "expected_outcome": "Agent records the container ID.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the TOS for the container's history.",
+      "expected_outcome": "Agent searches for the container and finds its event log.",
+      "required_tools": [
+        "get_container_movement_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm from the log that the container was loaded onto a specific train and railcar and provide this information to the customer.",
+      "expected_outcome": "Agent confirms the container was loaded onto train T123, car 89, and relays this to the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

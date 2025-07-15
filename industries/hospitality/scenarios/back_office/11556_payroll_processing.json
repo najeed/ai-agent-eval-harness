@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-bo-11556",
+  "title": "Process Bi-weekly Payroll",
+  "description": "The HR manager needs to process the bi-weekly payroll for all hotel employees.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Staff Scheduling",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import all employee timesheet data for the pay period.",
+      "expected_outcome": "All hours worked are successfully imported into the payroll system.",
+      "required_tools": [
+        "hris_import_timesheets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate gross wages, deductions (taxes, benefits), and net pay for each employee.",
+      "expected_outcome": "The system accurately calculates all payroll figures.",
+      "required_tools": [
+        "hris_calculate_payroll"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the payroll for processing (direct deposits and checks).",
+      "expected_outcome": "The payroll is submitted to the bank for payment.",
+      "required_tools": [
+        "hris_submit_payroll"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

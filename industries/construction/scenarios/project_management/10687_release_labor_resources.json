@@ -1,0 +1,39 @@
+{
+  "scenario_id": "construction-pm-10687",
+  "title": "Release Labor Resources",
+  "description": "The framing phase is complete. The PM needs to release the framing crew from the project so they can be assigned elsewhere.",
+  "use_case": "Project Management",
+  "core_function": "Resource Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that all tasks assigned to the 'Framing Crew' are 100% complete.",
+      "expected_outcome": "Agent confirms all framing tasks are complete.",
+      "required_tools": [
+        "get_tasks_by_resource",
+        "get_task_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the resource plan to show the 'Framing Crew' as available for other projects starting tomorrow.",
+      "expected_outcome": "The crew is released from the project.",
+      "required_tools": [
+        "update_resource_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

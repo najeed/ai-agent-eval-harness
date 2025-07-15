@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-ops-11608",
+  "title": "Manage Underground Ventilation on Demand",
+  "description": "An underground mine operator uses a Ventilation on Demand (VOD) system to adjust fan speeds based on where people and equipment are working.",
+  "use_case": "Mine Operations",
+  "core_function": "Underground Production",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The VOD system detects that a diesel loader has entered a previously empty section of the mine.",
+      "expected_outcome": "The system automatically identifies the need for more ventilation in that area.",
+      "required_tools": [
+        "get_equipment_location_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically sends a command to increase the speed of the auxiliary fan that supplies air to that section.",
+      "expected_outcome": "The fan speed is increased to ensure air quality is maintained for the loader operator.",
+      "required_tools": [
+        "set_fan_speed"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the loader leaves the area, the system automatically reduces the fan speed to save energy.",
+      "expected_outcome": "The fan speed is reduced, minimizing power consumption without compromising safety.",
+      "required_tools": [
+        "set_fan_speed"
+      ],
+      "success_criteria": [
+        {
+          "metric": "resource_allocation_efficiency",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

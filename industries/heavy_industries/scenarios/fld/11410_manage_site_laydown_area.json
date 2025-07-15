@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-fld-11410",
+  "title": "Manage Site Laydown Area",
+  "description": "A large piece of equipment (a pressure vessel) is arriving on site and the logistics coordinator must assign it a space in the laydown yard.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Site Management & Logistics",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the laydown yard management system for available space.",
+      "expected_outcome": "Agent views a map of the yard and identifies an open, suitable space.",
+      "required_tools": [
+        "get_laydown_yard_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Reserve the selected space for the incoming pressure vessel.",
+      "expected_outcome": "Agent successfully reserves the space, and it now shows as 'Occupied' in the system.",
+      "required_tools": [
+        "reserve_laydown_space"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the field supervisor and the transport company of the assigned location for unloading.",
+      "expected_outcome": "Agent sends a notification with a map and coordinates for the unloading spot.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

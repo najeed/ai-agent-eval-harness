@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-com-10566",
+  "title": "Change Shipping Address on Order",
+  "description": "A customer calls to change the shipping address for an order that has been placed but not yet shipped.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Order Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the sales order and verify its status is not 'Shipped'.",
+      "expected_outcome": "Agent locates the order and confirms it is still in the 'Processing' stage.",
+      "required_tools": [
+        "get_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Take the new shipping address from the customer.",
+      "expected_outcome": "Agent correctly records the new address details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the shipping address on the sales order.",
+      "expected_outcome": "Agent successfully changes the address, and the updated information is sent to the logistics system.",
+      "required_tools": [
+        "update_sales_order_address"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

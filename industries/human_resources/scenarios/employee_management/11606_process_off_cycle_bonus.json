@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-em-11606",
+  "title": "Process an Off-Cycle Bonus Payment",
+  "description": "A manager has approved a spot bonus for an employee that needs to be paid outside of the regular payroll cycle.",
+  "use_case": "Employee Management",
+  "core_function": "Payroll & Compensation",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the approved bonus details (employee, amount, reason).",
+      "expected_outcome": "Payroll specialist confirms the approved bonus information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the bonus payment into the payroll system as an off-cycle payment.",
+      "expected_outcome": "Specialist correctly enters the bonus details for processing.",
+      "required_tools": [
+        "enter_off_cycle_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the off-cycle payroll and verify the net pay and tax calculations.",
+      "expected_outcome": "Specialist processes the payment and confirms the calculations are correct before finalizing.",
+      "required_tools": [
+        "run_off_cycle_payroll"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

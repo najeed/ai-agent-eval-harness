@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-ind-13301",
+  "title": "Prepare Return with Interest Income",
+  "description": "A taxpayer has a W-2 and also received a Form 1099-INT for interest earned on a savings account.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Data Collection & Input",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Enter the data from the taxpayer's Form W-2.",
+      "expected_outcome": "Agent correctly inputs the W-2 information.",
+      "required_tools": [
+        "enter_w2_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the interest income from Form 1099-INT onto Schedule B.",
+      "expected_outcome": "Agent correctly inputs the interest income.",
+      "required_tools": [
+        "enter_1099int_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the interest income is correctly transferred to Form 1040.",
+      "expected_outcome": "Agent verifies that the total income on the main form is correct.",
+      "required_tools": [
+        "finalize_return"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10299",
+  "title": "Request Updated Weather Information",
+  "description": "En route, a pilot wants to get the latest weather report (METAR) for their destination airport to prepare for the approach and landing.",
+  "use_case": "Flight Operations",
+  "core_function": "Flight Planning & Dispatch",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use the Aircraft Communications Addressing and Reporting System (ACARS) to request the latest METAR for the destination airport.",
+      "expected_outcome": "Pilot sends the request via datalink.",
+      "required_tools": [
+        "request_metar_via_acars"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the METAR report, which is printed out in the cockpit.",
+      "expected_outcome": "The system provides the latest weather report.",
+      "required_tools": [
+        "receive_acars_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The crew reviews the weather (wind, visibility, cloud cover) to brief the approach.",
+      "expected_outcome": "The crew uses the information to plan for a safe landing.",
+      "required_tools": [
+        "brief_approach"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

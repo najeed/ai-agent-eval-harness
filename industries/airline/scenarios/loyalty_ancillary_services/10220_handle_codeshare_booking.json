@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10220",
+  "title": "Handle a Codeshare Booking Issue",
+  "description": "A customer booked a flight on Airline A's website, but one leg is operated by a partner, Airline B. The customer cannot select a seat for the partner flight.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Partnerships & Interlining",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the booking and identify the flight segment operated by the partner airline.",
+      "expected_outcome": "Agent correctly identifies the codeshare flight.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the customer with Airline B's confirmation number (PNR).",
+      "expected_outcome": "Agent finds the partner airline's PNR associated with the booking.",
+      "required_tools": [
+        "get_partner_pnr"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the customer to visit Airline B's website and use the partner PNR to manage their seat selection for that flight.",
+      "expected_outcome": "Agent provides clear and correct instructions to resolve the customer's issue.",
+      "required_tools": [
+        "provide_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

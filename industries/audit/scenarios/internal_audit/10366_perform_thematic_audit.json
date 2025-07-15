@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-ia-10366",
+  "title": "Perform a Thematic Audit",
+  "description": "The Chief Audit Executive requests a thematic audit focusing on the use of consultants across the entire organization.",
+  "use_case": "Internal Audit",
+  "core_function": "Audit Planning & Scoping",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scope the audit to cover consultant hiring, performance management, and invoice processing across all major departments.",
+      "expected_outcome": "A cross-functional audit scope is defined.",
+      "required_tools": [
+        "generate_audit_planning_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain data from HR and Accounts Payable to create a complete picture of consultant usage and spend for the past year.",
+      "expected_outcome": "A comprehensive dataset on consultant activity is compiled.",
+      "required_tools": [
+        "get_hr_data",
+        "get_payment_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the data to identify themes, such as a lack of a centralized process for hiring consultants or inconsistent invoice approval processes across departments.",
+      "expected_outcome": "The audit identifies systemic, company-wide issues in how consultants are managed.",
+      "required_tools": [
+        "analyze_thematic_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

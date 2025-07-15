@@ -1,0 +1,67 @@
+{
+  "scenario_id": "wholesale-om-13281",
+  "title": "Handle a Customer Pickup Order",
+  "description": "A local customer chooses to pick up their order directly from the warehouse instead of having it shipped.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Order Processing & Fulfillment",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The customer places an order and selects 'Customer Pickup'.",
+      "expected_outcome": "The order is flagged for pickup.",
+      "required_tools": [
+        "create_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The warehouse staff picks and stages the order in the customer pickup area.",
+      "expected_outcome": "The order is prepared and set aside.",
+      "required_tools": [
+        "generate_pick_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the customer that their order is ready for pickup.",
+      "expected_outcome": "The customer receives an email or SMS notification.",
+      "required_tools": [
+        "send_pickup_ready_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "When the customer arrives, verify their identity and have them sign for the order.",
+      "expected_outcome": "The customer's identity is verified, and they receive their goods.",
+      "required_tools": [
+        "verify_customer_identity",
+        "capture_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

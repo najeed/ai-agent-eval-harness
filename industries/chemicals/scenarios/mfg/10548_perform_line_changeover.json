@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10548",
+  "title": "Perform Production Line Changeover",
+  "description": "A production line that was making one product now needs to be cleaned and set up to make a different product.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Production Scheduling",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the changeover checklist for switching from Product A to Product B.",
+      "expected_outcome": "Agent finds the correct checklist which includes specific cleaning instructions.",
+      "required_tools": [
+        "get_changeover_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute the cleaning procedures and record their completion in the system.",
+      "expected_outcome": "Operator completes and signs off on all cleaning steps.",
+      "required_tools": [
+        "update_changeover_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After cleaning, take a swab sample and send it to QC for release testing to ensure no cross-contamination.",
+      "expected_outcome": "Agent takes a sample and creates a lab order for cleanliness verification.",
+      "required_tools": [
+        "create_lab_testing_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

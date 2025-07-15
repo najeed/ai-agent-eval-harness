@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-59",
+  "title": "Process 401(k) Contributions",
+  "description": "After a payroll run, the accountant must remit the employee 401(k) contributions and the company match to the plan administrator.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Payroll Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a report from the payroll system detailing the employee contributions and company match for the period.",
+      "expected_outcome": "Agent generates the 401(k) contribution report.",
+      "required_tools": [
+        "generate_401k_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate an ACH transfer to the 401(k) plan administrator for the total amount.",
+      "expected_outcome": "Agent successfully schedules the payment.",
+      "required_tools": [
+        "create_ach_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload the contribution detail file to the plan administrator's portal so they can allocate the funds to individual employee accounts.",
+      "expected_outcome": "Agent successfully uploads the contribution data file.",
+      "required_tools": [
+        "upload_contribution_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

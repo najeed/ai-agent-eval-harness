@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-op-11108",
+  "title": "Solar Farm Generation Forecast",
+  "description": "An operator needs an accurate 48-hour power generation forecast for a 100 MW solar farm.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Generation Forecasting",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest cloud cover and irradiance forecasts for the solar farm's location.",
+      "expected_outcome": "Agent fetches high-resolution weather data for the next 48 hours.",
+      "required_tools": [
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the asset management system for any planned maintenance or known outages at the farm.",
+      "expected_outcome": "Agent confirms all inverters are scheduled to be online.",
+      "required_tools": [
+        "get_asset_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an hourly generation forecast (in MWh) based on the weather forecast and asset availability.",
+      "expected_outcome": "Agent produces a detailed generation forecast table.",
+      "required_tools": [
+        "generate_solar_generation_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "forecast_accuracy_mae",
+          "threshold": 5.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10117",
+  "title": "Breeding Recommendation for Swine",
+  "description": "A swine farmer wants to select the best boar to breed with a specific sow to improve litter size.",
+  "use_case": "Livestock Management",
+  "core_function": "Breeding & Genetics",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the genetic data and historical performance records for the sow, including her litter sizes.",
+      "expected_outcome": "Agent retrieves the complete record for the sow.",
+      "required_tools": [
+        "get_animal_genetic_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the genetic data (Estimated Breeding Values - EBVs) for all available boars, focusing on the EBV for 'number born alive'.",
+      "expected_outcome": "Agent retrieves the relevant EBVs for all boars.",
+      "required_tools": [
+        "get_animal_genetic_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the top 3 boars that are the best genetic match to improve litter size, while also checking for inbreeding risk.",
+      "expected_outcome": "Agent provides a ranked list of recommended boars.",
+      "required_tools": [
+        "recommend_breeding_match"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

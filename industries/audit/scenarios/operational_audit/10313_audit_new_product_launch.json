@@ -1,0 +1,55 @@
+{
+  "scenario_id": "audit-op-10313",
+  "title": "Audit a New Product Launch",
+  "description": "An auditor reviews a recently completed new product launch to determine if the project met its objectives.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Project & Program Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Compare the final project cost and timeline to the original budget and plan.",
+      "expected_outcome": "Auditor determines the project was 20% over budget and 3 months late.",
+      "required_tools": [
+        "get_project_plan",
+        "get_project_financials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the actual sales in the first six months to the sales targets set in the business case.",
+      "expected_outcome": "Auditor finds that sales are at only 50% of the target.",
+      "required_tools": [
+        "get_sales_data",
+        "get_business_case_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Interview the product manager to understand the reasons for the shortfalls and document lessons learned for future projects.",
+      "expected_outcome": "The auditor documents key takeaways to improve future product launches.",
+      "required_tools": [
+        "conduct_interview",
+        "generate_lessons_learned_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

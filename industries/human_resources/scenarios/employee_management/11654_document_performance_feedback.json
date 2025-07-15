@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-em-11654",
+  "title": "Document Performance Feedback",
+  "description": "A manager wants to document a piece of positive feedback for an employee in the performance management system outside of the formal review cycle.",
+  "use_case": "Employee Management",
+  "core_function": "Performance Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Navigate to the performance management module in the HRIS.",
+      "expected_outcome": "Manager logs into the system.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the employee and choose the option to add 'anytime feedback'.",
+      "expected_outcome": "Manager finds the correct feature in the system.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the positive feedback and save it to the employee's record.",
+      "expected_outcome": "Manager successfully logs the feedback, which will be visible during the next formal review.",
+      "required_tools": [
+        "log_performance_feedback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

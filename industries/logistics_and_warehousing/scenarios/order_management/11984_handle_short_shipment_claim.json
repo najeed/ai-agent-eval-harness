@@ -1,0 +1,66 @@
+{
+  "scenario_id": "lw-om-11984",
+  "title": "Handle a Short Shipment Claim",
+  "description": "A customer claims they were shorted an item in their shipment. The agent must investigate and resolve.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Claims Management",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's order and the shipment details.",
+      "expected_outcome": "Agent retrieves the relevant order and shipment info.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the packing details for the shipment, including the recorded weight of the package.",
+      "expected_outcome": "Agent finds the final package weight.",
+      "required_tools": [
+        "get_shipment_pack_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the actual shipped weight to the expected weight if the order had been complete.",
+      "expected_outcome": "The weight check confirms that the package was too light, supporting the customer's claim.",
+      "required_tools": [
+        "calculate_expected_shipment_weight"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Issue a credit to the customer for the shorted item and apologize for the error.",
+      "expected_outcome": "The customer is credited for the missing item.",
+      "required_tools": [
+        "issue_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

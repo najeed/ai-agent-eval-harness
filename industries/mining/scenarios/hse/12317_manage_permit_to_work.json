@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-hse-12317",
+  "title": "Issue Permit for Confined Space Entry",
+  "description": "A supervisor needs to issue a permit for a maintenance crew to enter a large tank (a confined space) to perform repairs.",
+  "use_case": "Health, Safety & Environment (HSE)",
+  "core_function": "Safety Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new permit to work request for confined space entry.",
+      "expected_outcome": "A draft permit is created in the digital permit system.",
+      "required_tools": [
+        "create_permit_to_work"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all safety prerequisites are met, including isolating the tank, performing gas testing, and assigning a standby person.",
+      "expected_outcome": "The system's checklist confirms all safety controls are in place.",
+      "required_tools": [
+        "verify_safety_prerequisites"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve and issue the electronic permit, making it active for the work crew.",
+      "expected_outcome": "The permit is issued and becomes active, allowing work to commence safely.",
+      "required_tools": [
+        "issue_permit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

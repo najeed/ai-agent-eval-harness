@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10094",
+  "title": "Repair Composite Delamination",
+  "description": "A technician has found a delamination (a separation of layers) in a composite control surface. It must be repaired.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Component Repair & Overhaul",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Map the exact size and shape of the delamination using an ultrasonic inspection tool.",
+      "expected_outcome": "Agent accurately maps the boundaries of the damage.",
+      "required_tools": [
+        "perform_ultrasonic_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Follow the SRM to carefully remove the damaged material.",
+      "expected_outcome": "Agent removes all damaged composite layers.",
+      "required_tools": [
+        "get_structural_repair_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply new composite patches, layer by layer, and cure the repair using a heating blanket under vacuum pressure.",
+      "expected_outcome": "Agent successfully performs the bonded composite repair.",
+      "required_tools": [
+        "perform_composite_repair"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ac-ap-32",
+  "title": "Process an Invoice with an Early Payment Discount",
+  "description": "A vendor offers a 2% discount if their invoice is paid within 10 days. An accountant needs to process the payment to take advantage of the discount.",
+  "use_case": "Accounts Payable",
+  "core_function": "Payment Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify an approved invoice that has a '2/10, n/30' payment term and is still within the discount period.",
+      "expected_outcome": "Agent finds a suitable invoice.",
+      "required_tools": [
+        "get_invoices_with_discounts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule the invoice for immediate payment, calculating the reduced payment amount after the 2% discount.",
+      "expected_outcome": "Agent correctly calculates the discounted payment amount.",
+      "required_tools": [
+        "schedule_payment_with_discount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute the payment and ensure the discount is correctly recorded in the general ledger.",
+      "expected_outcome": "Agent processes the payment and posts the transaction, crediting 'Purchase Discounts'.",
+      "required_tools": [
+        "execute_payment_run",
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

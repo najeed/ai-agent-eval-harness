@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ecommerce-omf-10970",
+  "title": "Resend Order Confirmation Email",
+  "description": "A customer claims they never received their order confirmation email and would like it to be resent.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Order Processing",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's order.",
+      "expected_outcome": "Agent locates the correct order.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the customer's email address on file.",
+      "expected_outcome": "Agent confirms the email address with the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Re-trigger the order confirmation email to be sent to the customer.",
+      "expected_outcome": "Agent successfully resends the email.",
+      "required_tools": [
+        "send_transactional_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

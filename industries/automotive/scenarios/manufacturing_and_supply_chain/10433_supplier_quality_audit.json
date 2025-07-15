@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-ms-10433",
+  "title": "Supplier Quality Audit Failure",
+  "description": "A batch of incoming steering wheels from a supplier has failed a quality audit due to stitching defects.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Supplier Management",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the quality failure, including the part number, supplier, batch number, and reason for failure.",
+      "expected_outcome": "Agent logs the failure of batch #8821 from 'SteerCo' for 'Inconsistent Stitching'.",
+      "required_tools": [
+        "log_supplier_quality_issue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Quarantine the entire batch of defective parts to prevent them from entering the assembly line.",
+      "expected_outcome": "Agent updates the inventory system to place the batch on 'Quality Hold'.",
+      "required_tools": [
+        "update_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the supplier, inform them of the failure, and request a root cause analysis and a replacement shipment.",
+      "expected_outcome": "Agent formally notifies the supplier and initiates the corrective action process.",
+      "required_tools": [
+        "contact_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

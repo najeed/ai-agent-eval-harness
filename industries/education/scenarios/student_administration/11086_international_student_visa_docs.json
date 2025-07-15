@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-sa-11086",
+  "title": "International Student Visa Document Request",
+  "description": "A newly admitted international student needs the university to issue an I-20 form, which is required to apply for a student visa.",
+  "use_case": "Student Administration",
+  "core_function": "Admissions & Enrollment",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the student's admission and that they have paid their enrollment deposit.",
+      "expected_outcome": "Agent confirms the student is admitted and has committed.",
+      "required_tools": [
+        "get_applicant_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check that the student has submitted the required financial documentation proving they can cover costs.",
+      "expected_outcome": "Agent verifies the financial documents are on file and sufficient.",
+      "required_tools": [
+        "check_international_student_docs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the I-20 form in the SEVIS system and send it to the student.",
+      "expected_outcome": "Agent successfully creates and sends the official document.",
+      "required_tools": [
+        "generate_i20_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

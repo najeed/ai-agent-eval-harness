@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10274",
+  "title": "Handle Aircraft Fueling",
+  "description": "A ramp agent must oversee the fueling of an aircraft to ensure the correct amount of fuel is loaded.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Ramp & Turnaround Management",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the final fuel figure from the flight plan.",
+      "expected_outcome": "Agent knows the exact amount of fuel to be loaded.",
+      "required_tools": [
+        "get_flight_plan_fuel"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Communicate the required fuel amount to the fueling company.",
+      "expected_outcome": "Agent provides the fueler with the correct order.",
+      "required_tools": [
+        "contact_fueling_company"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Supervise the fueling process and verify that the final amount of fuel loaded matches the order.",
+      "expected_outcome": "Agent confirms the correct amount of fuel is on board.",
+      "required_tools": [
+        "verify_fuel_uplift"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

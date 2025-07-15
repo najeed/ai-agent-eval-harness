@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-as-11023",
+  "title": "Request to Change Academic Advisor",
+  "description": "A student is requesting to be assigned a new academic advisor due to a personality conflict.",
+  "use_case": "Academic Support",
+  "core_function": "Tutoring & Academic Advising",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and their currently assigned advisor.",
+      "expected_outcome": "Agent confirms the student's current advisor.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the list of other available advisors in the student's academic department.",
+      "expected_outcome": "Agent finds two other advisors with availability.",
+      "required_tools": [
+        "get_department_advisors"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reassign the student to a new advisor based on their preference or random assignment.",
+      "expected_outcome": "Agent successfully updates the student's assigned advisor in the SIS.",
+      "required_tools": [
+        "update_student_advisor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

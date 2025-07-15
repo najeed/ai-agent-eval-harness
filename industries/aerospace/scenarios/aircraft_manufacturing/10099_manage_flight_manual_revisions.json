@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10099",
+  "title": "Manage Airplane Flight Manual (AFM) Revisions",
+  "description": "After a change in aircraft performance or limitations, a technical writer must revise the official AFM and submit it for regulatory approval.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Testing & Certification",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the engineering data detailing the change in performance or limitation.",
+      "expected_outcome": "Agent identifies the new data that necessitates an AFM change.",
+      "required_tools": [
+        "get_engineering_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Revise the affected sections of the AFM to incorporate the new information.",
+      "expected_outcome": "Agent accurately updates the AFM content.",
+      "required_tools": [
+        "edit_technical_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the revised AFM to the regulatory agency (e.g., FAA) for approval and, once approved, distribute it to all operators.",
+      "expected_outcome": "Agent manages the approval and distribution process correctly.",
+      "required_tools": [
+        "submit_to_regulatory_agency",
+        "distribute_to_operators"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

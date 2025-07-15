@@ -1,0 +1,66 @@
+{
+  "scenario_id": "venues-vo-13905",
+  "title": "Manage an Elevator Malfunction",
+  "description": "An elevator gets stuck between floors with guests inside.",
+  "use_case": "Venue Operations & Logistics",
+  "core_function": "Security & Emergency Response",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an alarm from the elevator monitoring system or a call from inside the elevator.",
+      "expected_outcome": "Agent acknowledges the emergency.",
+      "required_tools": [
+        "get_system_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Establish two-way communication with the trapped guests via the elevator's intercom.",
+      "expected_outcome": "Agent speaks to the guests, reassures them, and confirms no one is injured.",
+      "required_tools": [
+        "use_intercom_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch the on-site elevator technician to the location immediately.",
+      "expected_outcome": "Agent sends the technician.",
+      "required_tools": [
+        "dispatch_technician"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "If the technician cannot resolve it quickly, contact the local fire department for assistance with extraction.",
+      "expected_outcome": "Agent follows protocol and contacts external emergency services.",
+      "required_tools": [
+        "contact_emergency_services"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

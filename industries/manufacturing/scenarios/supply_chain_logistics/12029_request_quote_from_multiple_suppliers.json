@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sl-12029",
+  "title": "Request a Quote from Multiple Suppliers",
+  "description": "A buyer is sourcing a new component and needs to send a Request for Quote (RFQ) to several potential suppliers.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Procurement & Ordering",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the RFQ, including the part specifications, required quantity, and response deadline.",
+      "expected_outcome": "Agent creates a new RFQ with all necessary details.",
+      "required_tools": [
+        "create_rfq"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a list of qualified suppliers to receive the RFQ.",
+      "expected_outcome": "Agent selects three qualified suppliers from the SRM system.",
+      "required_tools": [
+        "get_qualified_suppliers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the RFQ to the selected suppliers.",
+      "expected_outcome": "Agent successfully dispatches the RFQ to all three suppliers.",
+      "required_tools": [
+        "send_rfq"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

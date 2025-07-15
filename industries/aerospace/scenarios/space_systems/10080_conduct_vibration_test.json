@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10080",
+  "title": "Conduct a Satellite Vibration Test",
+  "description": "A satellite must be subjected to intense vibrations on a shaker table to ensure it can survive the violent forces of a rocket launch.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Manufacturing & Integration",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Mount the satellite onto the shaker table.",
+      "expected_outcome": "Agent ensures the satellite is securely mounted.",
+      "required_tools": [
+        "mount_on_shaker_table"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the shaker table through a vibration profile that simulates the launch environment.",
+      "expected_outcome": "Agent operates the shaker table according to the test plan.",
+      "required_tools": [
+        "operate_shaker_table"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the test, perform a full functional check on the satellite to verify that no components were damaged.",
+      "expected_outcome": "Agent runs a functional test and confirms the satellite is still fully operational.",
+      "required_tools": [
+        "run_functional_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

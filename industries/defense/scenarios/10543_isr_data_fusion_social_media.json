@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-isr-10543",
+  "title": "Open Source Intelligence (OSINT) Fusion",
+  "description": "An OSINT analyst must fuse social media posts, news reports, and satellite imagery to assess battle damage after a strike.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "ISR Data Fusion & Analysis",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze post-strike satellite imagery to identify visible damage to the target.",
+      "expected_outcome": "Analyst correctly identifies the physical damage from the imagery.",
+      "required_tools": [
+        "analyze_satellite_imagery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "damage_assessment_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scour social media and local news for posts, photos, or videos from the target area.",
+      "expected_outcome": "Analyst finds multiple social media posts confirming the destruction of the target.",
+      "required_tools": [
+        "search_social_media",
+        "search_news_feeds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Fuse the imagery and OSINT to create a comprehensive Battle Damage Assessment (BDA) report.",
+      "expected_outcome": "Analyst produces a report confirming mission success with evidence from multiple sources.",
+      "required_tools": [
+        "generate_bda_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-as-11041",
+  "title": "Request Accessible Textbook Format",
+  "description": "A student with a visual impairment needs an accessible electronic version (e.g., PDF, EPUB) of a required textbook.",
+  "use_case": "Academic Support",
+  "core_function": "Disability & Accessibility Services",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and verify their accommodation for accessible course materials.",
+      "expected_outcome": "Agent confirms the student's eligibility.",
+      "required_tools": [
+        "get_student_disability_services_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the textbook information (title, ISBN) and proof of purchase from the student.",
+      "expected_outcome": "Agent gathers the required documentation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Request the accessible format from the publisher or an accessibility clearinghouse.",
+      "expected_outcome": "Agent submits a formal request to the appropriate source for the accessible file.",
+      "required_tools": [
+        "request_accessible_textbook"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

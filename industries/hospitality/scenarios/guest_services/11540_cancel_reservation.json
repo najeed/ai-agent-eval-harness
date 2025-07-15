@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-gs-11540",
+  "title": "Cancel a Reservation",
+  "description": "A guest calls to cancel their upcoming reservation.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Reservations & Booking",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the reservation and review the cancellation policy associated with their booking.",
+      "expected_outcome": "Agent finds the booking and sees it has a 48-hour cancellation policy.",
+      "required_tools": [
+        "pms_lookup_reservation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine if the cancellation is within the free cancellation window.",
+      "expected_outcome": "The guest is canceling 5 days in advance, so no fee applies.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Cancel the reservation in the PMS and provide the guest with a cancellation number.",
+      "expected_outcome": "The reservation is canceled, and the guest receives a confirmation.",
+      "required_tools": [
+        "pms_cancel_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

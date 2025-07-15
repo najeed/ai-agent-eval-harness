@@ -1,0 +1,51 @@
+{
+  "scenario_id": "heavy-industries-fld-11446",
+  "title": "Perform Hydrostatic Test on Pipeline",
+  "description": "A new pipeline has been built and must be hydrostatically tested to ensure it is leak-free before being put into service.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Field Inspections & Testing",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the hydrostatic test procedure for the pipeline.",
+      "expected_outcome": "The inspector finds the procedure, which specifies the required test pressure and duration.",
+      "required_tools": [
+        "get_test_procedure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Fill the pipeline with water and use a pump to bring it up to the required test pressure.",
+      "expected_outcome": "The crew successfully pressurizes the pipeline.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the pressure for the required duration. If there is no pressure drop, record the test as successful and generate a test certificate.",
+      "expected_outcome": "The pressure holds steady, and the inspector logs the passing test and generates the final certificate.",
+      "required_tools": [
+        "log_test_result",
+        "generate_test_certificate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

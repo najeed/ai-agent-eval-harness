@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-cf-10882",
+  "title": "Manage Data Retention Policy",
+  "description": "A compliance officer needs to ensure that financial records older than the 7-year retention policy are being properly archived or disposed of.",
+  "use_case": "Corporate Finance",
+  "core_function": "Risk & Compliance",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query the system for all financial records older than 7 years.",
+      "expected_outcome": "Agent runs a query and identifies a set of records due for disposition.",
+      "required_tools": [
+        "query_records_by_date"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that none of the identified records are subject to a legal hold.",
+      "expected_outcome": "Agent cross-references the list against the legal hold database and finds no conflicts.",
+      "required_tools": [
+        "check_for_legal_holds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute the data disposition process for the eligible records.",
+      "expected_outcome": "Agent initiates the secure archival and deletion process for the old records.",
+      "required_tools": [
+        "execute_data_disposition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

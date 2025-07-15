@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-12871",
+  "title": "Add Travel Insurance to Booking",
+  "description": "A customer who booked a vacation package wants to add travel insurance.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Ancillary Services & Upgrades",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's package booking.",
+      "expected_outcome": "Agent locates the correct booking.",
+      "required_tools": [
+        "get_package_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Present the available travel insurance options and their coverage details.",
+      "expected_outcome": "Agent clearly explains the different insurance plans.",
+      "required_tools": [
+        "get_insurance_options"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the selected insurance policy to the booking and process the payment.",
+      "expected_outcome": "Agent successfully adds the insurance and provides the policy documents to the customer.",
+      "required_tools": [
+        "add_insurance_to_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

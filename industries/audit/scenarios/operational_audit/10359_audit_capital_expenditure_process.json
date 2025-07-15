@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10359",
+  "title": "Audit the Capital Expenditure (CapEx) Process",
+  "description": "An auditor reviews the process for approving large capital expenditures.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Project & Program Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a sample of 5 major capital projects approved in the last year.",
+      "expected_outcome": "A sample is selected for testing.",
+      "required_tools": [
+        "select_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each project, verify that a formal business case with an ROI calculation was prepared.",
+      "expected_outcome": "Auditor finds that one project was approved without a formal business case.",
+      "required_tools": [
+        "get_business_case_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that each project was approved at the correct level of management based on the project's value, as required by the delegation of authority policy.",
+      "expected_outcome": "Auditor confirms all sampled projects had the proper level of approval.",
+      "required_tools": [
+        "review_approval_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

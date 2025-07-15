@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-vm-10406",
+  "title": "Web Application Vulnerability Scan",
+  "description": "A vulnerability analyst must run a dynamic application security test (DAST) against a new public-facing web application before it goes live.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Vulnerability Scanning & Assessment",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Configure the DAST scanner with the target application's URL and authentication credentials.",
+      "expected_outcome": "Analyst correctly configures the scan parameters.",
+      "required_tools": [
+        "configure_dast_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "configuration_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Launch the authenticated scan and monitor its progress.",
+      "expected_outcome": "The scan runs to completion without errors.",
+      "required_tools": [
+        "launch_dast_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_execution_success",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the scan results, identifying a critical SQL Injection vulnerability, and create a high-priority ticket for the development team.",
+      "expected_outcome": "Analyst correctly identifies, prioritizes, and reports the critical finding.",
+      "required_tools": [
+        "analyze_scan_results",
+        "create_remediation_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "vulnerability_prioritization_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

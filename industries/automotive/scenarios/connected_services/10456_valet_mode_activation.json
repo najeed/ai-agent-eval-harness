@@ -1,0 +1,46 @@
+{
+  "scenario_id": "auto-cs-10456",
+  "title": "Activate Valet Mode",
+  "description": "A customer is dropping their car at a valet and wants to enable 'Valet Mode' to restrict access to certain features and data.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Remote Vehicle Operations",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Guide the customer to the 'Valet Mode' option in the vehicle's settings screen.",
+      "expected_outcome": "Agent provides clear instructions to find the feature.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Instruct the customer on how to set a temporary PIN for the mode.",
+      "expected_outcome": "Customer successfully sets a 4-digit PIN.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain what Valet Mode does (e.g., locks the trunk and glove box, limits speed, hides personal data from the infotainment system).",
+      "expected_outcome": "Agent clearly communicates the features and limitations of Valet Mode.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

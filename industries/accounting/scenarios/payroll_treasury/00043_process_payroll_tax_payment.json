@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-43",
+  "title": "Process Payroll Tax Payments",
+  "description": "After a payroll run, the specialist must remit the withheld federal and state taxes to the appropriate government agencies.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Payroll Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a report of all payroll tax liabilities from the latest payroll run.",
+      "expected_outcome": "Agent gets a report showing the amounts due for federal income tax, FICA, and state income tax.",
+      "required_tools": [
+        "generate_payroll_tax_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate electronic payments for the tax liabilities via the Electronic Federal Tax Payment System (EFTPS) and the state's equivalent system.",
+      "expected_outcome": "Agent successfully schedules the required tax payments before the deadline.",
+      "required_tools": [
+        "initiate_tax_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Record the tax payments in the general ledger.",
+      "expected_outcome": "Agent posts the journal entry to clear the tax liability accounts.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

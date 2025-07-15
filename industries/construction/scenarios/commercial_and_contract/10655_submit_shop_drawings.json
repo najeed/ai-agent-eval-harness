@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-cc-10655",
+  "title": "Submit Steel Shop Drawings for Review",
+  "description": "The steel fabricator has completed their shop drawings. The project manager must submit them to the structural engineer for review and approval.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Submittals & RFIs",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new submittal package in the project management system for 'Steel Shop Drawings'.",
+      "expected_outcome": "A new submittal package is created with a unique ID.",
+      "required_tools": [
+        "create_submittal_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attach the shop drawing files to the submittal package.",
+      "expected_outcome": "The relevant drawing files are uploaded and attached.",
+      "required_tools": [
+        "attach_document_to_submittal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Forward the submittal package to the structural engineer for review.",
+      "expected_outcome": "The submittal is officially sent to the engineer.",
+      "required_tools": [
+        "submit_submittal_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

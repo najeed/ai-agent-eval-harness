@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10287",
+  "title": "Manage a Fueling Discrepancy",
+  "description": "After fueling, the pilot notices the fuel quantity indicated in the cockpit does not match the amount on the fueler's receipt.",
+  "use_case": "Flight Operations",
+  "core_function": "Flight Planning & Dispatch",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The pilot notifies the ground crew of the discrepancy.",
+      "expected_outcome": "Pilot clearly communicates the issue.",
+      "required_tools": [
+        "contact_ground_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The ground crew and pilot re-verify the fuel order and the amount shown on the fuel truck's meter.",
+      "expected_outcome": "All parties re-check their figures.",
+      "required_tools": [
+        "verify_fuel_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If a discrepancy still exists, a maintenance technician is called to troubleshoot the aircraft's fuel quantity indication system.",
+      "expected_outcome": "A technician is called to diagnose a potential fault with the aircraft's gauges.",
+      "required_tools": [
+        "contact_maintenance_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

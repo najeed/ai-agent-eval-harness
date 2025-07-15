@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-sa-11067",
+  "title": "Swap Course Sections",
+  "description": "A student wants to swap from one section of a course to another section of the same course that fits their schedule better.",
+  "use_case": "Student Administration",
+  "core_function": "Registration & Course Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and the course they wish to swap.",
+      "expected_outcome": "Agent confirms the student is enrolled in 'ENGL101, Section 001'.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for availability in the desired section ('ENGL101, Section 005').",
+      "expected_outcome": "Agent confirms the target section has open seats.",
+      "required_tools": [
+        "get_course_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the section swap in the SIS.",
+      "expected_outcome": "Agent successfully drops the student from section 001 and adds them to section 005 in a single transaction.",
+      "required_tools": [
+        "swap_course_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10599",
+  "title": "Manage Lab Reagent Inventory",
+  "description": "A lab technician has opened a new bottle of a chemical reagent and needs to log it in the lab's inventory system.",
+  "use_case": "R&D and Quality",
+  "core_function": "Lab Information Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the barcode on the reagent bottle to identify it.",
+      "expected_outcome": "Agent successfully identifies the reagent.",
+      "required_tools": [
+        "scan_reagent_barcode"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the date the bottle was opened.",
+      "expected_outcome": "Agent records the 'date opened' in the system.",
+      "required_tools": [
+        "update_reagent_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system automatically calculates the new expiration date based on the 'in-use' stability period (e.g., 6 months after opening) and prints a new label.",
+      "expected_outcome": "Agent gets a new label with the correct in-use expiration date to place on the bottle.",
+      "required_tools": [
+        "print_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

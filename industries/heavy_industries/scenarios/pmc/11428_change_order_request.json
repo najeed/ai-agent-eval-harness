@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11428",
+  "title": "Process a Change Order Request",
+  "description": "The client has requested a change to the project scope (e.g., adding a new building). A project manager must create a formal change order.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Contract & Procurement Management",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new change order in the project management system.",
+      "expected_outcome": "Agent successfully initiates the change order record.",
+      "required_tools": [
+        "create_change_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Estimate the cost and schedule impact of the requested change.",
+      "expected_outcome": "Agent works with engineering and procurement to determine the change will add $500,000 and 30 days to the project.",
+      "required_tools": [
+        "estimate_cost_impact",
+        "estimate_schedule_impact"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the change order, including the cost and schedule impact, to the client for their approval before proceeding.",
+      "expected_outcome": "Agent sends the formal change order to the client for their signature.",
+      "required_tools": [
+        "submit_change_order_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

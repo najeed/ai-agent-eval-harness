@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-as-11025",
+  "title": "Request ASL Interpreter for Class",
+  "description": "A deaf student needs to request an American Sign Language (ASL) interpreter for one of their newly registered classes.",
+  "use_case": "Academic Support",
+  "core_function": "Disability & Accessibility Services",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and confirm their approved accommodation for ASL interpretation.",
+      "expected_outcome": "Agent verifies the student's record includes 'ASL Interpreter for lectures'.",
+      "required_tools": [
+        "get_student_disability_services_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the details of the course requiring the interpreter (course name, schedule, location).",
+      "expected_outcome": "Agent gathers all necessary logistical information.",
+      "required_tools": [
+        "get_student_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit a request to the interpreter scheduling coordinator with the course details.",
+      "expected_outcome": "Agent creates a service request in the scheduling system.",
+      "required_tools": [
+        "schedule_interpreter_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

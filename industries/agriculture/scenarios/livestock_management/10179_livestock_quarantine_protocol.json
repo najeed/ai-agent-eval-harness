@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10179",
+  "title": "Manage New Livestock Quarantine Protocol",
+  "description": "A farm has just received a new batch of animals. The manager needs to follow the standard quarantine protocol to prevent introducing diseases.",
+  "use_case": "Livestock Management",
+  "core_function": "Health & Welfare",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the farm's standard operating procedure (SOP) for new animal quarantine.",
+      "expected_outcome": "Agent gets the 30-day quarantine protocol document.",
+      "required_tools": [
+        "get_sop_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a schedule of tasks based on the protocol, including initial health checks, vaccinations, and diagnostic testing.",
+      "expected_outcome": "Agent generates a checklist of tasks with due dates for the new animals.",
+      "required_tools": [
+        "create_task_schedule_from_sop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set a reminder for the end of the 30-day quarantine period to clear the animals for introduction to the main herd.",
+      "expected_outcome": "Agent successfully sets a calendar reminder.",
+      "required_tools": [
+        "set_reminder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "heavy-industries-eng-11401",
+  "title": "Resolve Design Clash in 3D Model",
+  "description": "An automated clash detection report from the 3D model shows a newly designed pipe rack interfering with an existing structural beam.",
+  "use_case": "Engineering & Design",
+  "core_function": "Design & Simulation",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the clash detection report and locate the specific clash between the pipe rack and the beam.",
+      "expected_outcome": "Agent correctly identifies the two interfering components in the 3D model viewer.",
+      "required_tools": [
+        "get_clash_detection_report",
+        "view_3d_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult the design specifications for both the piping and structural elements to check for constraints.",
+      "expected_outcome": "Agent determines the structural beam cannot be moved, but the pipe rack has some routing flexibility.",
+      "required_tools": [
+        "get_design_specification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Modify the pipe rack's path in the CAD model to avoid the beam and submit the change for review.",
+      "expected_outcome": "Agent successfully reroutes the pipe rack, resolves the clash, and submits the updated drawing for approval.",
+      "required_tools": [
+        "update_cad_model",
+        "submit_drawing_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

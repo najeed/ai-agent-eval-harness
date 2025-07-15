@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tourism-ta-13599",
+  "title": "Handle Entry Denial for Prohibited Item",
+  "description": "A visitor at a stadium entrance has a prohibited item (a large backpack) and is denied entry by security.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Access & Entry Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Politely inform the visitor that their backpack exceeds the size limit allowed in the stadium.",
+      "expected_outcome": "Agent clearly and calmly explains the policy.",
+      "required_tools": [
+        "get_entry_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Advise the visitor of their options, such as returning the bag to their vehicle or using a nearby paid locker service.",
+      "expected_outcome": "Agent provides helpful solutions to the visitor.",
+      "required_tools": [
+        "get_locker_information"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reiterate that they can enter once they no longer have the prohibited item.",
+      "expected_outcome": "Agent ensures the visitor understands how they can gain entry.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

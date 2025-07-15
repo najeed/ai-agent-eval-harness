@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-dev-13083",
+  "title": "Oversee Site Clearing and Grading",
+  "description": "A developer is starting a new project and must oversee the initial site preparation.",
+  "use_case": "Real Estate Development",
+  "core_function": "Project Management & Entitlements",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that all necessary erosion control measures are in place before work begins, as required by local regulations.",
+      "expected_outcome": "The site is compliant with environmental regulations.",
+      "required_tools": [
+        "compliance_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Monitor the work of the excavation contractor to ensure they are clearing the site and grading it according to the approved civil engineering plans.",
+      "expected_outcome": "The site work is proceeding according to plan.",
+      "required_tools": [
+        "review_civil_engineering_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review and approve the contractor's invoices for the site work.",
+      "expected_outcome": "Invoices are approved for payment after verifying the work was completed.",
+      "required_tools": [
+        "approve_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

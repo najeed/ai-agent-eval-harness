@@ -1,0 +1,54 @@
+{
+  "scenario_id": "hc-ph-10981",
+  "title": "Create a Patient Care Plan",
+  "description": "A care manager is creating a comprehensive care plan for a patient with congestive heart failure (CHF).",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Care Coordination & Planning",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient's chart and the care plan module.",
+      "expected_outcome": "Care manager accesses the correct tool for care plan creation.",
+      "required_tools": [
+        "get_patient_record",
+        "open_care_plan_module"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add problems to the care plan, such as 'CHF' and 'Hypertension'.",
+      "expected_outcome": "The main health issues are added to the plan.",
+      "required_tools": [
+        "add_problem_to_care_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each problem, add goals (e.g., 'Patient will weigh themselves daily') and interventions (e.g., 'Low sodium diet education').",
+      "expected_outcome": "A comprehensive, actionable care plan is created to guide the patient and care team.",
+      "required_tools": [
+        "add_goal_to_care_plan",
+        "add_intervention_to_care_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

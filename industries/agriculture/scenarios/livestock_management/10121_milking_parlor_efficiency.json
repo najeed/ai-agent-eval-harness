@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10121",
+  "title": "Analyze Milking Parlor Efficiency",
+  "description": "A dairy farmer wants to analyze data from their milking parlor to identify bottlenecks and improve efficiency.",
+  "use_case": "Livestock Management",
+  "core_function": "Milking & Production",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the last month of milking data, including milking duration per cow, milk flow rates, and equipment cleaning times.",
+      "expected_outcome": "Agent retrieves the complete dataset.",
+      "required_tools": [
+        "get_milking_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to identify cows that are consistently slow to milk and any delays in the process.",
+      "expected_outcome": "Agent identifies 5 specific cows as 'slow milkers' and notes that the cleaning cycle between groups is longer than the target.",
+      "required_tools": [
+        "analyze_milking_performance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report with recommendations, such as grouping slow-milking cows together and reviewing the cleaning protocol.",
+      "expected_outcome": "Agent provides a report with actionable insights.",
+      "required_tools": [
+        "generate_performance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

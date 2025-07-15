@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11468",
+  "title": "Manage a Project Budget Transfer",
+  "description": "The civil engineering work package is trending under budget, and the project manager wants to transfer some of its budget to the mechanical work package, which is over budget.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Cost Engineering & Control",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current budget and actual costs for both the civil and mechanical WBS elements.",
+      "expected_outcome": "Agent confirms that civil has a positive cost variance and mechanical has a negative one.",
+      "required_tools": [
+        "get_wbs_cost_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a budget transfer request in the cost management system.",
+      "expected_outcome": "Agent initiates a new budget transfer.",
+      "required_tools": [
+        "create_budget_transfer_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the amount to transfer, the 'from' WBS (civil), and the 'to' WBS (mechanical), then submit for approval.",
+      "expected_outcome": "Agent successfully processes the transfer, which reallocates the budget between the two cost centers.",
+      "required_tools": [
+        "update_budget_transfer_request",
+        "submit_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

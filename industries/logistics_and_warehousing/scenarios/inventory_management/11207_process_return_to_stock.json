@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-im-11207",
+  "title": "Process a Return to Stock",
+  "description": "A returned item has been inspected and deemed resalable. An operator must return it to inventory.",
+  "use_case": "Inventory Management",
+  "core_function": "Returns & Reverse Logistics",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the RMA number on the returned product to retrieve its details.",
+      "expected_outcome": "Agent correctly identifies the item and its inspection status ('OK for Restock').",
+      "required_tools": [
+        "get_rma_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a put-away task for the item.",
+      "expected_outcome": "The WMS suggests an optimal storage location for the item.",
+      "required_tools": [
+        "create_putaway_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Move the item to the suggested location, scan the location and item to confirm, and finalize the task.",
+      "expected_outcome": "Agent successfully restocks the item, and the system inventory is updated.",
+      "required_tools": [
+        "confirm_putaway"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "scenario_id": "auto-csra-10484",
+  "title": "Key Fob Replacement and Programming",
+  "description": "A customer has lost their key fob and needs to order and program a replacement.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "General Inquiries",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and vehicle to determine the correct key fob part number.",
+      "expected_outcome": "Agent identifies the correct part number.",
+      "required_tools": [
+        "get_vehicle_details_by_vin",
+        "get_parts_price"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Order the replacement key fob.",
+      "expected_outcome": "Agent successfully places an order for the new key fob.",
+      "required_tools": [
+        "order_part"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer that once the fob arrives, they will need to schedule a service appointment to have it programmed to their vehicle.",
+      "expected_outcome": "Agent clearly explains the full process and sets expectations.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

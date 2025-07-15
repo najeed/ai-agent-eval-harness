@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ap-44",
+  "title": "Manage a Weekly Payment Run",
+  "description": "The AP manager needs to create, review, and execute the weekly payment run for all due vendor invoices.",
+  "use_case": "Accounts Payable",
+  "core_function": "Payment Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a payment proposal for all open vendor invoices that are due in the next 7 days.",
+      "expected_outcome": "Agent generates a list of proposed payments.",
+      "required_tools": [
+        "create_payment_proposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the payment proposal for any exceptions, such as payments to vendors on hold or unusually large payments that require specific approval.",
+      "expected_outcome": "Agent reviews the list and flags one payment that needs secondary approval.",
+      "required_tools": [
+        "review_payment_proposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After all approvals are received, execute the payment run, which generates ACH files and a list of checks to be printed.",
+      "expected_outcome": "Agent successfully executes the run, creating the necessary payment files.",
+      "required_tools": [
+        "execute_payment_run"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ap-100",
+  "title": "Reconcile Virtual Card Payments",
+  "description": "The company uses virtual credit cards (V-Cards) for some purchases. The AP team needs to reconcile the V-Card statement with the purchase transactions.",
+  "use_case": "Accounts Payable",
+  "core_function": "Accruals & Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the monthly statement from the virtual card provider.",
+      "expected_outcome": "Agent gets the statement listing all charges.",
+      "required_tools": [
+        "get_vcard_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve all internal purchase records where a virtual card was used as the payment method.",
+      "expected_outcome": "Agent gets the list of internal V-Card transactions.",
+      "required_tools": [
+        "get_internal_transaction_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Match the transactions on the statement to the internal purchase records.",
+      "expected_outcome": "Agent successfully matches all transactions.",
+      "required_tools": [
+        "match_vcard_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create the journal entry to record the expenses and the payment from the V-Card provider.",
+      "expected_outcome": "Agent creates the journal entry to correctly record the activity from the V-Card statement.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

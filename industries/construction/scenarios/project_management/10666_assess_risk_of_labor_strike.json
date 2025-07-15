@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-pm-10666",
+  "title": "Assess Risk of a Labor Strike",
+  "description": "News reports indicate a potential labor strike by local union electricians. A PM must assess the risk to the project.",
+  "use_case": "Project Management",
+  "core_function": "Risk & Issue Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all upcoming tasks assigned to the electrical subcontractor.",
+      "expected_outcome": "A list of all electrical tasks for the next 60 days is generated.",
+      "required_tools": [
+        "get_tasks_by_subcontractor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the potential strike in the risk register, classifying it as 'High Impact, Low Probability'.",
+      "expected_outcome": "A new entry is created in the risk register.",
+      "required_tools": [
+        "create_risk_register_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "As a contingency, identify a non-union electrical subcontractor that could be used if the strike occurs.",
+      "expected_outcome": "An alternative subcontractor is identified.",
+      "required_tools": [
+        "search_supplier_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

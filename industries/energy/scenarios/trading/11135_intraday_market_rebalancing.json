@@ -1,0 +1,53 @@
+{
+  "scenario_id": "energy-tr-11135",
+  "title": "Intraday Market Rebalancing",
+  "description": "A wind farm's generation is coming in lower than the day-ahead forecast. The trader must rebalance the position in the intraday market to avoid penalties.",
+  "use_case": "Energy Trading & Portfolio Management",
+  "core_function": "Trade Execution & Hedging",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the latest real-time generation data and the updated short-term forecast for the wind farm.",
+      "expected_outcome": "Agent confirms a 10 MW shortfall for the next 2 hours.",
+      "required_tools": [
+        "get_scada_data",
+        "get_short_term_generation_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the intraday market prices to determine the cost of buying power to cover the shortfall.",
+      "expected_outcome": "Agent retrieves the current bid-ask spread for the relevant market product.",
+      "required_tools": [
+        "get_intraday_market_prices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute a buy order on the intraday market to cover the 10 MW shortfall for the next two hours.",
+      "expected_outcome": "Agent successfully purchases the required energy.",
+      "required_tools": [
+        "execute_intraday_trade"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

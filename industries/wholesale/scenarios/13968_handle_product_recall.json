@@ -1,0 +1,64 @@
+{
+  "scenario_id": "wholesale-cr-13968",
+  "title": "Handle a Product Recall",
+  "description": "A supplier has issued a recall for a product due to a safety issue. An agent must notify all retailers who purchased the product.",
+  "use_case": "Customer & Retailer Support",
+  "core_function": "Claims & Dispute Resolution",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the recall notice from the supplier.",
+      "expected_outcome": "Agent has the details of the recall, including the affected product and batch numbers.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a list of all customers who purchased the recalled product.",
+      "expected_outcome": "Agent creates a list of all affected retailers.",
+      "required_tools": [
+        "get_customers_by_product_purchase"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a recall notification to all affected customers with instructions on how to return the product.",
+      "expected_outcome": "Agent successfully sends the recall notices.",
+      "required_tools": [
+        "send_recall_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Flag the product in the system to prevent any further sales.",
+      "expected_outcome": "The product is marked as 'recalled' and cannot be sold.",
+      "required_tools": [
+        "update_product_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

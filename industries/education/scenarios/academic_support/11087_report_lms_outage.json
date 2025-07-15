@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-as-11087",
+  "title": "Report Widespread LMS Outage",
+  "description": "Multiple students and faculty begin calling to report that the LMS is inaccessible.",
+  "use_case": "Academic Support",
+  "core_function": "Learning Management System (LMS) Support",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the multiple reports and perform a quick check on the LMS status page.",
+      "expected_outcome": "Agent confirms the system is down.",
+      "required_tools": [
+        "check_system_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Escalate the issue to the university's central IT services as a high-priority incident.",
+      "expected_outcome": "Agent creates a P1 ticket for the system administrators.",
+      "required_tools": [
+        "create_it_support_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the help desk's recorded message to inform callers of the known outage.",
+      "expected_outcome": "Agent updates the phone system greeting to manage call volume.",
+      "required_tools": [
+        "update_ivr_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

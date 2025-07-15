@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10042",
+  "title": "Design an Avionics System Architecture",
+  "description": "A systems engineer is designing the architecture for a new integrated avionics suite, including flight displays, flight management systems, and communication radios.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Design & Engineering",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the functional requirements and interfaces for all avionics subsystems.",
+      "expected_outcome": "Agent creates a complete requirements document.",
+      "required_tools": [
+        "define_system_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a system architecture diagram showing how all the subsystems connect and exchange data.",
+      "expected_outcome": "Agent produces a clear and accurate architecture diagram.",
+      "required_tools": [
+        "create_architecture_diagram"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the data bus loading to ensure the chosen architecture (e.g., ARINC 664) can handle the required data throughput.",
+      "expected_outcome": "Agent performs the analysis and confirms the data bus has sufficient capacity.",
+      "required_tools": [
+        "analyze_data_bus_load"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

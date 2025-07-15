@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10019",
+  "title": "Analyze Flight Test Data",
+  "description": "After a flight test, an engineer must analyze the collected data to verify the aircraft's performance against its design model.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Testing & Certification",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the flight test data into an analysis software.",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "import_flight_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the actual measured lift and drag coefficients from the flight test with the predicted values from the CFD simulation.",
+      "expected_outcome": "Agent plots the real and simulated data and finds they are within 2% of each other.",
+      "required_tools": [
+        "compare_data_sets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report summarizing the findings and confirming that the aircraft's performance meets or exceeds predictions.",
+      "expected_outcome": "Agent creates a detailed report for the certification team.",
+      "required_tools": [
+        "generate_test_analysis_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

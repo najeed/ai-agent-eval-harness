@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-to-11978",
+  "title": "Weigh a Container for SOLAS Compliance",
+  "description": "An export container arrives at the gate, but it does not have a Verified Gross Mass (VGM) certificate as required by SOLAS. The port must weigh it.",
+  "use_case": "Terminal Operations",
+  "core_function": "Customs & Documentation",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The gate system flags the container for having no VGM.",
+      "expected_outcome": "The gate clerk receives a 'Missing VGM' alert.",
+      "required_tools": [
+        "check_container_vgm_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Instruct the truck driver to proceed to the port's weighbridge.",
+      "expected_outcome": "The driver is directed to the weighing station.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Weigh the container, generate a VGM certificate, bill the service to the shipper, and update the container's status in the TOS.",
+      "expected_outcome": "The container is weighed, the VGM is recorded in the system, a charge is created, and the container is now compliant for loading.",
+      "required_tools": [
+        "weigh_container",
+        "generate_vgm_certificate",
+        "create_customer_charge",
+        "update_container_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10089",
+  "title": "Conduct an EMI Test",
+  "description": "Engineers must test an aircraft in an anechoic chamber to ensure its electronic systems do not interfere with each other and are not susceptible to external radio frequencies.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Testing & Certification",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Power on all of the aircraft's avionics and electronic systems.",
+      "expected_outcome": "Agent confirms all systems are operational.",
+      "required_tools": [
+        "power_on_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use antennas to 'listen' for any unintended radio emissions from the aircraft's systems.",
+      "expected_outcome": "Agent scans the frequency spectrum and finds no emissions that exceed the specified limits.",
+      "required_tools": [
+        "perform_emissions_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Transmit high-power radio waves at the aircraft to test its susceptibility, while monitoring the systems for any upsets or faults.",
+      "expected_outcome": "Agent bombards the aircraft with RF energy and confirms that all systems continue to operate without interruption.",
+      "required_tools": [
+        "perform_susceptibility_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

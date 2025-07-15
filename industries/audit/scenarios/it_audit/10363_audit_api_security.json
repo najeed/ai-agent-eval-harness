@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10363",
+  "title": "Audit API Security",
+  "description": "An IT auditor reviews the security controls for the company's public-facing APIs.",
+  "use_case": "IT Audit",
+  "core_function": "Application Controls Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the API documentation to ensure it does not expose sensitive information.",
+      "expected_outcome": "The documentation review is completed.",
+      "required_tools": [
+        "review_technical_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all APIs require authentication, such as an API key or OAuth token.",
+      "expected_outcome": "Auditor confirms authentication is enforced on all API endpoints.",
+      "required_tools": [
+        "perform_api_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that rate limiting is implemented to prevent denial-of-service attacks.",
+      "expected_outcome": "Auditor sends a high volume of test requests and confirms they are throttled correctly.",
+      "required_tools": [
+        "perform_api_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

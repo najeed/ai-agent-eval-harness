@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10308",
+  "title": "Test Application Input Validation Controls",
+  "description": "An IT auditor tests the input validation controls of a custom web application.",
+  "use_case": "IT Audit",
+  "core_function": "Application Controls Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Attempt to enter a negative number into a 'quantity' field that should only accept positive integers.",
+      "expected_outcome": "The application correctly rejects the input and displays an error message.",
+      "required_tools": [
+        "perform_application_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attempt to enter text into a 'zip code' field that should only accept numbers.",
+      "expected_outcome": "The application correctly rejects the input.",
+      "required_tools": [
+        "perform_application_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Attempt to submit a form with a required 'email address' field left blank.",
+      "expected_outcome": "The application correctly prevents submission and highlights the required field.",
+      "required_tools": [
+        "perform_application_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

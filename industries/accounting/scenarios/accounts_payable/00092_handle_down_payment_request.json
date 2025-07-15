@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ap-92",
+  "title": "Process a Vendor Down Payment Request",
+  "description": "A vendor requires a 20% down payment before they will begin work on a large custom order.",
+  "use_case": "Accounts Payable",
+  "core_function": "Payment Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the down payment request from the vendor, referencing the purchase order.",
+      "expected_outcome": "Agent receives the request.",
+      "required_tools": [
+        "get_vendor_down_payment_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a down payment request in the ERP system linked to the purchase order.",
+      "expected_outcome": "Agent successfully creates the special transaction.",
+      "required_tools": [
+        "create_down_payment_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the payment for the down payment request.",
+      "expected_outcome": "Agent issues the 20% down payment to the vendor.",
+      "required_tools": [
+        "execute_payment_run"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Ensure the down payment is recorded as a prepaid asset on the balance sheet, to be cleared against the final invoice.",
+      "expected_outcome": "Agent verifies the down payment is correctly posted to 'Prepaid Expenses' or a similar account.",
+      "required_tools": [
+        "get_gl_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

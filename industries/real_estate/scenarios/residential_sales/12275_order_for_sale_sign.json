@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-res-12275",
+  "title": "Order a 'For Sale' Sign",
+  "description": "For a new listing, the agent needs to order the installation of a 'For Sale' sign at the property.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the listing address and the agent's name and contact info to be displayed on the sign rider.",
+      "expected_outcome": "Agent gathers all necessary information for the sign order.",
+      "required_tools": [
+        "get_listing_details",
+        "get_agent_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the preferred sign installation company with the order details.",
+      "expected_outcome": "Agent successfully places the order with the vendor.",
+      "required_tools": [
+        "contact_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm with the vendor that the sign has been installed.",
+      "expected_outcome": "Agent receives confirmation and logs it in the transaction file.",
+      "required_tools": [
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

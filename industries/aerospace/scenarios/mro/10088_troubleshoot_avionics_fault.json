@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10088",
+  "title": "Troubleshoot an Avionics Fault",
+  "description": "A pilot has reported an intermittent fault with the autopilot system. An avionics technician must diagnose the cause.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Maintenance Planning",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Download the fault codes from the aircraft's central maintenance computer.",
+      "expected_outcome": "Agent retrieves the fault codes related to the autopilot system.",
+      "required_tools": [
+        "download_fault_codes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the fault isolation manual (FIM) to trace the fault code to a probable cause, such as a faulty sensor or wiring.",
+      "expected_outcome": "Agent follows the FIM and narrows down the cause to a specific line-replaceable unit (LRU).",
+      "required_tools": [
+        "get_fault_isolation_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Replace the suspected faulty LRU and perform a system test to verify the fault is cleared.",
+      "expected_outcome": "Agent replaces the component and confirms the autopilot system now passes all tests.",
+      "required_tools": [
+        "replace_lru",
+        "perform_system_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

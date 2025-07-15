@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10006",
+  "title": "Monitor Satellite Health Telemetry",
+  "description": "A satellite operator must monitor real-time telemetry data to ensure the spacecraft is operating within normal parameters.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Operations & Control",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Establish a connection with the satellite during its pass over the ground station.",
+      "expected_outcome": "Agent successfully connects to the satellite.",
+      "required_tools": [
+        "connect_to_spacecraft"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Monitor key telemetry channels, including battery voltage, temperature, and subsystem status.",
+      "expected_outcome": "Agent observes all telemetry data and confirms they are within predefined limits.",
+      "required_tools": [
+        "monitor_telemetry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the telemetry data for the duration of the pass and flag any anomalies.",
+      "expected_outcome": "Agent successfully logs all data and notes no anomalies were detected.",
+      "required_tools": [
+        "log_telemetry_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

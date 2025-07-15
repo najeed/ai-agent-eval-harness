@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-pm-10650",
+  "title": "Resolve Issue of Unforeseen Obstruction",
+  "description": "During excavation, a large, undocumented utility line is discovered. The PM must manage this issue.",
+  "use_case": "Project Management",
+  "core_function": "Risk & Issue Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Immediately log the discovery in the project's issue tracker, classifying it as 'High Priority'.",
+      "expected_outcome": "A new high-priority issue is logged.",
+      "required_tools": [
+        "create_issue_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the local utility locating service ('Call Before You Dig') to identify the owner of the line.",
+      "expected_outcome": "The utility owner is identified.",
+      "required_tools": [
+        "contact_utility_locator"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Initiate an RFI to the structural engineer to request a foundation redesign to avoid the obstruction.",
+      "expected_outcome": "An RFI is sent to the engineer to develop a solution.",
+      "required_tools": [
+        "create_rfi"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

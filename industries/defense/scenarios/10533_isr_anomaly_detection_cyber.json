@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-isr-10533",
+  "title": "Network Traffic Anomaly Detection",
+  "description": "An analyst must monitor network traffic logs to detect anomalous behavior indicative of a stealthy cyberattack.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "Pattern & Anomaly Detection",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Establish a baseline of normal network traffic patterns for a specific high-value server.",
+      "expected_outcome": "Analyst successfully models the normal flow of data to and from the server.",
+      "required_tools": [
+        "analyze_historical_network_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "baseline_model_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Monitor live network traffic and compare it against the baseline.",
+      "expected_outcome": "Analyst actively monitors the live data stream.",
+      "required_tools": [
+        "monitor_live_network_traffic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_diligence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Flag a small, encrypted data exfiltration to an unknown foreign IP address during off-hours as a critical anomaly.",
+      "expected_outcome": "Analyst correctly identifies the low-and-slow data theft.",
+      "required_tools": [
+        "flag_anomaly"
+      ],
+      "success_criteria": [
+        {
+          "metric": "anomaly_detection_sensitivity",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

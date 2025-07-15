@@ -1,0 +1,65 @@
+{
+  "scenario_id": "energy-cs-10785",
+  "title": "Enroll Customer in EV Managed Charging",
+  "description": "A customer with a new electric vehicle wants to enroll in a program where the utility manages their charging to occur during off-peak hours in exchange for a lower rate.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "EV Charging Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the benefits of the managed charging program, including cost savings and grid benefits.",
+      "expected_outcome": "Agent clearly communicates the program's value proposition.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the customer's EV model and home charger are compatible with the utility's control platform.",
+      "expected_outcome": "Agent confirms compatibility.",
+      "required_tools": [
+        "check_der_compatibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Guide the customer through the process of connecting their EV or charger account to the utility's platform.",
+      "expected_outcome": "Agent provides clear instructions for the customer to authorize the connection.",
+      "required_tools": [
+        "generate_onboarding_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Enroll the customer in the program and update their billing rate.",
+      "expected_outcome": "Agent successfully completes the enrollment.",
+      "required_tools": [
+        "enroll_in_der_program",
+        "update_customer_rate_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10247",
+  "title": "Book Group Travel",
+  "description": "A school group of 20 students and 2 teachers wants to book travel for a field trip.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Booking & Ticketing",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the requirements for the group booking: number of passengers, dates, and destination.",
+      "expected_outcome": "Agent collects all necessary details.",
+      "required_tools": [
+        "get_group_booking_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request a special group fare from the pricing department.",
+      "expected_outcome": "Agent submits the request and receives a discounted group fare.",
+      "required_tools": [
+        "request_group_fare"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a group booking with the negotiated fare and provide the group leader with a deadline for submitting passenger names and payment.",
+      "expected_outcome": "Agent creates the booking and communicates the terms.",
+      "required_tools": [
+        "create_group_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

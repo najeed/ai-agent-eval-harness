@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-sm-11573",
+  "title": "Combine Duplicate Loyalty Accounts",
+  "description": "A guest realizes they have two loyalty accounts under different email addresses and wants to merge them.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Loyalty Program Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up both accounts and verify the guest's identity for both.",
+      "expected_outcome": "The agent finds both accounts and confirms they belong to the same person.",
+      "required_tools": [
+        "lms_get_member_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate the account merge process in the loyalty system.",
+      "expected_outcome": "The agent uses the merge tool.",
+      "required_tools": [
+        "lms_merge_accounts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm that all points and stay history have been successfully transferred to the primary account.",
+      "expected_outcome": "The agent verifies the merge was successful and the new point total is correct.",
+      "required_tools": [
+        "lms_get_member_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

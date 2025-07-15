@@ -1,0 +1,53 @@
+{
+  "scenario_id": "education-sa-11069",
+  "title": "Dispute a Late Payment Fee",
+  "description": "A student was charged a late fee on their tuition bill but claims they paid on time.",
+  "use_case": "Student Administration",
+  "core_function": "Financial Aid & Billing",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and the late fee in question.",
+      "expected_outcome": "Agent locates the charge on the student's account.",
+      "required_tools": [
+        "get_student_record",
+        "get_student_bill_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the student's payment history, including the timestamp of the last payment.",
+      "expected_outcome": "Agent finds the payment was posted one day after the due date.",
+      "required_tools": [
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the student's record for any prior late payments. Finding none, offer a one-time courtesy waiver of the fee.",
+      "expected_outcome": "As a goodwill gesture for a first-time issue, the agent waives the fee.",
+      "required_tools": [
+        "waive_student_fee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

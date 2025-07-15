@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ar-26",
+  "title": "Resolve Unapplied Cash",
+  "description": "A customer made a payment without any remittance advice, and it's sitting in the system as unapplied cash. An AR specialist needs to identify which invoice(s) it should be applied to.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Cash Application",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the details of the unapplied payment, including the customer and the amount.",
+      "expected_outcome": "Agent identifies a payment of $5,678 from a specific customer.",
+      "required_tools": [
+        "get_unapplied_cash_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve a list of all open invoices for that customer.",
+      "expected_outcome": "Agent gets a list of the customer's open invoices.",
+      "required_tools": [
+        "get_customer_open_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Look for an open invoice or a combination of invoices that exactly matches the payment amount.",
+      "expected_outcome": "Agent finds a single open invoice for $5,678.",
+      "required_tools": [
+        "match_payment_to_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Apply the cash to the identified invoice.",
+      "expected_outcome": "Agent successfully applies the payment and closes the invoice.",
+      "required_tools": [
+        "apply_customer_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

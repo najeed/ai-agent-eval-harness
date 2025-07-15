@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-cs-10482",
+  "title": "Geofencing Alert",
+  "description": "A customer has set up a geofence around their home. They receive an alert when their teenage driver takes the car outside the set boundary.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Remote Vehicle Operations",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system detects the vehicle has crossed the pre-defined geofence boundary.",
+      "expected_outcome": "The system's location monitoring service triggers an event.",
+      "required_tools": [
+        "monitor_vehicle_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send an automated notification (SMS or push notification) to the primary account holder.",
+      "expected_outcome": "The system successfully sends an alert to the customer's phone.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the event in the vehicle's location history.",
+      "expected_outcome": "The geofence breach event is logged with a timestamp and location.",
+      "required_tools": [
+        "log_vehicle_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

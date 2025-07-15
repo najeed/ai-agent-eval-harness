@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-ms-10499",
+  "title": "Torque Wrench Calibration Alert",
+  "description": "A smart torque wrench used for a critical safety component (installing lug nuts) is due for its mandatory recalibration.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Quality Assurance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The tool management system sends an alert that the wrench is due for calibration.",
+      "expected_outcome": "Agent receives the alert for the specific tool.",
+      "required_tools": [
+        "get_tool_management_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The agent takes the tool out of service and provides the assembly worker with a calibrated replacement.",
+      "expected_outcome": "The tools are swapped to ensure no uncalibrated tool is used.",
+      "required_tools": [
+        "update_tool_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The agent sends the out-of-service tool to the calibration lab.",
+      "expected_outcome": "The tool is sent for recalibration.",
+      "required_tools": [
+        "create_calibration_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

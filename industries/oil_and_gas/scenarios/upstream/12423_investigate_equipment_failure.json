@@ -1,0 +1,54 @@
+{
+  "scenario_id": "og-up-12423",
+  "title": "Investigate Pump Failure",
+  "description": "A reliability engineer investigates the recent failure of a critical injection pump to understand the root cause and prevent recurrence.",
+  "use_case": "Upstream",
+  "core_function": "Asset & Maintenance Management",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all data related to the failed pump, including its maintenance history, recent operational data, and failure reports.",
+      "expected_outcome": "A complete dossier for the failed asset is compiled.",
+      "required_tools": [
+        "get_asset_maintenance_history",
+        "get_asset_runtime",
+        "get_failure_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the vibration data leading up to the failure to identify any anomalies.",
+      "expected_outcome": "Analysis shows a sharp increase in bearing vibration 48 hours before the failure.",
+      "required_tools": [
+        "analyze_vibration_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the preventive maintenance strategy for similar pumps to include more frequent bearing inspections.",
+      "expected_outcome": "The maintenance plan in the CMMS is updated with new recommendations.",
+      "required_tools": [
+        "update_maintenance_strategy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

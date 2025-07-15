@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ac-fc-50",
+  "title": "Prepare the Statement of Cash Flows",
+  "description": "Using the indirect method, an accountant needs to prepare the statement of cash flows for the quarter.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Financial Reporting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the income statement for the quarter and the balance sheets from the beginning and end of the quarter.",
+      "expected_outcome": "Agent gathers all the necessary financial statements.",
+      "required_tools": [
+        "get_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Start with net income and adjust for non-cash items like depreciation and amortization.",
+      "expected_outcome": "Agent correctly adjusts net income for non-cash expenses.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the changes in working capital accounts (e.g., AR, AP, Inventory) to determine cash flow from operations.",
+      "expected_outcome": "Agent correctly calculates the net change in working capital.",
+      "required_tools": [
+        "calculate_working_capital_changes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Analyze changes in long-term assets and liabilities to determine cash flow from investing and financing activities and generate the final statement.",
+      "expected_outcome": "Agent generates a complete and accurate statement of cash flows.",
+      "required_tools": [
+        "generate_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

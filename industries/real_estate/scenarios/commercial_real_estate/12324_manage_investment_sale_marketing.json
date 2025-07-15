@@ -1,0 +1,53 @@
+{
+  "scenario_id": "real_estate-cre-12324",
+  "title": "Manage Investment Sale Marketing Campaign",
+  "description": "An agent is hired to sell a $10 million shopping center and must create a marketing campaign to attract qualified buyers.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Investment Sales",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a professional Offering Memorandum (OM) with property details, financial analysis, and market information.",
+      "expected_outcome": "A comprehensive and persuasive OM is produced.",
+      "required_tools": [
+        "generate_offering_memorandum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Develop a target list of potential buyers from the brokerage's internal database.",
+      "expected_outcome": "A list of 50-100 qualified investors is generated.",
+      "required_tools": [
+        "query_investor_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Launch an email marketing campaign to the target list with the OM and track engagement (opens, clicks).",
+      "expected_outcome": "The email campaign is executed and its performance is monitored.",
+      "required_tools": [
+        "send_bulk_email",
+        "track_email_campaign_analytics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

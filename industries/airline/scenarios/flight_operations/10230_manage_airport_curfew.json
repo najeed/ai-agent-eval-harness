@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10230",
+  "title": "Manage an Airport Curfew",
+  "description": "A flight is delayed and now risks arriving at its destination after the airport's nightly noise curfew. An OCC controller must decide what to do.",
+  "use_case": "Flight Operations",
+  "core_function": "Operations Control (OCC)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the new estimated time of arrival (ETA) based on the delay.",
+      "expected_outcome": "Agent determines the new ETA is 15 minutes after the curfew begins.",
+      "required_tools": [
+        "calculate_eta"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if it's possible to request an exemption from the curfew from the destination airport authority.",
+      "expected_outcome": "Agent contacts the airport and is denied an exemption.",
+      "required_tools": [
+        "contact_airport_authority"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Since landing is not possible, divert the flight to a nearby 24-hour airport.",
+      "expected_outcome": "Agent makes the decision to divert the flight and notifies the crew.",
+      "required_tools": [
+        "authorize_diversion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

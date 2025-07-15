@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-brc-11358",
+  "title": "Process a Patient Refund",
+  "description": "A patient has a credit balance on their account due to an overpayment. A refund check needs to be issued.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Patient Billing & Collections",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify a patient account with a credit balance from a work queue.",
+      "expected_outcome": "Agent finds an account that is due a refund.",
+      "required_tools": [
+        "get_credit_balance_workqueue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the reason for the credit balance and confirm no other outstanding balances exist for the patient.",
+      "expected_outcome": "Agent confirms the credit is valid and a refund is due.",
+      "required_tools": [
+        "review_account_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Request a refund check to be issued to the patient for the credit amount.",
+      "expected_outcome": "A request is sent to accounts payable to cut a check, and the patient's balance is zeroed out.",
+      "required_tools": [
+        "request_refund_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

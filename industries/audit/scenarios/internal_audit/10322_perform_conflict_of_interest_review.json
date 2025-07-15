@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-ia-10322",
+  "title": "Perform Conflict of Interest Review",
+  "description": "An auditor reviews vendor data to identify potential conflicts of interest, such as employees also being vendors.",
+  "use_case": "Internal Audit",
+  "core_function": "Testing & Analysis",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the master list of all approved vendors and the master list of all current employees.",
+      "expected_outcome": "Auditor has both the vendor and employee datasets.",
+      "required_tools": [
+        "get_vendor_master_file",
+        "get_employee_master_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the addresses and bank account numbers in both files to find potential matches.",
+      "expected_outcome": "The analysis identifies two vendors who share a home address with a current employee.",
+      "required_tools": [
+        "compare_datasets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Investigate the matches to determine if a true conflict of interest exists and if it was properly disclosed.",
+      "expected_outcome": "Auditor confirms one of the matches is an undisclosed conflict and documents it as a finding.",
+      "required_tools": [
+        "investigate_conflict_of_interest"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

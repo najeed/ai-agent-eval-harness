@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-fc-22",
+  "title": "Perform Variance Analysis for Management Reporting",
+  "description": "A financial analyst needs to investigate a significant variance in the 'Travel Expense' account on the income statement.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Financial Reporting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify that the Travel Expense account has a 50% unfavorable variance against budget.",
+      "expected_outcome": "Agent flags the significant variance from the income statement.",
+      "required_tools": [
+        "get_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Drill down into the general ledger detail for the Travel Expense account for the month.",
+      "expected_outcome": "Agent retrieves all transactions posted to the account.",
+      "required_tools": [
+        "get_gl_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the transactions to identify the root cause of the overspend.",
+      "expected_outcome": "Agent discovers that the entire sales team attended an unscheduled conference, causing the variance.",
+      "required_tools": [
+        "analyze_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Write a concise explanation of the variance to be included in the monthly management report.",
+      "expected_outcome": "Agent drafts a clear explanation for the variance.",
+      "required_tools": [
+        "draft_report_commentary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

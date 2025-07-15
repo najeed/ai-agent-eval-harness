@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10172",
+  "title": "Analyze Insect Trap Data",
+  "description": "An automated insect trap has taken a picture of its contents. The agent needs to identify and count the target pest.",
+  "use_case": "Crop Management",
+  "core_function": "Pest & Disease Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest image from the specified insect trap.",
+      "expected_outcome": "Agent gets the image.",
+      "required_tools": [
+        "get_insect_trap_image"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run an image recognition model to identify and count the number of codling moths in the image.",
+      "expected_outcome": "The model identifies and counts 15 codling moths.",
+      "required_tools": [
+        "image_analysis_insect_counting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the count to the action threshold for codling moths and advise the apple grower if a spray is needed.",
+      "expected_outcome": "Agent determines the count is above the threshold and recommends an insecticide application.",
+      "required_tools": [
+        "get_pest_economic_threshold"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

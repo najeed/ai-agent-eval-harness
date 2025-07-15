@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-13747",
+  "title": "Analyze Pipeline Inspection Gauge (PIG) Data",
+  "description": "An integrity engineer analyzes data from a recent PIG run to check for corrosion or defects inside a natural gas pipeline.",
+  "use_case": "Gas Operations",
+  "core_function": "Asset Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ingest and process the high-resolution data from the intelligent PIG tool.",
+      "expected_outcome": "System successfully loads and structures the inspection data.",
+      "required_tools": [
+        "process_pig_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run an analysis algorithm to detect and classify anomalies, such as metal loss (corrosion) or dents.",
+      "expected_outcome": "Algorithm identifies three areas of minor metal loss and one small dent.",
+      "required_tools": [
+        "analyze_pipeline_defects"
+      ],
+      "success_criteria": [
+        {
+          "metric": "defect_detection_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assess the severity of the identified defects against industry standards to determine if immediate repair is needed.",
+      "expected_outcome": "System concludes that all identified defects are within acceptable limits and only require monitoring.",
+      "required_tools": [
+        "assess_defect_severity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

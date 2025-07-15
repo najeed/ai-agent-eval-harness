@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-ehs-10515",
+  "title": "Manage Hazardous Waste Disposal",
+  "description": "A drum of hazardous waste from a production clean-out needs to be prepared for shipment to a licensed disposal facility.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Waste Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the waste stream profile for the material in the drum.",
+      "expected_outcome": "Agent correctly identifies the waste stream code and its characteristics.",
+      "required_tools": [
+        "get_waste_stream_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the required hazardous waste manifest for the shipment, including the EPA waste codes.",
+      "expected_outcome": "Agent successfully creates a compliant waste manifest document.",
+      "required_tools": [
+        "generate_waste_manifest"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a pickup with an approved hazardous waste transportation company.",
+      "expected_outcome": "Agent books a pickup and records the confirmation number.",
+      "required_tools": [
+        "schedule_waste_pickup"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

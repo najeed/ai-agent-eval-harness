@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-cs-10463",
+  "title": "Find My Car in a Parking Lot",
+  "description": "A customer forgot where they parked in a large parking lot and wants to use the mobile app to find their car.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Remote Vehicle Operations",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Instruct the customer to open their vehicle's mobile app and select the 'Location' feature.",
+      "expected_outcome": "Agent guides the customer within the app.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The app displays the vehicle's last known location on a map.",
+      "expected_outcome": "The app shows the car's GPS coordinates.",
+      "required_tools": [
+        "get_vehicle_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Suggest the customer also use the 'Honk & Flash' feature to help them pinpoint the car once they are nearby.",
+      "expected_outcome": "Agent provides a helpful tip for final location.",
+      "required_tools": [
+        "send_remote_vehicle_command"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

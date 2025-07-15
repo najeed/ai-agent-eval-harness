@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-eng-11441",
+  "title": "Select Material for Corrosive Service",
+  "description": "A mechanical engineer is designing a tank for storing a corrosive chemical and must select an appropriate, cost-effective material.",
+  "use_case": "Engineering & Design",
+  "core_function": "Quality Engineering",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the chemical to be stored and its concentration and temperature.",
+      "expected_outcome": "Agent correctly identifies the service conditions.",
+      "required_tools": [
+        "get_process_design_basis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult a material compatibility database to find suitable materials for this service.",
+      "expected_outcome": "Agent finds that both Stainless Steel 316L and Hastelloy C276 are suitable.",
+      "required_tools": [
+        "check_material_compatibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the cost of the two suitable materials and select the more economical option (Stainless Steel 316L) for the design.",
+      "expected_outcome": "Agent compares the costs and specifies the cheaper, suitable material in the design document.",
+      "required_tools": [
+        "get_material_cost_data",
+        "update_design_specification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

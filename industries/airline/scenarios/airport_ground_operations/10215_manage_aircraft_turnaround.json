@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10215",
+  "title": "Manage an Aircraft Turnaround",
+  "description": "A ramp supervisor must coordinate all ground activities to ensure an aircraft departs on time.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Ramp & Turnaround Management",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm that the aircraft has been parked and chocked upon arrival.",
+      "expected_outcome": "Agent verifies the aircraft is secure.",
+      "required_tools": [
+        "get_aircraft_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate the fueling, catering, and baggage loading teams to service the aircraft simultaneously.",
+      "expected_outcome": "Agent ensures all ground servicing tasks are happening in parallel.",
+      "required_tools": [
+        "coordinate_ground_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Authorize the aircraft pushback once all doors are closed and the ground crew is clear.",
+      "expected_outcome": "Agent gives the final clearance for pushback.",
+      "required_tools": [
+        "authorize_pushback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

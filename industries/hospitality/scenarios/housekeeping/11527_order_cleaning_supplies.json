@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-hk-11527",
+  "title": "Order Cleaning Supplies",
+  "description": "The housekeeping manager needs to order more cleaning chemicals as stock is running low.",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Inventory Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current inventory level of the required cleaning chemical.",
+      "expected_outcome": "The system shows the stock is below the reorder point.",
+      "required_tools": [
+        "ims_check_stock_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a purchase order for the chemical from the approved vendor.",
+      "expected_outcome": "A new purchase order is created in the procurement system.",
+      "required_tools": [
+        "proc_create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the purchase order to the vendor.",
+      "expected_outcome": "The PO is successfully transmitted to the vendor.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

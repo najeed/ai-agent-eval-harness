@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-cc-11428",
+  "title": "Create a Video Ad Storyboard",
+  "description": "A creative director needs to create a storyboard for a 30-second video ad.",
+  "use_case": "Content & Creative Development",
+  "core_function": "Creative Asset Development",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Outline the key scenes for the video ad (e.g., Scene 1: Problem, Scene 2: Solution, Scene 3: CTA).",
+      "expected_outcome": "Agent creates a high-level narrative arc.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each scene, write a brief description of the visuals and any accompanying on-screen text or voiceover.",
+      "expected_outcome": "Agent details the content of each scene.",
+      "required_tools": [
+        "storyboarding_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "copywriting_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select stock imagery or create rough sketches to represent the visuals for each scene.",
+      "expected_outcome": "Agent creates a complete visual and written storyboard ready for production.",
+      "required_tools": [
+        "storyboarding_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "design_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

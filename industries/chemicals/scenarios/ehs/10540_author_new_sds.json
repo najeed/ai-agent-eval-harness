@@ -1,0 +1,54 @@
+{
+  "scenario_id": "chemicals-ehs-10540",
+  "title": "Author a New SDS",
+  "description": "A new product has been developed, and an EHS specialist needs to author a new Safety Data Sheet (SDS) from scratch.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Safety Data Sheet (SDS) Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new SDS document linked to the new product code.",
+      "expected_outcome": "Agent initiates a blank, 16-section SDS template.",
+      "required_tools": [
+        "create_sds_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the product's formulation and use it to populate Section 3 (Composition).",
+      "expected_outcome": "Agent correctly lists the product's components and their percentages.",
+      "required_tools": [
+        "get_product_formulation",
+        "update_sds_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use a built-in calculation engine to determine the GHS classification (e.g., pictograms, hazard statements) based on the components and populate Section 2.",
+      "expected_outcome": "Agent runs the GHS classification tool and populates the hazard information correctly.",
+      "required_tools": [
+        "calculate_ghs_classification",
+        "update_sds_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

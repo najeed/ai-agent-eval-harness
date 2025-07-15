@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-css-10924",
+  "title": "Resolve Billing Dispute - Double Charge",
+  "description": "A customer claims they were charged twice for a single order.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Issue Resolution",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's order and payment transaction history.",
+      "expected_outcome": "Agent finds the customer's order.",
+      "required_tools": [
+        "get_order_details",
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the transaction logs and confirm that two identical payment authorizations were captured.",
+      "expected_outcome": "Agent verifies that a system glitch caused a duplicate charge.",
+      "required_tools": [
+        "analyze_transaction_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a refund for the duplicate charge.",
+      "expected_outcome": "Agent successfully refunds the extra amount to the customer.",
+      "required_tools": [
+        "process_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "transaction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

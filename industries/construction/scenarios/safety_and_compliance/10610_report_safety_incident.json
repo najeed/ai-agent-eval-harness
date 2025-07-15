@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-sc-10610",
+  "title": "Report Minor Safety Incident",
+  "description": "A safety officer needs to report a minor incident where a worker twisted their ankle.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Safety Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new safety incident report for the project.",
+      "expected_outcome": "A new incident report form is generated.",
+      "required_tools": [
+        "create_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Fill out the report with the date, time, location, and a description of the event: 'Worker stepped off a curb incorrectly and twisted their ankle'.",
+      "expected_outcome": "The report is populated with the correct incident details.",
+      "required_tools": [
+        "update_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Classify the incident as 'First Aid Only' and submit the report.",
+      "expected_outcome": "The report is correctly classified and submitted into the system.",
+      "required_tools": [
+        "submit_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

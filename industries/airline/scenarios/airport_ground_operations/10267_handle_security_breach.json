@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10267",
+  "title": "Handle a Gate Security Breach",
+  "description": "A person has run past the gate agent without a valid boarding pass. The agent must initiate a security response.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Gate & Boarding",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Immediately notify airport security or police of the breach, providing a description of the person.",
+      "expected_outcome": "Agent makes an immediate and clear report to security.",
+      "required_tools": [
+        "contact_airport_security"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Stop the boarding process.",
+      "expected_outcome": "Agent halts boarding to prevent further issues.",
+      "required_tools": [
+        "stop_boarding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the person boarded the aircraft, coordinate with the flight crew to have all passengers deplane for a full security sweep.",
+      "expected_outcome": "Agent communicates with the crew to initiate a deplaning and security check.",
+      "required_tools": [
+        "contact_flight_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

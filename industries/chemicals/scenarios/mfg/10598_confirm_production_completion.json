@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10598",
+  "title": "Confirm Production Completion",
+  "description": "A production run has finished. The supervisor must confirm the quantity produced and close the production order.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Production Scheduling",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the production order that has just been completed.",
+      "expected_outcome": "Agent finds the correct production order.",
+      "required_tools": [
+        "get_production_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the final quantity of good product produced and the quantity of any scrap generated.",
+      "expected_outcome": "Agent enters the final production numbers.",
+      "required_tools": [
+        "confirm_production_quantity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Close the production order. The system should automatically increase the finished product inventory and consume the raw materials.",
+      "expected_outcome": "Agent closes the order, and the system inventory levels are updated correctly.",
+      "required_tools": [
+        "close_production_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

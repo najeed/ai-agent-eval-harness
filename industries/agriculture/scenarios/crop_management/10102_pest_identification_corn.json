@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10102",
+  "title": "Pest Identification in Corn",
+  "description": "A farmer submits a drone image of a cornfield showing signs of pest damage. The agent must identify the pest and recommend a treatment.",
+  "use_case": "Crop Management",
+  "core_function": "Pest & Disease Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the image to identify the pest causing the damage.",
+      "expected_outcome": "Agent correctly identifies the pest as the European Corn Borer.",
+      "required_tools": [
+        "image_analysis_pest_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the economic threshold for the identified pest at the current crop growth stage.",
+      "expected_outcome": "Agent finds the correct economic threshold for the V10 growth stage.",
+      "required_tools": [
+        "get_pest_economic_threshold"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend an appropriate pesticide and application rate based on the infestation level and local regulations.",
+      "expected_outcome": "Agent recommends a suitable pesticide and the correct application rate.",
+      "required_tools": [
+        "get_pesticide_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

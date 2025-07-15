@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ap-80",
+  "title": "Process a Credit Memo from a Vendor",
+  "description": "A vendor has issued a credit memo for returned goods. The AP clerk needs to apply this credit to the vendor's account.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and capture the data from the vendor credit memo.",
+      "expected_outcome": "Agent extracts the vendor, credit memo number, and amount.",
+      "required_tools": [
+        "capture_invoice_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Post the credit memo to the vendor's account in the AP sub-ledger.",
+      "expected_outcome": "Agent successfully posts the credit, creating a negative balance for the vendor.",
+      "required_tools": [
+        "post_ap_credit_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply the credit memo against an open invoice from the same vendor to reduce the amount that needs to be paid.",
+      "expected_outcome": "Agent successfully applies the credit to an open payable, reducing the net payment amount.",
+      "required_tools": [
+        "apply_vendor_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

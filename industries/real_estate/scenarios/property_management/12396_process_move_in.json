@@ -1,0 +1,53 @@
+{
+  "scenario_id": "real_estate-pm-12396",
+  "title": "Process a New Tenant Move-In",
+  "description": "A new tenant has signed a lease and is ready to move in. The property manager must handle the move-in process.",
+  "use_case": "Property Management",
+  "core_function": "Leasing & Tenant Screening",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Collect the first month's rent and the full security deposit from the new tenant before handing over the keys.",
+      "expected_outcome": "All move-in funds are collected and recorded.",
+      "required_tools": [
+        "process_payment",
+        "record_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Conduct a move-in inspection with the tenant, documenting the condition of the unit on a move-in checklist which both parties sign.",
+      "expected_outcome": "The property's initial condition is formally documented to avoid security deposit disputes later.",
+      "required_tools": [
+        "conduct_digital_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the tenant with keys and a welcome packet containing important information like emergency contacts and community rules.",
+      "expected_outcome": "The tenant is successfully moved in and has all necessary information.",
+      "required_tools": [
+        "provide_welcome_packet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

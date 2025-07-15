@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-tm-12562",
+  "title": "Analyze Player Workload Across a Season",
+  "description": "A sports scientist wants to analyze a player's total workload over a full season to identify trends and inform future training plans.",
+  "use_case": "Team & Player Management",
+  "core_function": "Player Performance & Health",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all training load and game data for a specific player for the entire season.",
+      "expected_outcome": "Agent compiles a massive dataset of the player's physical output.",
+      "required_tools": [
+        "get_player_season_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_aggregation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to identify periods of high workload and any correlation with subsequent injuries or dips in performance.",
+      "expected_outcome": "The analysis shows the player was injured after a period of exceptionally high game and training load.",
+      "required_tools": [
+        "analyze_longitudinal_workload"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report with recommendations for managing the player's workload more effectively next season.",
+      "expected_outcome": "Agent produces a report recommending more scheduled rest days for the player.",
+      "required_tools": [
+        "generate_player_workload_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

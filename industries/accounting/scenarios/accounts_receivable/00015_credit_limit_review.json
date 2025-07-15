@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ac-ar-15",
+  "title": "Review a Customer's Credit Limit",
+  "description": "A customer has requested an increase in their credit limit. The credit manager needs to review their account to make a decision.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Credit Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's payment history for the last 24 months.",
+      "expected_outcome": "Agent gets the customer's payment history, noting their average days-to-pay.",
+      "required_tools": [
+        "get_customer_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a credit report on the customer from a third-party credit agency (e.g., Dun & Bradstreet).",
+      "expected_outcome": "Agent retrieves the customer's latest credit score and report.",
+      "required_tools": [
+        "run_credit_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the positive payment history and strong credit score, approve the credit limit increase.",
+      "expected_outcome": "Agent approves the request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the customer's credit limit in the master file.",
+      "expected_outcome": "Agent successfully updates the credit limit in the system.",
+      "required_tools": [
+        "update_customer_credit_limit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

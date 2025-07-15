@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-ae-11553",
+  "title": "Analyze Subscriber Churn Reasons",
+  "description": "An agent needs to analyze the reasons given by subscribers who cancelled their service in the last month.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Audience Analytics",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all cancellation data from the last month, including the logged reasons.",
+      "expected_outcome": "Agent pulls a dataset of all churned subscribers and their stated reasons.",
+      "required_tools": [
+        "get_cancellation_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Categorize and quantify the cancellation reasons.",
+      "expected_outcome": "Agent finds the top reasons are 'Price' (40%), 'Lack of new content' (30%), and 'Technical issues' (15%).",
+      "required_tools": [
+        "analyze_churn_reasons"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report summarizing the findings for the executive team.",
+      "expected_outcome": "Agent creates a clear, concise report on the primary drivers of churn.",
+      "required_tools": [
+        "generate_churn_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

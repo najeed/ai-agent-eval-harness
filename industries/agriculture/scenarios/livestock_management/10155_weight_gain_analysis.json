@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ag-lm-10155",
+  "title": "Analyze Average Daily Gain in Feedlot Cattle",
+  "description": "A feedlot manager wants to analyze the performance of a pen of cattle by calculating their average daily gain (ADG).",
+  "use_case": "Livestock Management",
+  "core_function": "Feeding & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the initial weight and date for all cattle in the specified pen.",
+      "expected_outcome": "Agent gets the starting weight data.",
+      "required_tools": [
+        "get_animal_weight_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the most recent weight and date for the same group of cattle.",
+      "expected_outcome": "Agent gets the ending weight data.",
+      "required_tools": [
+        "get_animal_weight_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each animal, calculate the average daily gain (ADG).",
+      "expected_outcome": "Agent calculates the ADG for every animal in the pen.",
+      "required_tools": [
+        "calculate_average_daily_gain"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a report showing the average ADG for the pen and flag any individual animals that are performing significantly below average.",
+      "expected_outcome": "Agent creates a report and identifies 3 animals with poor performance for further inspection.",
+      "required_tools": [
+        "generate_performance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

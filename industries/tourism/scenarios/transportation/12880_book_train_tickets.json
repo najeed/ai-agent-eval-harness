@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-12880",
+  "title": "Book Train Tickets",
+  "description": "A traveler wants to book two first-class train tickets from Paris to Amsterdam.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Itinerary Planning & Booking",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for available trains from Paris to Amsterdam on the desired date.",
+      "expected_outcome": "Agent finds several train options with first-class availability.",
+      "required_tools": [
+        "search_trains"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the desired train and provide the total price for two first-class tickets.",
+      "expected_outcome": "Agent confirms the selection and total cost.",
+      "required_tools": [
+        "calculate_train_price"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the train tickets and issue them to the traveler.",
+      "expected_outcome": "Agent successfully books the tickets and provides a booking reference.",
+      "required_tools": [
+        "book_train"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

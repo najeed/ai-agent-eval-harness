@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ar-7",
+  "title": "Handle a Customer Short Payment",
+  "description": "A customer has paid an invoice but has short-paid by $100, claiming the goods were damaged. Remittance advice is provided.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Collections & Deductions",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Apply the cash received to the specified invoice.",
+      "expected_outcome": "Agent applies the payment, leaving a $100 balance on the invoice.",
+      "required_tools": [
+        "apply_customer_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a deduction case in the system, noting the customer's reason for the short payment.",
+      "expected_outcome": "Agent successfully creates a deduction case linked to the customer and invoice.",
+      "required_tools": [
+        "create_deduction_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the deduction case to the customer service department to investigate the damaged goods claim.",
+      "expected_outcome": "Agent correctly routes the case to the appropriate team for resolution.",
+      "required_tools": [
+        "assign_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

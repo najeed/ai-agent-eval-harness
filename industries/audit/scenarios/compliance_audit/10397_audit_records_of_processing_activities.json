@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10397",
+  "title": "Audit Records of Processing Activities (RoPA)",
+  "description": "A compliance auditor reviews the company's RoPA document for GDPR compliance.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Regulatory Compliance Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the company's official RoPA document.",
+      "expected_outcome": "The auditor has the RoPA.",
+      "required_tools": [
+        "get_ropa_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a new business process and verify that it has been added to the RoPA.",
+      "expected_outcome": "The auditor finds that a new marketing analytics process that uses customer data has not yet been documented in the RoPA.",
+      "required_tools": [
+        "review_ropa_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For a sample of entries in the RoPA, verify that the stated data retention period is accurate and consistent with the data retention policy.",
+      "expected_outcome": "The auditor confirms the accuracy of the sampled RoPA entries.",
+      "required_tools": [
+        "review_ropa_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

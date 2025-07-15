@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-os-10619",
+  "title": "Schedule Concrete Pour and Testing",
+  "description": "A site manager needs to schedule a concrete pour for the building's foundation and coordinate the required third-party slump test.",
+  "use_case": "On-Site Operations",
+  "core_function": "Task Execution & Coordination",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Contact the concrete supplier to schedule a delivery of 50 cubic yards for a specific date and time.",
+      "expected_outcome": "A concrete delivery is successfully scheduled.",
+      "required_tools": [
+        "schedule_material_delivery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the third-party testing agency to schedule a technician to be on-site to perform slump tests during the pour.",
+      "expected_outcome": "A testing technician is successfully booked for the same date and time.",
+      "required_tools": [
+        "schedule_third_party_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

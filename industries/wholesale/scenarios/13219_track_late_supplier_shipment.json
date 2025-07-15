@@ -1,0 +1,67 @@
+{
+  "scenario_id": "wholesale-sp-13219",
+  "title": "Track a Late Supplier Shipment",
+  "description": "A purchase order from a key supplier is overdue. A manager needs to track the shipment and get an updated ETA.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Supplier Relationship Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the overdue purchase order.",
+      "expected_outcome": "Agent finds the PO in the system and confirms it is past its expected delivery date.",
+      "required_tools": [
+        "get_overdue_purchase_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the supplier to get the tracking number for the shipment.",
+      "expected_outcome": "Agent sends an email to the supplier requesting the tracking information.",
+      "required_tools": [
+        "send_email_to_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the tracking number to check the status with the freight carrier.",
+      "expected_outcome": "Agent finds the shipment is delayed at a port due to customs.",
+      "required_tools": [
+        "track_freight_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the expected delivery date in the system and notify the sales team of the delay.",
+      "expected_outcome": "Agent updates the PO's ETA and informs the sales team.",
+      "required_tools": [
+        "update_po_eta",
+        "send_internal_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

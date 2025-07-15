@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10029",
+  "title": "Manage Tool Calibration",
+  "description": "A metrology technician needs to manage the calibration schedule for torque wrenches used on the assembly line.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Assembly & Production",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a report to identify all torque wrenches that are due for calibration in the next 30 days.",
+      "expected_outcome": "Agent generates a list of tools requiring calibration.",
+      "required_tools": [
+        "get_tool_calibration_due_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Issue a recall for the due tools from the assembly line.",
+      "expected_outcome": "Agent notifies the production supervisors to turn in the specified tools.",
+      "required_tools": [
+        "issue_tool_recall"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After a tool is calibrated, update its calibration record and return it to service.",
+      "expected_outcome": "Agent updates the tool's status to 'Calibrated' and logs the new calibration date.",
+      "required_tools": [
+        "update_tool_calibration_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

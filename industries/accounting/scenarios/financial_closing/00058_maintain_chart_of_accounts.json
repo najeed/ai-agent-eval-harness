@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-fc-58",
+  "title": "Add a New General Ledger Account",
+  "description": "The controller has requested a new expense account be added to the chart of accounts to track software subscription costs more accurately.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "General Ledger & Journal Entries",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the request for the new GL account, including the desired account number and description.",
+      "expected_outcome": "Agent receives the request for account '6650 - Software Subscriptions'.",
+      "required_tools": [
+        "get_new_account_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the requested account number fits within the existing chart of accounts structure and does not already exist.",
+      "expected_outcome": "Agent confirms the number is available and appropriate.",
+      "required_tools": [
+        "review_chart_of_accounts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the new account to the chart of accounts in the ERP system.",
+      "expected_outcome": "Agent successfully creates the new GL account.",
+      "required_tools": [
+        "add_gl_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

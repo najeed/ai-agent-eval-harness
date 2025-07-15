@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-scl-10597",
+  "title": "Create Stock Transfer Order",
+  "description": "A planner needs to move inventory of a product from a main manufacturing site to a regional distribution center to rebalance stock.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Inventory Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the inventory levels at both the source and destination locations.",
+      "expected_outcome": "Agent confirms the source has excess stock and the destination is low.",
+      "required_tools": [
+        "get_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new stock transfer order in the system.",
+      "expected_outcome": "Agent successfully initiates the transfer order.",
+      "required_tools": [
+        "create_stock_transfer_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Specify the product, quantity, source location, and destination location, then submit the order to the warehouse for picking.",
+      "expected_outcome": "Agent completes the order details, and it becomes a pending shipment for the source warehouse.",
+      "required_tools": [
+        "update_stock_transfer_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

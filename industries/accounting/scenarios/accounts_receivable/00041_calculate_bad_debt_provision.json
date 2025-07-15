@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ac-ar-41",
+  "title": "Calculate Allowance for Doubtful Accounts",
+  "description": "For the month-end close, a controller needs to calculate the required provision for bad debt based on the aging of accounts receivable.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Collections & Deductions",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run the Accounts Receivable aging report.",
+      "expected_outcome": "Agent generates the AR aging summary, showing balances in categories like Current, 1-30 days, 31-60 days, etc.",
+      "required_tools": [
+        "run_ar_aging_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the company's provision percentages to each aging bucket (e.g., 1% of current, 5% of 1-30, 20% of 31-60).",
+      "expected_outcome": "Agent correctly calculates the required allowance for each bucket.",
+      "required_tools": [
+        "get_provision_percentages"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total required balance for the 'Allowance for Doubtful Accounts'.",
+      "expected_outcome": "Agent sums the amounts from each bucket to get the total required provision.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a journal entry to adjust the current allowance balance to the new required balance, debiting 'Bad Debt Expense'.",
+      "expected_outcome": "Agent creates and posts the correct adjusting journal entry.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

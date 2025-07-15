@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-op-10388",
+  "title": "Audit the Return-to-Office Program",
+  "description": "An auditor reviews the company's return-to-office program to assess its effectiveness and impact on employees.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Project & Program Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the project plan and goals for the return-to-office program.",
+      "expected_outcome": "The auditor understands the stated objectives of the program.",
+      "required_tools": [
+        "get_project_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze badge swipe data to determine if employees are complying with the new in-office day requirements.",
+      "expected_outcome": "The analysis shows that office attendance is significantly below the target.",
+      "required_tools": [
+        "analyze_badge_swipe_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Survey employees to gauge their satisfaction with the new hybrid work model and identify key pain points.",
+      "expected_outcome": "The survey reveals high levels of dissatisfaction with the policy, which is correlated with an increase in employee attrition.",
+      "required_tools": [
+        "distribute_survey",
+        "analyze_survey_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

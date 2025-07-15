@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-fc-82",
+  "title": "Prepare a Statement of Retained Earnings",
+  "description": "An accountant needs to prepare the statement of retained earnings for the annual report.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Financial Reporting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the beginning retained earnings balance.",
+      "expected_outcome": "Agent gets the prior year's ending balance.",
+      "required_tools": [
+        "get_gl_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the net income for the current year.",
+      "expected_outcome": "Agent gets the net income from the income statement.",
+      "required_tools": [
+        "get_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Retrieve the total dividends paid during the year.",
+      "expected_outcome": "Agent gets the total dividend payments.",
+      "required_tools": [
+        "get_dividend_payments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Calculate the ending retained earnings balance and generate the statement.",
+      "expected_outcome": "Agent calculates (Beginning RE + Net Income - Dividends = Ending RE) and produces the formal statement.",
+      "required_tools": [
+        "generate_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

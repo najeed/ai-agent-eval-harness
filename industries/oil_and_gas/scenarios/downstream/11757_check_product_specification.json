@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-down-11757",
+  "title": "Check Jet Fuel Specification",
+  "description": "A salesperson receives an inquiry from an airline for jet fuel. They need to confirm their product meets the required international specification (e.g., ASTM D1655).",
+  "use_case": "Downstream",
+  "core_function": "Distribution & Retail",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the internal product specification sheet for 'Jet A-1' fuel.",
+      "expected_outcome": "The product spec sheet is displayed.",
+      "required_tools": [
+        "get_product_specification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the internal specification against the requirements of ASTM D1655, paying close attention to flash point and freeze point.",
+      "expected_outcome": "The comparison confirms that the company's product meets all requirements of the ASTM standard.",
+      "required_tools": [
+        "compare_specifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a Certificate of Quality (COQ) to send to the customer confirming compliance.",
+      "expected_outcome": "A formal COQ document is created and ready to be sent.",
+      "required_tools": [
+        "generate_certificate_of_quality"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

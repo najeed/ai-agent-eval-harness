@@ -1,0 +1,53 @@
+{
+  "scenario_id": "auto-csra-10420",
+  "title": "Roadside Assistance Request for a Flat Tire",
+  "description": "A customer has a flat tire and needs roadside assistance.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Emergency & Roadside Assistance",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm the customer's identity and their roadside assistance plan status.",
+      "expected_outcome": "Agent verifies the customer has an active roadside assistance plan.",
+      "required_tools": [
+        "get_customer_details",
+        "get_roadside_assistance_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain the customer's precise location using their phone's GPS or by asking for an address/cross-streets.",
+      "expected_outcome": "Agent successfully captures the customer's location.",
+      "required_tools": [
+        "get_caller_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a local service provider to change the tire and provide the customer with an estimated time of arrival.",
+      "expected_outcome": "Agent dispatches a tow truck and gives the customer a 45-minute ETA.",
+      "required_tools": [
+        "dispatch_roadside_assistance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

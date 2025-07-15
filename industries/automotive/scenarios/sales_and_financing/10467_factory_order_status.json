@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-sf-10467",
+  "title": "Check Status of a Factory Order",
+  "description": "A customer who placed a factory order for a new vehicle is calling to get a status update.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Sales Consultation & Configuration",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the customer's order number or name.",
+      "expected_outcome": "Agent retrieves the customer's order details.",
+      "required_tools": [
+        "get_factory_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the vehicle's status in the production pipeline.",
+      "expected_outcome": "Agent finds the vehicle's status is 'In Production - Paint Shop'.",
+      "required_tools": [
+        "get_factory_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the customer with the current status and the estimated completion and delivery dates.",
+      "expected_outcome": "Agent informs the customer of the current stage and the estimated delivery window.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

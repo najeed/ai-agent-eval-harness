@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-cf-10883",
+  "title": "Write Off Bad Debt",
+  "description": "An accountant needs to write off an accounts receivable balance for a customer who has gone bankrupt.",
+  "use_case": "Corporate Finance",
+  "core_function": "Audit & Reporting",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's outstanding invoices.",
+      "expected_outcome": "Agent retrieves the list of unpaid invoices for the bankrupt customer.",
+      "required_tools": [
+        "get_customer_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the bankruptcy status with supporting documentation.",
+      "expected_outcome": "Agent reviews the bankruptcy notice and confirms the debt is uncollectible.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a journal entry to write off the outstanding balance to the bad debt expense account.",
+      "expected_outcome": "Agent posts the correct journal entry to remove the receivable and record the expense.",
+      "required_tools": [
+        "post_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sf-10493",
+  "title": "Process Title and Registration Paperwork",
+  "description": "A dealership's back-office staff needs to process the title application and registration for a recently sold vehicle.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Delivery & Handover",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the signed bill of sale and power of attorney documents for the vehicle.",
+      "expected_outcome": "Agent has all necessary legal documents.",
+      "required_tools": [
+        "get_sales_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Complete the official state DMV forms for title application and registration.",
+      "expected_outcome": "Agent accurately fills out all required government forms.",
+      "required_tools": [
+        "fill_dmv_forms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the paperwork and associated fees to the local DMV.",
+      "expected_outcome": "The paperwork is successfully submitted for processing.",
+      "required_tools": [
+        "submit_dmv_paperwork"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

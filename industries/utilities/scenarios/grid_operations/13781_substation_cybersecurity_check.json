@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-13781",
+  "title": "Substation Cybersecurity Check",
+  "description": "A cybersecurity analyst is reviewing logs from a substation's intelligent electronic devices (IEDs) for signs of unauthorized access.",
+  "use_case": "Grid Operations",
+  "core_function": "Asset Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Collect access logs from all relays, meters, and controllers in the substation.",
+      "expected_outcome": "System gathers all relevant security logs.",
+      "required_tools": [
+        "get_ied_security_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_aggregation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the logs for any failed login attempts or access from unrecognized IP addresses.",
+      "expected_outcome": "Analysis shows no anomalous access attempts.",
+      "required_tools": [
+        "analyze_security_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the firmware on all devices is up to date and patched for known vulnerabilities.",
+      "expected_outcome": "System confirms all devices are running the latest approved firmware.",
+      "required_tools": [
+        "check_firmware_versions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

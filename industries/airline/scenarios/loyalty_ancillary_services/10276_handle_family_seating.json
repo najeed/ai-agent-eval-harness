@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10276",
+  "title": "Handle Family Seating",
+  "description": "A family with young children is booking a flight and wants to ensure they can sit together.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Ancillary Revenue & Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "During booking, identify that the passengers are a family traveling with children.",
+      "expected_outcome": "Agent recognizes the family booking.",
+      "required_tools": [
+        "get_passenger_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan the seat map for a block of adjacent seats large enough for the family.",
+      "expected_outcome": "Agent finds a row of available seats.",
+      "required_tools": [
+        "get_seat_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the family to the adjacent seats, ensuring each child is seated next to an adult, in compliance with airline policy.",
+      "expected_outcome": "Agent successfully assigns the family to seats together.",
+      "required_tools": [
+        "assign_group_seats"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

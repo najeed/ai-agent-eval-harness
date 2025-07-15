@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10261",
+  "title": "Manage a Group Seat Block",
+  "description": "A tour group has a booking and wants to be seated together. A reservations agent must block a group of seats for them.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Corporate & Group Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the group booking.",
+      "expected_outcome": "Agent finds the booking.",
+      "required_tools": [
+        "get_group_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find a block of adjacent seats on the seat map that can accommodate the entire group.",
+      "expected_outcome": "Agent finds a suitable block of seats.",
+      "required_tools": [
+        "get_seat_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the seats to the passengers in the group booking.",
+      "expected_outcome": "Agent successfully assigns all passengers to seats in the block.",
+      "required_tools": [
+        "assign_group_seats"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

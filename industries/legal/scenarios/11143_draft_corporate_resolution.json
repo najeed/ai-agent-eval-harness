@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-11143",
+  "title": "Draft a Corporate Resolution",
+  "description": "A company needs to open a new bank account, which requires a formal corporate resolution. A paralegal needs to draft it.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Corporate Governance & Compliance",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the firm's template for a board resolution to open a bank account.",
+      "expected_outcome": "Agent retrieves the correct template.",
+      "required_tools": [
+        "get_document_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Populate the template with the company's name, the name of the bank, and the names of the authorized signatories.",
+      "expected_outcome": "Agent fills in all the specific details.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare the resolution for the board of directors to sign.",
+      "expected_outcome": "A complete draft resolution is generated, ready for execution.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

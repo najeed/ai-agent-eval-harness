@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10384",
+  "title": "Audit Real Estate Lease Administration",
+  "description": "An auditor reviews the administration of the company's real estate leases.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Vendor & Third-Party Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a list of all real estate leases and abstract key data points like rent amount, escalation clauses, and expiration dates.",
+      "expected_outcome": "A master summary of all lease data is created.",
+      "required_tools": [
+        "get_lease_abstracts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a sample of lease payments and verify they agree with the terms in the lease agreement.",
+      "expected_outcome": "The auditor finds one instance where a rent escalation clause was missed, resulting in an underpayment.",
+      "required_tools": [
+        "review_lease_payments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the implementation of a lease administration software to better track critical dates and payment amounts.",
+      "expected_outcome": "A recommendation is made to improve the lease management process.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

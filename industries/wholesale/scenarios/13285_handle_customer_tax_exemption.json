@@ -1,0 +1,50 @@
+{
+  "scenario_id": "wholesale-om-13285",
+  "title": "Handle a Customer's Tax-Exempt Status",
+  "description": "A new customer (e.g., a school or non-profit) is tax-exempt and provides their exemption certificate.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Customer Account Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the tax-exempt certificate from the customer.",
+      "expected_outcome": "Agent has the customer's documentation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the certificate is valid.",
+      "expected_outcome": "Agent confirms the certificate is legitimate.",
+      "required_tools": [
+        "verify_tax_exempt_certificate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the customer's account to be tax-exempt.",
+      "expected_outcome": "Agent successfully flags the account as tax-exempt, ensuring future orders are not charged sales tax.",
+      "required_tools": [
+        "update_customer_tax_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

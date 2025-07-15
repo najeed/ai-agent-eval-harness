@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sm-10440",
+  "title": "Diagnose Intermittent Electrical Issue",
+  "description": "A customer reports that their radio occasionally reboots for no reason. There are no active DTCs.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Vehicle Diagnostics",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule a service appointment and instruct the customer to note the time and date if the issue reoccurs.",
+      "expected_outcome": "Agent books an appointment and provides clear instructions for data gathering.",
+      "required_tools": [
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Once the vehicle is at the dealership, have a technician check for any available software updates for the infotainment module.",
+      "expected_outcome": "Technician finds a Technical Service Bulletin (TSB) describing this issue, which is resolved by a software update.",
+      "required_tools": [
+        "search_technical_service_bulletins"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply the software update and monitor the system to ensure the issue is resolved.",
+      "expected_outcome": "Agent updates the repair order to show the software was updated and the issue is resolved.",
+      "required_tools": [
+        "update_repair_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

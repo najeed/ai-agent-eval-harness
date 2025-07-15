@@ -1,0 +1,67 @@
+{
+  "scenario_id": "audit-ia-10390",
+  "title": "Perform an Integrated Audit",
+  "description": "An audit team performs an integrated audit that covers both the financial and IT controls of the revenue cycle.",
+  "use_case": "Internal Audit",
+  "core_function": "Fieldwork & Data Collection",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The financial auditor tests a sample of sales invoices to ensure they were recorded correctly in the general ledger.",
+      "expected_outcome": "The financial controls are tested.",
+      "required_tools": [
+        "test_invoice_accuracy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The IT auditor tests the application controls in the billing system to ensure that all sales are billed completely and accurately.",
+      "expected_outcome": "The IT application controls are tested.",
+      "required_tools": [
+        "perform_application_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The IT auditor tests the IT general controls over the billing system, such as access and change management.",
+      "expected_outcome": "The IT general controls are tested.",
+      "required_tools": [
+        "review_user_access",
+        "review_change_management"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The audit team combines their results into a single, integrated report that provides a holistic view of the risks in the revenue cycle.",
+      "expected_outcome": "A single, comprehensive report is created.",
+      "required_tools": [
+        "generate_integrated_audit_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

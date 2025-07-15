@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-em-13831",
+  "title": "Coordinate with a Third-Party Security Vendor",
+  "description": "A large music festival requires additional security beyond the in-house team, so a third-party security firm has been hired.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Vendor & Partner Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Share the event's security plan and post orders with the vendor's management.",
+      "expected_outcome": "Agent securely sends the security plan documents to the vendor.",
+      "required_tools": [
+        "send_secure_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain a list of all vendor staff who will be working the event for credentialing.",
+      "expected_outcome": "Agent receives the staff list from the vendor.",
+      "required_tools": [
+        "request_vendor_staff_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange a pre-event briefing between the in-house security manager and the vendor's on-site supervisor.",
+      "expected_outcome": "Agent schedules a meeting to align on protocols and chain of command.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

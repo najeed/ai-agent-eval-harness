@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10028",
+  "title": "Inspect Fuselage for Fatigue Cracks",
+  "description": "As part of a heavy maintenance check, a technician must perform an eddy current inspection on a specific section of the fuselage known for potential fatigue cracks.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Component Repair & Overhaul",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the exact area on the fuselage to be inspected, as defined in the maintenance manual.",
+      "expected_outcome": "Agent correctly locates the inspection area.",
+      "required_tools": [
+        "get_aircraft_maintenance_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform the eddy current inspection on the specified area.",
+      "expected_outcome": "Agent completes the inspection according to procedure.",
+      "required_tools": [
+        "perform_eddy_current_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the results. If a crack is found, create a non-conformance report and notify engineering for a repair disposition.",
+      "expected_outcome": "Agent finds a small crack, creates an NCR, and escalates to engineering.",
+      "required_tools": [
+        "analyze_ndt_data",
+        "create_ncr"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

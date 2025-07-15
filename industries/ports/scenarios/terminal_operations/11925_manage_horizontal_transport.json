@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-to-11925",
+  "title": "Manage Horizontal Transport Fleet",
+  "description": "A dispatcher for terminal tractors (ITVs) must efficiently assign jobs to move containers from the ship to the yard.",
+  "use_case": "Terminal Operations",
+  "core_function": "Horizontal Transport",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the queue of containers being discharged by the quay cranes.",
+      "expected_outcome": "Dispatcher sees a queue of containers waiting for pickup at the quayside.",
+      "required_tools": [
+        "get_crane_work_queue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify available terminal tractors and their current locations.",
+      "expected_outcome": "Dispatcher sees three available tractors near the vessel.",
+      "required_tools": [
+        "get_vehicle_gps_locations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the next container move to the closest available tractor.",
+      "expected_outcome": "The system sends a job ticket to the tractor driver's terminal, instructing them which container to pick up and where to take it.",
+      "required_tools": [
+        "dispatch_job_to_tractor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ldr-11880",
+  "title": "Request Medical Records",
+  "description": "In a personal injury case, a paralegal needs to request the plaintiff's medical records from a hospital.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Discovery & E-Discovery",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a signed HIPAA authorization from the client.",
+      "expected_outcome": "Agent confirms a valid authorization is on file.",
+      "required_tools": [
+        "case_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a letter to the hospital's medical records department requesting all records related to the client's treatment for their injuries.",
+      "expected_outcome": "Agent writes a clear and specific request letter.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the request letter along with the signed HIPAA authorization to the hospital.",
+      "expected_outcome": "The request is successfully submitted.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

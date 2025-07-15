@@ -1,0 +1,48 @@
+{
+  "scenario_id": "auto-sf-10489",
+  "title": "Vehicle Customization Request (Vinyl Wrap)",
+  "description": "A customer wants to purchase a new car but wants a custom vinyl wrap applied before delivery.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Delivery & Handover",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the customer's request and explain that this is a post-sale, third-party modification.",
+      "expected_outcome": "Agent sets the correct expectation that this is not a factory option.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the customer with a list of recommended local shops that specialize in vehicle wraps.",
+      "expected_outcome": "Agent provides a list of 2-3 trusted local vendors.",
+      "required_tools": [
+        "get_local_vendor_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Offer to coordinate with the shop to have the wrap done after the vehicle purchase is complete but before the customer takes final delivery.",
+      "expected_outcome": "Agent offers a value-added service to help facilitate the customization.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "scenario_id": "wholesale-om-13969",
+  "title": "Handle a Customer Payment Dispute",
+  "description": "A customer claims they already paid an invoice that is showing as overdue.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Invoicing & Payments",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the disputed invoice and the customer's payment history.",
+      "expected_outcome": "Agent has the invoice and payment records.",
+      "required_tools": [
+        "get_customer_invoice",
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask the customer for proof of payment, such as a check number or transaction ID.",
+      "expected_outcome": "The customer provides a check number.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Search the bank records for the payment.",
+      "expected_outcome": "Agent finds the check payment was received but was mistakenly applied to the wrong customer account.",
+      "required_tools": [
+        "search_bank_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Correct the payment application, moving the payment to the correct account and closing the invoice.",
+      "expected_outcome": "Agent corrects the error and resolves the dispute.",
+      "required_tools": [
+        "reapply_customer_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

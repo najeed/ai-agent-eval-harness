@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-res-10210",
+  "title": "Change a Flight Date",
+  "description": "A customer needs to change the date of their existing flight booking.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Post-Booking Services",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's booking.",
+      "expected_outcome": "Agent successfully finds the booking.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the change fee and any fare difference for the new requested date.",
+      "expected_outcome": "Agent accurately calculates the total cost to make the change.",
+      "required_tools": [
+        "calculate_change_fee",
+        "calculate_fare_difference"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer of the cost. If they agree, process the payment and reissue the ticket for the new date.",
+      "expected_outcome": "Agent communicates the cost, takes payment, and successfully changes the flight.",
+      "required_tools": [
+        "process_payment",
+        "reissue_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

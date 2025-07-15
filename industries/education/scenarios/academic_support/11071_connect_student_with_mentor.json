@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-as-11071",
+  "title": "Connect Student with Peer Mentor",
+  "description": "A first-year student is feeling overwhelmed and wants to be connected with a peer mentor.",
+  "use_case": "Academic Support",
+  "core_function": "Tutoring & Academic Advising",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and their major.",
+      "expected_outcome": "Agent confirms the student's identity and academic program.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the peer mentor database for a suitable mentor in the same major.",
+      "expected_outcome": "Agent finds an available upper-class mentor in the student's major.",
+      "required_tools": [
+        "find_peer_mentor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a formal introduction email connecting the student and the peer mentor.",
+      "expected_outcome": "Agent facilitates the connection between the two students.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

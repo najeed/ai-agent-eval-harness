@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-cs-10412",
+  "title": "Troubleshoot Bluetooth Pairing Issue",
+  "description": "A customer is unable to pair their new smartphone with the car's infotainment system.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Infotainment & App Support",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the vehicle model and the customer's smartphone model.",
+      "expected_outcome": "Agent identifies a 2022 Mach-E and an iPhone 15.",
+      "required_tools": [
+        "get_vehicle_details_by_vin"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the customer to delete the old phone profile from the car and the old car profile from the phone.",
+      "expected_outcome": "Agent provides clear step-by-step instructions for deleting previous connections.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Walk the customer through the pairing process again, ensuring the car is in discovery mode.",
+      "expected_outcome": "The customer successfully pairs their phone with the car.",
+      "required_tools": [
+        "provide_pairing_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

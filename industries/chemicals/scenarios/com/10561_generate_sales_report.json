@@ -1,0 +1,48 @@
+{
+  "scenario_id": "chemicals-com-10561",
+  "title": "Generate Regional Sales Report",
+  "description": "A sales manager wants a report of sales volume by product for the US region for the last quarter.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Customer Relationship Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the parameters for the report: date range (last quarter) and region (US).",
+      "expected_outcome": "Agent correctly sets the filters for the report.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the sales report generation tool.",
+      "expected_outcome": "Agent successfully executes the report.",
+      "required_tools": [
+        "generate_sales_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The report is generated, showing total sales volume for each product sold in the US during the specified period, and is exported to Excel.",
+      "expected_outcome": "Agent obtains the correctly filtered and aggregated data in a downloadable format.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

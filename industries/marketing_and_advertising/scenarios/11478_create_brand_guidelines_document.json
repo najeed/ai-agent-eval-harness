@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-sp-11478",
+  "title": "Create a Brand Guidelines Document",
+  "description": "A brand manager needs to create a comprehensive document outlining the brand's visual identity.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Brand Management",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all core brand assets: logo files, color palette (hex codes), and font families.",
+      "expected_outcome": "Agent collects all the necessary brand assets.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a document that specifies rules for logo usage (e.g., clear space, minimum size).",
+      "expected_outcome": "Agent clearly defines how the logo should and should not be used.",
+      "required_tools": [
+        "document_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add sections for the primary and secondary color palettes and typography rules (e.g., font sizes for headlines vs. body text).",
+      "expected_outcome": "Agent creates a complete visual style guide.",
+      "required_tools": [
+        "document_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

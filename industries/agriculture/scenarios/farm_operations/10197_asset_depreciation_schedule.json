@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-fo-10197",
+  "title": "Calculate Asset Depreciation Schedule",
+  "description": "An accountant for a farm needs to calculate the annual depreciation for a new tractor for tax purposes.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Financial Management & Compliance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the asset's purchase price, purchase date, and asset class.",
+      "expected_outcome": "Agent gets the necessary details for the tractor.",
+      "required_tools": [
+        "get_asset_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the appropriate depreciation method (e.g., straight-line, MACRS).",
+      "expected_outcome": "Agent selects the MACRS method as is standard for farm equipment.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate and generate the full depreciation schedule for the life of the asset.",
+      "expected_outcome": "Agent produces a table showing the annual depreciation expense.",
+      "required_tools": [
+        "calculate_depreciation_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

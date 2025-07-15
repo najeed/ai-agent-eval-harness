@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10091",
+  "title": "Update Aircraft Weight and Balance after Modification",
+  "description": "After a major modification (like adding a new satellite antenna), an engineer must update the aircraft's official weight and balance records.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Technical Documentation & Compliance",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the weight and location (moment arm) of all components that were added or removed during the modification.",
+      "expected_outcome": "Agent compiles a list of all weight changes.",
+      "required_tools": [
+        "get_modification_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the aircraft's master weight and balance sheet with these changes.",
+      "expected_outcome": "Agent accurately updates the master record.",
+      "required_tools": [
+        "update_weight_balance_sheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recalculate the aircraft's new empty weight and center of gravity and issue a revised weight and balance report.",
+      "expected_outcome": "Agent calculates the new values and generates the official revised report.",
+      "required_tools": [
+        "calculate_weight_balance",
+        "generate_weight_balance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-tm-12577",
+  "title": "Handle a Player's Retirement",
+  "description": "A long-time veteran player announces their retirement. The team must process the retirement and plan a farewell ceremony.",
+  "use_case": "Team & Player Management",
+  "core_function": "Contract & Roster Management",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process the player's retirement paperwork with the league.",
+      "expected_outcome": "Agent successfully files the official retirement forms.",
+      "required_tools": [
+        "file_retirement_paperwork"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the team's official roster, removing the player.",
+      "expected_outcome": "Agent updates the roster, freeing up a spot.",
+      "required_tools": [
+        "update_team_roster"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate with the events team to plan a pre-game farewell ceremony for the player at an upcoming game.",
+      "expected_outcome": "Agent works with the events team to schedule and plan the ceremony.",
+      "required_tools": [
+        "schedule_pre_game_ceremony"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

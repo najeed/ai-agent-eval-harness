@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-bus-13320",
+  "title": "File Heavy Vehicle Use Tax (Form 2290)",
+  "description": "A trucking company needs to file Form 2290 and pay the annual Heavy Vehicle Use Tax for its fleet.",
+  "use_case": "Business Tax Services",
+  "core_function": "Specialized & Excise Tax",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the list of all taxable vehicles in the fleet, including their Vehicle Identification Numbers (VINs).",
+      "expected_outcome": "Agent compiles a complete list of vehicles.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total tax due based on the number and weight of the vehicles.",
+      "expected_outcome": "Agent accurately calculates the total tax liability.",
+      "required_tools": [
+        "calculate_form_2290_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare and e-file Form 2290.",
+      "expected_outcome": "Agent successfully files the return and receives a stamped Schedule 1 as proof of payment.",
+      "required_tools": [
+        "efile_form_2290"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

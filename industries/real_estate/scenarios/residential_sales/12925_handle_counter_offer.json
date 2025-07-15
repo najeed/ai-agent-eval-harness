@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-res-12925",
+  "title": "Handle a Seller's Counter Offer",
+  "description": "A seller has responded to a buyer's offer with a counter offer. The agent must present it to the buyer.",
+  "use_case": "Residential Sales",
+  "core_function": "Offer & Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the counter offer from the listing agent.",
+      "expected_outcome": "Agent successfully retrieves the counter offer document.",
+      "required_tools": [
+        "get_transaction_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the changes in the counter offer (e.g., increased price, shortened contingency period).",
+      "expected_outcome": "Agent accurately identifies all changes from the original offer.",
+      "required_tools": [
+        "analyze_document_changes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Clearly explain the new terms to the buyer client and advise them on how to respond (accept, reject, or counter back).",
+      "expected_outcome": "Agent provides clear communication and strategic advice to the buyer.",
+      "required_tools": [
+        "log_communication",
+        "provide_strategic_advice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

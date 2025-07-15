@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ac-ap-40",
+  "title": "Handle a Suspected Duplicate Invoice",
+  "description": "An invoice is entered into the system, which flags it as a potential duplicate of an invoice already processed.",
+  "use_case": "Accounts Payable",
+  "core_function": "Invoice Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the duplicate invoice alert from the system.",
+      "expected_outcome": "Agent notes the system has flagged an invoice based on having the same vendor and invoice number.",
+      "required_tools": [
+        "get_system_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve and compare the details of the newly submitted invoice and the one already in the system.",
+      "expected_outcome": "Agent confirms that both the invoice number and amount are identical.",
+      "required_tools": [
+        "get_invoice_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reject the new invoice as a duplicate and notify the person who submitted it.",
+      "expected_outcome": "Agent cancels the processing of the duplicate invoice and sends a notification.",
+      "required_tools": [
+        "reject_invoice",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

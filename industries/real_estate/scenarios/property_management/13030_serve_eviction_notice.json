@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-pm-13030",
+  "title": "Serve an Eviction Notice for Non-Payment",
+  "description": "A tenant has failed to pay rent for two months despite warnings. The property manager must begin the formal eviction process.",
+  "use_case": "Property Management",
+  "core_function": "Rent Collection & Financials",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the tenant's payment history and confirm the total amount of unpaid rent.",
+      "expected_outcome": "Agent has accurate records of the delinquency.",
+      "required_tools": [
+        "get_tenant_ledger"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the appropriate legal notice for non-payment of rent as required by state law (e.g., '3-Day Pay or Quit').",
+      "expected_outcome": "A legally compliant eviction notice is created.",
+      "required_tools": [
+        "generate_legal_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange for the notice to be legally served to the tenant by a professional process server.",
+      "expected_outcome": "The notice is served and proof of service is obtained.",
+      "required_tools": [
+        "hire_process_server"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

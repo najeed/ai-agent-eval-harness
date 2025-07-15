@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-to-12989",
+  "title": "Process a Fuel Purchase",
+  "description": "A driver uses a company fuel card to buy fuel. The transaction must be logged and associated with their truck.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Billing & Settlements",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system receives a transaction feed from the fuel card provider.",
+      "expected_outcome": "A new fuel purchase transaction is received.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system uses the card number to identify the driver and their assigned truck.",
+      "expected_outcome": "The transaction is linked to the correct driver and vehicle.",
+      "required_tools": [
+        "get_driver_by_fuel_card"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system prompts the driver to enter their current odometer reading.",
+      "expected_outcome": "The odometer reading is captured to calculate fuel economy.",
+      "required_tools": [
+        "prompt_driver_for_odometer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The fuel purchase (gallons, cost, location) is logged in the system for IFTA and fuel economy reporting.",
+      "expected_outcome": "The transaction is successfully logged.",
+      "required_tools": [
+        "log_fuel_purchase"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

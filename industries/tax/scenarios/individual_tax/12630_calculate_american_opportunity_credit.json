@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-ind-12630",
+  "title": "Calculate American Opportunity Tax Credit",
+  "description": "Parents of a college student want to claim the American Opportunity Tax Credit for tuition expenses.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Deductions & Credits Optimization",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather Form 1098-T from the educational institution and the family's income information.",
+      "expected_outcome": "Agent collects all necessary documents and data.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the student and the expenses meet all eligibility requirements for the AOTC.",
+      "expected_outcome": "Agent confirms the student is an eligible student at an eligible institution.",
+      "required_tools": [
+        "verify_aotc_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the maximum allowable credit using Form 8863.",
+      "expected_outcome": "Agent accurately calculates the credit amount, including any refundable portion.",
+      "required_tools": [
+        "prepare_form_8863"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-mfg-10563",
+  "title": "Update Bill of Materials (BOM)",
+  "description": "A process engineer has identified that a slightly different grade of a solvent can be used in a product. The Bill of Materials (BOM) needs to be updated.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Process Optimization",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the BOM for the specified product.",
+      "expected_outcome": "Agent retrieves the current list of materials for the product.",
+      "required_tools": [
+        "get_product_bom"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate a change control request to modify the BOM.",
+      "expected_outcome": "Agent successfully creates a new change request.",
+      "required_tools": [
+        "create_change_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "As part of the change request, replace the old solvent part number with the new one and submit for approval.",
+      "expected_outcome": "Agent updates the BOM within the change control workflow and routes it for QA approval.",
+      "required_tools": [
+        "update_bom",
+        "submit_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

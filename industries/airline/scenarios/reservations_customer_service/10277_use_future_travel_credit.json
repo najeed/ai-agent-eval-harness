@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-res-10277",
+  "title": "Use a Future Travel Credit",
+  "description": "A customer who previously cancelled a flight has a travel credit and wants to use it to book a new flight.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Booking & Ticketing",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's travel credit voucher using the voucher number.",
+      "expected_outcome": "Agent finds the voucher and confirms its value.",
+      "required_tools": [
+        "get_travel_voucher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new booking for the customer's desired flight.",
+      "expected_outcome": "Agent creates the new booking.",
+      "required_tools": [
+        "create_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply the travel credit as a form of payment. If there's a remaining balance, collect it from the customer.",
+      "expected_outcome": "Agent successfully applies the credit and processes any remaining payment.",
+      "required_tools": [
+        "apply_voucher_payment",
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

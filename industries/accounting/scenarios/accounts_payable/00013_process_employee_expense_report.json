@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ap-13",
+  "title": "Process an Employee Expense Report",
+  "description": "An employee has submitted an expense report for a business trip, including airfare, meals, and lodging, with attached receipts.",
+  "use_case": "Accounts Payable",
+  "core_function": "Payment Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the submitted expense report and attached receipts.",
+      "expected_outcome": "Agent reviews all line items and receipts.",
+      "required_tools": [
+        "get_expense_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all expenses comply with the company's travel and expense policy (e.g., meal per diems, approved hotels).",
+      "expected_outcome": "Agent confirms all expenses are within policy limits.",
+      "required_tools": [
+        "check_expense_policy_compliance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the expense report and schedule the reimbursement for the next payment run.",
+      "expected_outcome": "Agent approves the report and schedules the payment to the employee.",
+      "required_tools": [
+        "approve_expense_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

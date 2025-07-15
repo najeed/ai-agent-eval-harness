@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10226",
+  "title": "Handle a Damaged Baggage Claim",
+  "description": "A passenger's checked bag has arrived on the carousel with significant damage (e.g., a broken wheel, a large tear).",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Baggage Handling & Resolution",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Inspect the damage to the bag and take photos for the record.",
+      "expected_outcome": "Agent documents the damage.",
+      "required_tools": [
+        "document_baggage_damage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a damaged baggage report in the system.",
+      "expected_outcome": "Agent creates a new claim file.",
+      "required_tools": [
+        "create_mishandled_bag_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the airline's liability and offer the passenger the option of a future travel voucher or having the airline arrange for the bag to be repaired.",
+      "expected_outcome": "Agent clearly explains the compensation options.",
+      "required_tools": [
+        "offer_compensation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

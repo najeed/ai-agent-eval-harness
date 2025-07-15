@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10314",
+  "title": "Test HIPAA Compliance",
+  "description": "In a healthcare organization, a compliance auditor tests adherence to HIPAA privacy and security rules.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Regulatory Compliance Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review system access logs to ensure that only authorized clinical staff are accessing patient records.",
+      "expected_outcome": "Auditor identifies several instances where administrative staff accessed patient records without a documented medical reason.",
+      "required_tools": [
+        "analyze_access_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inspect a sample of workstations in patient areas to ensure they are configured to auto-lock after a short period of inactivity.",
+      "expected_outcome": "Auditor finds 5 workstations that do not have screen-lock enabled.",
+      "required_tools": [
+        "perform_physical_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that all laptops containing patient data are encrypted.",
+      "expected_outcome": "Auditor confirms that disk encryption is deployed on all company-issued laptops.",
+      "required_tools": [
+        "check_device_configuration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

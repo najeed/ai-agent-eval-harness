@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-bm-12550",
+  "title": "Clip Highlights for Social Media",
+  "description": "Immediately after a game, a social media manager needs to create and post highlight clips.",
+  "use_case": "Broadcasting & Media",
+  "core_function": "Live Broadcast Production",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the full recording of the game broadcast.",
+      "expected_outcome": "Agent has the full video file.",
+      "required_tools": [
+        "get_game_recording"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use an AI tool to automatically identify the most exciting plays (e.g., goals, big hits).",
+      "expected_outcome": "The tool generates a list of timestamps for potential highlights.",
+      "required_tools": [
+        "identify_video_highlights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create short video clips for the top 3 highlights.",
+      "expected_outcome": "Agent generates three highlight clips.",
+      "required_tools": [
+        "generate_video_clip_from_timestamp"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Post the clips to the team's social media accounts.",
+      "expected_outcome": "Agent successfully posts the highlights.",
+      "required_tools": [
+        "post_to_social_media"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

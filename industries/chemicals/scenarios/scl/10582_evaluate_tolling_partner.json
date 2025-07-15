@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-scl-10582",
+  "title": "Evaluate Toll Manufacturing Partner",
+  "description": "To meet excess demand, the company is considering using a toll manufacturer. A planner must evaluate the financial viability.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Demand & Supply Planning",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the tolling fee (cost per kg) from the potential partner.",
+      "expected_outcome": "Agent obtains the pricing from the toller.",
+      "required_tools": [
+        "get_supplier_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total 'toll and return' cost, including the tolling fee, freight to the toller, and freight back.",
+      "expected_outcome": "Agent calculates the total landed cost for the tolled product.",
+      "required_tools": [
+        "calculate_tolling_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the total tolling cost to the internal manufacturing cost for the same product.",
+      "expected_outcome": "Agent compares the two costs and finds that tolling is 15% more expensive but necessary to meet demand.",
+      "required_tools": [
+        "get_internal_product_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

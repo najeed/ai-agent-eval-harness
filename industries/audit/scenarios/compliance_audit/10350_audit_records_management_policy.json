@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-cp-10350",
+  "title": "Audit Records Management Policy",
+  "description": "An auditor reviews compliance with the company's records management policy, focusing on the storage of physical records.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Policy & Procedure Adherence",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Perform an inspection of the on-site records storage room.",
+      "expected_outcome": "The auditor inspects the physical storage area.",
+      "required_tools": [
+        "perform_physical_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Observe that the room is unlocked and boxes are not labeled according to the policy's classification scheme.",
+      "expected_outcome": "The auditor identifies several policy violations related to physical security and labeling.",
+      "required_tools": [
+        "log_observation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend that a log be kept for access to the records room and that all boxes be properly labeled.",
+      "expected_outcome": "Specific recommendations are made to improve the records management process.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

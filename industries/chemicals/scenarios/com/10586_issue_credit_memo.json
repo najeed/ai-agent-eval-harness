@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-com-10586",
+  "title": "Issue a Credit Memo",
+  "description": "Following a product return, a credit memo must be issued to the customer for the value of the returned goods.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Order Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the original invoice that corresponds to the returned product.",
+      "expected_outcome": "Agent locates the original invoice.",
+      "required_tools": [
+        "get_customer_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify in the inventory system that the returned goods have been received and are in good condition.",
+      "expected_outcome": "Agent confirms the return receipt has been processed by the warehouse.",
+      "required_tools": [
+        "check_return_receipt_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a credit memo for the value of the returned items, which the customer can apply to a future payment.",
+      "expected_outcome": "Agent successfully generates the credit memo and applies it to the customer's account.",
+      "required_tools": [
+        "create_credit_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

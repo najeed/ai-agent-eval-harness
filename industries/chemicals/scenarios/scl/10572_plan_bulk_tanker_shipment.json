@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-scl-10572",
+  "title": "Plan a Bulk Tanker Shipment",
+  "description": "A large order requires a bulk chemical shipment. The logistics planner must schedule a compatible tanker and ensure all documents are in order.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Logistics & Distribution",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the product's requirements for transportation (e.g., stainless steel, heated tanker).",
+      "expected_outcome": "Agent identifies that a heated, stainless steel tanker is required.",
+      "required_tools": [
+        "get_product_transport_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact approved bulk carriers to check for availability of a compatible tanker for the required date.",
+      "expected_outcome": "Agent finds an available tanker with Carrier XYZ.",
+      "required_tools": [
+        "check_carrier_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the shipment with the carrier and generate the bill of lading.",
+      "expected_outcome": "Agent successfully books the shipment and creates the necessary shipping document.",
+      "required_tools": [
+        "book_shipment",
+        "generate_bill_of_lading"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

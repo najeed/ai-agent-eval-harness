@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-mp-10830",
+  "title": "Ground Convoy Route Deconfliction",
+  "description": "A planner must deconflict the routes of two separate convoys (one supply, one combat) and a scheduled artillery fire mission.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Route & Airspace Deconfliction",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Input the planned routes for both convoys and the target area and timing for the artillery mission.",
+      "expected_outcome": "Planner accurately enters all mission data.",
+      "required_tools": [
+        "input_mission_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a deconfliction analysis to identify any points where the convoys might interfere or be in the artillery's surface danger zone (SDZ).",
+      "expected_outcome": "The tool correctly identifies that one convoy's route passes through the artillery SDZ at the scheduled time.",
+      "required_tools": [
+        "run_deconfliction_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "conflict_identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Adjust the timing of the supply convoy's departure to ensure it clears the SDZ before the fire mission begins.",
+      "expected_outcome": "Planner resolves the conflict by adjusting the timeline.",
+      "required_tools": [
+        "adjust_mission_timing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "conflict_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

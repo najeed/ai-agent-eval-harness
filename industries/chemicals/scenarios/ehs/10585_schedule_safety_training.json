@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-ehs-10585",
+  "title": "Schedule Annual Safety Training",
+  "description": "An EHS specialist needs to schedule the annual mandatory 'Hazard Communication' training for all plant employees.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Regulatory Compliance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all active plant employees who require the training.",
+      "expected_outcome": "Agent retrieves a list of all employees assigned to the 'Plant Operations' department.",
+      "required_tools": [
+        "get_employees_by_department"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new training session in the learning management system for the 'Hazard Communication' course.",
+      "expected_outcome": "Agent successfully creates the new session.",
+      "required_tools": [
+        "create_training_session"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enroll all the identified employees in the session and send them a calendar invitation.",
+      "expected_outcome": "Agent successfully enrolls all employees and notifications are sent.",
+      "required_tools": [
+        "enroll_employees_in_session",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

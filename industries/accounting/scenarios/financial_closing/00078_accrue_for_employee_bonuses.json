@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-fc-78",
+  "title": "Accrue for Employee Bonuses",
+  "description": "The company has a bonus plan tied to profitability. At year-end, the accountant must accrue for the estimated bonus payout.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "General Ledger & Journal Entries",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the company's net income for the year.",
+      "expected_outcome": "Agent gets the final net income figure.",
+      "required_tools": [
+        "get_financial_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the estimated total bonus pool based on the formula in the bonus plan (e.g., 5% of net income).",
+      "expected_outcome": "Agent correctly calculates the total bonus amount.",
+      "required_tools": [
+        "calculate_bonus_accrual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create and post a journal entry to debit 'Bonus Expense' and credit 'Accrued Bonuses Payable'.",
+      "expected_outcome": "Agent posts the correct year-end accrual.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

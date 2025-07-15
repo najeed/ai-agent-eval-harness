@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-res-12958",
+  "title": "Handle a Low Appraisal",
+  "description": "A property's appraisal came in below the purchase price. The agent must advise the client on how to proceed.",
+  "use_case": "Residential Sales",
+  "core_function": "Offer & Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the appraisal report and identify the appraised value.",
+      "expected_outcome": "Agent confirms the appraisal is lower than the contract price.",
+      "required_tools": [
+        "get_transaction_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the client (buyer or seller) of the low appraisal and explain the implications for the loan and transaction.",
+      "expected_outcome": "Agent clearly communicates the problem to their client.",
+      "required_tools": [
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Outline the options: buyer brings more cash to closing, seller lowers the price, they meet in the middle, or cancel the contract. Then, begin negotiations with the other party's agent.",
+      "expected_outcome": "Agent provides strategic options and initiates negotiations to save the deal.",
+      "required_tools": [
+        "provide_strategic_advice",
+        "send_email_to_agent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

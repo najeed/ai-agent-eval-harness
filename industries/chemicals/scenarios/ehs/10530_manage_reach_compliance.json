@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-ehs-10530",
+  "title": "Manage REACH Compliance for New Product",
+  "description": "A new chemical product is planned for sale in the EU. An EHS specialist must ensure all substances are registered under REACH regulations.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Regulatory Compliance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the formulation for the new product.",
+      "expected_outcome": "Agent gets the list of all chemical components.",
+      "required_tools": [
+        "get_product_formulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each component, check its registration status in the company's REACH database.",
+      "expected_outcome": "Agent finds that 3 of the 4 components are already registered, but one is not.",
+      "required_tools": [
+        "check_reach_registration_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Flag the new product as 'Not for sale in EU' and notify the R&D team that the unregistered component must be registered or replaced.",
+      "expected_outcome": "Agent updates the product's compliance status and sends a notification to the R&D manager.",
+      "required_tools": [
+        "update_product_compliance_status",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

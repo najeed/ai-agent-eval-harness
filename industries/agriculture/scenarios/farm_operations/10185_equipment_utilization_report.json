@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10185",
+  "title": "Generate Equipment Utilization Report",
+  "description": "A large farm wants to analyze how its equipment was utilized during the planting season to identify inefficiencies.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Equipment Management & Maintenance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve telematics data for all planters and tractors for the duration of the planting season.",
+      "expected_outcome": "Agent gets data on engine hours, working time, idle time, and travel time.",
+      "required_tools": [
+        "get_equipment_telemetry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to calculate the percentage of time each machine spent working, idling, and traveling.",
+      "expected_outcome": "Agent calculates the utilization metrics for each machine.",
+      "required_tools": [
+        "analyze_equipment_utilization"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report that highlights machines with high idle times, suggesting opportunities for better logistics planning or operator training.",
+      "expected_outcome": "Agent's report identifies two tractors with over 40% idle time, indicating a bottleneck in seed tendering.",
+      "required_tools": [
+        "generate_utilization_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

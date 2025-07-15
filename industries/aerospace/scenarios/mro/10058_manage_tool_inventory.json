@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10058",
+  "title": "Manage Tool Inventory",
+  "description": "A tool crib attendant must manage the checkout and return of tools to maintenance technicians.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Spares & Logistics",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A technician requests a specific tool. Check the tool out to the technician in the inventory system.",
+      "expected_outcome": "Agent successfully logs the tool as checked out to the specific technician.",
+      "required_tools": [
+        "checkout_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "When the technician returns the tool, inspect it for damage.",
+      "expected_outcome": "Agent inspects the tool and finds it in good condition.",
+      "required_tools": [
+        "inspect_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the tool back into the inventory system and return it to its designated storage location.",
+      "expected_outcome": "Agent updates the tool's status to 'Available' and logs its return.",
+      "required_tools": [
+        "checkin_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

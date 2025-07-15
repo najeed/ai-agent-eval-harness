@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-vm-10470",
+  "title": "Cloud Security Posture Scan",
+  "description": "An analyst must run a Cloud Security Posture Management (CSPM) scan to find misconfigurations in the company's AWS environment.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Vulnerability Scanning & Assessment",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Configure the CSPM tool with read-only credentials to the AWS environment.",
+      "expected_outcome": "Analyst securely configures the tool's access.",
+      "required_tools": [
+        "configure_cspm_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "configuration_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Launch the scan against the AWS environment.",
+      "expected_outcome": "The scan runs to completion.",
+      "required_tools": [
+        "launch_cspm_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_execution_success",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the results and identify a critical misconfiguration: an S3 bucket containing sensitive data that is open to the public internet.",
+      "expected_outcome": "Analyst correctly identifies and prioritizes a critical cloud misconfiguration.",
+      "required_tools": [
+        "analyze_scan_results",
+        "create_remediation_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "vulnerability_prioritization_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

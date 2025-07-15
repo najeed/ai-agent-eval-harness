@@ -1,0 +1,50 @@
+{
+  "scenario_id": "audit-ia-10329",
+  "title": "Document a Walkthrough Narrative",
+  "description": "An auditor must formally document their understanding of the payroll process in a workpaper narrative.",
+  "use_case": "Internal Audit",
+  "core_function": "Workpaper & Finding Documentation",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Based on interview notes, write a step-by-step description of the payroll process, from employee time entry to payment disbursement.",
+      "expected_outcome": "A clear narrative of the process is drafted.",
+      "required_tools": [
+        "draft_narrative"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify and embed key controls within the narrative, such as 'Manager review and approval of employee timesheets'.",
+      "expected_outcome": "The narrative clearly indicates the key control points in the process.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the draft narrative to the Payroll Manager to confirm its accuracy.",
+      "expected_outcome": "The auditee confirms that the auditor's understanding of the process is correct.",
+      "required_tools": [
+        "send_document_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

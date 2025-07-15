@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10075",
+  "title": "Audit a Supplier's Facility",
+  "description": "A quality manager needs to audit a new supplier's manufacturing facility to ensure it meets quality standards before they can be approved.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Supply Chain & Procurement",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use a standard checklist to audit the supplier's quality management system (QMS), production processes, and documentation.",
+      "expected_outcome": "Agent completes the full audit checklist.",
+      "required_tools": [
+        "get_audit_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Document any non-conformances or areas for improvement found during the audit.",
+      "expected_outcome": "Agent identifies two minor non-conformances.",
+      "required_tools": [
+        "document_audit_finding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an audit report and provide it to the supplier. If non-conformances were found, require a corrective action plan.",
+      "expected_outcome": "Agent creates the report and requests a corrective action plan from the supplier.",
+      "required_tools": [
+        "generate_audit_report",
+        "request_corrective_action_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

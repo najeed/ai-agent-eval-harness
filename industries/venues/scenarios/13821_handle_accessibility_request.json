@@ -1,0 +1,66 @@
+{
+  "scenario_id": "venues-gs-13821",
+  "title": "Handle Guest Request for Accessible Seating",
+  "description": "A guest who purchased standard tickets has since broken their leg and now requires wheelchair accessible seating.",
+  "use_case": "Guest & Patron Services",
+  "core_function": "Accessibility & Special Needs",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the guest's original order.",
+      "expected_outcome": "Agent finds the guest's original ticket purchase.",
+      "required_tools": [
+        "search_ticket_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the availability of unsold accessible seats for the event.",
+      "expected_outcome": "Agent finds an available wheelchair space with a companion seat.",
+      "required_tools": [
+        "get_accessible_seating_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process an exchange for the guest's original tickets to the new accessible seats.",
+      "expected_outcome": "Agent successfully voids the old tickets and issues the new ones.",
+      "required_tools": [
+        "exchange_tickets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Inform the guest of their new seat location and offer to arrange for wheelchair assistance upon arrival.",
+      "expected_outcome": "Agent provides the new details and logs a request for assistance.",
+      "required_tools": [
+        "log_assistance_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-com-10591",
+  "title": "Potential Customer Requests Product Sample",
+  "description": "A potential new customer is requesting a small sample of a product to test in their lab.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Technical Support",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new lead account for the potential customer in the CRM.",
+      "expected_outcome": "Agent successfully creates the new lead record.",
+      "required_tools": [
+        "create_crm_lead"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new sample request order in the system for the requested product.",
+      "expected_outcome": "Agent creates a no-charge order for a 1kg sample.",
+      "required_tools": [
+        "create_sample_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the request to the sample lab for fulfillment and shipping.",
+      "expected_outcome": "The sample lab receives the request and prepares the sample for shipment.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

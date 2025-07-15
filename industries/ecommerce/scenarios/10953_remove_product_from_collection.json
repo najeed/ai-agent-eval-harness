@@ -1,0 +1,36 @@
+{
+  "scenario_id": "ecommerce-osm-10953",
+  "title": "Remove Product from a Collection",
+  "description": "A product that was part of a seasonal collection is no longer relevant and needs to be removed from that collection page.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Search & Navigation",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the product SKU and the collection it needs to be removed from.",
+      "expected_outcome": "Agent has the correct product and collection identifiers.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Remove the product from the specified collection.",
+      "expected_outcome": "Agent successfully updates the collection's product list.",
+      "required_tools": [
+        "remove_product_from_collection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

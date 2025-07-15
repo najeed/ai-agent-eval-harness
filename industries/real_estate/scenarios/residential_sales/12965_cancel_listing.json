@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-res-12965",
+  "title": "Process a Listing Cancellation",
+  "description": "A seller has decided not to sell their home and wants to cancel the listing agreement.",
+  "use_case": "Residential Sales",
+  "core_function": "Closing & Post-Sale",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the seller's request and review the cancellation clause in the signed listing agreement.",
+      "expected_outcome": "Agent reviews the contract for any terms related to early cancellation.",
+      "required_tools": [
+        "get_listing_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the official listing cancellation form.",
+      "expected_outcome": "Agent creates the correct legal form for cancellation.",
+      "required_tools": [
+        "generate_legal_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the cancellation form to the seller for signature and then update the listing status in the MLS to 'Cancelled'.",
+      "expected_outcome": "Agent completes the cancellation process and updates the MLS.",
+      "required_tools": [
+        "send_for_e_signature",
+        "update_mls_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

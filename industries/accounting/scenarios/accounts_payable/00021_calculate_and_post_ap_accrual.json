@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ac-ap-21",
+  "title": "Calculate and Post a Goods Received Not Invoiced (GRNI) Accrual",
+  "description": "For month-end close, an accountant needs to create an accrual for goods that have been received but for which no supplier invoice has been processed yet.",
+  "use_case": "Accounts Payable",
+  "core_function": "Accruals & Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a report of all open purchase order lines where goods have been received but an invoice has not been posted.",
+      "expected_outcome": "Agent generates the GRNI report.",
+      "required_tools": [
+        "run_grni_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total value of the items on the GRNI report.",
+      "expected_outcome": "Agent calculates the total accrual amount.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create and post a journal entry to debit the relevant expense/inventory accounts and credit 'AP Accruals'.",
+      "expected_outcome": "Agent posts the correct month-end accrual entry.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

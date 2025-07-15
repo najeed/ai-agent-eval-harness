@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10100",
+  "title": "Perform Propellant Loading",
+  "description": "At the launch pad, a team must safely load highly volatile propellants (e.g., liquid hydrogen, liquid oxygen) into a rocket.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Launch Operations",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that all personnel are clear of the hazardous zone around the launch pad.",
+      "expected_outcome": "Agent confirms the area is clear.",
+      "required_tools": [
+        "verify_zone_clearance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Follow the detailed checklist to operate the valves and pumps of the propellant loading system.",
+      "expected_outcome": "Agent follows the procedure precisely to avoid any safety incidents.",
+      "required_tools": [
+        "get_loading_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the temperature, pressure, and fluid levels in the rocket's tanks to ensure the propellant is loaded to the correct levels.",
+      "expected_outcome": "Agent monitors the system and confirms the tanks are filled to the target amounts.",
+      "required_tools": [
+        "monitor_propellant_loading"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

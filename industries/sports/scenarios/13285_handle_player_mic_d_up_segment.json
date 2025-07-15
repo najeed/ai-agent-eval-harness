@@ -1,0 +1,67 @@
+{
+  "scenario_id": "sports-bm-13285",
+  "title": "Handle Player 'Mic'd Up' Segment",
+  "description": "A player agrees to be 'mic'd up' for a game, wearing a microphone to capture on-field audio for a broadcast segment.",
+  "use_case": "Broadcasting & Media",
+  "core_function": "Live Broadcast Production",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Secure the player's consent and equip them with the microphone before the game.",
+      "expected_outcome": "The player is properly equipped with the audio equipment.",
+      "required_tools": [
+        "get_player_consent",
+        "equip_player_with_mic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Monitor the live audio feed during the game.",
+      "expected_outcome": "Agent listens to the audio in real time.",
+      "required_tools": [
+        "monitor_live_audio_feed"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the game, review the audio and select the best, most broadcast-appropriate clips.",
+      "expected_outcome": "Agent selects several interesting and clean audio clips.",
+      "required_tools": [
+        "review_and_select_audio_clips"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Edit the clips into a segment for the post-game show.",
+      "expected_outcome": "Agent produces the final 'mic'd up' segment.",
+      "required_tools": [
+        "edit_audio_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

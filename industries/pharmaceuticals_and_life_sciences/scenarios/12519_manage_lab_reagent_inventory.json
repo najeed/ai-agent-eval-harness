@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-rd-12519",
+  "title": "Manage Lab Reagent Inventory",
+  "description": "A lab manager needs to check the inventory of a critical reagent, notice it is low, and order more.",
+  "use_case": "Research & Development",
+  "core_function": "Lab & Sample Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current stock level of 'Reagent ABC' in the lab inventory system.",
+      "expected_outcome": "Agent finds that the stock level is below the predefined reorder threshold.",
+      "required_tools": [
+        "check_inventory_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find the approved supplier and catalog number for 'Reagent ABC'.",
+      "expected_outcome": "Agent retrieves the correct supplier and ordering information.",
+      "required_tools": [
+        "get_supplier_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a purchase order for a new lot of the reagent.",
+      "expected_outcome": "Agent successfully generates a purchase order in the procurement system.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Upon receipt, log the new lot into the inventory system and update the stock level.",
+      "expected_outcome": "Agent updates the inventory with the new lot number, quantity, and expiration date.",
+      "required_tools": [
+        "receive_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

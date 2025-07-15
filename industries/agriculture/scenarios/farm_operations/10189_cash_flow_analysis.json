@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10189",
+  "title": "Monthly Cash Flow Analysis",
+  "description": "A farm's bookkeeper needs to generate a monthly cash flow statement to ensure the farm has enough liquidity to meet its obligations.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Financial Management & Compliance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all income and expense transactions for the last month from the accounting software.",
+      "expected_outcome": "Agent gets all financial transactions.",
+      "required_tools": [
+        "get_financial_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Categorize all transactions into operating, investing, and financing activities.",
+      "expected_outcome": "Agent correctly categorizes all transactions.",
+      "required_tools": [
+        "categorize_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a statement of cash flows for the month.",
+      "expected_outcome": "Agent produces a formal cash flow statement.",
+      "required_tools": [
+        "generate_financial_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

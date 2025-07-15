@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10044",
+  "title": "Overhaul an Engine Turbine Section",
+  "description": "A specialized MRO technician must inspect and repair the high-pressure turbine section of a jet engine.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Component Repair & Overhaul",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Disassemble the turbine section according to the engine overhaul manual.",
+      "expected_outcome": "Agent follows the manual to safely disassemble the section.",
+      "required_tools": [
+        "get_engine_overhaul_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a detailed visual and boroscopic inspection of each turbine blade, looking for cracks, erosion, or heat damage.",
+      "expected_outcome": "Agent inspects all blades and identifies three that need to be replaced.",
+      "required_tools": [
+        "perform_borescope_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Replace the damaged blades, reassemble the section, and perform a balance check.",
+      "expected_outcome": "Agent replaces the blades and confirms the reassembled turbine is correctly balanced.",
+      "required_tools": [
+        "replace_component",
+        "perform_balance_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

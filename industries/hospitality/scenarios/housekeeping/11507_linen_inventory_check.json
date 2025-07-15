@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hosp-hk-11507",
+  "title": "Linen Inventory Check",
+  "description": "The head of housekeeping needs to check the current inventory levels for clean towels.",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Inventory Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the inventory management system.",
+      "expected_outcome": "Agent successfully logs into the system.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the system for the current stock count of 'Bath Towel - Clean'.",
+      "expected_outcome": "The system reports 500 clean bath towels are in stock.",
+      "required_tools": [
+        "ims_check_stock_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the current stock to the par level and determine if a new laundry order is needed.",
+      "expected_outcome": "The par level is 800, so the agent determines a new batch needs to be laundered.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

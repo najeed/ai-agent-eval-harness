@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10041",
+  "title": "Comply with a New Airworthiness Directive (AD)",
+  "description": "The FAA has issued a mandatory AD that requires an inspection of the horizontal stabilizer on a specific aircraft model. A maintenance planner must ensure compliance.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Technical Documentation & Compliance",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all aircraft in the fleet that are affected by the new AD.",
+      "expected_outcome": "Agent creates a list of affected tail numbers.",
+      "required_tools": [
+        "get_fleet_by_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new maintenance task card for the inspection required by the AD.",
+      "expected_outcome": "Agent creates a detailed task card for the technicians.",
+      "required_tools": [
+        "create_maintenance_task_card"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule this new task to be completed on all affected aircraft before the AD's compliance deadline.",
+      "expected_outcome": "Agent successfully schedules the work for the entire affected fleet.",
+      "required_tools": [
+        "schedule_maintenance_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "chemicals-com-10581",
+  "title": "Update Customer Primary Address",
+  "description": "A customer has moved their headquarters and needs to update their primary billing address.",
+  "use_case": "Commercial & Sales",
+  "core_function": "Customer Relationship Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's account in the CRM.",
+      "expected_outcome": "Agent successfully retrieves the customer's main profile.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Take the new address information from the customer.",
+      "expected_outcome": "Agent records the new billing address.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the billing address on the customer's master record.",
+      "expected_outcome": "Agent successfully updates the address in the system.",
+      "required_tools": [
+        "update_customer_address"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

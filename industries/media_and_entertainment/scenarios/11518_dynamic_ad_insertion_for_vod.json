@@ -1,0 +1,67 @@
+{
+  "scenario_id": "media-bo-11518",
+  "title": "Dynamic Ad Insertion for VOD",
+  "description": "An agent needs to configure an advertising campaign for a new movie being added to a VOD catalog, targeting specific viewer demographics.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Ad Insertion & Management",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new ad campaign for the movie.",
+      "expected_outcome": "Agent sets up a new campaign in the ad management system.",
+      "required_tools": [
+        "create_ad_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define the targeting parameters for the campaign (e.g., viewers aged 18-34 in the United States).",
+      "expected_outcome": "Agent correctly sets the demographic and geographic targeting rules.",
+      "required_tools": [
+        "set_campaign_targeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign ad creatives to the campaign and set the ad pods (e.g., one pre-roll, two mid-roll ads).",
+      "expected_outcome": "Agent uploads the ad videos and configures the ad break structure.",
+      "required_tools": [
+        "assign_ad_creative",
+        "configure_ad_pods"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Activate the campaign to run alongside the movie's release.",
+      "expected_outcome": "Agent successfully activates the ad campaign.",
+      "required_tools": [
+        "activate_ad_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

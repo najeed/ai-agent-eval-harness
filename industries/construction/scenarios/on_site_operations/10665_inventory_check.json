@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-os-10665",
+  "title": "Conduct On-Site Material Inventory Check",
+  "description": "A foreman needs to check the on-site inventory of copper pipe to ensure there is enough for the next week's plumbing work.",
+  "use_case": "On-Site Operations",
+  "core_function": "Material & Equipment Logistics",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the current inventory level for '1-inch Copper Pipe' from the inventory management system.",
+      "expected_outcome": "System shows 500 feet of pipe in inventory.",
+      "required_tools": [
+        "get_inventory_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the on-hand quantity with the forecasted need of 600 feet for the upcoming week.",
+      "expected_outcome": "Agent identifies a shortfall of 100 feet.",
+      "required_tools": [
+        "get_material_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a purchase order for an additional 200 feet of pipe to cover the shortfall and provide a buffer.",
+      "expected_outcome": "A new PO is created to prevent a material shortage.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

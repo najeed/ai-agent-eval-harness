@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10553",
+  "title": "Manage Maintenance Spare Parts Inventory",
+  "description": "A maintenance technician used the last spare gasket of a specific type. They need to record its use and trigger a reorder.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Maintenance Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the part number for the gasket used.",
+      "expected_outcome": "Agent finds the correct part number from the equipment's bill of materials.",
+      "required_tools": [
+        "get_equipment_bom"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Record the use of one unit of the gasket in the inventory system, which brings the on-hand quantity to zero.",
+      "expected_outcome": "Agent successfully updates the spare part inventory.",
+      "required_tools": [
+        "update_spare_parts_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system automatically flags the part for reorder because the quantity is below the minimum level. Confirm and submit the purchase requisition.",
+      "expected_outcome": "Agent confirms the auto-generated purchase requisition to restock the part.",
+      "required_tools": [
+        "approve_purchase_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-co-11064",
+  "title": "Check on Event Setup Status",
+  "description": "An event organizer calls to confirm that the tables and chairs they requested for their event have been set up.",
+  "use_case": "Campus Life & Operations",
+  "core_function": "Event & Facilities Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the event from the event management system using the organizer's name and event date.",
+      "expected_outcome": "Agent locates the 'Annual Job Fair' event record.",
+      "required_tools": [
+        "get_event_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of the associated facilities work order.",
+      "expected_outcome": "Agent finds the work order for the setup is marked as 'Completed'.",
+      "required_tools": [
+        "get_work_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm to the organizer that the setup has been completed by the facilities team.",
+      "expected_outcome": "Agent provides a clear confirmation to the event organizer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

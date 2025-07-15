@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-cp-10315",
+  "title": "Audit Adherence to Travel & Expense Policy",
+  "description": "An auditor checks if employee expense reports are in compliance with the company's T&E policy.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Policy & Procedure Adherence",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a sample of 50 expense reports that included airfare.",
+      "expected_outcome": "A sample is selected for testing.",
+      "required_tools": [
+        "select_random_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each sampled report, verify that employees booked economy class tickets, as required by policy for domestic travel.",
+      "expected_outcome": "Auditor finds 4 instances of business class travel that were not pre-approved.",
+      "required_tools": [
+        "review_expense_receipts",
+        "log_test_exception"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that all meal expenses claimed are within the per diem limit set by the policy.",
+      "expected_outcome": "Auditor confirms all sampled meal expenses are compliant.",
+      "required_tools": [
+        "review_expense_receipts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

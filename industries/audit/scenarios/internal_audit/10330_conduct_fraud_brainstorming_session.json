@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10330",
+  "title": "Conduct Fraud Brainstorming Session",
+  "description": "As part of audit planning, the audit team holds a brainstorming session to identify potential fraud schemes in the area under review.",
+  "use_case": "Internal Audit",
+  "core_function": "Audit Planning & Scoping",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule a meeting with the audit team assigned to the engagement.",
+      "expected_outcome": "A meeting is scheduled.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the meeting, lead a discussion on how fraud could occur in the accounts receivable process (e.g., lapping schemes, fictitious credits).",
+      "expected_outcome": "The team identifies at least three plausible fraud schemes.",
+      "required_tools": [
+        "facilitate_brainstorming_session"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the potential fraud schemes and design specific audit tests to detect them.",
+      "expected_outcome": "The audit plan is updated with specific fraud-focused tests.",
+      "required_tools": [
+        "update_audit_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-grc-10795",
+  "title": "Quantitative Risk Assessment",
+  "description": "An analyst must perform a quantitative risk assessment for a potential data breach, calculating the potential financial loss.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Risk Assessment & Management",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the value of the asset at risk (e.g., a customer database with 1 million records).",
+      "expected_outcome": "Analyst correctly identifies the asset and its size.",
+      "required_tools": [
+        "identify_asset_value"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Estimate the likelihood of a data breach occurring in a given year based on historical data and threat intelligence.",
+      "expected_outcome": "Analyst estimates a 10% chance of a breach per year.",
+      "required_tools": [
+        "estimate_event_likelihood"
+      ],
+      "success_criteria": [
+        {
+          "metric": "estimation_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the Annualized Loss Expectancy (ALE) by multiplying the potential loss per breach (e.g., $5M) by the likelihood (10%), to arrive at an ALE of $500,000.",
+      "expected_outcome": "Analyst correctly performs the quantitative risk calculation to inform security investment decisions.",
+      "required_tools": [
+        "calculate_annualized_loss_expectancy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

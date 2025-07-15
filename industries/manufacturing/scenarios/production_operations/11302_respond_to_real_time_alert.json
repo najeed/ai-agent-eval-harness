@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mfg-po-11302",
+  "title": "Respond to Real-time Production Alert",
+  "description": "An operator receives a real-time alert from a CNC machine indicating a tool is nearing its wear limit.",
+  "use_case": "Production & Operations",
+  "core_function": "Real-time Monitoring & Control",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the alert and retrieve the specific tool's usage data.",
+      "expected_outcome": "Agent acknowledges the SCADA alert and views the tool's current operational hours.",
+      "required_tools": [
+        "get_scada_alert_details",
+        "get_tool_usage_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the production schedule to find the next available window for a tool change.",
+      "expected_outcome": "Agent identifies a scheduled changeover or break within the next few hours.",
+      "required_tools": [
+        "get_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_logic",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a maintenance task for the tool change and notify the maintenance team.",
+      "expected_outcome": "Agent creates a maintenance ticket and assigns it to the appropriate team.",
+      "required_tools": [
+        "create_maintenance_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

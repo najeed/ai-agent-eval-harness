@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-pt-67",
+  "title": "Analyze Bank Account Analysis Statement",
+  "description": "The treasurer receives the monthly account analysis statement from the bank and needs to verify the fees charged for services like wires, ACH, and lockbox processing.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Cash Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the monthly bank account analysis statement.",
+      "expected_outcome": "Agent gets the statement, which details transaction volumes and fees.",
+      "required_tools": [
+        "get_bank_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the internal records of transaction volumes for the same period.",
+      "expected_outcome": "Agent gets the company's own count of wire and ACH transactions.",
+      "required_tools": [
+        "get_internal_transaction_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the bank's reported volumes and fees against the internal records and the agreed-upon fee schedule.",
+      "expected_outcome": "Agent confirms all fees are calculated correctly based on actual volumes.",
+      "required_tools": [
+        "compare_bank_fees"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Accrue for the bank fees with a journal entry.",
+      "expected_outcome": "Agent posts a journal entry to debit 'Bank Fees Expense' and credit 'Accrued Expenses'.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

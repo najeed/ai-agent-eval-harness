@@ -1,0 +1,51 @@
+{
+  "scenario_id": "sports-fe-12559",
+  "title": "Handle Accessible Seating Request",
+  "description": "A fan with a disability needs to purchase tickets in an accessible seating area.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Ticketing & Access Control",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the fan's needs (e.g., wheelchair accessible seating).",
+      "expected_outcome": "Agent understands the specific seating requirement.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the availability of accessible seating for the desired game.",
+      "expected_outcome": "Agent finds available wheelchair accessible seats.",
+      "required_tools": [
+        "check_accessible_seating_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the sale of the accessible seats and provide information about accessible entrances and amenities at the stadium.",
+      "expected_outcome": "Agent completes the sale and provides helpful information to the fan.",
+      "required_tools": [
+        "process_payment",
+        "provide_accessibility_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

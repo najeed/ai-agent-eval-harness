@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-cm-10137",
+  "title": "Select a Cover Crop Mix",
+  "description": "A farmer wants to plant a cover crop after corn harvest to improve soil health and reduce erosion. They need a recommendation for a suitable mix.",
+  "use_case": "Crop Management",
+  "core_function": "Planting & Seeding",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the farmer's primary goals for the cover crop (e.g., nitrogen scavenging, soil compaction reduction, weed suppression).",
+      "expected_outcome": "Agent documents the farmer's goals.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve information on various cover crop species and their attributes.",
+      "expected_outcome": "Agent gathers data on species like cereal rye, tillage radish, and crimson clover.",
+      "required_tools": [
+        "get_cover_crop_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend a cover crop mix and seeding rates that best match the farmer's goals and geographic region.",
+      "expected_outcome": "Agent recommends a mix of cereal rye and tillage radish.",
+      "required_tools": [
+        "recommend_cover_crop_mix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

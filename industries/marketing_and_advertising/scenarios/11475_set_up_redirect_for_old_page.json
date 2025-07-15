@@ -1,0 +1,48 @@
+{
+  "scenario_id": "marketing-cc-11475",
+  "title": "Set Up a 301 Redirect",
+  "description": "An old webpage is being deleted, and an SEO specialist needs to set up a 301 (permanent) redirect to send users and search engines to a new, relevant page.",
+  "use_case": "Content & Creative Development",
+  "core_function": "SEO & Content Optimization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the old URL that is being deleted.",
+      "expected_outcome": "Agent has the source URL.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the most relevant new page to redirect the old URL to.",
+      "expected_outcome": "Agent selects an appropriate destination URL.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the 301 redirect rule to the website's configuration file or redirect management tool.",
+      "expected_outcome": "Agent successfully implements the redirect.",
+      "required_tools": [
+        "website_configuration_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

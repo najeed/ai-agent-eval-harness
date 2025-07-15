@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10035",
+  "title": "Manage Hazardous Materials",
+  "description": "A supply chain manager needs to arrange the transportation of hazardous materials (e.g., primers, sealants) to the assembly line.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Supply Chain & Procurement",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the Safety Data Sheet (SDS) for the hazardous material to identify its handling and shipping requirements.",
+      "expected_outcome": "Agent finds the SDS and notes the material is flammable.",
+      "required_tools": [
+        "get_safety_data_sheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ensure the material is packaged in UN-approved containers with the correct hazard labels.",
+      "expected_outcome": "Agent verifies the packaging and labeling are compliant.",
+      "required_tools": [
+        "verify_packaging_compliance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange for a certified hazardous materials carrier to transport the items and generate the required shipping manifest.",
+      "expected_outcome": "Agent books a certified carrier and creates the shipping paperwork.",
+      "required_tools": [
+        "book_hazmat_carrier",
+        "generate_shipping_manifest"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

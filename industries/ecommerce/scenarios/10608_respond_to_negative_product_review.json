@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-css-10608",
+  "title": "Respond to a Negative Product Review",
+  "description": "A customer left a 1-star review complaining about a product defect. An agent needs to respond publicly and resolve the issue.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Feedback & Reviews",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the negative review and the customer who wrote it.",
+      "expected_outcome": "Agent locates the review and the associated customer account.",
+      "required_tools": [
+        "get_product_reviews",
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Post a public reply to the review, apologizing for the issue and offering to make it right.",
+      "expected_outcome": "Agent posts a well-worded, empathetic public response.",
+      "required_tools": [
+        "post_review_comment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a support ticket to proactively contact the customer via email and offer a replacement or refund.",
+      "expected_outcome": "Agent creates a support ticket to resolve the underlying issue privately.",
+      "required_tools": [
+        "create_support_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

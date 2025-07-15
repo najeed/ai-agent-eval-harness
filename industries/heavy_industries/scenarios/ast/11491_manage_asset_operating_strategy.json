@@ -1,0 +1,55 @@
+{
+  "scenario_id": "heavy-industries-ast-11491",
+  "title": "Manage Asset Operating Strategy",
+  "description": "A reliability engineer is reviewing the overall maintenance and operating strategy for a critical asset to ensure it is optimized for performance and life.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Reliability Engineering",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the asset's current maintenance plan, spare parts list, and operating procedures.",
+      "expected_outcome": "Agent gathers all the documents that define the current strategy.",
+      "required_tools": [
+        "get_maintenance_plan",
+        "get_asset_bom",
+        "get_operating_procedure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the asset's failure history and performance data.",
+      "expected_outcome": "The engineer reviews the historical data for trends.",
+      "required_tools": [
+        "get_maintenance_history",
+        "get_asset_performance_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the analysis, create a recommendation to update the strategy, such as moving from time-based maintenance to condition-based maintenance.",
+      "expected_outcome": "The engineer proposes a change to the overall strategy and submits it for approval.",
+      "required_tools": [
+        "create_change_request_for_maintenance_strategy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-em-11638",
+  "title": "Create a Performance Improvement Plan (PIP)",
+  "description": "A manager needs to place an employee on a PIP for failing to meet performance expectations.",
+  "use_case": "Employee Management",
+  "core_function": "Performance Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Consult with the manager to document the specific performance issues and desired improvements.",
+      "expected_outcome": "HRBP works with the manager to define clear, measurable goals for the PIP.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the PIP document using the company's standard template.",
+      "expected_outcome": "HRBP creates the formal PIP document.",
+      "required_tools": [
+        "generate_document_from_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_creation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a meeting with the manager and employee to deliver the PIP and have it signed.",
+      "expected_outcome": "HRBP schedules and attends the meeting to ensure it's handled correctly.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

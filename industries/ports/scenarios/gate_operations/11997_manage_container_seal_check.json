@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ports-go-11997",
+  "title": "Manage Container Seal Check at Gate",
+  "description": "For a high-value cargo container, the shipper has requested a seal check upon entry to the port.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Customs & Documentation",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system flags a container at the gate for a mandatory seal check based on shipper instructions.",
+      "expected_outcome": "The gate clerk receives an alert to perform a manual seal verification.",
+      "required_tools": [
+        "get_special_handling_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The clerk physically inspects the container's seal and compares the seal number to the one in the documentation.",
+      "expected_outcome": "The clerk confirms the physical seal number matches the number on the Bill of Lading.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The clerk logs the successful verification in the system and allows the truck to proceed.",
+      "expected_outcome": "The seal check is logged as 'Verified OK', and the truck enters the terminal.",
+      "required_tools": [
+        "log_seal_verification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

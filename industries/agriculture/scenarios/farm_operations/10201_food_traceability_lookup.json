@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-fo-10201",
+  "title": "Food Traceability Lookup",
+  "description": "A food processor has a product recall and needs to trace a batch of spinach back to the field it was harvested from.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Supply Chain & Inventory",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the lot number from the recalled product.",
+      "expected_outcome": "Agent gets the lot number.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the traceability system using the lot number to find the corresponding harvest date and field ID.",
+      "expected_outcome": "Agent finds the spinach was harvested on July 10th from Field 7B.",
+      "required_tools": [
+        "query_traceability_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Retrieve all application and harvest records for that field for the specified date.",
+      "expected_outcome": "Agent provides a complete history for the specific batch of spinach, confirming no off-label chemicals were used.",
+      "required_tools": [
+        "get_field_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

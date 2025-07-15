@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-fo-10154",
+  "title": "Create a Purchase Order for Parts",
+  "description": "A mechanic needs to order spare parts to repair a tractor.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Equipment Management & Maintenance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the required part numbers in the tractor's service manual.",
+      "expected_outcome": "Agent finds the correct part numbers for the required filters and belts.",
+      "required_tools": [
+        "get_part_numbers_from_manual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check inventory at preferred local dealerships for the required parts.",
+      "expected_outcome": "Agent finds one dealership has all parts in stock.",
+      "required_tools": [
+        "check_dealer_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a purchase order for the parts from the selected dealership.",
+      "expected_outcome": "Agent creates a formal PO with the correct parts, quantities, and prices.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

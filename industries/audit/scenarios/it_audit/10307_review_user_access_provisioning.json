@@ -1,0 +1,54 @@
+{
+  "scenario_id": "audit-it-10307",
+  "title": "Review New User Access Provisioning",
+  "description": "An IT auditor is reviewing the process for granting new employees access to systems.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a list of all employees hired in the last quarter and a list of all new user accounts created in the main ERP system.",
+      "expected_outcome": "Auditor has the two datasets needed for comparison.",
+      "required_tools": [
+        "get_new_hire_report",
+        "get_new_user_account_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the lists to ensure that every new user account corresponds to a legitimate new hire.",
+      "expected_outcome": "Auditor finds one new user account that does not match any new hire, flagging it as an exception.",
+      "required_tools": [
+        "compare_datasets",
+        "log_test_exception"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For a sample of 20 new hires, verify that the access request was approved by their manager before the account was created.",
+      "expected_outcome": "Auditor verifies that all sampled requests had the proper approval.",
+      "required_tools": [
+        "get_access_request_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

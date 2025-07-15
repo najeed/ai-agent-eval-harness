@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ag-cm-10115",
+  "title": "Predict Optimal Harvest Time for Wine Grapes",
+  "description": "A vineyard manager needs to decide the optimal day to harvest their Cabernet Sauvignon grapes based on sugar levels and weather.",
+  "use_case": "Crop Management",
+  "core_function": "Harvesting & Logistics",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest grape maturity data, including Brix (sugar), pH, and acidity from field samples.",
+      "expected_outcome": "Agent retrieves the latest quality metrics.",
+      "required_tools": [
+        "get_crop_quality_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the trend of the maturity data to predict when the grapes will reach the target Brix level.",
+      "expected_outcome": "Agent predicts the target Brix will be reached in 5 days.",
+      "required_tools": [
+        "predict_crop_maturity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the 10-day weather forecast for any upcoming rain or extreme heat that could impact the decision.",
+      "expected_outcome": "Agent notes a major rainstorm is forecast in 7 days.",
+      "required_tools": [
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Recommend a harvest date that balances optimal maturity with the risk of bad weather.",
+      "expected_outcome": "Agent recommends harvesting in 5-6 days, before the rain arrives.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

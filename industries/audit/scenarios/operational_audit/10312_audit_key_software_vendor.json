@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10312",
+  "title": "Audit a Key Software Vendor",
+  "description": "An auditor assesses the risks associated with a critical third-party software-as-a-service (SaaS) vendor.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Vendor & Third-Party Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the contract and Service Level Agreement (SLA) with the vendor.",
+      "expected_outcome": "Auditor understands the contractual requirements for uptime and performance.",
+      "required_tools": [
+        "get_vendor_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain and review the vendor's latest SOC 2 Type II report.",
+      "expected_outcome": "Auditor analyzes the SOC 2 report to assess the vendor's control environment.",
+      "required_tools": [
+        "review_soc_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify that the SOC 2 report lists several control exceptions related to employee background checks and document this as a potential risk.",
+      "expected_outcome": "Auditor flags a specific third-party risk to be monitored.",
+      "required_tools": [
+        "log_risk_finding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

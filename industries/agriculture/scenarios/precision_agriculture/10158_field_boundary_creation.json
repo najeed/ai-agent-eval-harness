@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10158",
+  "title": "Create a Field Boundary from Drone Imagery",
+  "description": "A farmer has a new field and has flown a drone over it. They need the agent to create an accurate field boundary from the image.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Data Collection & Sensing",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process the drone image of the new field.",
+      "expected_outcome": "Agent displays the georeferenced image.",
+      "required_tools": [
+        "stitch_drone_images"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_processing_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use image analysis to automatically detect the edges of the cultivated area.",
+      "expected_outcome": "Agent's model draws a polygon around the edge of the field.",
+      "required_tools": [
+        "image_analysis_boundary_detection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the new polygon as a field boundary in the farm management system.",
+      "expected_outcome": "Agent successfully saves the new boundary.",
+      "required_tools": [
+        "save_field_boundary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10354",
+  "title": "Review Inventory Obsolescence Reserve",
+  "description": "An operational auditor reviews the process for identifying slow-moving inventory and calculating the necessary reserve.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Process Efficiency Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the detailed inventory aging report.",
+      "expected_outcome": "Auditor has the data showing how long each inventory item has been in stock.",
+      "required_tools": [
+        "get_inventory_aging_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the report to identify items with no sales in the last 12 months.",
+      "expected_outcome": "A list of potentially obsolete inventory is generated.",
+      "required_tools": [
+        "analyze_inventory_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recalculate the required obsolescence reserve based on the policy and compare it to the amount booked by the finance team.",
+      "expected_outcome": "Auditor finds that the reserve is understated and recommends an adjustment.",
+      "required_tools": [
+        "recalculate_reserve_amount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

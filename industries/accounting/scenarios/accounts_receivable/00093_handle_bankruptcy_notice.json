@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ar-93",
+  "title": "Handle a Customer Bankruptcy Notice",
+  "description": "The company receives a notice that a customer with a large outstanding balance has filed for bankruptcy.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Credit Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the bankruptcy notification from the court.",
+      "expected_outcome": "Agent gets the legal notice.",
+      "required_tools": [
+        "get_bankruptcy_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve all open invoices for the customer.",
+      "expected_outcome": "Agent gets a list of all amounts owed by the bankrupt customer.",
+      "required_tools": [
+        "get_customer_open_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Cease all standard collections activity for the customer.",
+      "expected_outcome": "Agent flags the customer account to stop dunning notices.",
+      "required_tools": [
+        "update_customer_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Prepare a proof of claim to be filed with the bankruptcy court, detailing the amounts owed.",
+      "expected_outcome": "Agent generates the legal proof of claim document.",
+      "required_tools": [
+        "prepare_proof_of_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

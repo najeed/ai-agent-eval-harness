@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-op-10712",
+  "title": "Battery Storage Dispatch Optimization",
+  "description": "An operator needs to create an optimal charge/discharge schedule for a 50 MW / 200 MWh battery system for the next 24 hours to maximize revenue from energy arbitrage.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Dispatch & Optimization",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the day-ahead hourly price forecast for the battery's market node.",
+      "expected_outcome": "Agent retrieves the 24-hour price forecast.",
+      "required_tools": [
+        "get_day_ahead_price_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the battery's current state of charge (SoC) and operational constraints (e.g., max charge/discharge rate, round-trip efficiency).",
+      "expected_outcome": "Agent fetches the real-time status and technical limits of the battery.",
+      "required_tools": [
+        "get_bess_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an optimal hourly dispatch schedule that maximizes arbitrage profit.",
+      "expected_outcome": "Agent produces a schedule detailing when to charge, discharge, or remain idle.",
+      "required_tools": [
+        "optimize_battery_dispatch_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "optimization_effectiveness",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "sports-fe-13269",
+  "title": "Handle Mobile Ticket Transfer",
+  "description": "A fan wants to transfer their ticket for a game to a friend.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Fan Communications & Support",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Guide the fan on how to use the 'transfer' feature in the team's mobile app.",
+      "expected_outcome": "Agent provides clear, step-by-step instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The fan enters their friend's email address to send the ticket.",
+      "expected_outcome": "The system sends a transfer offer to the friend.",
+      "required_tools": [
+        "initiate_ticket_transfer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the system to confirm the friend has accepted the transfer and the ticket is now in their account.",
+      "expected_outcome": "Agent verifies the transfer was completed successfully.",
+      "required_tools": [
+        "check_ticket_transfer_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

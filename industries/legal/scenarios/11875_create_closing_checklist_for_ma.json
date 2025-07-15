@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-11875",
+  "title": "Create a Closing Checklist for an M&A Deal",
+  "description": "A corporate associate needs to create a closing checklist that details all the documents that need to be signed and actions that need to be taken to close a deal.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Mergers & Acquisitions (M&A)",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the main purchase agreement to identify all required closing deliverables.",
+      "expected_outcome": "Agent extracts a list of all required documents and actions.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a checklist with columns for the item, the responsible party, the status, and notes.",
+      "expected_outcome": "Agent creates a well-structured checklist.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Populate the checklist with all the deliverables and assign responsible parties.",
+      "expected_outcome": "Agent produces a comprehensive checklist to manage the deal closing.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

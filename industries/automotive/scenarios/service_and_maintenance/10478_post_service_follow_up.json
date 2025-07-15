@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sm-10478",
+  "title": "Post-Service Follow-Up Call",
+  "description": "A few days after a service visit, an agent calls the customer to ensure everything is working correctly and they are satisfied with the service.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Billing & Warranty Claims",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of customers who had service completed 3-5 days ago.",
+      "expected_outcome": "Agent generates a daily call list.",
+      "required_tools": [
+        "get_recent_service_customers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Call the customer and ask about their experience and if their vehicle is performing as expected.",
+      "expected_outcome": "Agent makes a courtesy follow-up call.",
+      "required_tools": [
+        "contact_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the customer is satisfied, thank them. If they report an issue, create a ticket for the service manager to address it.",
+      "expected_outcome": "The customer is satisfied. The agent logs the positive outcome.",
+      "required_tools": [
+        "log_customer_feedback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

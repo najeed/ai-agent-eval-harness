@@ -1,0 +1,48 @@
+{
+  "scenario_id": "real_estate-rs-12377",
+  "title": "Explain Closing Costs to a First-Time Buyer",
+  "description": "A first-time home buyer is confused by the list of closing costs on their loan estimate. Their agent must explain the different fees.",
+  "use_case": "Residential Sales",
+  "core_function": "Client Onboarding & Qualification",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the buyer's Loan Estimate document.",
+      "expected_outcome": "Agent is familiar with the specific figures and fees listed.",
+      "required_tools": [
+        "review_loan_estimate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain each major closing cost, such as lender fees, title insurance, appraisal fee, and pre-paid items (taxes, insurance).",
+      "expected_outcome": "Agent provides a clear, line-by-line explanation of the costs.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the buyer to compare the Loan Estimate with the final Closing Disclosure to ensure there are no major changes.",
+      "expected_outcome": "The buyer understands how to review their final closing documents.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-fs-11076",
+  "title": "Cross-list a Course Between Departments",
+  "description": "Two departments want to cross-list a course, making it available for credit to students in both majors.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "Curriculum Development & Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the course information and the two departments that will be sharing it (e.g., 'SOCI350' and 'ANTH350').",
+      "expected_outcome": "Agent gathers the details of the cross-listing request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that both department chairs have approved the cross-listing.",
+      "expected_outcome": "Agent checks the system for the required approvals.",
+      "required_tools": [
+        "check_approval_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the cross-listing in the SIS, linking the two course codes to the same class section.",
+      "expected_outcome": "Agent successfully configures the course in the system.",
+      "required_tools": [
+        "cross_list_course"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

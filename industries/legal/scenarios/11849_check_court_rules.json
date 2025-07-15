@@ -1,0 +1,66 @@
+{
+  "scenario_id": "legal-ldr-11849",
+  "title": "Check Local Court Rules",
+  "description": "Before filing a motion, a paralegal must check the local court rules and the specific judge's rules for any special formatting or filing requirements.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Pleadings & Motions Practice",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the court and judge assigned to the case.",
+      "expected_outcome": "Agent has the correct court and judge information.",
+      "required_tools": [
+        "case_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Navigate to the court's official website and locate the 'Local Rules' section.",
+      "expected_outcome": "Agent finds the general rules for the court.",
+      "required_tools": [
+        "web_browser"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Navigate to the specific judge's page on the court website to find their individual practices or standing orders.",
+      "expected_outcome": "Agent finds the judge's specific rules.",
+      "required_tools": [
+        "web_browser"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Summarize any specific requirements (e.g., 'font must be Times New Roman size 13', 'courtesy copy must be delivered to chambers').",
+      "expected_outcome": "Agent creates a checklist to ensure the filing is compliant.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

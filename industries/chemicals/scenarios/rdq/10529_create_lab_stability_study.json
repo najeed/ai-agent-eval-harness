@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-rdq-10529",
+  "title": "Create Lab Stability Study",
+  "description": "A new product requires a 12-month stability study to determine its shelf life. A QA specialist needs to set up the study protocol in the LIMS.",
+  "use_case": "R&D and Quality",
+  "core_function": "Formulation & Product Development",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new stability study protocol for the new product.",
+      "expected_outcome": "Agent successfully creates the new study record.",
+      "required_tools": [
+        "create_stability_study"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define the storage conditions (e.g., 25\u00b0C/60% RH, 40\u00b0C/75% RH) and the testing timepoints (e.g., 0, 3, 6, 9, 12 months).",
+      "expected_outcome": "Agent correctly configures the study parameters.",
+      "required_tools": [
+        "define_stability_protocol_conditions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Specify the tests to be performed at each timepoint and activate the protocol.",
+      "expected_outcome": "Agent links the required tests to the protocol, which will now automatically generate test requests at the scheduled intervals.",
+      "required_tools": [
+        "define_stability_protocol_tests",
+        "activate_stability_study"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

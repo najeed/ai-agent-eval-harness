@@ -1,0 +1,66 @@
+{
+  "scenario_id": "wholesale-om-13225",
+  "title": "Retailer Requests a Quote for a New Product",
+  "description": "A potential new customer requests a price quote for a large quantity of a specific product.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Quoting & Order Placement",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the product and the requested quantity.",
+      "expected_outcome": "Agent has the details of the request.",
+      "required_tools": [
+        "get_product_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the pricing tiers to determine if a volume discount applies.",
+      "expected_outcome": "Agent finds the quantity is large enough to qualify for a 10% discount.",
+      "required_tools": [
+        "get_pricing_tiers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a formal price quote, including the discount and estimated shipping costs.",
+      "expected_outcome": "Agent creates an accurate and professional quote.",
+      "required_tools": [
+        "generate_price_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send the quote to the potential customer.",
+      "expected_outcome": "Agent successfully emails the quote.",
+      "required_tools": [
+        "send_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

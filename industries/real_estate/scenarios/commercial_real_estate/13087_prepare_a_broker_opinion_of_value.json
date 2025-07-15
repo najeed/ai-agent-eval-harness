@@ -1,0 +1,67 @@
+{
+  "scenario_id": "real_estate-cre-13087",
+  "title": "Prepare a Broker Opinion of Value (BOV)",
+  "description": "A property owner wants to know the current market value of their small office building. They ask a commercial agent to prepare a BOV.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Market Analysis & Valuation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather information on the subject property, including its size, income, and expenses.",
+      "expected_outcome": "Agent has all necessary data on the property being valued.",
+      "required_tools": [
+        "get_property_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Research and select at least three recent, relevant sales comparables.",
+      "expected_outcome": "A list of strong comparable sales is compiled.",
+      "required_tools": [
+        "search_sales_comps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "search_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the property using both the income approach (cap rate) and the sales comparison approach to arrive at a final value estimate.",
+      "expected_outcome": "The agent uses multiple valuation methods to determine a credible value.",
+      "required_tools": [
+        "calculate_cap_rate",
+        "analyze_sales_comps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a professional BOV report detailing the analysis and present it to the owner.",
+      "expected_outcome": "The owner receives a comprehensive report explaining the property's estimated value.",
+      "required_tools": [
+        "generate_bov_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

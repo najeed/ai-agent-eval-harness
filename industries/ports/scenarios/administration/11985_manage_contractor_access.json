@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-af-11985",
+  "title": "Manage Contractor Access",
+  "description": "A third-party contractor needs temporary access to the port to perform work. The admin must issue a temporary pass.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Customer Service & Claims",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the access request from the contractor, including the names of their workers and the duration of the job.",
+      "expected_outcome": "Admin receives the list of workers who need access for one week.",
+      "required_tools": [
+        "get_access_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the contracting company has valid insurance on file.",
+      "expected_outcome": "Admin confirms the contractor's insurance is up to date.",
+      "required_tools": [
+        "check_contractor_compliance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue temporary access cards for the workers, valid only for the duration of the job.",
+      "expected_outcome": "Temporary ID cards with a one-week expiry date are created and issued.",
+      "required_tools": [
+        "issue_temporary_id_card"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

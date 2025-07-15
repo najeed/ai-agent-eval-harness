@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-rdq-10534",
+  "title": "Assign Training for Lab Analyst",
+  "description": "A new lab analyst needs to be trained on a specific analytical instrument (e.g., GC-MS) before they can test samples on it.",
+  "use_case": "R&D and Quality",
+  "core_function": "Quality Assurance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the new analyst's current training record in the training management system.",
+      "expected_outcome": "Agent finds the analyst has not yet been trained on the GC-MS.",
+      "required_tools": [
+        "get_employee_training_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign the 'GC-MS Operation and Maintenance' training module to the analyst.",
+      "expected_outcome": "Agent successfully assigns the required training course.",
+      "required_tools": [
+        "assign_training_module"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a hands-on training session with a senior analyst.",
+      "expected_outcome": "Agent notifies the senior analyst and schedules the practical training session.",
+      "required_tools": [
+        "send_notification",
+        "update_training_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

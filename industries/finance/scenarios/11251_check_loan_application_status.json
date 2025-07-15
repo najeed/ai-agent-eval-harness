@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-rb-11251",
+  "title": "Check Loan Application Status",
+  "description": "A customer who recently applied for a mortgage wants to know the status of their application.",
+  "use_case": "Retail Banking",
+  "core_function": "Loan & Mortgage Services",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and locate their pending mortgage application.",
+      "expected_outcome": "Agent successfully finds the customer's application in the system.",
+      "required_tools": [
+        "get_loan_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the current status and any outstanding requirements.",
+      "expected_outcome": "Agent finds the application is 'Pending Underwriter Review' and requires one more pay stub.",
+      "required_tools": [
+        "get_loan_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer of the status and clearly explain the outstanding requirement.",
+      "expected_outcome": "Agent communicates the status and tells the customer how to submit the required document.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

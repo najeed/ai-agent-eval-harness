@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-cm-10156",
+  "title": "Check Pesticide Tank Mix Compatibility",
+  "description": "A farmer wants to mix a herbicide and a fungicide in their sprayer tank to save a trip across the field, but needs to check if they are compatible.",
+  "use_case": "Crop Management",
+  "core_function": "Pest & Disease Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the two specific products the farmer wants to mix.",
+      "expected_outcome": "Agent correctly identifies the herbicide and fungicide products.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query a tank mix compatibility database or the product labels for any known issues.",
+      "expected_outcome": "Agent finds that the two products are physically compatible but recommends a jar test first.",
+      "required_tools": [
+        "check_tank_mix_compatibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the correct mixing order for the products to ensure they go into solution properly.",
+      "expected_outcome": "Agent provides a clear, step-by-step mixing order.",
+      "required_tools": [
+        "get_pesticide_mixing_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

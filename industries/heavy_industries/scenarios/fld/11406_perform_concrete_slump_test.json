@@ -1,0 +1,51 @@
+{
+  "scenario_id": "heavy-industries-fld-11406",
+  "title": "Perform Concrete Slump Test",
+  "description": "A concrete truck has arrived on site. A field inspector must perform a slump test to ensure the concrete meets the project's workability specifications before it can be poured.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Field Inspections & Testing",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the concrete mix design specification for the current pour.",
+      "expected_outcome": "Agent finds the spec, which calls for a slump between 3 and 5 inches.",
+      "required_tools": [
+        "get_technical_specification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform the physical slump test on a sample from the truck.",
+      "expected_outcome": "The inspector performs the test according to ASTM standards.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Measure the slump, record the result (e.g., '4.5 inches') in the daily inspection log, and approve the truck for pouring.",
+      "expected_outcome": "Agent logs the passing result and notifies the site supervisor that the pour can begin.",
+      "required_tools": [
+        "log_inspection_result",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

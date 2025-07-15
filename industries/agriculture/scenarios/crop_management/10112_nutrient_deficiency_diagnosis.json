@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10112",
+  "title": "Diagnose Nutrient Deficiency from Leaf Image",
+  "description": "A farmer uploads a picture of a soybean leaf that is yellowing. The agent must diagnose the nutrient deficiency.",
+  "use_case": "Crop Management",
+  "core_function": "Fertilization & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the image of the leaf, noting the pattern of chlorosis (yellowing).",
+      "expected_outcome": "Agent correctly identifies interveinal chlorosis on the upper leaves.",
+      "required_tools": [
+        "image_analysis_nutrient_deficiency"
+      ],
+      "success_criteria": [
+        {
+          "metric": "identification_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on the visual symptoms, diagnose the most likely nutrient deficiency.",
+      "expected_outcome": "Agent diagnoses a likely Iron (Fe) deficiency.",
+      "required_tools": [
+        "diagnose_nutrient_deficiency"
+      ],
+      "success_criteria": [
+        {
+          "metric": "diagnostic_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend a foliar fertilizer application to correct the deficiency and suggest a soil test to confirm the diagnosis.",
+      "expected_outcome": "Agent recommends a specific chelated iron fertilizer and advises on soil sampling.",
+      "required_tools": [
+        "get_fertilizer_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

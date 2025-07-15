@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-ehs-10570",
+  "title": "Update Waste Stream Profile",
+  "description": "A process change will introduce a new component into a waste stream. The EHS specialist must update the waste profile.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Waste Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the existing waste stream profile.",
+      "expected_outcome": "Agent pulls up the current profile, showing its composition and waste codes.",
+      "required_tools": [
+        "get_waste_stream_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the new component to the profile and re-evaluate the waste characteristics.",
+      "expected_outcome": "Agent adds the new component, which now makes the waste stream hazardous.",
+      "required_tools": [
+        "update_waste_stream_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the new, correct EPA waste code to the profile and notify the plant of the change in handling requirements.",
+      "expected_outcome": "Agent updates the waste code and sends a notification about the change.",
+      "required_tools": [
+        "update_waste_stream_profile",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10113",
+  "title": "Analyze Post-Harvest Yield Map",
+  "description": "After harvest, a farmer uploads a yield map from their combine. The agent needs to identify and explain areas of low yield.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Yield Forecasting & Mapping",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process and clean the raw yield map data, removing errors and outliers.",
+      "expected_outcome": "Agent produces a clean, accurate yield map.",
+      "required_tools": [
+        "clean_yield_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_processing_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify statistically significant low-yielding zones within the field.",
+      "expected_outcome": "Agent outlines specific polygons on the map indicating problem areas.",
+      "required_tools": [
+        "identify_yield_zones"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Correlate the low-yield zones with other data layers like soil type and topography to suggest a probable cause.",
+      "expected_outcome": "Agent determines the low-yield areas correspond with a sandy, low-lying part of the field, suggesting poor drainage was the cause.",
+      "required_tools": [
+        "correlate_farm_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

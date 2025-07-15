@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10588",
+  "title": "Review Operator Logbook Entries",
+  "description": "A production supervisor is reviewing the electronic logbook entries made by operators during the previous shift to check for any issues.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Plant Operations",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the electronic logbook for the specified production area.",
+      "expected_outcome": "Agent accesses the logbook.",
+      "required_tools": [
+        "get_operator_logbook"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the logbook to show all entries from the last 12 hours.",
+      "expected_outcome": "Agent successfully filters the log entries.",
+      "required_tools": [
+        "filter_logbook_entries"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the entries and identify a comment about a 'noisy pump' that may require follow-up from maintenance.",
+      "expected_outcome": "Agent reads the logs and flags one entry for follow-up by creating a low-priority maintenance request.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-fo-10177",
+  "title": "Pesticide Application Record Keeping",
+  "description": "After spraying a field, a farmer needs to create a legally compliant record of the application.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Financial Management & Compliance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all required information for the record: date, time, field name, product applied, application rate, weather conditions (wind speed/direction), and applicator name.",
+      "expected_outcome": "Agent collects all necessary data points.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a formal application record in the farm management system.",
+      "expected_outcome": "Agent successfully saves the record.",
+      "required_tools": [
+        "create_application_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the record meets all state and federal regulatory requirements.",
+      "expected_outcome": "Agent confirms the record is compliant.",
+      "required_tools": [
+        "check_record_compliance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

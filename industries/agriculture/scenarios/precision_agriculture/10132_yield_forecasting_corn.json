@@ -1,0 +1,67 @@
+{
+  "scenario_id": "ag-pa-10132",
+  "title": "Mid-Season Corn Yield Forecast",
+  "description": "An agronomist wants a yield forecast for a corn field based on current crop health imagery and weather data.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Yield Forecasting & Mapping",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest satellite imagery and historical yield data for the field.",
+      "expected_outcome": "Agent gathers all necessary historical and current data.",
+      "required_tools": [
+        "get_satellite_imagery",
+        "get_historical_yield_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the long-range weather forecast for the remainder of the growing season.",
+      "expected_outcome": "Agent gets the forecast until the typical harvest date.",
+      "required_tools": [
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a machine learning yield prediction model using the collected data.",
+      "expected_outcome": "The model predicts an average yield of 210 bushels per acre for the field.",
+      "required_tools": [
+        "run_yield_prediction_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a yield forecast map showing the predicted yield variation across the field.",
+      "expected_outcome": "Agent creates a map visualizing the yield predictions.",
+      "required_tools": [
+        "generate_yield_forecast_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

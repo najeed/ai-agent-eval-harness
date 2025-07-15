@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10293",
+  "title": "Provide Unaccompanied Minor (UM) Rules",
+  "description": "A parent is asking about the rules and fees for their child to fly alone as an unaccompanied minor.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Customer Support",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the airline's official policy for unaccompanied minors.",
+      "expected_outcome": "Agent finds the correct policy document.",
+      "required_tools": [
+        "get_um_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the age restrictions, eligible flights (e.g., no connections), and the UM service fee.",
+      "expected_outcome": "Agent clearly explains all rules and fees.",
+      "required_tools": [
+        "summarize_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the drop-off and pick-up procedures, including the requirement for the designated adults to show ID.",
+      "expected_outcome": "Agent provides a comprehensive overview of the process.",
+      "required_tools": [
+        "explain_procedure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

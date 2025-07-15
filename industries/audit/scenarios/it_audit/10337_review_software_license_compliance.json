@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10337",
+  "title": "Review Software License Compliance",
+  "description": "An IT auditor checks if the company is compliant with its software licensing agreements.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a report of all installed software from the IT asset management system.",
+      "expected_outcome": "Auditor has a list of all software installed on company devices.",
+      "required_tools": [
+        "get_installed_software_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain the purchase records for software licenses.",
+      "expected_outcome": "Auditor has a list of all licenses the company owns.",
+      "required_tools": [
+        "get_license_purchase_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the number of installations for a specific software (e.g., Adobe Photoshop) to the number of licenses purchased.",
+      "expected_outcome": "Auditor finds there are 150 installations but only 120 licenses, indicating a compliance gap.",
+      "required_tools": [
+        "compare_datasets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

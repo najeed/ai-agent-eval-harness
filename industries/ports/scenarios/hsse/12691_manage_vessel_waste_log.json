@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ports-hs-12691",
+  "title": "Manage a Vessel's Waste Log",
+  "description": "As part of an environmental inspection, an officer must check a vessel's garbage and oil record books for compliance.",
+  "use_case": "Health, Safety, Security & Environment (HSSE)",
+  "core_function": "Environmental Compliance",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Board a vessel to conduct a routine Port State Control inspection.",
+      "expected_outcome": "The officer boards the vessel for an inspection.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request to see the vessel's Oil Record Book and Garbage Record Book.",
+      "expected_outcome": "The vessel's Chief Officer provides the logbooks.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the books to ensure all waste disposal has been logged correctly and receipts from shore facilities are present.",
+      "expected_outcome": "The officer checks the logs and finds them to be in full compliance with MARPOL regulations.",
+      "required_tools": [
+        "review_compliance_logbook"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_verification",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

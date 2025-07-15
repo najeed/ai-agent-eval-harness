@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-ia-10386",
+  "title": "Audit for Management Override of Controls",
+  "description": "An auditor specifically designs tests to detect potential management override of internal controls.",
+  "use_case": "Internal Audit",
+  "core_function": "Testing & Analysis",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the journal entry log for entries posted directly by senior finance executives.",
+      "expected_outcome": "The analysis identifies several large, non-standard entries made by a VP of Finance.",
+      "required_tools": [
+        "get_journal_entry_log",
+        "analyze_journal_entries"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Interview the controller to ask about any instances where they were pressured to deviate from standard accounting policies.",
+      "expected_outcome": "The controller describes a situation where they were asked to delay the recognition of certain expenses.",
+      "required_tools": [
+        "conduct_interview"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review management's estimates for significant accounting areas (e.g., bad debt reserve) for any signs of bias.",
+      "expected_outcome": "The auditor notes that management's estimates are consistently aggressive and favorable to the company.",
+      "required_tools": [
+        "review_accounting_estimates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

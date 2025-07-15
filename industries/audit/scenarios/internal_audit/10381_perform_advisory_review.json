@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10381",
+  "title": "Perform an Advisory Review",
+  "description": "A business unit is planning a major new process and asks internal audit to perform an advisory review to identify potential risks upfront.",
+  "use_case": "Internal Audit",
+  "core_function": "Audit Planning & Scoping",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Meet with the project team to understand the goals and design of the new process.",
+      "expected_outcome": "The auditor understands the proposed process.",
+      "required_tools": [
+        "conduct_interview"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Facilitate a risk assessment workshop to identify potential control gaps or weaknesses in the proposed design.",
+      "expected_outcome": "The workshop identifies a potential lack of segregation of duties in the proposed workflow.",
+      "required_tools": [
+        "facilitate_workshop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a memo with recommendations for improving the control design before the process is implemented. (Note: In an advisory review, these are recommendations, not formal findings).",
+      "expected_outcome": "The project team receives valuable input to build a more controlled process from the start.",
+      "required_tools": [
+        "generate_advisory_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

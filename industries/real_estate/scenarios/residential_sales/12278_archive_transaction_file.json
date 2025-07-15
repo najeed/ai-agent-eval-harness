@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-12278",
+  "title": "Archive a Closed Transaction File",
+  "description": "A transaction has closed and funded. The agent must ensure all documents are in the file and archive it for compliance.",
+  "use_case": "Residential Sales",
+  "core_function": "Closing & Post-Sale",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify a transaction that closed more than 7 days ago.",
+      "expected_outcome": "Agent finds a recently closed transaction ready for archiving.",
+      "required_tools": [
+        "get_recently_closed_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a compliance check on the transaction file to ensure all required documents (e.g., contract, disclosures, closing statement) are present.",
+      "expected_outcome": "Agent uses a checklist to verify the file is complete.",
+      "required_tools": [
+        "run_compliance_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Change the status of the transaction file to 'Archived' in the transaction management system.",
+      "expected_outcome": "Agent successfully archives the file, making it read-only.",
+      "required_tools": [
+        "archive_transaction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-sm-10462",
+  "title": "Incorrect Part Delivered for Repair",
+  "description": "A technician discovers that the wrong part was delivered for a scheduled repair, delaying the job.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Repair & Maintenance Execution",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the incorrect part received and the correct part number from the repair order.",
+      "expected_outcome": "Agent confirms the wrong part was sent and identifies the correct part needed.",
+      "required_tools": [
+        "get_repair_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the parts department to arrange an emergency order for the correct part.",
+      "expected_outcome": "Agent places a 'STAT' order for the correct part.",
+      "required_tools": [
+        "order_part"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the customer to inform them of the delay and provide a new estimated completion time.",
+      "expected_outcome": "Agent proactively calls the customer to manage their expectations about the delay.",
+      "required_tools": [
+        "contact_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-sc-10625",
+  "title": "Verify Crane Operator Certification",
+  "description": "Before a critical lift, the safety officer must verify that the crane operator's certification is valid and on file.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Compliance & Permitting",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the personnel file for the scheduled crane operator.",
+      "expected_outcome": "The operator's file is retrieved from the HR system.",
+      "required_tools": [
+        "get_personnel_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the expiration date of their crane operator certification.",
+      "expected_outcome": "Agent confirms the certification is valid for another 6 months.",
+      "required_tools": [
+        "check_certification_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

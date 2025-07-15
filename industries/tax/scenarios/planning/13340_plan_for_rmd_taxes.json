@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-plan-13340",
+  "title": "Plan for Required Minimum Distribution (RMD) Taxes",
+  "description": "A retiree needs to take their first RMD from their traditional IRA and wants to plan for the income tax.",
+  "use_case": "Tax Planning & Advisory",
+  "core_function": "Individual & Family Planning",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the RMD amount based on the prior year-end IRA balance and the retiree's age.",
+      "expected_outcome": "Agent accurately calculates the required withdrawal amount.",
+      "required_tools": [
+        "calculate_rmd"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Estimate the retiree's total income for the year, including the RMD.",
+      "expected_outcome": "Agent projects the retiree's annual income.",
+      "required_tools": [
+        "project_annual_income"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the client on having federal income tax withheld from the RMD to cover the tax liability.",
+      "expected_outcome": "Agent recommends a specific percentage or dollar amount to withhold.",
+      "required_tools": [
+        "recommend_withholding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

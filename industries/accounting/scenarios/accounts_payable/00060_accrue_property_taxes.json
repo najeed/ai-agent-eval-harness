@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ac-ap-60",
+  "title": "Accrue Monthly Property Taxes",
+  "description": "Property taxes are paid twice a year, but for accurate monthly financial statements, the expense must be accrued each month.",
+  "use_case": "Accounts Payable",
+  "core_function": "Accruals & Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the total estimated annual property tax bill.",
+      "expected_outcome": "Agent finds the estimated annual tax is $240,000.",
+      "required_tools": [
+        "get_property_tax_estimate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the monthly property tax expense.",
+      "expected_outcome": "Agent correctly calculates the monthly expense of $20,000.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create and post the recurring monthly journal entry to debit 'Property Tax Expense' and credit 'Accrued Property Taxes'.",
+      "expected_outcome": "Agent posts the correct journal entry.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

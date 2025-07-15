@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-35",
+  "title": "Prepare a 13-Week Cash Flow Forecast",
+  "description": "The treasurer needs a 13-week direct cash flow forecast to manage liquidity and plan for potential borrowing needs.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Cash Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Forecast cash inflows by analyzing historical customer payment patterns and scheduled receipts.",
+      "expected_outcome": "Agent generates a weekly forecast of cash receipts.",
+      "required_tools": [
+        "forecast_cash_inflows"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Forecast cash outflows by analyzing scheduled vendor payments, payroll runs, and other recurring expenses.",
+      "expected_outcome": "Agent generates a weekly forecast of cash disbursements.",
+      "required_tools": [
+        "forecast_cash_outflows"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Combine the inflow and outflow forecasts to create a comprehensive 13-week cash flow projection.",
+      "expected_outcome": "Agent produces a report showing the projected weekly cash balance and any potential shortfalls.",
+      "required_tools": [
+        "generate_cash_flow_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

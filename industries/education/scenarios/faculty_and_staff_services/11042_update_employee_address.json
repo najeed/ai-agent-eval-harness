@@ -1,0 +1,48 @@
+{
+  "scenario_id": "education-fs-11042",
+  "title": "Employee Updates Home Address",
+  "description": "A staff member has moved and needs to update their home address for payroll and tax purposes.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "HR & Onboarding",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the employee and authenticate their identity.",
+      "expected_outcome": "Agent securely verifies the employee's identity.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the employee to the self-service section of the HR portal to update their address.",
+      "expected_outcome": "Agent provides clear instructions for the employee to make the change themselves.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm with the employee that the change was saved successfully.",
+      "expected_outcome": "Agent has the employee check that the new address is reflected in the portal.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

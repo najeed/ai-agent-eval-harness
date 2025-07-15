@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10252",
+  "title": "De-ice an Aircraft",
+  "description": "During winter operations, an aircraft has accumulated snow and ice on its wings and must be de-iced before departure.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Ramp & Turnaround Management",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The flight crew requests de-icing from the ground crew.",
+      "expected_outcome": "Ground crew receives and acknowledges the request.",
+      "required_tools": [
+        "receive_ground_service_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The de-icing truck sprays the aircraft's critical surfaces with de-icing fluid.",
+      "expected_outcome": "The de-icing procedure is performed correctly.",
+      "required_tools": [
+        "operate_deicing_truck"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The ground crew informs the flight crew of the type of fluid used and the start time of the final application, which determines the holdover time.",
+      "expected_outcome": "Ground crew provides the pilots with the necessary information for a safe takeoff.",
+      "required_tools": [
+        "send_notification_to_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

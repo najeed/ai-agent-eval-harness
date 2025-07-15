@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10549",
+  "title": "Author a New Analytical Test Method",
+  "description": "R&D has developed a new way to test for an impurity. A lab manager must formally document and approve this method in the LIMS.",
+  "use_case": "R&D and Quality",
+  "core_function": "Lab Information Management",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new test method document in the system.",
+      "expected_outcome": "Agent initiates a new, blank test method template.",
+      "required_tools": [
+        "create_test_method"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the step-by-step procedure for the new analytical method, including required reagents and instrument parameters.",
+      "expected_outcome": "Agent correctly documents the entire analytical procedure.",
+      "required_tools": [
+        "update_test_method"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the new method for review and approval by the lab director.",
+      "expected_outcome": "Agent successfully submits the method into the approval workflow.",
+      "required_tools": [
+        "submit_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

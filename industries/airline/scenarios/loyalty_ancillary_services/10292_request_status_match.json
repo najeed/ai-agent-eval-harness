@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10292",
+  "title": "Request a Status Match",
+  "description": "A frequent flyer who has elite status with a competing airline wants to request a status match with this airline.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Frequent Flyer Program",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the status match challenge requirements, such as providing proof of status with the other airline.",
+      "expected_outcome": "Agent clearly communicates the policy.",
+      "required_tools": [
+        "get_status_match_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the customer's proof of status (e.g., a screenshot of their account).",
+      "expected_outcome": "Agent receives the required documentation.",
+      "required_tools": [
+        "get_customer_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify the documentation and grant the customer a temporary, promotional elite status for a trial period.",
+      "expected_outcome": "Agent successfully grants the temporary status.",
+      "required_tools": [
+        "grant_promotional_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

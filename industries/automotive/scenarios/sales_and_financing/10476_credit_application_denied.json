@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-sf-10476",
+  "title": "Credit Application Denied",
+  "description": "A customer's credit application was denied. The agent must deliver the news and explain the next steps.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Financing & Leasing",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the credit application decision and the reason for the denial (e.g., low credit score, high debt-to-income ratio).",
+      "expected_outcome": "Agent finds the application was denied due to 'Insufficient Credit History'.",
+      "required_tools": [
+        "get_credit_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the customer and sensitively inform them of the denial.",
+      "expected_outcome": "Agent communicates the decision in a polite and professional manner.",
+      "required_tools": [
+        "contact_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain that they will receive an adverse action notice in the mail with details, and suggest options like adding a cosigner or providing a larger down payment.",
+      "expected_outcome": "Agent provides compliant information and helpful suggestions for how the customer might still be able to purchase a vehicle.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

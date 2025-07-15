@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10255",
+  "title": "Assist a Passenger with Reduced Mobility (PRM)",
+  "description": "A passenger who requested wheelchair assistance has arrived at the check-in desk. The agent must ensure they are assisted to the gate.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Gate & Boarding",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's booking and confirm their wheelchair assistance request (SSR code).",
+      "expected_outcome": "Agent verifies the pre-booked request.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the airport's special assistance provider to dispatch a wheelchair and an agent.",
+      "expected_outcome": "Agent successfully requests assistance.",
+      "required_tools": [
+        "request_special_assistance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Hand the passenger over to the special assistance agent, who will help them through security and to the departure gate.",
+      "expected_outcome": "The passenger is safely handed off for assistance.",
+      "required_tools": [
+        "handoff_passenger"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

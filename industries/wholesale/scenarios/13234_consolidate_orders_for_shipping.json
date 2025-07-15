@@ -1,0 +1,53 @@
+{
+  "scenario_id": "wholesale-im-13234",
+  "title": "Consolidate Multiple Orders for Shipping",
+  "description": "A single customer has placed multiple small orders that are all scheduled to ship on the same day. An agent needs to consolidate them into one shipment to save costs.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Picking, Packing, & Shipping",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all unshipped orders for a single customer with the same shipping date.",
+      "expected_outcome": "Agent finds three separate orders for the same customer.",
+      "required_tools": [
+        "get_unshipped_orders_by_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Merge the three orders into a single consolidated shipment.",
+      "expected_outcome": "Agent successfully merges the orders in the warehouse management system.",
+      "required_tools": [
+        "consolidate_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a single pick list and shipping label for the consolidated order.",
+      "expected_outcome": "Agent creates one pick list and one shipping label for the entire shipment.",
+      "required_tools": [
+        "generate_pick_list",
+        "generate_shipping_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10333",
+  "title": "Audit a Third-Party Logistics (3PL) Provider",
+  "description": "An operational auditor reviews the performance of the company's primary 3PL provider.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Vendor & Third-Party Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the SLA in the 3PL contract, focusing on the metrics for on-time delivery and order accuracy.",
+      "expected_outcome": "Auditor understands the performance standards the vendor is supposed to meet.",
+      "required_tools": [
+        "get_vendor_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the 3PL's performance reports for the last 12 months.",
+      "expected_outcome": "Auditor finds that on-time delivery has been below the SLA target of 98% for the last 4 months.",
+      "required_tools": [
+        "analyze_performance_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate any penalties or service credits due to the company as a result of the SLA breach.",
+      "expected_outcome": "Auditor determines the company is owed service credits and recommends they be claimed.",
+      "required_tools": [
+        "calculate_sla_penalty"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

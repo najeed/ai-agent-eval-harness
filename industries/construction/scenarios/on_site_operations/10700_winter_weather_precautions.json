@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-os-10700",
+  "title": "Implement Winter Weather Precautions",
+  "description": "With freezing temperatures forecast, a superintendent must implement winter weather precautions to protect the site and materials.",
+  "use_case": "On-Site Operations",
+  "core_function": "Daily Operations & Reporting",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Order and place concrete curing blankets on all recently poured concrete to prevent freezing.",
+      "expected_outcome": "Blankets are placed on all exposed concrete.",
+      "required_tools": [
+        "order_materials",
+        "dispatch_crew_for_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ensure any temporary water lines are drained to prevent them from bursting.",
+      "expected_outcome": "Water lines are drained.",
+      "required_tools": [
+        "dispatch_crew_for_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log all winter precaution activities in the daily log.",
+      "expected_outcome": "All actions taken are documented.",
+      "required_tools": [
+        "create_daily_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ac-fc-94",
+  "title": "Create an Accrual for a Legal Settlement",
+  "description": "The legal department has informed accounting that a lawsuit is likely to be settled for an estimated amount. An accrual must be recorded.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "General Ledger & Journal Entries",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the estimated settlement amount and likelihood from the legal department.",
+      "expected_outcome": "Agent receives notification that a settlement of $100,000 is probable.",
+      "required_tools": [
+        "get_legal_department_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on accounting standards (ASC 450), determine that an accrual is required because the loss is both probable and estimable.",
+      "expected_outcome": "Agent correctly applies the accounting standard.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create and post a journal entry to debit 'Legal Expense' and credit 'Accrued Legal Liabilities' for the estimated amount.",
+      "expected_outcome": "Agent posts the correct journal entry.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-ss-10036",
+  "title": "Handle a Launch Hold",
+  "description": "During a countdown, a sensor on the rocket's second stage reports an anomalous reading, forcing a launch hold. The director must manage the situation.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Launch Operations",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Announce a hold in the countdown and safe the vehicle's systems.",
+      "expected_outcome": "Agent issues the hold command and confirms the vehicle is in a safe state.",
+      "required_tools": [
+        "issue_launch_hold",
+        "safe_vehicle_systems"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch a team to troubleshoot the anomalous sensor.",
+      "expected_outcome": "Agent coordinates with the engineering team to diagnose the issue.",
+      "required_tools": [
+        "dispatch_engineering_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the team's findings, decide whether to resume the countdown or scrub the launch for the day.",
+      "expected_outcome": "The team finds a faulty sensor that can't be fixed quickly. Agent makes the decision to scrub the launch.",
+      "required_tools": [
+        "make_go_no_go_decision"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

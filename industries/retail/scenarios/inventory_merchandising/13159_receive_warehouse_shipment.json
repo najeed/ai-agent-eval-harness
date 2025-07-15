@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-im-13159",
+  "title": "Receive a Warehouse Shipment",
+  "description": "A backroom associate needs to receive a daily shipment of goods from the distribution center.",
+  "use_case": "Inventory & Merchandising",
+  "core_function": "Receiving & Restocking",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the barcode on the delivery manifest to pull up the shipment details in the inventory system.",
+      "expected_outcome": "The system displays the list of items and quantities expected in the shipment.",
+      "required_tools": [
+        "scan_shipment_manifest"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Unload the truck and scan the barcode on each carton received.",
+      "expected_outcome": "Each carton is scanned to confirm it has been received.",
+      "required_tools": [
+        "scan_carton"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Acknowledge receipt of the full shipment in the system, noting any discrepancies (e.g., a missing carton).",
+      "expected_outcome": "The store's inventory on-hand is increased by the received amounts, and the shipment is marked as 'Received'.",
+      "required_tools": [
+        "confirm_shipment_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

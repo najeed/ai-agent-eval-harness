@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-com-12222",
+  "title": "Conduct Due Diligence for Commercial Purchase",
+  "description": "A client is under contract to buy a small apartment building. The agent must manage the due diligence process.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Investment & Sales Analysis",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a due diligence checklist including items like reviewing all leases, service contracts, and financial statements.",
+      "expected_outcome": "Agent generates a comprehensive checklist for the transaction.",
+      "required_tools": [
+        "create_due_diligence_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request all necessary documents from the seller's agent.",
+      "expected_outcome": "Agent sends a formal request for all checklist items.",
+      "required_tools": [
+        "send_email_to_agent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Track the received documents and follow up on outstanding items before the due diligence period expires.",
+      "expected_outcome": "Agent maintains an organized tracking system and ensures all documents are received on time.",
+      "required_tools": [
+        "track_document_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10068",
+  "title": "Manage Life-Limited Parts (LLPs)",
+  "description": "A records administrator must track the flight cycles of an LLP (like a turbine disk) and ensure it is replaced before it expires.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Spares & Logistics",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the current flight cycles accumulated by the specific LLP from the maintenance tracking system.",
+      "expected_outcome": "Agent finds the part has accumulated 18,000 cycles.",
+      "required_tools": [
+        "get_llp_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the current cycles to the part's life limit (e.g., 20,000 cycles).",
+      "expected_outcome": "Agent determines the part is approaching its life limit.",
+      "required_tools": [
+        "get_part_life_limit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order to have the LLP replaced at the next scheduled maintenance check.",
+      "expected_outcome": "Agent schedules the replacement of the part before it expires.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

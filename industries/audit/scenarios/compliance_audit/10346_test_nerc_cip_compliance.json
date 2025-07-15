@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-cp-10346",
+  "title": "Test NERC CIP Compliance",
+  "description": "For an electric utility, a compliance auditor tests adherence to NERC CIP (Critical Infrastructure Protection) standards.",
+  "use_case": "Compliance & Regulatory Audit",
+  "core_function": "Regulatory Compliance Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the training records for all personnel with access to the critical cyber systems.",
+      "expected_outcome": "Auditor verifies that all required personnel have completed their annual security awareness training.",
+      "required_tools": [
+        "get_training_completion_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the logs for all remote access to the critical systems.",
+      "expected_outcome": "Auditor verifies that all remote access sessions used multi-factor authentication.",
+      "required_tools": [
+        "analyze_access_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform a physical inspection of the data center to ensure all access points are secured and access is logged.",
+      "expected_outcome": "Auditor finds that the visitor access log for the data center is not being consistently filled out.",
+      "required_tools": [
+        "perform_physical_inspection",
+        "review_access_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

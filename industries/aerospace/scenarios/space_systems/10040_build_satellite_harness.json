@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10040",
+  "title": "Build a Satellite Wiring Harness",
+  "description": "A technician needs to build a complex wiring harness that connects the satellite's main computer to its various subsystems.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Manufacturing & Integration",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Follow the wiring diagram to cut, strip, and crimp pins onto all the necessary wires.",
+      "expected_outcome": "Agent correctly prepares all wires according to the schematic.",
+      "required_tools": [
+        "get_wiring_diagram"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Insert the pinned wires into the correct locations in the multi-pin connectors.",
+      "expected_outcome": "Agent populates the connectors with 100% accuracy.",
+      "required_tools": [
+        "populate_connector"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform a continuity test on the completed harness to ensure there are no open circuits or short circuits.",
+      "expected_outcome": "Agent runs the test and confirms the harness passes all continuity checks.",
+      "required_tools": [
+        "run_continuity_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

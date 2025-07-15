@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-ro-13624",
+  "title": "Manage Yard Switching",
+  "description": "A yardmaster needs to create a switch list to instruct a crew on how to move railcars around the yard to build an outbound train.",
+  "use_case": "Rail Operations",
+  "core_function": "Yard & Terminal Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the outbound train that needs to be built.",
+      "expected_outcome": "Agent identifies the correct train consist.",
+      "required_tools": [
+        "get_train_consist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each railcar on the train, find its current location (track and position) in the yard.",
+      "expected_outcome": "The system provides the current location for all needed railcars.",
+      "required_tools": [
+        "find_railcar_in_yard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an optimized switch list that details the sequence of moves (pulls and spots) required to assemble the train.",
+      "expected_outcome": "An efficient work order for the switch crew is created.",
+      "required_tools": [
+        "generate_switch_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Assign the switch list to an available yard crew.",
+      "expected_outcome": "The work order is sent to the crew's mobile device.",
+      "required_tools": [
+        "assign_yard_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10013",
+  "title": "Resolve a Satellite Anomaly",
+  "description": "A satellite's telemetry shows it has unexpectedly entered safe mode. An operator must diagnose the cause and attempt to restore normal operations.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Operations & Control",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the safe mode alarm and retrieve the satellite's historical telemetry data leading up to the event.",
+      "expected_outcome": "Agent pulls the relevant telemetry logs.",
+      "required_tools": [
+        "get_telemetry_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to find the root cause, such as a single event upset (SEU) in a memory chip.",
+      "expected_outcome": "Agent correctly identifies the likely cause of the anomaly.",
+      "required_tools": [
+        "analyze_telemetry_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Follow the established procedure to send a command sequence to reboot the affected subsystem and return the satellite to its nominal operational mode.",
+      "expected_outcome": "Agent sends the correct command sequence to recover the satellite.",
+      "required_tools": [
+        "send_spacecraft_command"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

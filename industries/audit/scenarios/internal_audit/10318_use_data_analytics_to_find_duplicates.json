@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-ia-10318",
+  "title": "Use Data Analytics to Find Duplicate Payments",
+  "description": "An auditor uses data analytics to search for potential duplicate payments in the accounts payable ledger.",
+  "use_case": "Internal Audit",
+  "core_function": "Testing & Analysis",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a data dump of all vendor payments made in the last fiscal year.",
+      "expected_outcome": "Auditor receives the complete accounts payable data.",
+      "required_tools": [
+        "request_data_dump"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a data analytics script that searches for payments with the same vendor, same invoice number, and same dollar amount.",
+      "expected_outcome": "The script identifies 15 potential duplicate payments.",
+      "required_tools": [
+        "run_data_analytics_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Investigate the potential duplicates to confirm if they are true errors or legitimate payments, and document any confirmed duplicates as a finding.",
+      "expected_outcome": "Auditor confirms 4 of the payments were true duplicates and creates a finding.",
+      "required_tools": [
+        "investigate_payment_details",
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

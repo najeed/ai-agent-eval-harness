@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10144",
+  "title": "Count Livestock with a Drone",
+  "description": "A rancher has used a drone to take aerial photos of a large pasture and needs the agent to count the number of cattle.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Data Collection & Sensing",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Stitch the aerial images into a single orthomosaic map of the pasture.",
+      "expected_outcome": "Agent creates a complete map of the area.",
+      "required_tools": [
+        "stitch_drone_images"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_processing_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run an object detection model on the map to identify and count all the cattle.",
+      "expected_outcome": "The model identifies and counts 148 cattle in the pasture.",
+      "required_tools": [
+        "image_analysis_object_counting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the count to the expected number of cattle in that pasture from farm records and report any discrepancy.",
+      "expected_outcome": "Agent reports that the count of 148 matches the 150 expected, within a reasonable margin of error.",
+      "required_tools": [
+        "get_livestock_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

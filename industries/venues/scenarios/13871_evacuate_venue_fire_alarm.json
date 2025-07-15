@@ -1,0 +1,67 @@
+{
+  "scenario_id": "venues-vo-13871",
+  "title": "Evacuate Venue for Fire Alarm",
+  "description": "A fire alarm is triggered during an event, requiring a full venue evacuation.",
+  "use_case": "Venue Operations & Logistics",
+  "core_function": "Security & Emergency Response",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the fire alarm and confirm it is not a false alarm.",
+      "expected_outcome": "Agent confirms a legitimate alarm via CCTV or staff report.",
+      "required_tools": [
+        "get_system_alerts",
+        "monitor_cctv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Activate the emergency announcement system, instructing guests to evacuate calmly.",
+      "expected_outcome": "Agent plays the pre-recorded evacuation message over the PA system.",
+      "required_tools": [
+        "activate_pa_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch all staff to their assigned evacuation posts to direct guests.",
+      "expected_outcome": "Agent issues a command for all staff to proceed to their emergency positions.",
+      "required_tools": [
+        "dispatch_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Contact the local fire department and provide them with necessary information.",
+      "expected_outcome": "Agent calls 911 and informs the fire department of the alarm and the venue's status.",
+      "required_tools": [
+        "contact_emergency_services"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

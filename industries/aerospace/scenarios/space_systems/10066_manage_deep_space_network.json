@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10066",
+  "title": "Manage Deep Space Network (DSN) Time",
+  "description": "A mission planner needs to request and schedule time on the DSN to communicate with an interplanetary probe.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Operations & Control",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the required communication windows based on the probe's trajectory and mission events.",
+      "expected_outcome": "Agent identifies the critical timeframes when communication is needed.",
+      "required_tools": [
+        "get_mission_timeline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Submit a request to the DSN scheduling authority for antenna time during those windows.",
+      "expected_outcome": "Agent correctly fills out and submits the DSN time request form.",
+      "required_tools": [
+        "submit_dsn_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive the approved schedule from the DSN and update the mission's operational plan accordingly.",
+      "expected_outcome": "Agent incorporates the confirmed DSN passes into the mission plan.",
+      "required_tools": [
+        "update_mission_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

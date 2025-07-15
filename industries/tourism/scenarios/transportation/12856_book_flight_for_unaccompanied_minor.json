@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-12856",
+  "title": "Book a Flight for an Unaccompanied Minor",
+  "description": "A parent needs to book a flight for their 10-year-old child who will be traveling alone.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Itinerary Planning & Booking",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the airline's policy and fees for unaccompanied minors.",
+      "expected_outcome": "Agent clearly communicates the rules and costs associated with the service.",
+      "required_tools": [
+        "get_unaccompanied_minor_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the required information for the child, the parent dropping them off, and the adult picking them up.",
+      "expected_outcome": "Agent gathers all necessary contact and identification details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the flight and the unaccompanied minor service, and complete the required forms.",
+      "expected_outcome": "Agent successfully books the flight and service, providing the parent with a confirmation and completed forms.",
+      "required_tools": [
+        "book_flight",
+        "add_ancillary_service",
+        "generate_unaccompanied_minor_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

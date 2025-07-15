@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-11866",
+  "title": "File a Corporate Annual Report",
+  "description": "A corporate paralegal needs to file a company's annual report with the Secretary of State to keep it in good standing.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Corporate Governance & Compliance",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the deadline for filing the annual report.",
+      "expected_outcome": "Agent finds the correct filing deadline.",
+      "required_tools": [
+        "secretary_of_state_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather the required information, such as the names of current directors and officers.",
+      "expected_outcome": "Agent collects all necessary data.",
+      "required_tools": [
+        "company_database_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Complete and file the annual report form through the Secretary of State's online portal.",
+      "expected_outcome": "The annual report is successfully filed.",
+      "required_tools": [
+        "secretary_of_state_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

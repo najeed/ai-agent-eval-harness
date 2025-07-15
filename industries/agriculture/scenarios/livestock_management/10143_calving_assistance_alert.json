@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-lm-10143",
+  "title": "Calving Assistance Alert",
+  "description": "A sensor monitoring a pregnant cow's behavior indicates she has been in labor for an extended period, suggesting a difficult birth.",
+  "use_case": "Livestock Management",
+  "core_function": "Health & Welfare",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an alert for a prolonged labor event.",
+      "expected_outcome": "Agent identifies the cow and confirms the duration of labor from sensor data.",
+      "required_tools": [
+        "get_animal_health_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a high-priority alert to the rancher to immediately check on the cow.",
+      "expected_outcome": "Agent sends an SMS with the cow's ID and location.",
+      "required_tools": [
+        "send_sms_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a link to a video tutorial on how to assist with common calving difficulties.",
+      "expected_outcome": "Agent provides a relevant instructional resource.",
+      "required_tools": [
+        "get_instructional_video"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

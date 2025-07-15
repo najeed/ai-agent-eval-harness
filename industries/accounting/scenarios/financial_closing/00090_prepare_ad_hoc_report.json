@@ -1,0 +1,65 @@
+{
+  "scenario_id": "ac-fc-90",
+  "title": "Prepare an Ad-Hoc Financial Report",
+  "description": "A department manager wants a report showing their department's expenses for the last quarter, broken down by GL account.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Financial Reporting",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the ad-hoc report request.",
+      "expected_outcome": "Agent understands the user needs expense data for a specific department and timeframe.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the general ledger for all transactions matching the specified department and date range.",
+      "expected_outcome": "Agent retrieves all the relevant transactions.",
+      "required_tools": [
+        "get_gl_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Summarize the data by GL account.",
+      "expected_outcome": "Agent pivots the data to show total spend for each expense account.",
+      "required_tools": [
+        "summarize_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate and send the report to the manager.",
+      "expected_outcome": "Agent creates a spreadsheet with the requested data and emails it to the manager.",
+      "required_tools": [
+        "generate_report",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

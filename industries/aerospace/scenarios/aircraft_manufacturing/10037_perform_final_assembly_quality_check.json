@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10037",
+  "title": "Perform Final Assembly Quality Check",
+  "description": "Before an aircraft rolls out of the factory, a quality inspector must perform a final walk-around inspection to check for any defects.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Assembly & Production",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Follow a detailed checklist to inspect the aircraft's exterior for any cosmetic defects, such as scratches or dents.",
+      "expected_outcome": "Agent completes the exterior inspection checklist.",
+      "required_tools": [
+        "get_inspection_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all required placards and markings are correctly installed.",
+      "expected_outcome": "Agent confirms all placards are present and legible.",
+      "required_tools": [
+        "verify_placards"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document any findings and create a snag list of items to be rectified before the official rollout.",
+      "expected_outcome": "Agent finds a minor paint defect and adds it to the snag list.",
+      "required_tools": [
+        "create_snag_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

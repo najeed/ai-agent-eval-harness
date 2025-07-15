@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10145",
+  "title": "Assess Hail Damage Using Drone Imagery",
+  "description": "After a hailstorm, an insurance adjuster uses a drone to assess the percentage of crop damage in a field.",
+  "use_case": "Crop Management",
+  "core_function": "Harvesting & Logistics",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process high-resolution drone imagery of the damaged field.",
+      "expected_outcome": "Agent creates a high-resolution map of the field.",
+      "required_tools": [
+        "stitch_drone_images"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_processing_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the imagery to identify damaged plants and quantify the area of severe damage.",
+      "expected_outcome": "Agent's analysis shows that 35% of the field has suffered significant defoliation.",
+      "required_tools": [
+        "image_analysis_damage_assessment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report for the insurance claim, including the damage percentage and a map highlighting the affected areas.",
+      "expected_outcome": "Agent creates a formal report suitable for an insurance claim.",
+      "required_tools": [
+        "generate_damage_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

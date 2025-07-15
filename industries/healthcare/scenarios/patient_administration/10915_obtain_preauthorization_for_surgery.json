@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hc-pa-10915",
+  "title": "Obtain Preauthorization for Surgery",
+  "description": "A surgery scheduler needs to obtain preauthorization from a patient's insurance company for a scheduled procedure.",
+  "use_case": "Patient Administration",
+  "core_function": "Insurance & Eligibility Verification",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the patient, their insurance, and the CPT code for the planned surgery.",
+      "expected_outcome": "Agent gathers all necessary information for the authorization request.",
+      "required_tools": [
+        "get_patient_record",
+        "get_scheduled_procedure_codes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Submit the preauthorization request to the payer through their provider portal, attaching relevant clinical documentation.",
+      "expected_outcome": "Agent successfully submits the request with supporting documents.",
+      "required_tools": [
+        "submit_preauthorization_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive and document the authorization number in the patient's record.",
+      "expected_outcome": "Agent receives an approval and enters the authorization number into the EHR, clearing the procedure for billing.",
+      "required_tools": [
+        "document_authorization_number"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

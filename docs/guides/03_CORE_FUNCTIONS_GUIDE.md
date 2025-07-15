@@ -4,70 +4,288 @@
 To provide a more granular level of analysis, each scenario in this harness is tagged with a "core function" within its broader use case. This guide serves as a central reference for the defined functions across all industries.
 
 # Accounting Core Functions
+## Use Case: Accounts Payable (AP)
+* **Invoice Processing:** Scenarios focused on receiving, capturing, and validating vendor invoices. This includes data entry, 3-way matching (comparing invoice to purchase order and receiving report), and managing approvals.
+* **Payment Processing:** Scenarios related to scheduling and executing vendor payments. This includes managing payment runs, handling different payment methods (ACH, check, wire), and processing employee expense reimbursements.
+* **Vendor Management:** Scenarios involving the setup and maintenance of vendor master files. This includes adding new vendors, updating banking information, and managing vendor inquiries or disputes.
+* **Accruals & Reconciliation:** Scenarios covering the process of recording accrued expenses for goods and services received but not yet invoiced, and reconciling the AP sub-ledger to the general ledger.
 
+## Use Case: Accounts Receivable (AR)
+* **Billing & Invoicing:** Scenarios focused on generating and sending customer invoices. This includes calculating charges, applying correct sales tax, and managing recurring billing schedules.
+* **Cash Application:** Scenarios related to applying incoming customer payments to open invoices. This includes processing checks, matching electronic payments, and resolving short-pays or unapplied cash.
+* **Collections & Deductions:** Scenarios involving the management of overdue accounts. This includes sending payment reminders, managing dunning notices, and investigating and resolving customer deductions or disputes.
+* **Credit Management:** Scenarios focused on assessing the creditworthiness of new customers, setting credit limits, and managing holds on customer accounts.
+
+## Use Case: Financial Closing & Reporting
+* **General Ledger & Journal Entries:** Scenarios covering the recording of manual journal entries, managing recurring entries, and maintaining the chart of accounts and the integrity of the general ledger.
+* **Account Reconciliation:** Scenarios involving the reconciliation of balance sheet accounts (e.g., bank accounts, prepaid expenses, fixed assets) to supporting documentation to ensure accuracy.
+* **Period-End Close Management:** Scenarios focused on the process of closing the books for a period (month, quarter, year). This includes managing the closing checklist, performing consolidation of multiple entities, and handling intercompany transactions.
+* **Financial Reporting:** Scenarios related to the preparation and analysis of financial statements (Income Statement, Balance Sheet, Cash Flow Statement) and other management reports.
+
+## Use Case: Treasury & Payroll
+* **Cash Management:** Scenarios focused on monitoring daily cash positions, forecasting cash flow, and executing transfers to manage liquidity and optimize interest.
+* **Payroll Processing:** Scenarios covering the end-to-end process of paying employees. This includes processing timesheets, calculating wages and deductions, managing payroll taxes, and generating paychecks or direct deposits.
+* **Fixed Asset Management:** Scenarios involving the tracking of a company's fixed assets. This includes recording asset acquisitions and disposals, calculating and posting depreciation, and conducting physical inventory counts.
+* **Compliance & Cost Accounting:** Scenarios related to ensuring compliance with accounting standards (e.g., GAAP, IFRS), managing cost allocations, and performing product costing or inventory valuation.
 
 # Aerospace Core Functions
+## Use Case: Aircraft Manufacturing
+Design & Engineering: Scenarios related to conceptual aircraft design, systems engineering, aerodynamic modeling, stress analysis, and creating detailed engineering blueprints (CAD).
 
+Supply Chain & Procurement: Scenarios focused on sourcing and procuring aerospace-grade materials and components, managing supplier contracts and quality, and tracking the global supply chain for parts.
+
+Assembly & Production: Scenarios covering the management of the aircraft assembly line, including work order execution, structural assembly, systems integration (e.g., avionics, hydraulics), and quality assurance checkpoints.
+
+Testing & Certification: Scenarios involving ground-based systems testing, non-destructive testing (NDT), flight test planning and execution, and managing the extensive documentation required for certification with regulatory bodies like the FAA or EASA.
+
+## Use Case: Space Systems & Satellites
+Mission Design & Analysis: Scenarios related to defining mission objectives, performing orbital mechanics calculations, designing trajectories, and analyzing payload requirements for satellites, probes, or other spacecraft.
+
+Satellite Manufacturing & Integration: Scenarios covering the assembly of satellite buses, integration of scientific or communication payloads in a cleanroom environment, and comprehensive pre-launch testing.
+
+Launch Operations: Scenarios focused on the integration of a spacecraft with its launch vehicle, managing launch countdown procedures, monitoring vehicle and payload telemetry, and making real-time decisions during the launch sequence.
+
+Satellite Operations & Control: Scenarios involving the command and control of on-orbit satellites from a ground station, monitoring spacecraft health and telemetry, performing orbital maneuvers, and troubleshooting anomalies.
+
+## Use Case: Maintenance, Repair, and Overhaul (MRO)
+Maintenance Planning: Scenarios related to scheduling heavy maintenance checks (e.g., C-checks, D-checks), planning work packages, and ensuring compliance with airworthiness directives (ADs) and service bulletins (SBs).
+
+Component Repair & Overhaul: Scenarios focused on the disassembly, inspection, repair, and reassembly of complex aircraft components like engines, landing gear, and avionics units.
+
+Spares & Logistics: Scenarios covering the management of a global inventory of aircraft spare parts, forecasting demand, handling AOG (Aircraft on Ground) situations, and managing part traceability.
+
+Technical Documentation & Compliance: Scenarios involving the use and management of aircraft maintenance manuals (AMMs), documenting all maintenance actions, and ensuring the airworthiness and regulatory compliance of the aircraft.
 
 # Agriculture Core Functions
-## Use Case: Crop Farming & Production
-Field Preparation & Planting: Scenarios related to soil testing, tilling, applying pre-plant fertilizers or herbicides, and operating planters or seeders to sow crops.
+## Use Case: Crop Management
+Planting & Seeding: Scenarios related to planning and executing planting or seeding activities, including variety selection, calculating seed rates, and generating planting prescriptions.
 
-Crop Monitoring & Health: Scenarios involving in-field or remote scouting for pests, weeds, and diseases. This includes checking crop growth stages, assessing plant health, and diagnosing issues affecting yield.
+Irrigation Management: Scenarios focused on scheduling and optimizing irrigation, monitoring soil moisture levels, and managing water resources.
 
-Irrigation & Water Management: Scenarios focused on scheduling and operating irrigation systems (e.g., center pivots, drip lines), monitoring soil moisture levels, and managing water resource allocations.
+Fertilization & Nutrition: Scenarios covering the planning and application of fertilizers and other nutrients, including soil testing, creating variable rate prescriptions, and managing nutrient budgets.
 
-Harvesting & Post-Harvest: Scenarios covering the operation of harvesting equipment like combines, managing the logistics of moving grain from field to storage, and monitoring grain condition (e.g., temperature, moisture) in bins.
+Pest & Disease Management: Scenarios involving the identification, monitoring, and treatment of crop pests and diseases, including scouting, diagnosing issues, and recommending control measures.
+
+Harvesting & Logistics: Scenarios related to planning and executing harvest operations, including predicting optimal harvest times, managing harvesting equipment, and coordinating logistics.
 
 ## Use Case: Livestock Management
-Animal Health & Nutrition: Scenarios related to developing and managing feeding programs, administering vaccinations and medications, monitoring animal health for signs of illness, and consulting with veterinarians.
+Health & Welfare: Scenarios focused on monitoring animal health, diagnosing illnesses, managing vaccination schedules, and ensuring animal welfare standards are met.
 
-Breeding & Genetics: Scenarios focused on managing breeding programs, tracking animal lineage and performance data (e.g., birth weights, milk yield), performing artificial insemination, and selecting for desired genetic traits.
+Feeding & Nutrition: Scenarios related to formulating and distributing feed, managing nutritional plans for different growth stages, and optimizing feed efficiency.
 
-Daily Operations & Welfare: Scenarios covering routine tasks like milking, moving herds or flocks between pastures, checking feed and water supplies, and ensuring animal housing and welfare standards are met.
+Breeding & Genetics: Scenarios involving the management of breeding programs, tracking animal genetics and parentage, and selecting for desired traits.
 
-Livestock Marketing & Sales: Scenarios related to selling livestock at auction, direct to processors, or to other farms. This includes sorting animals for sale and arranging transportation.
+Milking & Production: Scenarios specific to dairy operations, covering milking schedules, monitoring milk yield and quality, and managing milking parlor equipment.
 
-## Use Case: Agribusiness & Sales
-Commodity Trading & Hedging: Scenarios involving the sale of harvested crops or livestock, analyzing commodity market prices, executing sales contracts, and using financial instruments like futures and options to hedge against price risk.
+## Use Case: Precision Agriculture
+Data Collection & Sensing: Scenarios focused on gathering data from various sources, including drones, satellites, in-field sensors, and IoT devices.
 
-Supply Chain & Logistics: Scenarios focused on coordinating the transportation of agricultural products from the farm to the buyer, which includes scheduling trucks or rail cars and managing shipping documentation.
+Analytics & Insights: Scenarios that involve analyzing farm data to identify trends, create management zones, and generate insights for decision-making.
 
-Procurement & Inventory: Scenarios related to purchasing essential farm inputs like seeds, fertilizer, chemicals, and feed. This also includes managing on-farm inventory of these inputs.
+Robotics & Automation: Scenarios related to the operation and management of autonomous equipment, such as robotic weeders, automated irrigation systems, or drones for spraying.
 
-Customer & Vendor Management: Scenarios covering relationship management with key business partners, such as grain elevators, food processors, equipment dealers, and input suppliers.
+Yield Forecasting & Mapping: Scenarios focused on creating yield predictions based on historical and real-time data, and generating post-harvest yield maps for analysis.
 
-## Use Case: Precision Agriculture & Technology
-Data Collection & Analysis: Scenarios involving the use of drones, in-field sensors, and satellite imagery to collect farm data. This includes analyzing yield maps, soil data, and imagery to identify trends and management zones.
+## Use Case: Farm Operations & Finance
+Equipment Management & Maintenance: Scenarios covering the maintenance, repair, and management of farm machinery and infrastructure, including scheduling service and tracking work orders.
 
-Variable Rate Application: Scenarios focused on creating and executing prescription maps to apply inputs (e.g., seed, fertilizer, lime, pesticides) at a variable rate across a field based on data analysis.
+Supply Chain & Inventory: Scenarios related to managing farm inputs (seeds, fertilizer, feed), tracking inventory levels, and selling farm products.
 
-Autonomous Operations: Scenarios related to the operation, monitoring, and path planning of autonomous or semi-autonomous farm equipment, such as tractors, sprayers, or drones.
+Financial Management & Compliance: Scenarios involving farm budgeting, managing loans, crop insurance, tracking expenses, and ensuring compliance with agricultural regulations and subsidies.
 
-Equipment Integration & Troubleshooting: Scenarios involving the integration of various technology systems (e.g., GPS receivers, yield monitors, implement controllers, farm management software) and troubleshooting connectivity or data flow issues.
-
-## Use Case: Farm Administration & Compliance
-Financial Management & Reporting: Scenarios related to farm budgeting, tracking income and field-level profitability, managing operating loans, and preparing financial statements for lenders or stakeholders.
-
-Regulatory Compliance & Audits: Scenarios focused on ensuring compliance with environmental regulations (e.g., nutrient management plans), food safety standards, and organic certification requirements. This includes preparing for and managing audits.
-
-Labor Management: Scenarios covering the hiring, training, scheduling, and management of farm labor. This includes tracking hours for payroll and ensuring compliance with labor laws.
-
-Land & Lease Management: Scenarios related to managing land rental agreements, tracking property taxes, and enrolling in and managing compliance with government agricultural programs (e.g., crop insurance, conservation programs).
+Labor Management: Scenarios focused on scheduling and managing farm labor, tracking hours, and ensuring compliance with labor laws.
 
 # Airline Core Functions
+## Use Case: Reservations & Customer Service
+Booking & Ticketing: Scenarios related to searching for flights, making new bookings for individuals or groups, applying payments, and issuing tickets.
 
+Post-Booking Services: Scenarios covering modifications to existing bookings, such as changing dates, selecting seats, adding special service requests (e.g., wheelchair, special meals), and upgrading travel class.
+
+Customer Support: Scenarios involving handling general customer inquiries, resolving complaints about service, processing refunds for cancelled flights, and providing information about travel policies.
+
+Disruption Management (Customer Facing): Scenarios focused on proactively notifying passengers of flight delays, cancellations, or gate changes, and re-booking them onto alternative flights.
+
+## Use Case: Airport & Ground Operations
+Check-in & Baggage: Scenarios related to the passenger check-in process (at the counter or kiosk), verifying travel documents (passports, visas), and accepting and tagging checked baggage.
+
+Gate & Boarding: Scenarios covering the management of the boarding process at the gate, including making announcements, handling seat assignments, managing upgrade and standby lists, and closing the flight.
+
+Baggage Handling & Resolution: Scenarios focused on the backend baggage process, including sorting and loading bags, as well as creating and managing claims for lost, delayed, or damaged baggage.
+
+Ramp & Turnaround Management: Scenarios involving the coordination of ground crew activities to prepare an aircraft for its next departure, such as aircraft pushback, fueling, catering, and loading/unloading cargo.
+
+## Use Case: Flight Operations
+Flight Planning & Dispatch: Scenarios related to creating the operational flight plan, which includes selecting the optimal route, calculating the required fuel load, and performing weight and balance calculations.
+
+Crew Management: Scenarios covering the scheduling and assignment of pilots and cabin crew to flights, ensuring compliance with flight time limitations and rest requirements, and managing last-minute crew changes.
+
+Operations Control (OCC): Scenarios focused on real-time flight monitoring, managing irregular operations (e.g., weather diversions, maintenance issues), and acting as the central point of communication for all operational matters.
+
+In-Flight Services & Safety: Scenarios related to the cabin crew's duties during a flight, including conducting safety briefings, providing food and beverage service, and responding to passenger needs or in-flight medical situations.
+
+## Use Case: Loyalty & Ancillary Services
+Frequent Flyer Program: Scenarios involving the management of loyalty program accounts, such as enrolling new members, redeeming miles for flights or upgrades, and handling missing mileage claims.
+
+Ancillary Revenue & Sales: Scenarios focused on selling additional products and services, such as excess baggage, preferred seating with extra legroom, in-flight Wi-Fi, and lounge access.
 
 # Audit Core Functions
+## Use Case: Internal Audit
+Audit Planning & Scoping: Scenarios related to defining the objectives, scope, risk assessment, and methodology for an internal audit engagement based on the annual audit plan.
 
+Fieldwork & Data Collection: Scenarios focused on gathering evidence through process walkthroughs, interviews with personnel, and requesting data and documentation from the business unit under review.
+
+Testing & Analysis: Scenarios involving the performance of tests of controls, substantive testing of transactions, and data analytics to identify anomalies, exceptions, or control weaknesses.
+
+Workpaper & Finding Documentation: Scenarios covering the detailed documentation of audit procedures, evidence gathered, and the drafting of potential audit findings, including condition, criteria, cause, and effect.
+
+Reporting & Remediation Tracking: Scenarios focused on drafting the formal audit report, communicating findings to management, obtaining management action plans, and tracking the implementation of those corrective actions.
+
+## Use Case: IT Audit
+IT General Controls (ITGC) Review: Scenarios assessing the fundamental controls of the IT environment, including logical access controls (e.g., user provisioning), change management processes, and IT operations (e.g., backups, job scheduling).
+
+Application Controls Testing: Scenarios focused on testing the automated controls embedded within specific business applications, such as input validations, processing calculations, and segregation of duties within the system.
+
+Cybersecurity & Privacy Audit: Scenarios evaluating the design and effectiveness of the organization's cybersecurity framework (e.g., NIST, ISO 27001), incident response plans, vulnerability management, and data privacy controls (e.g., GDPR, CCPA).
+
+System Development & Implementation Review: Scenarios involving the audit of major IT projects (pre- or post-implementation) to ensure they are managed effectively, meet business objectives, and have adequate controls built in.
+
+## Use Case: Operational & Performance Audit
+Process Efficiency Review: Scenarios that go beyond financial controls to analyze business processes for inefficiencies, waste, and opportunities for operational improvement. This includes mapping processes and identifying bottlenecks.
+
+Vendor & Third-Party Audit: Scenarios focused on assessing the risks associated with key vendors and third parties. This includes reviewing contracts, performance SLAs, and the vendor's own control environment (e.g., via a SOC report).
+
+Project & Program Audit: Scenarios involving the evaluation of large-scale, non-IT business projects to determine if they are on time, on budget, and achieving the expected benefits and strategic goals.
+
+## Use Case: Compliance & Regulatory Audit
+Regulatory Compliance Testing: Scenarios focused on auditing the organization's adherence to specific external laws and industry regulations (e.g., HIPAA for healthcare, NERC for energy, SOX for public companies).
+
+Policy & Procedure Adherence: Scenarios verifying that employees and departments are following the company's own internal policies and procedures.
+
+Quality Assurance Audit: Scenarios involving the review of operations or products against a defined quality management system or standard, such as ISO 9001 or Six Sigma.
 
 # Automotive Core Functions
 
+## Use Case: Vehicle Sales & Financing
+
+* **Sales Consultation & Configuration:** Scenarios focused on customer interaction during the sales process. This includes vehicle configuration, test drives, feature explanations, and providing quotes.
+
+* **Financing & Leasing:** Scenarios related to the financial aspects of acquiring a vehicle, including credit applications, loan calculations, lease term explanations, and processing financial paperwork.
+
+* **Trade-in & Appraisal:** Scenarios involving the assessment and valuation of a customer's existing vehicle for trade-in, including condition checks, and offer generation.
+
+* **Delivery & Handover:** Scenarios covering the final steps of a vehicle purchase, such as scheduling delivery, preparing the vehicle, explaining features to the new owner, and completing final paperwork.
+
+## Use Case: Service & Maintenance
+
+* **Appointment & Scheduling:** Scenarios focused on booking service appointments, managing service bay capacity, ordering parts in advance, and handling courtesy vehicles.
+
+* **Vehicle Diagnostics:** Scenarios involving the identification of vehicle issues, including interpreting diagnostic trouble codes (DTCs), running remote diagnostics, and analyzing vehicle performance data.
+
+* **Repair & Maintenance Execution:** Scenarios covering the hands-on repair and maintenance work, tracking technician time, updating repair orders, and documenting the work performed.
+
+* **Billing & Warranty Claims:** Scenarios related to generating service invoices, processing payments, determining warranty coverage, and submitting warranty claims to the manufacturer.
+
+## Use Case: Connected Services & In-Car Experience
+
+* **Subscription Management:** Scenarios focused on managing paid in-car services like real-time traffic, Wi-Fi hotspots, or premium infotainment features, including activation, renewal, and cancellation.
+
+* **Remote Vehicle Operations:** Scenarios involving the use of a mobile app or agent to remotely control vehicle functions like locking/unlocking doors, starting the engine, or locating the vehicle.
+
+* **Infotainment & App Support:** Scenarios for troubleshooting issues with the in-car infotainment system, including Bluetooth pairing, app connectivity, navigation problems, and user settings.
+
+* **Over-the-Air (OTA) Updates:** Scenarios related to managing and troubleshooting software updates that are delivered wirelessly to the vehicle, including scheduling, confirming installation, and handling failed updates.
+
+## Use Case: Manufacturing & Supply Chain
+
+* **Production Planning:** Scenarios focused on managing the vehicle assembly line schedule, responding to disruptions, and adjusting production targets based on demand or supply constraints.
+
+* **Supplier Management:** Scenarios involving interaction with parts suppliers, including placing orders, tracking shipments, managing supplier quality, and handling parts shortages.
+
+* **Logistics & Parts Tracking:** Scenarios related to the movement of parts and finished vehicles, including tracking inventory within the factory, managing warehouse logistics, and coordinating vehicle shipping.
+
+* **Quality Assurance:** Scenarios focused on ensuring vehicle quality during and after production, including running automated quality checks, documenting defects, and managing rectification campaigns.
+
+## Use Case: Customer Support & Roadside Assistance
+
+* **General Inquiries:** Scenarios covering general customer questions about vehicle features, specifications, and ownership that are not related to a specific fault or sale.
+
+* **Recall Management:** Scenarios involving the management of vehicle recalls, including notifying affected owners, checking a VIN for open recalls, and scheduling the required service.
+
+* **Emergency & Roadside Assistance:** Scenarios focused on providing immediate support to drivers in case of a breakdown, accident, or other emergency, including dispatching tow trucks or mobile technicians.
+
+* **Customer Feedback & Resolution:** Scenarios related to handling customer complaints, resolving non-technical issues, and escalating problems to ensure customer satisfaction.
 
 # Chemicals Core Functions
+## Use Case: Supply Chain & Logistics
+* **Raw Material Procurement:** Scenarios focused on sourcing, ordering, and managing the delivery of raw materials. This includes supplier qualification, purchase order management, and handling supply disruptions.
 
+* **Inventory Management:** Scenarios related to tracking, storing, and managing levels of raw materials, intermediates, and finished products. This covers stock reconciliation, shelf-life management, and optimizing stock levels.
+
+* **Logistics & Distribution:** Scenarios covering the transportation and delivery of chemical products. This includes carrier selection, shipment tracking, hazardous materials (HazMat) shipping compliance, and managing bulk vs. packaged transport.
+
+* **Demand & Supply Planning:** Scenarios focused on forecasting customer demand, planning production runs accordingly, and ensuring supply chain continuity to meet market needs.
+
+## Use Case: Manufacturing & Operations
+* **Production Scheduling:** Scenarios involving the planning and scheduling of manufacturing campaigns on specific equipment like reactors and blending tanks, considering sequence, clean-out times, and capacity.
+
+* **Process Optimization:** Scenarios focused on analyzing batch data to improve yield, reduce cycle time, or enhance product quality. This includes troubleshooting process deviations and implementing control plan changes.
+
+* **Maintenance Management:** Scenarios related to the upkeep of plant equipment. This covers scheduling preventative maintenance, responding to equipment breakdowns, and managing spare parts inventory.
+
+* **Plant Operations:** Scenarios covering the real-time execution of production tasks by plant operators. This includes following batch instructions, recording process parameters, and managing in-process additions.
+
+## Use Case: R&D and Quality
+* **Formulation & Product Development:** Scenarios focused on the research and development of new products or the modification of existing ones. This includes creating new formulations and managing experimental batches.
+
+* **Quality Assurance (QA):** Scenarios involving the review and approval of batch records, ensuring compliance with cGMP (current Good Manufacturing Practices), releasing finished products, and managing deviations.
+
+* **Lab Information Management:** Scenarios related to the testing of samples in a quality control lab. This includes managing test queues, recording results in a LIMS (Laboratory Information Management System), and instrument calibration.
+
+* **Sample Management:** Scenarios covering the lifecycle of physical samples, including logging incoming samples, tracking their location and status in the lab, and managing retain samples.
+
+## Use Case: EHS & Compliance (Environment, Health, Safety)
+* **Incident Management:** Scenarios focused on reporting, investigating, and resolving environmental or safety incidents, such as spills, injuries, or process safety events.
+
+* **Regulatory Compliance:** Scenarios related to adhering to regulations from bodies like the EPA, OSHA, and REACH. This includes managing permits, preparing compliance reports, and conducting audits.
+
+* **Waste Management:** Scenarios covering the classification, handling, and disposal of hazardous and non-hazardous waste streams in compliance with regulations.
+
+* **Safety Data Sheet (SDS) Management:** Scenarios involving the creation, updating, and distribution of Safety Data Sheets for all chemical products to ensure hazard communication compliance.
+
+## Use Case: Commercial & Sales
+* **Order Management:** Scenarios covering the end-to-end process of a customer order, from initial receipt and inventory check, to fulfillment and invoicing.
+
+* **Technical Support:** Scenarios where a customer requires technical information about a product, such as application guidance, troubleshooting product issues, or requesting a Certificate of Analysis (CoA).
+
+* **Pricing & Quoting:** Scenarios focused on generating price quotes for customers, considering factors like volume, contract terms, and raw material cost fluctuations.
+
+* **Customer Relationship Management:** Scenarios related to managing customer accounts, handling complaints (non-technical), and onboarding new clients.
+        
 
 # Construction Core Functions
+## Use Case: Project Management
+* **Project Planning & Scheduling:** Scenarios involving the creation, modification, and tracking of project timelines, milestones, and dependencies using tools like Gantt charts.
+* **Resource Management:** Scenarios focused on the allocation and tracking of labor, equipment, and materials to specific tasks and project phases to ensure availability and prevent delays.
+* **Risk & Issue Management:** Scenarios covering the identification, assessment, and mitigation of project risks (e.g., weather, supply chain), as well as the resolution of unforeseen issues that arise during construction.
+* **Budgeting & Cost Control:** Scenarios related to estimating project costs, tracking actual spending against the budget, forecasting final costs, and managing financial performance.
+
+## Use Case: On-Site Operations
+* **Daily Operations & Reporting:** Scenarios involving the creation of daily logs, tracking site progress against the schedule, documenting weather conditions, recording crew attendance, and managing site access.
+* **Material & Equipment Logistics:** Scenarios focused on ordering materials, tracking deliveries, managing inventory on-site, and coordinating heavy equipment usage, maintenance, and certification.
+* **Quality & Punch Lists:** Scenarios related to conducting quality control inspections against specifications, documenting defects or non-conformance, and managing the punch list (list of remaining work) for project closeout.
+* **Task Execution & Coordination:** Scenarios that cover the assignment of specific tasks to crews, coordinating work between different trades (e.g., electrical and plumbing), and verifying task completion.
+
+## Use Case: Safety & Compliance
+* **Safety Management:** Scenarios involving the documentation and immediate response to safety incidents or near-misses, conducting safety meetings (toolbox talks), and managing worker safety certifications.
+* **Compliance & Permitting:** Scenarios focused on ensuring adherence to local, state, and federal regulations (e.g., building codes, environmental standards) and managing the lifecycle of required permits.
+* **Documentation & Reporting:** Scenarios related to generating and filing compliance reports (e.g., OSHA logs), managing safety documentation (e.g., SDS sheets), and preparing for regulatory inspections.
+* **Hazard Analysis:** Scenarios that cover the proactive identification of potential site hazards, creation of Job Hazard Analyses (JHAs), and implementation of preventative safety measures.
+
+## Use Case: Commercial & Contract Management
+* **Contract Administration:** Scenarios involving the management of prime contracts and subcontracts, including document control, official correspondence, and ensuring compliance with all contractual obligations.
+* **Change Order Management:** Scenarios focused on the end-to-end process of documenting, pricing, submitting, and getting approval for changes to the project scope, schedule, or cost.
+* **Billing & Invoicing:** Scenarios related to preparing progress billings for the client (pay applications) based on work completed and processing incoming invoices from subcontractors and suppliers.
+* **Submittals & RFIs:** Scenarios covering the management of submittals (e.g., material data, shop drawings) for architect/engineer approval and handling Requests for Information (RFIs) to clarify plans or specifications.
 
 
 # Consulting Core Functions
@@ -204,6 +422,45 @@ Abandoned Cart Recovery: Scenarios focused on identifying and following up on ab
 
 # Education Core Functions
 
+## Use Case: Student Administration
+
+* **Admissions & Enrollment:** Scenarios focused on the entire lifecycle of a prospective student, from initial inquiry and application processing to acceptance and final enrollment confirmation.
+
+* **Registration & Course Management:** Scenarios related to student course registration, managing waitlists, processing drop/add requests, and handling prerequisite checks.
+
+* **Student Records & Transcripts:** Scenarios involving the management of student academic records, processing transcript requests, updating personal information, and verifying graduation eligibility.
+
+* **Financial Aid & Billing:** Scenarios covering student financial matters, including processing financial aid applications (e.g., FAFSA), managing scholarships, generating tuition bills, and setting up payment plans.
+
+## Use Case: Academic Support
+
+* **Learning Management System (LMS) Support:** Scenarios focused on assisting students and faculty with the use of online learning platforms (e.g., Canvas, Moodle, Blackboard), such as troubleshooting login issues, submitting assignments, or setting up gradebooks.
+
+* **Tutoring & Academic Advising:** Scenarios involving scheduling tutoring sessions, connecting students with academic advisors, tracking academic progress, and managing academic intervention plans.
+
+* **Library & Research Services:** Scenarios related to assisting students and faculty with library resources, including searching databases, reserving materials, accessing digital archives, and providing research assistance.
+
+* **Disability & Accessibility Services:** Scenarios focused on managing accommodations for students with disabilities, such as arranging for note-takers, scheduling proctored exams with extra time, and ensuring digital materials are accessible.
+
+## Use Case: Faculty & Staff Services
+
+* **HR & Onboarding:** Scenarios covering faculty and staff employment processes, including onboarding new hires, managing benefits enrollment, processing payroll inquiries, and handling contract renewals.
+
+* **IT & Classroom Tech Support:** Scenarios related to providing technical support to faculty and staff for campus IT systems, including email, network access, and troubleshooting classroom technology (e.g., projectors, smartboards).
+
+* **Curriculum Development & Management:** Scenarios focused on the process of proposing, approving, and updating academic courses and programs, including managing curriculum catalogs and ensuring alignment with accreditation standards.
+
+* **Grant & Research Administration:** Scenarios involving the administrative support for academic research, such as processing grant proposals, managing research funds, and ensuring compliance with funding agency regulations.
+
+## Use Case: Campus Life & Operations
+
+* **Housing & Residential Life:** Scenarios related to on-campus housing, including managing housing applications, processing room assignments, handling maintenance requests for dorms, and managing resident advisor duties.
+
+* **Campus Safety & Security:** Scenarios involving the response to campus incidents, managing access control systems (e.g., key cards), issuing emergency alerts, and dispatching campus security personnel.
+
+* **Event & Facilities Management:** Scenarios focused on scheduling and managing the use of campus facilities, such as booking classrooms for events, coordinating audio/visual support, and managing event logistics.
+
+* **Alumni Relations & Development:** Scenarios related to engaging with university alumni, including updating contact information, managing fundraising campaigns, sending newsletters, and organizing alumni events.
 
 # Energy Core Functions
 ## Use Case: Renewable Project Development
@@ -316,10 +573,90 @@ Health Risk Assessment: Scenarios that involve identifying at-risk patient popul
 
 Reporting & Analytics: Scenarios covering the generation of reports on clinical quality measures, financial performance, and population health metrics to support administrative and clinical decision-making.
 
+# Heavy Industries Core Functions
+
+## Use Case: Project Management & Controls
+* **Project Planning & Scheduling:** Scenarios focused on creating and managing project timelines, defining work breakdown structures (WBS), and scheduling resources and equipment for large-scale projects (e.g., construction, mining operations).
+* **Cost Engineering & Control:** Scenarios related to estimating project costs, managing budgets, tracking expenditures, and forecasting final project costs.
+* **Contract & Procurement Management:** Scenarios covering the management of large contracts with suppliers and subcontractors, including bid evaluation, contract administration, and managing purchase orders for heavy equipment and materials.
+* **Project Reporting & Communication:** Scenarios focused on generating progress reports, communicating status updates to stakeholders, and documenting key project decisions and milestones.
+
+## Use Case: Engineering & Design
+* **Technical Specification Management:** Scenarios involving the creation, review, and approval of detailed technical specifications and design documents for structures, equipment, and systems.
+* **Design & Simulation:** Scenarios focused on using CAD/CAE software for detailed design work, performing structural or process simulations, and resolving design clashes.
+* **Document Control:** Scenarios related to managing the lifecycle of engineering drawings and documents, including version control, approval workflows, and distribution to relevant teams.
+* **Quality Engineering:** Scenarios involving the application of quality principles to design, including failure mode and effects analysis (FMEA), material selection, and defining inspection and testing plans (ITPs).
+
+## Use Case: Field Operations & Execution
+* **Site Management & Logistics:** Scenarios covering the day-to-day management of a worksite, including coordinating personnel, managing laydown areas, and ensuring the timely delivery of materials and equipment.
+* **Construction & Assembly:** Scenarios focused on the physical execution of work in the field, such as erecting steel, pouring concrete, installing large equipment, or managing drilling and blasting operations in mining.
+* **Field Inspections & Testing:** Scenarios related to performing on-site inspections and non-destructive testing (NDT) to verify that work complies with engineering specifications and quality standards.
+* **Safety & Permitting:** Scenarios involving the implementation of site safety plans, conducting safety briefings (e.g., toolbox talks), managing work permits (e.g., hot work, confined space), and ensuring environmental compliance.
+
+## Use Case: Asset & Maintenance Management
+* **Asset Commissioning:** Scenarios focused on the final stages of a project, including system testing, punch list management, and the formal handover of a new facility or piece of equipment to the owner.
+* **Maintenance Planning & Execution:** Scenarios related to the long-term maintenance of heavy assets, including planning major shutdowns/turnarounds, executing preventative maintenance routines, and responding to breakdowns.
+* **Reliability Engineering:** Scenarios focused on analyzing asset performance data to identify sources of failure, predict remaining useful life, and develop strategies to improve equipment reliability and uptime.
+* **Inventory & Spares Management:** Scenarios involving the management of critical spare parts for heavy machinery, including setting inventory levels, tracking usage, and procuring new spares.
+
+
 # Hospitality Core Functions
+## Use Case: Guest Services & Front Office
+* **Reservations & Booking:** Scenarios focused on creating, modifying, and canceling guest room reservations.
+* **Check-in & Check-out:** Scenarios covering the guest arrival and departure processes, including identity verification, payment processing, and room assignment.
+* **Guest Inquiries & Concierge:** Scenarios related to assisting guests with requests, such as booking tours, making dinner reservations, or providing local information.
+* **Billing & Folio Management:** Scenarios involving the management of guest bills, including posting charges, handling disputes, and processing payments.
+
+## Use Case: Housekeeping & Maintenance
+* **Room Status & Cleaning:** Scenarios focused on managing the cleaning of guest rooms, updating room statuses (e.g., clean, dirty, inspected), and responding to specific cleaning requests.
+* **Maintenance Requests:** Scenarios involving the creation, assignment, and completion of work orders for repairs within the hotel (e.g., leaky faucet, broken TV).
+* **Lost & Found:** Scenarios covering the logging, storing, and returning of items left behind by guests.
+* **Inventory Management:** Scenarios related to managing the stock of operational supplies, such as linens, cleaning chemicals, and guest amenities.
+
+## Use Case: Food & Beverage (F&B)
+* **Restaurant Reservations:** Scenarios focused on managing table bookings for the hotel's restaurants, including taking reservations, managing waitlists, and assigning tables.
+* **Order Taking & Service:** Scenarios covering the process of taking food and drink orders, processing them through a POS system, and handling service-related issues.
+* **Room Service:** Scenarios specifically related to taking and delivering in-room dining orders.
+* **Event & Banquet Management:** Scenarios involving the planning and execution of events, from creating Banquet Event Orders (BEOs) to managing F&B for large groups.
+
+## Use Case: Sales & Marketing
+* **Group & Event Sales:** Scenarios focused on selling room blocks and event space to corporate or social groups, including sending proposals and negotiating contracts.
+* **Loyalty Program Management:** Scenarios related to managing the hotel's loyalty program, including enrolling new members, redeeming points, and handling account issues.
+* **Promotions & Upselling:** Scenarios involving the creation of special offers and the practice of upselling guests to higher room categories or additional services.
+* **Guest Feedback & Reviews:** Scenarios focused on soliciting and responding to guest feedback, including post-stay surveys and online review sites.
+
+## Use Case: Back Office & Administration
+* **Staff Scheduling:** Scenarios related to creating and managing employee schedules, handling time-off requests, and finding coverage for shifts.
+* **Supplier & Vendor Management:** Scenarios involving the hotel's relationship with its suppliers, including processing invoices, onboarding new vendors, and negotiating contracts.
+* **Financial Reporting:** Scenarios covering the generation of key financial reports, such as the daily revenue report, and processes like the night audit.
+* **Security & Emergency Response:** Scenarios focused on ensuring the safety and security of guests and staff, including responding to alarms, investigating incidents, and handling emergencies.
 
 
 # Human Resources Core Functions
+
+## Use Case: Talent Acquisition
+* **Requisition Management:** Scenarios focused on creating, approving, and managing job requisitions in partnership with hiring managers.
+* **Sourcing & Screening:** Scenarios related to finding active and passive candidates, reviewing resumes and applications, and conducting initial screening calls.
+* **Interview & Selection:** Scenarios involving the coordination of interviews, gathering feedback from interview panels, and managing the offer process, including background checks and offer letter generation.
+* **Onboarding:** Scenarios covering the process of converting a candidate to an employee, including new hire paperwork (e.g., I-9, W-4), system access provisioning, and first-day orientation logistics.
+
+## Use Case: Employee Management
+* **Payroll & Compensation:** Scenarios involving the processing of payroll, managing salary adjustments, administering bonuses or commissions, and handling off-cycle payments.
+* **Benefits Administration:** Scenarios focused on managing employee benefits, including open enrollment, qualifying life events, and answering questions about health insurance, retirement plans, and other benefits.
+* **Time & Attendance:** Scenarios related to managing employee work hours, processing time-off requests (PTO, sick leave), and handling leave of absence administration (e.g., FMLA, parental leave).
+* **Performance Management:** Scenarios covering the performance review cycle, managing promotions and transfers, creating performance improvement plans (PIPs), and goal setting.
+
+## Use Case: Employee & Labor Relations
+* **Employee Inquiries & Grievances:** Scenarios focused on serving as the first point of contact for employee questions about policies, resolving workplace conflicts, and managing formal grievance procedures.
+* **Disciplinary Actions:** Scenarios involving the investigation of misconduct, issuing disciplinary warnings, and managing the process for employee suspensions or terminations.
+* **Policy & Compliance:** Scenarios related to maintaining and communicating HR policies, ensuring compliance with labor laws (e.g., FLSA, ADA), and managing mandatory reporting (e.g., EEO-1).
+* **Offboarding:** Scenarios covering the separation process for departing employees, including conducting exit interviews, processing final paychecks, and managing the return of company property.
+
+## Use Case: HR Operations & Strategy
+* **HRIS Management:** Scenarios involving the maintenance and administration of the Human Resources Information System (HRIS), including data entry, user access control, and system configuration.
+* **Reporting & Analytics:** Scenarios focused on generating standard and ad-hoc reports on HR metrics such as headcount, turnover, diversity, and compensation analysis.
+* **Learning & Development:** Scenarios related to managing the company's training programs, including course enrollment, tracking completion of mandatory training, and administering tuition reimbursement programs.
+* **Workforce Planning:** Scenarios covering strategic activities like analyzing talent gaps, succession planning for key roles, and managing restructuring or reorganization efforts.
 
 
 # Insurance Core Functions
@@ -965,40 +1302,40 @@ Compliance & Risk Assessment: Scenarios related to proactively identifying poten
 
 # Telecom Core Functions
 ## Use Case: Customer Service
-Billing and Payments: Scenarios involving the explanation of charges, handling payment disputes, processing payments, and managing billing cycles.
+* **Billing and Payments:** Scenarios involving the explanation of charges, handling payment disputes, processing payments, and managing billing cycles.
 
-Plan Management: Scenarios focused on customer-initiated changes to their service plans, such as upgrades, downgrades, and adding or removing features (e.g., data packs, international calling).
+* **Plan Management:** Scenarios focused on customer-initiated changes to their service plans, such as upgrades, downgrades, and adding or removing features (e.g., data packs, international calling).
 
-Account Administration: Scenarios related to the management of a customer's account details, including updating addresses, changing security settings, and adding or removing authorized users.
+* **Account Administration:** Scenarios related to the management of a customer's account details, including updating addresses, changing security settings, and adding or removing authorized users.
 
-Service Lifecycle: Scenarios that cover major service events like reporting outages, handling service cancellation requests, and retention efforts.
+* **Service Lifecycle:** Scenarios that cover major service events like reporting outages, handling service cancellation requests, and retention efforts.
 
 ## Use Case: Technical Support
-Mobile Device Troubleshooting: Scenarios focused on diagnosing and resolving issues with mobile handsets, including signal problems, data connectivity, SIM card errors, and device-specific settings.
+* **Mobile Device Troubleshooting:** Scenarios focused on diagnosing and resolving issues with mobile handsets, including signal problems, data connectivity, SIM card errors, and device-specific settings.
 
-Broadband and Fixed-Line Support: Scenarios involving home or business internet, landlines, or other fixed services. This includes connectivity issues, slow speeds, and hardware setup (modems/routers).
+* **Broadband and Fixed-Line Support:** Scenarios involving home or business internet, landlines, or other fixed services. This includes connectivity issues, slow speeds, and hardware setup (modems/routers).
 
-Value-Added Service Support: Scenarios for services beyond basic connectivity, such as troubleshooting IPTV, streaming applications, voicemail, or other digital add-ons.
+* **Value-Added Service Support:** Scenarios for services beyond basic connectivity, such as troubleshooting IPTV, streaming applications, voicemail, or other digital add-ons.
 
-Advanced Diagnostics: Scenarios that require the agent to guide a user through complex, multi-step diagnostic procedures or interpret detailed remote diagnostic data.
+* **Advanced Diagnostics:** Scenarios that require the agent to guide a user through complex, multi-step diagnostic procedures or interpret detailed remote diagnostic data.
 
 ## Use Case: Sales & Onboarding
-New Customer Acquisition: Scenarios covering the full process of signing up a new customer, from initial plan recommendations and coverage checks to creating a new account.
+* **New Customer Acquisition:** Scenarios covering the full process of signing up a new customer, from initial plan recommendations and coverage checks to creating a new account.
 
-Upselling and Cross-selling: Scenarios where the agent attempts to increase the value of an existing account by offering hardware upgrades, additional service lines, or premium features.
+* **Upselling and Cross-selling:** Scenarios where the agent attempts to increase the value of an existing account by offering hardware upgrades, additional service lines, or premium features.
 
-Onboarding and Activation: Scenarios focused on the initial experience of a new customer, including activating a new device or service and explaining the first bill.
+* **Onboarding and Activation:** Scenarios focused on the initial experience of a new customer, including activating a new device or service and explaining the first bill.
 
-Competitive Port-in: Scenarios that specifically handle the process of a customer transferring their existing phone number from a competing carrier.
+* **Competitive Port-in:** Scenarios that specifically handle the process of a customer transferring their existing phone number from a competing carrier.
 
 ## Use Case: Network Operations
-Fault Management: Scenarios involving the detection, diagnosis, and resolution of failures in network hardware or software, such as a cell tower going offline.
+* **Fault Management:** Scenarios involving the detection, diagnosis, and resolution of failures in network hardware or software, such as a cell tower going offline.
 
-Performance Management: Scenarios focused on proactively monitoring and optimizing the network, including managing traffic congestion and ensuring quality of service.
+* **Performance Management:** Scenarios focused on proactively monitoring and optimizing the network, including managing traffic congestion and ensuring quality of service.
 
-Network Provisioning: Scenarios related to the configuration and deployment of new network elements, such as activating a new cell site or router.
+* **Network Provisioning:** Scenarios related to the configuration and deployment of new network elements, such as activating a new cell site or router.
 
-Security Operations: Scenarios that involve responding to network security threats, such as DDoS attacks, identifying fraudulent activity, or investigating security alerts.
+* **Security Operations:** Scenarios that involve responding to network security threats, such as DDoS attacks, identifying fraudulent activity, or investigating security alerts.
 
 # Tourism Core Functions
 ## Use Case: Hospitality & Accommodations

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hosp-fb-11550",
+  "title": "Guest Requests Room Service Tray Pickup",
+  "description": "A guest calls to have their used room service tray removed from their room.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Room Service",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Thank the guest and confirm their room number.",
+      "expected_outcome": "The agent gets the correct room number.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a task in the system for a room service attendant to retrieve the tray.",
+      "expected_outcome": "A new task is created and dispatched.",
+      "required_tools": [
+        "hms_create_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the guest that someone will be there shortly.",
+      "expected_outcome": "The agent sets a clear expectation with the guest.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

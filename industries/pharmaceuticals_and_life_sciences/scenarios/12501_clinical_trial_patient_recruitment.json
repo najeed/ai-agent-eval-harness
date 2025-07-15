@@ -1,0 +1,52 @@
+{
+  "scenario_id": "pharma-ct-12501",
+  "title": "Identify Patients for Clinical Trial",
+  "description": "An agent must query a database of electronic health records (EHR) to identify potentially eligible patients for an upcoming Phase 3 clinical trial for a new diabetes drug.",
+  "use_case": "Clinical Trials",
+  "core_function": "Patient Recruitment & Enrollment",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the inclusion and exclusion criteria from the clinical trial protocol.",
+      "expected_outcome": "Agent correctly extracts key criteria such as 'Type 2 Diabetes diagnosis', 'A1C between 7.5 and 9.0', and 'no history of pancreatitis'.",
+      "required_tools": [
+        "get_trial_protocol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Construct a query to search the de-identified EHR database based on the protocol criteria.",
+      "expected_outcome": "Agent builds a query that correctly filters for the specified diagnosis, lab values, and contraindications.",
+      "required_tools": [
+        "query_ehr_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "query_construction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a list of potential patient IDs for the clinical site to review.",
+      "expected_outcome": "Agent produces a list of candidate IDs without revealing any PII.",
+      "required_tools": [
+        "generate_patient_candidate_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

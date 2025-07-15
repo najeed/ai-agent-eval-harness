@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-im-13238",
+  "title": "Manage Stock Transfer Between Warehouses",
+  "description": "A distribution center on the East Coast is low on stock for an item, while the West Coast center has a surplus. An agent must arrange a stock transfer.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Inventory Control",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the inventory imbalance between the two warehouses.",
+      "expected_outcome": "Agent confirms one warehouse has a surplus and the other has a deficit.",
+      "required_tools": [
+        "get_inventory_by_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a stock transfer order in the inventory management system.",
+      "expected_outcome": "Agent creates an order to move 500 units from the West Coast to the East Coast.",
+      "required_tools": [
+        "create_stock_transfer_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange for freight transportation for the transfer.",
+      "expected_outcome": "Agent books a truck to move the goods between warehouses.",
+      "required_tools": [
+        "book_freight_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

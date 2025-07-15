@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10180",
+  "title": "Detect Crop Water Stress from Thermal Imagery",
+  "description": "A farmer uses a thermal camera on a drone to detect water stress in a potato field before it's visible to the naked eye.",
+  "use_case": "Crop Management",
+  "core_function": "Irrigation Management",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process the thermal imagery from the drone.",
+      "expected_outcome": "Agent creates a temperature map of the crop canopy.",
+      "required_tools": [
+        "process_thermal_imagery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_processing_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify areas where the crop canopy temperature is significantly higher than the ambient air temperature, indicating water stress.",
+      "expected_outcome": "Agent highlights specific zones in the field where plants are running hot.",
+      "required_tools": [
+        "identify_canopy_temperature_stress"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.97
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend targeted irrigation for the stressed zones to prevent yield loss.",
+      "expected_outcome": "Agent suggests a variable rate irrigation plan.",
+      "required_tools": [
+        "generate_irrigation_prescription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

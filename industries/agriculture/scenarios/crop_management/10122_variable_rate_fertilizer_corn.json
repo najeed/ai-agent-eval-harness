@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-cm-10122",
+  "title": "Variable Rate Nitrogen Prescription for Corn",
+  "description": "Based on satellite imagery showing crop health, a farmer wants to create a variable rate prescription for a top-dress nitrogen application.",
+  "use_case": "Crop Management",
+  "core_function": "Fertilization & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest NDVI (Normalized Difference Vegetation Index) satellite image for the field.",
+      "expected_outcome": "Agent retrieves and displays the NDVI map.",
+      "required_tools": [
+        "get_satellite_imagery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create management zones based on the NDVI values (low, medium, high biomass).",
+      "expected_outcome": "Agent generates a map with 3 distinct nitrogen management zones.",
+      "required_tools": [
+        "create_management_zones"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a variable rate nitrogen prescription, applying more N to the lower-scoring zones and less to the higher-scoring zones.",
+      "expected_outcome": "Agent creates a downloadable prescription file for a fertilizer spreader.",
+      "required_tools": [
+        "generate_fertilizer_prescription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

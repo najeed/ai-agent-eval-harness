@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-bo-11558",
+  "title": "Reconcile a Cash Drawer",
+  "description": "At the end of a shift, a front desk agent needs to reconcile their cash drawer.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Financial Reporting",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a report from the PMS showing all cash transactions processed during the shift.",
+      "expected_outcome": "The report shows total cash receipts of $500.",
+      "required_tools": [
+        "pms_generate_cash_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Physically count the cash in the drawer.",
+      "expected_outcome": "The physical count is $505.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the physical count to the system report and document any variance.",
+      "expected_outcome": "The agent documents a $5 'overage' on the reconciliation form.",
+      "required_tools": [
+        "acct_log_cash_variance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

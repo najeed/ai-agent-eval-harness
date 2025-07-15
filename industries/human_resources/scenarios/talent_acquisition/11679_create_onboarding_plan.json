@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-ta-11679",
+  "title": "Create a 30-60-90 Day Onboarding Plan",
+  "description": "A hiring manager wants HR's help to create a structured 30-60-90 day plan for their new hire.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Onboarding",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Provide the manager with a standard 30-60-90 day plan template.",
+      "expected_outcome": "HRBP sends the manager the template document.",
+      "required_tools": [
+        "send_document_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult with the manager to customize the template with role-specific goals and milestones.",
+      "expected_outcome": "HRBP and manager work together to define key objectives for the new hire's first 90 days.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload the completed plan to the new hire's profile in the performance management system.",
+      "expected_outcome": "HRBP saves the final plan to the employee's record for future reference.",
+      "required_tools": [
+        "upload_document_to_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

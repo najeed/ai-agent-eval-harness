@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-cc-10635",
+  "title": "Client Approves a Change Order",
+  "description": "A client reviews a change order for a new patio and approves it.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Change Order Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the client's approval for the pending change order.",
+      "expected_outcome": "The approval is received and logged.",
+      "required_tools": [
+        "receive_client_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the status of the change order to 'Approved' in the project management system.",
+      "expected_outcome": "The change order status is updated.",
+      "required_tools": [
+        "update_change_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the total project budget to include the cost of the approved change order.",
+      "expected_outcome": "The project budget is increased by the value of the change order.",
+      "required_tools": [
+        "update_project_budget"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

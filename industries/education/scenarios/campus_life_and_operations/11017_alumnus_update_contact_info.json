@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-co-11017",
+  "title": "Alumnus Updates Contact Information",
+  "description": "An alumnus calls to update their home address and employer information to stay connected with the university.",
+  "use_case": "Campus Life & Operations",
+  "core_function": "Alumni Relations & Development",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the alumnus in the alumni database.",
+      "expected_outcome": "Agent successfully locates the alumnus record.",
+      "required_tools": [
+        "get_alumnus_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the new address and employment details from the alumnus.",
+      "expected_outcome": "Agent accurately records the new information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the alumnus's record in the development CRM.",
+      "expected_outcome": "Agent successfully updates the record in the system.",
+      "required_tools": [
+        "update_alumnus_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10509",
+  "title": "Manage New Product Formulation",
+  "description": "An R&D chemist needs to create a new formulation for an experimental product in the formulation management system.",
+  "use_case": "R&D and Quality",
+  "core_function": "Formulation & Product Development",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new product code and name for the experimental material.",
+      "expected_outcome": "Agent successfully creates a new, unique product identifier.",
+      "required_tools": [
+        "create_product_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the formulation components and their target percentages into the system.",
+      "expected_outcome": "Agent creates a new formulation recipe with 4 components, totaling 100%.",
+      "required_tools": [
+        "create_formulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Define the required in-process and final quality tests for the new product.",
+      "expected_outcome": "Agent successfully links 5 quality tests (e.g., viscosity, pH, solids content) to the new product specification.",
+      "required_tools": [
+        "define_product_testing_spec"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

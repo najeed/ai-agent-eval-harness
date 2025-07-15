@@ -1,0 +1,49 @@
+{
+  "scenario_id": "auto-sf-10452",
+  "title": "Lease vs. Buy Analysis",
+  "description": "A customer is undecided between leasing or financing a new car and wants to understand the financial differences.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Financing & Leasing",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather information on the customer's expected annual mileage and how long they typically keep a car.",
+      "expected_outcome": "Agent learns the customer drives ~12,000 miles/year and likes a new car every 3 years.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a sample monthly payment for a 36-month lease and a 60-month finance contract for the same vehicle.",
+      "expected_outcome": "Agent generates two clear payment scenarios.",
+      "required_tools": [
+        "calculate_lease_payment",
+        "calculate_finance_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the pros and cons of each option based on the customer's habits (e.g., lower payments and no long-term commitment with leasing vs. building equity with financing).",
+      "expected_outcome": "Agent provides a clear, unbiased comparison to help the customer make an informed decision.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

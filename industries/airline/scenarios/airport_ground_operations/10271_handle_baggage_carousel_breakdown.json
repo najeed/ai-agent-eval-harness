@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10271",
+  "title": "Handle a Baggage Carousel Breakdown",
+  "description": "The baggage carousel for an arriving flight has broken down. A ground operations agent must manage the situation.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Baggage Handling & Resolution",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Notify the airport's maintenance team of the breakdown.",
+      "expected_outcome": "Agent reports the issue to maintenance.",
+      "required_tools": [
+        "contact_airport_maintenance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Make an announcement to passengers at the carousel, informing them of the issue and directing them to an alternate carousel.",
+      "expected_outcome": "Agent makes a clear announcement to passengers.",
+      "required_tools": [
+        "make_pa_announcement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate with the baggage handlers to move all the bags from the broken carousel to the new one.",
+      "expected_outcome": "Agent ensures all bags are moved to the correct location for passenger pickup.",
+      "required_tools": [
+        "coordinate_baggage_handlers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

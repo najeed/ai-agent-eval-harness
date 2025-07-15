@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-fs-11029",
+  "title": "Submit a Grant Proposal",
+  "description": "A researcher needs assistance with the final submission of a federal grant proposal through the university's sponsored programs office.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "Grant & Research Administration",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the researcher and the grant proposal details.",
+      "expected_outcome": "Agent locates the pending proposal in the administration system.",
+      "required_tools": [
+        "get_grant_proposal_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a final review of the proposal against the funding agency's requirements checklist.",
+      "expected_outcome": "Agent verifies that all required sections and signatures are present.",
+      "required_tools": [
+        "validate_grant_proposal_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Officially submit the grant proposal through the federal government's online portal on behalf of the university.",
+      "expected_outcome": "Agent successfully submits the proposal and logs the confirmation number.",
+      "required_tools": [
+        "submit_federal_grant"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-ago-10298",
+  "title": "Handle a VIP Passenger",
+  "description": "A VIP (e.g., a celebrity or high-profile government official) is traveling. Ground staff must provide special handling.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Check-in & Baggage",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the VIP notification in the booking.",
+      "expected_outcome": "Agent is aware of the VIP's travel.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Arrange for a special services agent to meet the passenger kerbside and escort them through a private check-in and security line.",
+      "expected_outcome": "Agent arranges for an escort.",
+      "required_tools": [
+        "arrange_vip_escort"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Allow the VIP to pre-board the aircraft before other passengers.",
+      "expected_outcome": "Agent facilitates pre-boarding for the VIP.",
+      "required_tools": [
+        "facilitate_pre_boarding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

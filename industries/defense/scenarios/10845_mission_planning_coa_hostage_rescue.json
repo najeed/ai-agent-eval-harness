@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-mp-10845",
+  "title": "Course of Action Analysis for Hostage Rescue",
+  "description": "A planner must compare two COAs for a hostage rescue: a stealthy nighttime insertion vs. a rapid daylight assault.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Course of Action (COA) Analysis",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Develop detailed plans for both the stealth and daylight assault COAs.",
+      "expected_outcome": "Planner creates two distinct and complete mission plans.",
+      "required_tools": [
+        "develop_course_of_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the risks for each COA, focusing on the risk to the hostages and the rescue force.",
+      "expected_outcome": "Planner accurately assesses that the daylight assault is faster but carries higher risk to the hostages.",
+      "required_tools": [
+        "assess_mission_risk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_assessment_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the stealthy nighttime COA as it maximizes the element of surprise and hostage safety.",
+      "expected_outcome": "Planner makes a well-reasoned recommendation based on the primary goal of hostage safety.",
+      "required_tools": [
+        "generate_coa_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_justification_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

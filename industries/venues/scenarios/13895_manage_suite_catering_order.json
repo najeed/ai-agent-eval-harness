@@ -1,0 +1,65 @@
+{
+  "scenario_id": "venues-sh-13895",
+  "title": "Manage a Suite Catering Order",
+  "description": "A suite holder wants to place their food and beverage order for an upcoming event.",
+  "use_case": "Sales & Hospitality",
+  "core_function": "Premium Seating & Suite Sales",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Send the suite catering menu to the client.",
+      "expected_outcome": "Agent emails the menu.",
+      "required_tools": [
+        "send_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the completed order from the client.",
+      "expected_outcome": "Agent receives the list of desired food and beverage items.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place the order with the catering department.",
+      "expected_outcome": "Agent submits the order to catering.",
+      "required_tools": [
+        "place_catering_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send a confirmation and the invoice for the order to the client.",
+      "expected_outcome": "Agent confirms the order and sends the bill.",
+      "required_tools": [
+        "send_email_notification",
+        "generate_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

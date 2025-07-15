@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-rc-11800",
+  "title": "Process Adverse Event Report from Patient",
+  "description": "An agent must process a telephoned-in adverse event (AE) report from a patient, ensuring all necessary information is captured for regulatory reporting.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Pharmacovigilance & Safety Reporting",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the patient and the drug product involved.",
+      "expected_outcome": "Agent correctly identifies the patient (or reporter) and the specific drug, including lot number if available.",
+      "required_tools": [
+        "search_patient_database",
+        "search_product_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Capture the details of the adverse event, including symptoms, date of onset, and severity, using a structured intake form.",
+      "expected_outcome": "Agent accurately captures all required fields in the safety database.",
+      "required_tools": [
+        "create_adverse_event_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assess the event for seriousness and expectedness against the product's reference safety information.",
+      "expected_outcome": "Agent correctly flags the event as 'serious' and 'unexpected'.",
+      "required_tools": [
+        "get_reference_safety_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Initiate a follow-up request for more medical information if necessary.",
+      "expected_outcome": "Agent successfully generates a follow-up query to be sent to the patient's HCP.",
+      "required_tools": [
+        "generate_follow_up_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

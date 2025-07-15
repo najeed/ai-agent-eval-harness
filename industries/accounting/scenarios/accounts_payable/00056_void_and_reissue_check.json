@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-ap-56",
+  "title": "Void and Reissue a Lost Vendor Check",
+  "description": "A vendor reports that they never received a check that was mailed to them. The accountant needs to void the original check and reissue a new one.",
+  "use_case": "Accounts Payable",
+  "core_function": "Payment Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the original check in the system using the check number or invoice number.",
+      "expected_outcome": "Agent finds the record of the original payment.",
+      "required_tools": [
+        "get_payment_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Place a stop payment on the original check with the bank.",
+      "expected_outcome": "Agent successfully issues a stop payment request.",
+      "required_tools": [
+        "issue_stop_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Void the original check in the accounting system.",
+      "expected_outcome": "Agent successfully voids the payment, which reopens the original invoice.",
+      "required_tools": [
+        "void_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Issue a new check for the same invoice and mail it to the vendor.",
+      "expected_outcome": "Agent processes a new payment and generates a new check.",
+      "required_tools": [
+        "execute_payment_run"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

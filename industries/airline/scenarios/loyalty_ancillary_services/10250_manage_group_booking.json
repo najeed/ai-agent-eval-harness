@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10250",
+  "title": "Manage a Group Booking",
+  "description": "The leader of a group booking needs to submit the final list of passenger names.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Corporate & Group Sales",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the group booking record.",
+      "expected_outcome": "Agent finds the correct group booking.",
+      "required_tools": [
+        "get_group_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the list of names from the group leader.",
+      "expected_outcome": "Agent gets the passenger list.",
+      "required_tools": [
+        "get_passenger_names"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add each passenger's name to the booking record.",
+      "expected_outcome": "Agent successfully updates the booking with all the names.",
+      "required_tools": [
+        "add_names_to_group_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

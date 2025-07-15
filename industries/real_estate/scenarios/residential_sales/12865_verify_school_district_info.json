@@ -1,0 +1,50 @@
+{
+  "scenario_id": "realestate-rs-12865",
+  "title": "Verify School District Information",
+  "description": "A buyer client's primary concern is being in a specific high school's attendance zone. The agent must verify this for a property.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Valuation & Market Analysis",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the full address of the property in question.",
+      "expected_outcome": "Agent has the property address.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the official school district's address lookup tool to determine the assigned schools.",
+      "expected_outcome": "Agent enters the address into the district's web tool and gets the assigned elementary, middle, and high schools.",
+      "required_tools": [
+        "search_school_district_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a screenshot or link from the official source to the client and advise them to independently verify.",
+      "expected_outcome": "Agent shares the official information with the client while providing a disclaimer about final verification.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

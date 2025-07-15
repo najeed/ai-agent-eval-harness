@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ar-30",
+  "title": "Set Up a Recurring Billing Schedule",
+  "description": "A new customer has signed up for a monthly subscription service. AR needs to set them up on a recurring billing schedule.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Billing & Invoicing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the new customer contract with the subscription details.",
+      "expected_outcome": "Agent gets the contract specifying a $500 monthly fee.",
+      "required_tools": [
+        "get_customer_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a recurring billing plan in the ERP system for the customer.",
+      "expected_outcome": "Agent sets up a plan to automatically generate a $500 invoice on the 1st of each month.",
+      "required_tools": [
+        "create_recurring_billing_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the schedule is active and the first invoice will be generated on the correct date.",
+      "expected_outcome": "Agent verifies the setup in the system.",
+      "required_tools": [
+        "get_billing_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

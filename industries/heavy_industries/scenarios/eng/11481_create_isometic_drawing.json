@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-eng-11481",
+  "title": "Create a Piping Isometric Drawing",
+  "description": "A piping designer needs to create an isometric drawing (iso) for a single pipeline, which will be used by the fabrication shop.",
+  "use_case": "Engineering & Design",
+  "core_function": "Design & Simulation",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the pipeline from the 3D model.",
+      "expected_outcome": "Agent correctly selects the specific pipeline to be detailed.",
+      "required_tools": [
+        "select_pipeline_in_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the automatic iso generation tool.",
+      "expected_outcome": "The system automatically generates an isometric drawing of the pipeline.",
+      "required_tools": [
+        "generate_isometric_drawing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add any necessary annotations or dimensions to the drawing and submit it for checking.",
+      "expected_outcome": "The designer cleans up the drawing, adds required notes, and submits it for review.",
+      "required_tools": [
+        "annotate_drawing",
+        "submit_drawing_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ac-fc-74",
+  "title": "Reconcile Unbilled Receivables Account",
+  "description": "A professional services firm needs to reconcile its 'Unbilled Receivables' or 'Work in Progress' (WIP) account at month-end.",
+  "use_case": "Financial Closing & Reporting",
+  "core_function": "Account Reconciliation",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a WIP report showing all unbilled time and materials for all active projects as of month-end.",
+      "expected_outcome": "Agent generates the detailed WIP report.",
+      "required_tools": [
+        "run_wip_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the month-end balance for the 'Unbilled Receivables' account from the general ledger.",
+      "expected_outcome": "Agent gets the GL balance.",
+      "required_tools": [
+        "get_gl_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the total of the WIP report to the general ledger balance and investigate any discrepancies.",
+      "expected_outcome": "Agent confirms the balances match, validating the revenue accrual process.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

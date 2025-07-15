@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ac-pt-24",
+  "title": "Conduct a Physical Fixed Asset Inventory",
+  "description": "As part of an annual audit, the company needs to perform a physical count of its fixed assets (e.g., laptops, machinery) and compare it to the asset register.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Fixed Asset Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all active assets from the fixed asset register, including asset ID, description, and location.",
+      "expected_outcome": "Agent produces the complete asset listing.",
+      "required_tools": [
+        "generate_fixed_asset_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide a mobile interface for employees to scan the barcode on each physical asset and confirm its location and condition.",
+      "expected_outcome": "Agent provides a tool that allows for efficient physical counting.",
+      "required_tools": [
+        "enable_mobile_asset_scanning"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the physical count data against the asset register to identify any missing or misplaced assets.",
+      "expected_outcome": "Agent generates a reconciliation report showing 5 missing laptops.",
+      "required_tools": [
+        "reconcile_physical_asset_count"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Draft the necessary adjustments to write off the missing assets.",
+      "expected_outcome": "Agent proposes the journal entry to write off the cost and accumulated depreciation of the missing assets.",
+      "required_tools": [
+        "propose_asset_write_off_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

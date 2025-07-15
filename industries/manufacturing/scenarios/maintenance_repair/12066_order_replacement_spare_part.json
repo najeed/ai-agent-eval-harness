@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-mr-12066",
+  "title": "Order a Replacement Spare Part",
+  "description": "After using the last spare motor in stock, a technician needs to order a replacement to replenish the inventory.",
+  "use_case": "Maintenance & Repair",
+  "core_function": "Asset & Spares Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the part number and supplier for the motor.",
+      "expected_outcome": "Agent finds the correct part and supplier information.",
+      "required_tools": [
+        "get_spare_part_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a purchase requisition for the motor, specifying the reorder quantity.",
+      "expected_outcome": "Agent creates a purchase requisition for approval by the maintenance manager.",
+      "required_tools": [
+        "create_purchase_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the requisition to the purchasing department.",
+      "expected_outcome": "Agent successfully submits the request into the procurement workflow.",
+      "required_tools": [
+        "submit_purchase_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

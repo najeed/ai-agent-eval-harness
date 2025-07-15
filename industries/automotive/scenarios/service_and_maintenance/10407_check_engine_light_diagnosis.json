@@ -1,0 +1,54 @@
+{
+  "scenario_id": "auto-sm-10407",
+  "title": "Customer Reports Check Engine Light",
+  "description": "A customer's check engine light has come on, and they want to know what the problem is.",
+  "use_case": "Service & Maintenance",
+  "core_function": "Vehicle Diagnostics",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their vehicle, and confirm it has an active telematics subscription.",
+      "expected_outcome": "Agent identifies the vehicle and confirms telematics are active.",
+      "required_tools": [
+        "get_customer_details",
+        "get_vehicle_details_by_vin"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate a remote diagnostic scan to retrieve any Diagnostic Trouble Codes (DTCs).",
+      "expected_outcome": "The scan returns DTC P0420 - 'Catalyst System Efficiency Below Threshold'.",
+      "required_tools": [
+        "run_remote_diagnostics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the meaning of the code in simple terms, advise the customer that it is safe to drive, and schedule a service appointment for a physical inspection.",
+      "expected_outcome": "Agent clearly explains the issue and successfully books an appointment.",
+      "required_tools": [
+        "lookup_dtc_code",
+        "schedule_service_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

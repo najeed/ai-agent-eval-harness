@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-ts-12722",
+  "title": "Mobile Troubleshooting - Dropped Calls",
+  "description": "A customer complains about frequently dropped calls in a specific location (e.g., their home).",
+  "use_case": "Technical Support",
+  "core_function": "Mobile Device Troubleshooting",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the specific address where calls are dropping.",
+      "expected_outcome": "Agent confirms the customer's account and logs the problem address.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the network coverage map and known issues for the reported location.",
+      "expected_outcome": "Agent finds no known outages but notes the area has borderline coverage.",
+      "required_tools": [
+        "check_network_coverage_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the customer to enable Wi-Fi Calling on their device as a solution.",
+      "expected_outcome": "Agent provides clear instructions for enabling Wi-Fi Calling on iOS and Android.",
+      "required_tools": [
+        "provide_wifi_calling_guide"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10317",
+  "title": "Track Remediation of a Prior Audit Finding",
+  "description": "An auditor follows up on a high-risk finding from a previous audit to ensure it has been remediated by management.",
+  "use_case": "Internal Audit",
+  "core_function": "Reporting & Remediation Tracking",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the prior audit finding and the agreed-upon management action plan, including the implementation date.",
+      "expected_outcome": "Auditor retrieves the details of the finding and the promised fix.",
+      "required_tools": [
+        "get_prior_audit_findings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the business owner responsible for the action plan to get an update on the status.",
+      "expected_outcome": "The business owner states that the fix has been implemented.",
+      "required_tools": [
+        "contact_auditee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform testing to independently verify that the corrective action has been implemented and is effective.",
+      "expected_outcome": "The auditor's testing confirms the control is now working, allowing the finding to be officially closed.",
+      "required_tools": [
+        "perform_remediation_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

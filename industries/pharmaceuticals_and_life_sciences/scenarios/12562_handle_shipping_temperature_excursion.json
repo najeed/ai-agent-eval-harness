@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-ms-12562",
+  "title": "Handle a Shipping Temperature Excursion",
+  "description": "A shipment of a refrigerated product arrives at a pharmacy, and the temperature monitor shows it went above the required 8\u00b0C for 4 hours.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Inventory & Cold Chain Logistics",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the temperature excursion event in the quality system, including the duration and peak temperature.",
+      "expected_outcome": "Agent creates a new quality event record with all the details of the excursion.",
+      "required_tools": [
+        "create_quality_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult the product's stability data to determine if the excursion impacts product quality.",
+      "expected_outcome": "Agent checks the stability profile and finds that the product is stable for up to 6 hours at the recorded temperature.",
+      "required_tools": [
+        "get_product_stability_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Make a disposition decision for the product.",
+      "expected_outcome": "Based on the stability data, the agent makes the decision that the product is still usable and can be released.",
+      "required_tools": [
+        "make_product_disposition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Document the investigation and disposition decision, and close the quality event.",
+      "expected_outcome": "Agent writes a summary report of the investigation and closes the event record.",
+      "required_tools": [
+        "generate_investigation_report",
+        "update_quality_event_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ag-cm-10200",
+  "title": "Plan Post-Harvest Residue Management",
+  "description": "After corn harvest, a farmer needs to decide how to manage the crop residue (stalks).",
+  "use_case": "Crop Management",
+  "core_function": "Harvesting & Logistics",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the farmer's goals (e.g., quick decomposition, erosion control, prepare for no-till planting).",
+      "expected_outcome": "Agent documents the goals.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide information on different residue management options, such as chopping, disking, or leaving the stalks standing.",
+      "expected_outcome": "Agent explains the pros and cons of each method.",
+      "required_tools": [
+        "get_residue_management_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the goal of preparing for no-till soybeans, recommend using a stalk-chopping attachment on the combine to size the residue for faster breakdown.",
+      "expected_outcome": "Agent provides a relevant and practical recommendation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "hosp-bo-11516",
+  "title": "Create Weekly Staff Schedule",
+  "description": "A front office manager needs to create the staff schedule for the upcoming week.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Staff Scheduling",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the hotel's occupancy forecast for the next week to determine staffing needs.",
+      "expected_outcome": "Manager notes high occupancy for the weekend, requiring extra staff.",
+      "required_tools": [
+        "pms_get_occupancy_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check staff availability and time-off requests.",
+      "expected_outcome": "Manager reviews all approved time-off for the week.",
+      "required_tools": [
+        "hris_get_time_off_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a draft schedule using the scheduling software, ensuring all shifts are covered.",
+      "expected_outcome": "A complete draft schedule is generated.",
+      "required_tools": [
+        "ss_generate_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Publish the final schedule and notify the staff.",
+      "expected_outcome": "The schedule is published, and staff receive a notification.",
+      "required_tools": [
+        "ss_publish_schedule",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

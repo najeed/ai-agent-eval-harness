@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-em-11668",
+  "title": "Process a Wage Garnishment",
+  "description": "HR has received a legal order to garnish an employee's wages for child support.",
+  "use_case": "Employee Management",
+  "core_function": "Payroll & Compensation",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and validate the legal garnishment order.",
+      "expected_outcome": "Payroll specialist confirms the order is legally valid.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the garnishment details (e.g., amount, recipient) into the payroll system for the specified employee.",
+      "expected_outcome": "Specialist correctly sets up the recurring deduction in the HRIS.",
+      "required_tools": [
+        "setup_wage_garnishment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a notification to the employee informing them that the company has received the order and will begin deductions.",
+      "expected_outcome": "Specialist sends the required legal notification to the employee.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

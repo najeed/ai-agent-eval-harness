@@ -1,0 +1,53 @@
+{
+  "scenario_id": "utils-go-13052",
+  "title": "Asset Investment Planning",
+  "description": "An asset strategist needs to decide which aging substation transformers to replace next year based on health and criticality.",
+  "use_case": "Grid Operations",
+  "core_function": "Asset Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather data on all transformers older than 30 years, including their health index (from DGA, etc.) and load history.",
+      "expected_outcome": "System compiles a list of aging transformers with their condition data.",
+      "required_tools": [
+        "get_asset_condition_data",
+        "get_historical_asset_load"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_aggregation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the criticality of each transformer based on the number of customers and type of load (e.g., hospitals, industrial) it serves.",
+      "expected_outcome": "System assigns a criticality score to each transformer.",
+      "required_tools": [
+        "assess_asset_criticality"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a prioritized replacement list based on a combined risk score of poor health and high criticality.",
+      "expected_outcome": "System generates a ranked list of transformers recommended for replacement.",
+      "required_tools": [
+        "prioritize_asset_replacement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

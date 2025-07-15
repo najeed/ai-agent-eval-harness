@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-as-11038",
+  "title": "Faculty Needs Help Setting Up LMS Gradebook",
+  "description": "A faculty member needs assistance setting up the weighted categories for their course gradebook in the LMS.",
+  "use_case": "Academic Support",
+  "core_function": "Learning Management System (LMS) Support",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the faculty member and the course.",
+      "expected_outcome": "Agent confirms the faculty member's identity and course shell.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the LMS as a support user to view the course.",
+      "expected_outcome": "Agent successfully gains view-only access to the course's LMS page.",
+      "required_tools": [
+        "access_lms_course_view"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Walk the faculty member through the steps to create weighted grade categories (e.g., Assignments 40%, Midterm 30%, Final 30%).",
+      "expected_outcome": "Agent provides clear, step-by-step guidance, resulting in a correctly configured gradebook.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

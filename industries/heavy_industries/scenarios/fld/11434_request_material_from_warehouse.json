@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-fld-11434",
+  "title": "Request Material from Site Warehouse",
+  "description": "A field supervisor needs to request a pallet of cement from the on-site warehouse for the next day's work.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Site Management & Logistics",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the material request system.",
+      "expected_outcome": "Agent successfully accesses the system.",
+      "required_tools": [
+        "open_material_request_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new request for one pallet of cement, specifying the required delivery location on site and the date needed.",
+      "expected_outcome": "Agent correctly fills out and submits the material request.",
+      "required_tools": [
+        "create_material_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the status of the request later to confirm it has been approved and scheduled for delivery by the warehouse team.",
+      "expected_outcome": "Agent checks the system and sees the request status is now 'Approved'.",
+      "required_tools": [
+        "check_material_request_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

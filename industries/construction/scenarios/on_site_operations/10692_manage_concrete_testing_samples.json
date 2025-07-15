@@ -1,0 +1,50 @@
+{
+  "scenario_id": "construction-os-10692",
+  "title": "Manage Concrete Test Cylinder Samples",
+  "description": "During a concrete pour, a technician takes test cylinders. The site manager must ensure they are correctly labeled and stored before being picked up by the lab.",
+  "use_case": "On-Site Operations",
+  "core_function": "Quality & Punch Lists",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the ID numbers of the test cylinders taken during the pour.",
+      "expected_outcome": "The cylinder IDs are recorded in the quality log.",
+      "required_tools": [
+        "create_quality_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the cylinders are labeled with the pour date, location, and sample ID.",
+      "expected_outcome": "The labels are confirmed to be correct.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a pickup with the testing lab for the next day.",
+      "expected_outcome": "The lab confirms they will pick up the samples.",
+      "required_tools": [
+        "schedule_vendor_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

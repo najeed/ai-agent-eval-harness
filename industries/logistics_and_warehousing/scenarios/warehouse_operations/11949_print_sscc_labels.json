@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-wo-11949",
+  "title": "Print SSCC Pallet Labels",
+  "description": "After building a pallet for a large retail customer, the operator must generate and apply a Serial Shipping Container Code (SSCC) label for compliance.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Outbound & Shipping",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "After a pallet is fully picked, scan the pallet ID to begin the labeling process.",
+      "expected_outcome": "The system retrieves the contents of the scanned pallet.",
+      "required_tools": [
+        "get_pallet_contents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a unique SSCC number for the pallet.",
+      "expected_outcome": "The system generates a new, unique SSCC barcode.",
+      "required_tools": [
+        "generate_sscc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Print the SSCC label in the customer-specified format and apply it to the pallet.",
+      "expected_outcome": "A compliant GS1-128 label is printed and applied.",
+      "required_tools": [
+        "print_sscc_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

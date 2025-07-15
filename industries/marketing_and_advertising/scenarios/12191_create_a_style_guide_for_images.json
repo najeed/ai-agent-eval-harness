@@ -1,0 +1,48 @@
+{
+  "scenario_id": "marketing-cc-12191",
+  "title": "Create a Style Guide for Imagery",
+  "description": "A creative director wants to create a style guide to ensure all images used in marketing have a consistent look and feel.",
+  "use_case": "Content & Creative Development",
+  "core_function": "Creative Asset Development",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the desired style for photography (e.g., 'Bright, airy, with natural light').",
+      "expected_outcome": "Agent specifies the overall mood and lighting.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Specify rules for image composition, such as color palettes and subject matter.",
+      "expected_outcome": "Agent defines the visual rules for all marketing images.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a document with examples of 'on-brand' and 'off-brand' images.",
+      "expected_outcome": "Agent produces a clear visual guide for the team to follow.",
+      "required_tools": [
+        "document_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "design_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

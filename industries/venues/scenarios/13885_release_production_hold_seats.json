@@ -1,0 +1,50 @@
+{
+  "scenario_id": "venues-tb-13885",
+  "title": "Release Production Hold Seats",
+  "description": "The production manager for a concert has determined they don't need a block of seats that was on hold, and they can now be sold to the public.",
+  "use_case": "Ticketing & Box Office",
+  "core_function": "Box Office Operations",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the request from the production manager to release the hold on a specific block of seats.",
+      "expected_outcome": "Agent identifies the seats to be released (e.g., Section 101, Rows A-E).",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the ticketing system and remove the 'Production Hold' status from the seats.",
+      "expected_outcome": "Agent successfully updates the status of the seats.",
+      "required_tools": [
+        "release_seat_hold"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the seats are now available for sale on the public website.",
+      "expected_outcome": "Agent checks the website and confirms the seats are listed for sale.",
+      "required_tools": [
+        "check_website_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

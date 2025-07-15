@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10005",
+  "title": "Source Titanium Forgings for Landing Gear",
+  "description": "A procurement manager needs to source certified titanium forgings for a new landing gear assembly from an approved supplier.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Supply Chain & Procurement",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the part number and material specifications for the required titanium forgings from the engineering bill of materials (BOM).",
+      "expected_outcome": "Agent correctly identifies the exact part and material specs.",
+      "required_tools": [
+        "get_bill_of_materials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the approved supplier list to find vendors qualified to produce this specific part.",
+      "expected_outcome": "Agent generates a list of 2-3 approved suppliers.",
+      "required_tools": [
+        "get_approved_supplier_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a Request for Quotation (RFQ) to the approved suppliers.",
+      "expected_outcome": "Agent successfully creates and sends the RFQ to the selected suppliers.",
+      "required_tools": [
+        "create_rfq"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

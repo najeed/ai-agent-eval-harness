@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-sp-13247",
+  "title": "Handle Inbound Freight Scheduling",
+  "description": "A large shipment is due to arrive from a supplier. A warehouse manager must schedule a delivery appointment.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Inbound Logistics",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a notification from the freight carrier that the shipment is ready for final delivery.",
+      "expected_outcome": "Agent gets the alert from the carrier.",
+      "required_tools": [
+        "get_carrier_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the warehouse's receiving dock schedule for availability.",
+      "expected_outcome": "Agent finds an open time slot for tomorrow morning.",
+      "required_tools": [
+        "get_receiving_dock_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the delivery appointment with the carrier.",
+      "expected_outcome": "Agent successfully schedules the delivery.",
+      "required_tools": [
+        "book_delivery_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

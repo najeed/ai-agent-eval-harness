@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-op-11196",
+  "title": "Hydro Dam Trash Rack Cleaning",
+  "description": "An operator at a hydroelectric dam detects a drop in efficiency and suspects that the trash racks (which filter debris) are clogged.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Maintenance & Outage Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the pressure differential across the trash racks.",
+      "expected_outcome": "System is monitoring the head loss across the racks.",
+      "required_tools": [
+        "get_dam_instrumentation_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system detects an increase in the pressure drop, indicating a blockage.",
+      "expected_outcome": "System generates an alert for a clogged trash rack.",
+      "required_tools": [
+        "analyze_pressure_differential"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a crew to operate the automated trash rake to clean the racks.",
+      "expected_outcome": "Operator sends a command to start the cleaning cycle.",
+      "required_tools": [
+        "operate_trash_rake"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

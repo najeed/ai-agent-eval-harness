@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-tr-10703",
+  "title": "PPA Price Negotiation Support",
+  "description": "An energy trader needs to analyze market data to propose a competitive price for a 10-year Power Purchase Agreement (PPA) with a corporate off-taker.",
+  "use_case": "Energy Trading & Portfolio Management",
+  "core_function": "Trade Execution & Hedging",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Fetch the last 24 months of historical wholesale electricity prices for the relevant market node.",
+      "expected_outcome": "Agent retrieves accurate historical price data.",
+      "required_tools": [
+        "get_historical_market_prices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze long-term price forecasts and market volatility trends.",
+      "expected_outcome": "Agent summarizes key trends and forecasted price ranges.",
+      "required_tools": [
+        "get_long_term_price_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate a proposed PPA price with a target profit margin, considering price cannibalization and curtailment risks.",
+      "expected_outcome": "Agent provides a justified PPA price and risk assessment.",
+      "required_tools": [
+        "calculate_ppa_price"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

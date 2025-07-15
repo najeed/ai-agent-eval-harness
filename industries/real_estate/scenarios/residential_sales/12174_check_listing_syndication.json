@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-rs-12174",
+  "title": "Check Listing Syndication Status",
+  "description": "A seller calls, worried that their new listing is not showing up on Zillow. The agent needs to investigate.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Property Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm the listing is active in the MLS.",
+      "expected_outcome": "Agent verifies the listing status is 'Active'.",
+      "required_tools": [
+        "get_mls_listing_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the MLS's syndication settings to ensure feeds to third-party sites like Zillow are enabled.",
+      "expected_outcome": "Agent confirms that syndication to Zillow is active for the brokerage.",
+      "required_tools": [
+        "check_mls_syndication_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the seller that syndication can sometimes take 24-48 hours to update and that you will re-check tomorrow.",
+      "expected_outcome": "Agent provides a clear explanation and sets a follow-up task for themselves.",
+      "required_tools": [
+        "create_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-res-10281",
+  "title": "Provide Proof of Travel Letter",
+  "description": "A customer needs an official letter from the airline confirming they took a specific flight for insurance or immigration purposes.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Customer Support",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's past booking and verify that they were marked as 'flown'.",
+      "expected_outcome": "Agent confirms the passenger traveled on the specified flight.",
+      "required_tools": [
+        "get_past_booking",
+        "check_flight_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a standardized 'Proof of Travel' letter containing the passenger's name, flight details, and ticket number.",
+      "expected_outcome": "Agent creates the official letter.",
+      "required_tools": [
+        "generate_proof_of_travel_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Email the letter to the customer.",
+      "expected_outcome": "Agent successfully sends the document to the customer.",
+      "required_tools": [
+        "send_email_to_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

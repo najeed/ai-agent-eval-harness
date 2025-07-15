@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-cc-10682",
+  "title": "Close Out the Submittal Log",
+  "description": "As part of project closeout, a project engineer must ensure every item in the submittal log has been reviewed and closed.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Submittals & RFIs",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the entire submittal log for the project.",
+      "expected_outcome": "The complete submittal log is retrieved.",
+      "required_tools": [
+        "get_submittal_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the log to find any submittals that are not in a 'Closed' or 'Approved' status.",
+      "expected_outcome": "The filter returns zero items, confirming all submittals have been processed.",
+      "required_tools": [
+        "filter_log_by_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a final submittal log report for the project archive.",
+      "expected_outcome": "A final, complete report is generated.",
+      "required_tools": [
+        "generate_log_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "scenario_id": "legal-pm-11805",
+  "title": "Run a Conflicts Check",
+  "description": "Before taking on a new client, a paralegal must run a conflicts check to ensure the firm can ethically represent them.",
+  "use_case": "Law Practice Management",
+  "core_function": "Conflicts & Ethics",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the names of the potential new client and all adverse parties.",
+      "expected_outcome": "Agent has the list of all entities to be checked.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the firm's client and matter database for each name provided.",
+      "expected_outcome": "Agent queries the database for any matches against current or former clients.",
+      "required_tools": [
+        "conflicts_database_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the results for any direct or positional conflicts.",
+      "expected_outcome": "Agent finds that the firm previously represented one of the adverse parties in an unrelated matter.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a conflicts report summarizing the findings for the responsible attorney to review.",
+      "expected_outcome": "Agent produces a clear report detailing the potential conflict.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "real_estate-rs-13057",
+  "title": "Handle a Home Sale Contingent Offer",
+  "description": "A buyer makes an offer that is contingent on them selling their current home. The listing agent must advise the seller.",
+  "use_case": "Residential Sales",
+  "core_function": "Offers & Negotiation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the contingent offer, paying close attention to the terms of the contingency, such as the timeline for the buyer to sell their home.",
+      "expected_outcome": "Agent fully understands the terms and risks of the contingency.",
+      "required_tools": [
+        "review_contract_addendum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Advise the seller on the pros and cons of accepting a contingent offer and suggest adding a 'kick-out' clause.",
+      "expected_outcome": "Seller understands the risks and decides to counter with a kick-out clause, allowing them to accept another offer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Negotiate the terms of the contingency and kick-out clause with the buyer's agent.",
+      "expected_outcome": "An agreement is reached that protects the seller's interests while accepting the contingent offer.",
+      "required_tools": [
+        "generate_counter_offer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "negotiation_success",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

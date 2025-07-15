@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-plan-12685",
+  "title": "Advise on Qualified Business Income (QBI) Deduction",
+  "description": "The owner of a profitable pass-through business wants to understand if they qualify for the QBI deduction and how to maximize it.",
+  "use_case": "Tax Planning & Advisory",
+  "core_function": "Business Tax Strategy",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine if the business is a 'specified service trade or business' (SSTB), which has stricter limitations.",
+      "expected_outcome": "Agent confirms the business is not an SSTB.",
+      "required_tools": [
+        "determine_sstb_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the taxpayer's QBI and taxable income to see if any limitations apply.",
+      "expected_outcome": "Agent determines the owner's income is below the thresholds for limitations.",
+      "required_tools": [
+        "calculate_qbi"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the client on strategies to maximize the QBI deduction, such as optimizing W-2 wages paid by the business.",
+      "expected_outcome": "Agent provides actionable advice to increase the client's tax deduction.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

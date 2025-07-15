@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10090",
+  "title": "Procure Radiation-Hardened Electronics",
+  "description": "A procurement manager needs to buy radiation-hardened microprocessors for a satellite's flight computer.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Satellite Manufacturing & Integration",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific part number and radiation tolerance requirements (e.g., 100 krad) from the bill of materials.",
+      "expected_outcome": "Agent correctly identifies the required component specifications.",
+      "required_tools": [
+        "get_bill_of_materials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find a supplier that specializes in space-grade, radiation-hardened electronics.",
+      "expected_outcome": "Agent identifies a qualified supplier from the approved vendor list.",
+      "required_tools": [
+        "get_approved_supplier_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place a purchase order for the components and ensure it includes requirements for full traceability and certification.",
+      "expected_outcome": "Agent creates a purchase order with all necessary flow-down requirements.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

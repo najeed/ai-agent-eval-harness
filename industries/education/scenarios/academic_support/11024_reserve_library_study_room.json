@@ -1,0 +1,48 @@
+{
+  "scenario_id": "education-as-11024",
+  "title": "Reserve Library Group Study Room",
+  "description": "A group of students needs to reserve a group study room in the main library for next Tuesday.",
+  "use_case": "Academic Support",
+  "core_function": "Library & Research Services",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Guide the user to the library's online room booking system.",
+      "expected_outcome": "Agent provides the direct URL for the booking system.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the booking policies, such as maximum reservation time and advance booking limits.",
+      "expected_outcome": "Agent clearly communicates the rules (e.g., 'max 2 hours per day').",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assist the student in navigating the system to find an available room and complete the reservation.",
+      "expected_outcome": "Agent walks the student through the process, resulting in a successful booking.",
+      "required_tools": [
+        "check_room_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

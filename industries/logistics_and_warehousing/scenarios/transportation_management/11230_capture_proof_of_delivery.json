@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-tm-11230",
+  "title": "Capture Proof of Delivery (POD)",
+  "description": "A carrier's driver has completed a delivery and needs to upload the signed Bill of Lading as Proof of Delivery.",
+  "use_case": "Transportation Management",
+  "core_function": "Proof of Delivery & Settlement",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Using a mobile app, the driver selects the shipment that was just delivered.",
+      "expected_outcome": "Driver correctly identifies the shipment record.",
+      "required_tools": [
+        "get_shipment_by_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The driver takes a picture of the signed BOL.",
+      "expected_outcome": "A clear image of the signed document is captured.",
+      "required_tools": [
+        "capture_image"
+      ],
+      "success_criteria": [
+        {
+          "metric": "image_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The driver uploads the image and captures the name of the signatory.",
+      "expected_outcome": "The POD image and signatory name are successfully uploaded to the TMS.",
+      "required_tools": [
+        "upload_pod_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

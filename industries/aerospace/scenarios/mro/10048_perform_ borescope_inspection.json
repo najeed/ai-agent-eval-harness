@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10048",
+  "title": "Perform a Borescope Inspection of an Engine",
+  "description": "A technician must use a borescope to inspect the internal components of a jet engine for damage without disassembling it.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Maintenance Planning",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Insert the borescope probe into the engine's inspection ports.",
+      "expected_outcome": "Agent correctly navigates the probe into the engine.",
+      "required_tools": [
+        "operate_borescope"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Visually inspect the compressor and turbine blades for any signs of foreign object damage (FOD), cracks, or distress.",
+      "expected_outcome": "Agent carefully inspects all visible surfaces.",
+      "required_tools": [
+        "inspect_engine_internals"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Record images or video of any findings and create a report for the engineering team to review.",
+      "expected_outcome": "Agent finds minor erosion on one blade, captures an image, and generates a report.",
+      "required_tools": [
+        "capture_inspection_image",
+        "generate_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

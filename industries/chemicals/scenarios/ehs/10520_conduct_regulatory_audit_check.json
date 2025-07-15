@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-ehs-10520",
+  "title": "Conduct Internal Check for Regulatory Audit",
+  "description": "In preparation for an upcoming EPA audit, an EHS specialist needs to verify that all required emissions reports for the last year have been filed.",
+  "use_case": "EHS & Compliance",
+  "core_function": "Regulatory Compliance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all required EPA air emissions reports for the facility for the previous calendar year.",
+      "expected_outcome": "Agent retrieves a list of 4 quarterly reports and 1 annual report.",
+      "required_tools": [
+        "get_required_compliance_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each required report, check the document management system for a record of its submission.",
+      "expected_outcome": "Agent verifies that all 5 reports have a 'Submitted' status and a corresponding submission date.",
+      "required_tools": [
+        "check_report_submission_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile a summary report confirming compliance to be used as documentation for the audit.",
+      "expected_outcome": "Agent creates a summary document listing each report and its submission confirmation.",
+      "required_tools": [
+        "generate_compliance_summary_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

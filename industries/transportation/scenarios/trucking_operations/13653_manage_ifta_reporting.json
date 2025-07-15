@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-to-13653",
+  "title": "Manage IFTA Reporting",
+  "description": "A fuel tax specialist needs to prepare the quarterly International Fuel Tax Agreement (IFTA) report.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Billing & Settlements",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all fuel purchase records for the fleet for the previous quarter.",
+      "expected_outcome": "Agent retrieves a list of all fuel transactions.",
+      "required_tools": [
+        "get_fuel_purchases"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather all mileage data from the trucks' ELDs, broken down by state/province, for the quarter.",
+      "expected_outcome": "Agent retrieves a report of all miles traveled in each jurisdiction.",
+      "required_tools": [
+        "get_eld_mileage_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use an IFTA calculation tool to determine the net fuel tax owed or to be refunded by each jurisdiction.",
+      "expected_outcome": "The system calculates the tax liability for each state.",
+      "required_tools": [
+        "calculate_ifta_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate the final IFTA report and file it with the base jurisdiction.",
+      "expected_outcome": "The quarterly IFTA report is successfully filed.",
+      "required_tools": [
+        "generate_ifta_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

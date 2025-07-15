@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-pm-13004",
+  "title": "Process Monthly Rent Payment",
+  "description": "A property manager processes a tenant's monthly rent payment and handles a late fee.",
+  "use_case": "Property Management",
+  "core_function": "Rent Collection & Financials",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a rent payment after the grace period has ended.",
+      "expected_outcome": "Agent identifies that the payment is late.",
+      "required_tools": [
+        "get_tenant_ledger"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically calculate and apply the late fee as specified in the lease agreement.",
+      "expected_outcome": "The correct late fee is added to the tenant's ledger.",
+      "required_tools": [
+        "apply_late_fee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Record the rent payment and the late fee payment in the tenant's ledger.",
+      "expected_outcome": "The tenant's balance is correctly updated to zero.",
+      "required_tools": [
+        "record_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

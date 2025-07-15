@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-rdq-10569",
+  "title": "Approve New Supplier for Raw Material",
+  "description": "Procurement wants to use a new supplier for a raw material. QA must review the trial lot data and approve the supplier.",
+  "use_case": "R&D and Quality",
+  "core_function": "Quality Assurance",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the QC test results for the trial lot received from the new supplier.",
+      "expected_outcome": "Agent pulls up the lab results for the trial material.",
+      "required_tools": [
+        "get_lab_results_for_batch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the results to the material's specification and to the results from the current supplier.",
+      "expected_outcome": "Agent confirms the new supplier's material meets all specs and is comparable to the incumbent.",
+      "required_tools": [
+        "compare_data_to_spec"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the approved supplier list (ASL) for the raw material to include the new supplier.",
+      "expected_outcome": "Agent successfully adds the new supplier to the material's ASL in the system.",
+      "required_tools": [
+        "update_approved_supplier_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

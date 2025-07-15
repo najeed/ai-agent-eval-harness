@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10341",
+  "title": "Review Pre-Implementation Controls for a New System",
+  "description": "An IT auditor reviews a new software system before it goes live to ensure adequate controls are built in.",
+  "use_case": "IT Audit",
+  "core_function": "System Development & Implementation Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the system's design documents to understand the planned control features, such as audit trails and role-based access.",
+      "expected_outcome": "Auditor understands the intended control design.",
+      "required_tools": [
+        "get_design_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Interview the development team to discuss how segregation of duties will be enforced within the application.",
+      "expected_outcome": "Auditor assesses the planned approach for segregation of duties.",
+      "required_tools": [
+        "conduct_interview"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend adding a control to require manager approval for any transactions over $10,000 before the system goes live.",
+      "expected_outcome": "The auditor identifies a missing control and recommends its inclusion before launch.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-pm-10633",
+  "title": "Request Additional Labor to Accelerate Schedule",
+  "description": "To get back on schedule after a delay, a project manager needs to request two additional carpenters for the framing crew for one week.",
+  "use_case": "Project Management",
+  "core_function": "Resource Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the framing task to determine if adding labor will decrease its duration.",
+      "expected_outcome": "Agent confirms that the task is labor-intensive and can be accelerated.",
+      "required_tools": [
+        "get_task_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Submit a request to the resource manager for two additional carpenters for a specific one-week period.",
+      "expected_outcome": "A formal resource request is sent.",
+      "required_tools": [
+        "create_resource_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

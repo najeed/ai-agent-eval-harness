@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-af-12645",
+  "title": "Deactivate Departing Employee's Access",
+  "description": "An employee has resigned. The security admin must deactivate all their access on their last day.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Customer Service & Claims",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the offboarding notification from HR for the departing employee.",
+      "expected_outcome": "Admin receives the official request to terminate access for a specific employee.",
+      "required_tools": [
+        "get_hr_offboarding_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Deactivate the employee's user account in all port systems.",
+      "expected_outcome": "The user's login credentials for the TOS, finance system, and email are disabled.",
+      "required_tools": [
+        "deactivate_user_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deactivate the employee's physical port access ID card.",
+      "expected_outcome": "The employee's ID card is disabled in the access control system, preventing physical entry.",
+      "required_tools": [
+        "deactivate_id_card"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-mro-10011",
+  "title": "Document a Component Repair",
+  "description": "A technician has repaired a hydraulic pump. They must document the work performed and the parts used for compliance.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Component Repair & Overhaul",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the work order for the hydraulic pump repair.",
+      "expected_outcome": "Agent identifies the correct work order.",
+      "required_tools": [
+        "get_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Document the steps taken to repair the pump and list the part numbers of all replacement components used.",
+      "expected_outcome": "Agent writes a clear, detailed description of the repair and lists all parts.",
+      "required_tools": [
+        "update_work_order_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Certify the work as complete by signing off on the work order, making the component serviceable again.",
+      "expected_outcome": "Agent completes the electronic sign-off, updating the component's status.",
+      "required_tools": [
+        "certify_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

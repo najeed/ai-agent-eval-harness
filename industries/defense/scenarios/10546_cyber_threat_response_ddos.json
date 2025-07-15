@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-cy-10546",
+  "title": "DDoS Attack Mitigation",
+  "description": "An analyst must mitigate a Distributed Denial of Service (DDoS) attack that is overwhelming a public-facing military website.",
+  "use_case": "Cybersecurity & Information Warfare",
+  "core_function": "Network Threat Detection & Response",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge alerts of high traffic and server unavailability for the website.",
+      "expected_outcome": "Analyst confirms the symptoms of a DDoS attack.",
+      "required_tools": [
+        "get_network_performance_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_acknowledgement_time",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze incoming traffic to identify the characteristics of the attack (e.g., source countries, traffic type).",
+      "expected_outcome": "Analyst correctly identifies the nature of the malicious traffic.",
+      "required_tools": [
+        "analyze_live_network_traffic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Engage a cloud-based DDoS mitigation service to scrub the malicious traffic before it reaches the website.",
+      "expected_outcome": "Analyst successfully reroutes traffic through the scrubbing service, restoring website availability.",
+      "required_tools": [
+        "activate_ddos_mitigation_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "mitigation_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

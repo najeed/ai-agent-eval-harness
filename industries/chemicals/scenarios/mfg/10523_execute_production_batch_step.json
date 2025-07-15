@@ -1,0 +1,53 @@
+{
+  "scenario_id": "chemicals-mfg-10523",
+  "title": "Execute Production Batch Step",
+  "description": "A plant operator needs to execute a step in an electronic batch record, which involves charging a specific amount of a raw material to a reactor.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Plant Operations",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the current active batch on the reactor control screen.",
+      "expected_outcome": "Agent correctly identifies the batch being manufactured.",
+      "required_tools": [
+        "get_active_batch_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the next step in the batch record, which instructs to 'Charge 500 kg of Methanol'.",
+      "expected_outcome": "Agent correctly identifies the material and quantity for the next step.",
+      "required_tools": [
+        "get_batch_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute the automated charge, monitor the weight addition, and apply an electronic signature to confirm the step's completion.",
+      "expected_outcome": "Agent initiates the charge, the system adds 500 kg, and the operator signs off on the completed step.",
+      "required_tools": [
+        "execute_material_charge",
+        "apply_electronic_signature_for_step"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

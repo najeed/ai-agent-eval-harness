@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10353",
+  "title": "Test Application Error Handling",
+  "description": "An IT auditor tests how an application handles errors to ensure data integrity.",
+  "use_case": "IT Audit",
+  "core_function": "Application Controls Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Attempt to import a data file with incorrect formatting into the application.",
+      "expected_outcome": "The application should reject the entire file and create a log of the formatting errors.",
+      "required_tools": [
+        "perform_application_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Simulate a network interruption during a large transaction.",
+      "expected_outcome": "The application should roll back the incomplete transaction, leaving no partial data in the database.",
+      "required_tools": [
+        "perform_application_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the error logs to ensure that all failed transactions are properly logged for investigation.",
+      "expected_outcome": "Auditor confirms that the error logs are detailed and accurate.",
+      "required_tools": [
+        "review_application_error_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "finance-wm-10867",
+  "title": "Create a Financial Plan for an Inheritance",
+  "description": "A client is expecting to receive a large inheritance and wants advice on how to manage it.",
+  "use_case": "Wealth Management",
+  "core_function": "Financial Planning",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Discuss the client's goals for the inheritance (e.g., pay off debt, invest, donate).",
+      "expected_outcome": "Agent identifies the client's top three priorities for the funds.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the tax implications of the inheritance.",
+      "expected_outcome": "Agent determines there are no immediate federal inheritance taxes but potential state taxes to consider.",
+      "required_tools": [
+        "analyze_inheritance_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Develop a strategy that allocates the funds towards the client's goals in a tax-efficient manner.",
+      "expected_outcome": "Agent proposes a clear plan: 30% to pay off mortgage, 60% to invest in a diversified portfolio, 10% to a donor-advised fund.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

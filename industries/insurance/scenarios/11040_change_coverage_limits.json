@@ -1,0 +1,51 @@
+{
+  "scenario_id": "insurance-pc-11040",
+  "title": "Change Homeowners Insurance Coverage Limits",
+  "description": "A customer finished their basement and wants to increase their personal property coverage limit.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Policy Administration",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and their current coverage limits.",
+      "expected_outcome": "Agent finds the customer's policy and notes their current coverage.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Discuss the new desired coverage amount with the customer.",
+      "expected_outcome": "Agent and customer determine an appropriate new coverage limit.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the policy with the new coverage limit and calculate the resulting premium change.",
+      "expected_outcome": "Agent successfully increases the coverage and informs the customer of the new premium.",
+      "required_tools": [
+        "update_coverage_limits",
+        "recalculate_premium"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

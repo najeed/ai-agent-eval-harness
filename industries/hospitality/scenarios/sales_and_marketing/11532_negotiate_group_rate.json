@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-sm-11532",
+  "title": "Negotiate Group Room Rate",
+  "description": "A client for a large conference wants to negotiate a lower room rate than was initially proposed.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Group & Event Sales",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the event's overall value, including F&B spend and meeting room rental, to determine how much flexibility exists on the room rate.",
+      "expected_outcome": "Agent analyzes the total potential revenue from the event.",
+      "required_tools": [
+        "ems_get_event_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the hotel's occupancy forecast for the event dates to see if there is a high demand.",
+      "expected_outcome": "Agent sees that demand is moderate, allowing for some flexibility.",
+      "required_tools": [
+        "pms_get_occupancy_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Offer a revised, slightly lower rate and present it as a final offer to secure the business.",
+      "expected_outcome": "Agent makes a counter-offer to the client.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

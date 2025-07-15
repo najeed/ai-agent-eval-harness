@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10382",
+  "title": "Review IT Asset Management",
+  "description": "An IT auditor reviews the process for tracking IT assets like laptops and servers.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the complete IT asset inventory from the asset management system.",
+      "expected_outcome": "The auditor has the master list of all recorded IT assets.",
+      "required_tools": [
+        "get_it_asset_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a sample of 30 assets from the list and perform a physical verification to ensure they exist and are in the correct location.",
+      "expected_outcome": "The auditor finds that 3 of the sampled laptops cannot be located.",
+      "required_tools": [
+        "perform_physical_verification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend a more frequent cycle of physical inventory counts to improve the accuracy of the asset inventory.",
+      "expected_outcome": "A recommendation is made to improve the asset tracking process.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

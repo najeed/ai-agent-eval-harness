@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ecommerce-osm-10641",
+  "title": "Create a BOGO Promotion",
+  "description": "A marketing manager wants to create a 'Buy One, Get One Free' promotion for a specific brand of shoes.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Pricing & Promotions",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the parameters of the BOGO promotion: applies to all products from 'Brand X', no coupon code needed, automatically applies in cart.",
+      "expected_outcome": "Agent correctly sets up the promotion rules.",
+      "required_tools": [
+        "create_promotion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Activate the promotion and set a start and end date.",
+      "expected_outcome": "Agent successfully activates the BOGO offer for the specified time period.",
+      "required_tools": [
+        "update_promotion_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

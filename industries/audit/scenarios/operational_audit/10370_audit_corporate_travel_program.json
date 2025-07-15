@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10370",
+  "title": "Audit the Corporate Travel Program",
+  "description": "An operational auditor reviews the corporate travel program to identify cost-saving opportunities.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Vendor & Third-Party Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze travel data to determine the company's top travel routes and hotel chains.",
+      "expected_outcome": "The auditor identifies the top 10 most frequent city pairs and hotel brands.",
+      "required_tools": [
+        "analyze_travel_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the company's current contracts with airlines and hotels.",
+      "expected_outcome": "The auditor finds that the company does not have negotiated corporate rates with its most-used airline.",
+      "required_tools": [
+        "get_vendor_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend that the procurement department enter into negotiations with the top airline and hotel chain to secure discounted corporate rates.",
+      "expected_outcome": "A specific, data-driven recommendation for cost savings is made.",
+      "required_tools": [
+        "draft_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

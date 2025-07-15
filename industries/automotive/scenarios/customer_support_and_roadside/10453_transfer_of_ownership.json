@@ -1,0 +1,50 @@
+{
+  "scenario_id": "auto-csra-10453",
+  "title": "Process Transfer of Ownership",
+  "description": "A customer sold their vehicle to a private party and wants to transfer the remaining connected services and warranty to the new owner.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "General Inquiries",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the identity of the original owner.",
+      "expected_outcome": "Agent authenticates the seller.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the new owner's name and contact information.",
+      "expected_outcome": "Agent gathers the buyer's details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the vehicle's record in the system with the new owner's information, initiating the transfer process for any applicable services.",
+      "expected_outcome": "Agent successfully updates the ownership record in the master vehicle database.",
+      "required_tools": [
+        "update_vehicle_ownership"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

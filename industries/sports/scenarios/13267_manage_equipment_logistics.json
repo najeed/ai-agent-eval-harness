@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-tm-13267",
+  "title": "Manage Team Equipment Logistics",
+  "description": "An equipment manager needs to coordinate the shipment of all team equipment to an away game.",
+  "use_case": "Team & Player Management",
+  "core_function": "Team Logistics & Travel",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a complete inventory list of all equipment that needs to be shipped.",
+      "expected_outcome": "Agent produces a detailed packing list.",
+      "required_tools": [
+        "generate_equipment_inventory_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Book a freight service to transport the equipment.",
+      "expected_outcome": "Agent successfully books a truck for the equipment.",
+      "required_tools": [
+        "book_freight_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Track the shipment to ensure it arrives at the destination venue on time.",
+      "expected_outcome": "Agent monitors the shipment's progress.",
+      "required_tools": [
+        "track_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

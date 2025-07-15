@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10216",
+  "title": "Handle an In-Flight Medical Emergency",
+  "description": "A passenger is experiencing a medical emergency in-flight. The cabin crew must respond and coordinate with the flight crew and ground support.",
+  "use_case": "Flight Operations",
+  "core_function": "In-Flight Services & Safety",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Assess the passenger's condition and provide first aid.",
+      "expected_outcome": "Cabin crew provides immediate medical assistance.",
+      "required_tools": [
+        "perform_first_aid"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Make a PA announcement asking if there is a doctor or other medical professional on board.",
+      "expected_outcome": "A doctor on board volunteers to assist.",
+      "required_tools": [
+        "make_pa_announcement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the airline's ground-based medical advisory service via satellite phone for expert advice and inform the captain of the situation.",
+      "expected_outcome": "Crew communicates with medical experts and the captain to decide if a diversion is necessary.",
+      "required_tools": [
+        "contact_medical_advisory_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

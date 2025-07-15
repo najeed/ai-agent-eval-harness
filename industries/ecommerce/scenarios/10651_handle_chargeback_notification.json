@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-css-10651",
+  "title": "Handle a Chargeback Notification",
+  "description": "The payment processor notifies the company of a chargeback filed by a customer. An agent needs to investigate and respond.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Issue Resolution",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the chargeback notification and identify the associated order.",
+      "expected_outcome": "Agent retrieves the order details related to the chargeback.",
+      "required_tools": [
+        "get_chargeback_notifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather evidence to dispute the chargeback, such as proof of delivery and communication history with the customer.",
+      "expected_outcome": "Agent collects all relevant documents and logs.",
+      "required_tools": [
+        "get_shipment_delivery_details",
+        "get_customer_communication_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the evidence to the payment processor to fight the chargeback.",
+      "expected_outcome": "Agent successfully submits the dispute paperwork through the processor's portal.",
+      "required_tools": [
+        "submit_chargeback_dispute"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

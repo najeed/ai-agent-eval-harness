@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-op-10349",
+  "title": "Audit the Contract Management Process",
+  "description": "An auditor reviews the process for managing contracts to identify risks like automatic renewals of unwanted services.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Vendor & Third-Party Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a list of all active contracts from the contract management system.",
+      "expected_outcome": "Auditor has a complete list of contracts.",
+      "required_tools": [
+        "get_contract_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the contract data to identify any contracts that are set to auto-renew within the next 90 days.",
+      "expected_outcome": "The analysis identifies 15 contracts approaching their auto-renewal date.",
+      "required_tools": [
+        "analyze_contract_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For a sample of these contracts, contact the business owner to verify if the service is still needed and if they are aware of the renewal.",
+      "expected_outcome": "Auditor finds that for two contracts, the business owner was unaware of the auto-renewal and no longer needs the service, preventing unnecessary spending.",
+      "required_tools": [
+        "contact_business_owner"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

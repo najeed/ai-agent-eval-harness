@@ -1,0 +1,48 @@
+{
+  "scenario_id": "finance-rb-11274",
+  "title": "Set up External Account for Transfers",
+  "description": "A customer wants to link an account from another bank to be able to transfer funds.",
+  "use_case": "Retail Banking",
+  "core_function": "Payments & Transfers",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Collect the routing and account number for the external bank account.",
+      "expected_outcome": "Agent accurately captures the external account details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate the micro-deposit verification process.",
+      "expected_outcome": "Agent starts the process where two small deposits will be sent to the external account for verification.",
+      "required_tools": [
+        "initiate_micro_deposit_verification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain to the customer that they will need to verify the amounts of the micro-deposits once they appear.",
+      "expected_outcome": "Agent clearly instructs the customer on the next steps they need to take to complete the setup.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "scenario_id": "auto-sf-10497",
+  "title": "Fleet Vehicle Sale",
+  "description": "A local business wants to purchase 10 identical cargo vans for their delivery fleet.",
+  "use_case": "Vehicle Sales & Financing",
+  "core_function": "Sales Consultation & Configuration",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the business's needs and recommend the appropriate vehicle model and configuration.",
+      "expected_outcome": "Agent recommends the 'Transit 250' cargo van.",
+      "required_tools": [
+        "get_vehicle_models"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check inventory and factory availability to fulfill an order for 10 units.",
+      "expected_outcome": "Agent determines the order will need to be a factory order.",
+      "required_tools": [
+        "check_vehicle_inventory",
+        "get_factory_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a fleet sales quote, applying any available volume discounts.",
+      "expected_outcome": "Agent provides a formal quote with fleet pricing.",
+      "required_tools": [
+        "generate_fleet_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Process the fleet sale agreement and place the factory order.",
+      "expected_outcome": "Agent successfully completes the sale and submits the order.",
+      "required_tools": [
+        "process_fleet_sale",
+        "submit_factory_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

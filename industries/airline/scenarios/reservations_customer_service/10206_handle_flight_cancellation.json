@@ -1,0 +1,53 @@
+{
+  "scenario_id": "airline-res-10206",
+  "title": "Handle a Flight Cancellation",
+  "description": "Due to a maintenance issue, a flight has been cancelled. An agent must contact affected passengers and rebook them.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Disruption Management (Customer Facing)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all passengers booked on the cancelled flight.",
+      "expected_outcome": "Agent retrieves the passenger manifest for the flight.",
+      "required_tools": [
+        "get_passenger_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each passenger, find the next available flight to their destination.",
+      "expected_outcome": "Agent identifies the best alternative flight for each passenger.",
+      "required_tools": [
+        "search_flights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Proactively rebook the passengers onto the new flight and send them a notification with their updated itinerary.",
+      "expected_outcome": "Agent successfully rebooks all passengers and sends out notifications.",
+      "required_tools": [
+        "rebook_passenger",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

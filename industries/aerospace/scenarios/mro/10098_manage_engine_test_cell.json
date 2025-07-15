@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-mro-10098",
+  "title": "Manage an Engine Test Cell",
+  "description": "After an engine overhaul, it must be run in a test cell to verify its performance before it can be returned to service.",
+  "use_case": "Maintenance, Repair, and Overhaul (MRO)",
+  "core_function": "Spares & Logistics",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Mount the engine in the test cell and connect all fuel, electrical, and data lines.",
+      "expected_outcome": "Agent ensures the engine is correctly installed in the test cell.",
+      "required_tools": [
+        "install_engine_in_test_cell"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the engine at various power settings, from idle to full thrust, according to a standard test procedure.",
+      "expected_outcome": "Agent operates the engine and follows the test plan.",
+      "required_tools": [
+        "operate_engine_test_cell"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Record all performance parameters (thrust, fuel flow, temperatures, pressures) and verify they meet the manufacturer's specifications.",
+      "expected_outcome": "Agent collects all data and confirms the engine is performing within limits.",
+      "required_tools": [
+        "record_engine_performance_data",
+        "verify_performance_specs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

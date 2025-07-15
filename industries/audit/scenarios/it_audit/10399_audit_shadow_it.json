@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-it-10399",
+  "title": "Audit for 'Shadow IT'",
+  "description": "An IT auditor tries to identify instances of 'Shadow IT' - software or services used by departments without official IT approval.",
+  "use_case": "IT Audit",
+  "core_function": "Cybersecurity & Privacy Audit",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze expense reports to look for recurring payments to software vendors that are not on the IT department's list of approved applications.",
+      "expected_outcome": "The analysis identifies that the marketing department has been paying for a project management tool that was not approved by IT.",
+      "required_tools": [
+        "analyze_expense_reports",
+        "get_approved_software_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review network traffic logs to identify data flows to and from known, unapproved cloud service providers.",
+      "expected_outcome": "The review identifies significant traffic to a cloud file-sharing service that is not the company standard.",
+      "required_tools": [
+        "analyze_network_traffic_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Report the instances of Shadow IT and recommend a clearer policy and process for requesting and approving new software.",
+      "expected_outcome": "Findings are documented and recommendations are made to control Shadow IT.",
+      "required_tools": [
+        "draft_finding_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

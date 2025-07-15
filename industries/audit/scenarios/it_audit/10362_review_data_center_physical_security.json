@@ -1,0 +1,53 @@
+{
+  "scenario_id": "audit-it-10362",
+  "title": "Review Data Center Physical Security",
+  "description": "An IT auditor performs a review of the physical security controls at the company's primary data center.",
+  "use_case": "IT Audit",
+  "core_function": "IT General Controls (ITGC) Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the data center access logs for the past 3 months.",
+      "expected_outcome": "The auditor has the logs of all entries into the data center.",
+      "required_tools": [
+        "get_physical_access_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the access logs to the list of authorized personnel to identify any unauthorized access.",
+      "expected_outcome": "The auditor confirms all access was by authorized individuals.",
+      "required_tools": [
+        "compare_datasets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform a physical inspection to verify that security cameras are operational and fire suppression systems are tested regularly.",
+      "expected_outcome": "The auditor confirms that the fire suppression system's last test was over a year ago, which violates the policy to test it semi-annually.",
+      "required_tools": [
+        "perform_physical_inspection",
+        "review_maintenance_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

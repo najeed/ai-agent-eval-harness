@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-12239",
+  "title": "Process a Rental Payment",
+  "description": "A tenant has paid rent via an online portal. The agent must ensure the payment is correctly applied to their ledger.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a notification of a new payment from the online payment system.",
+      "expected_outcome": "Agent identifies the tenant, property, and payment amount.",
+      "required_tools": [
+        "get_payment_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the payment to the tenant's outstanding balance in the property management software.",
+      "expected_outcome": "Agent correctly credits the payment to the tenant's ledger.",
+      "required_tools": [
+        "apply_tenant_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the tenant's balance is now zero.",
+      "expected_outcome": "Agent confirms the payment was applied correctly and the balance is paid in full.",
+      "required_tools": [
+        "get_tenant_ledger"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

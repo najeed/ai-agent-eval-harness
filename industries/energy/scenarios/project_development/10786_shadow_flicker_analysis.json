@@ -1,0 +1,64 @@
+{
+  "scenario_id": "energy-pd-10786",
+  "title": "Wind Turbine Shadow Flicker Analysis",
+  "description": "A developer needs to model the potential shadow flicker impact of a new wind farm on nearby homes.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Permitting & Compliance",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the locations of all nearby residences relative to the proposed turbine locations.",
+      "expected_outcome": "Agent maps all homes within a 2km radius.",
+      "required_tools": [
+        "get_property_locations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a shadow flicker model using the turbine dimensions, sun path data, and topography.",
+      "expected_outcome": "Model calculates the expected hours of flicker per year at each residence.",
+      "required_tools": [
+        "run_shadow_flicker_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the results to local regulations or industry best practices (e.g., less than 30 hours per year).",
+      "expected_outcome": "Agent finds that two homes are predicted to experience more than 30 hours of flicker.",
+      "required_tools": [
+        "check_local_regulations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Propose mitigation, such as programming the turbines to shut down during periods when they would be causing flicker at the affected homes.",
+      "expected_outcome": "Agent recommends a specific operational control to solve the issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

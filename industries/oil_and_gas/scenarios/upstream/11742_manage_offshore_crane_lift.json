@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-11742",
+  "title": "Plan Offshore Crane Lift",
+  "description": "An offshore logistics coordinator plans a critical crane lift to move a large piece of equipment from a supply boat to the platform deck.",
+  "use_case": "Upstream",
+  "core_function": "Asset & Maintenance Management",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a lift plan, specifying the equipment to be lifted, its weight, and the start and end locations.",
+      "expected_outcome": "A draft lift plan is created in the system.",
+      "required_tools": [
+        "create_lift_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the weather forecast, specifically wind speed and sea state, to ensure the lift can be performed safely.",
+      "expected_outcome": "The forecast is checked and confirms conditions are within safe limits for the planned time.",
+      "required_tools": [
+        "get_marine_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Finalize and issue the lift plan for approval by the offshore installation manager and crane operator.",
+      "expected_outcome": "The plan is submitted for final approval before the operation begins.",
+      "required_tools": [
+        "submit_plan_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

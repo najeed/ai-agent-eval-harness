@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-hs-11973",
+  "title": "Manage Environmental Compliance for Dredging",
+  "description": "The port is conducting maintenance dredging of a channel. An environmental officer must monitor for compliance.",
+  "use_case": "Health, Safety, Security & Environment (HSSE)",
+  "core_function": "Environmental Compliance",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the environmental permit for the dredging project, noting any specific conditions.",
+      "expected_outcome": "Officer reviews the permit, which requires monitoring of water turbidity.",
+      "required_tools": [
+        "get_environmental_permit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the real-time water quality sensor data near the dredging operation.",
+      "expected_outcome": "The officer checks the turbidity sensor readings on their dashboard.",
+      "required_tools": [
+        "get_environmental_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If turbidity exceeds permitted levels, instruct the dredging contractor to pause operations until it subsides.",
+      "expected_outcome": "The officer sees a spike in turbidity, contacts the contractor, and instructs them to stop work temporarily, logging the action.",
+      "required_tools": [
+        "contact_contractor",
+        "log_compliance_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

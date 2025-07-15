@@ -1,0 +1,49 @@
+{
+  "scenario_id": "ps-pw-12792",
+  "title": "Report a Downed Tree Blocking a Road",
+  "description": "A citizen reports that a large tree has fallen and is completely blocking a public road.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Service Request Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the location of the downed tree.",
+      "expected_outcome": "Agent gets the exact location of the road blockage.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Recognize the issue as a public safety hazard and escalate it.",
+      "expected_outcome": "Agent flags the request as an emergency.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "routing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create an emergency work order and dispatch a public works crew to clear the road.",
+      "expected_outcome": "Agent immediately dispatches a crew to the location.",
+      "required_tools": [
+        "create_emergency_work_order",
+        "dispatch_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

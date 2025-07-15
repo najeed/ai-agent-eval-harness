@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-fo-10272",
+  "title": "Request Direct Routing from ATC",
+  "description": "During a flight, a pilot notices favorable conditions and wants to request a more direct routing from Air Traffic Control to save time and fuel.",
+  "use_case": "Flight Operations",
+  "core_function": "In-Flight Services & Safety",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify a potential shortcut or more direct route to the destination.",
+      "expected_outcome": "Pilot finds a more efficient route.",
+      "required_tools": [
+        "analyze_flight_path"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact ATC and formally request the direct routing.",
+      "expected_outcome": "Pilot makes the request to ATC.",
+      "required_tools": [
+        "contact_atc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "ATC approves the request. The pilot updates the Flight Management System (FMS) with the new route.",
+      "expected_outcome": "Pilot receives approval and reprograms the FMS.",
+      "required_tools": [
+        "update_fms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

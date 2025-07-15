@@ -1,0 +1,54 @@
+{
+  "scenario_id": "audit-op-10379",
+  "title": "Review Sales Commission Payment Accuracy",
+  "description": "An auditor reviews sales commission payments to ensure they were calculated correctly.",
+  "use_case": "Operational & Performance Audit",
+  "core_function": "Process Efficiency Review",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the commission payment data for the last quarter.",
+      "expected_outcome": "The auditor has the payment data.",
+      "required_tools": [
+        "get_payment_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a sample of 20 commission payments.",
+      "expected_outcome": "A sample is selected for testing.",
+      "required_tools": [
+        "select_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each payment, obtain the underlying sales data and manually recalculate the commission based on the official commission plan.",
+      "expected_outcome": "The auditor finds two payments that were miscalculated due to using the wrong commission rate, resulting in overpayments.",
+      "required_tools": [
+        "get_sales_data",
+        "get_commission_plan",
+        "recalculate_manually"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

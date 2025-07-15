@@ -1,0 +1,53 @@
+{
+  "scenario_id": "finance-cf-10858",
+  "title": "Review Employee Expense Report for Policy Violations",
+  "description": "A compliance officer is reviewing an employee's expense report for any violations of company policy.",
+  "use_case": "Corporate Finance",
+  "core_function": "Risk & Compliance",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the employee's submitted expense report.",
+      "expected_outcome": "Agent pulls up the specified expense report.",
+      "required_tools": [
+        "get_expense_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically scan the report for common policy violations (e.g., expenses over limit, missing receipts).",
+      "expected_outcome": "The system flags one expense for a meal that is over the per-diem limit.",
+      "required_tools": [
+        "scan_expense_report_for_violations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reject the non-compliant line item and notify the employee to correct it.",
+      "expected_outcome": "Agent rejects the specific expense and sends an automated notification to the employee with the reason.",
+      "required_tools": [
+        "reject_expense_item",
+        "notify_employee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

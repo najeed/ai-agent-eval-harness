@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-13605",
+  "title": "Handle Itinerary Change on a Cruise",
+  "description": "Due to a storm, a cruise ship must skip a scheduled port of call. The cruise line needs to inform passengers and adjust accounts.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Disruption Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Broadcast an announcement to all passengers onboard about the itinerary change and the reason.",
+      "expected_outcome": "Agent successfully sends a notification to all passenger cabins and the cruise line's mobile app.",
+      "required_tools": [
+        "send_onboard_announcement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify all passengers who had pre-booked shore excursions for the cancelled port.",
+      "expected_outcome": "Agent generates a list of all affected excursion bookings.",
+      "required_tools": [
+        "get_excursion_bookings_by_port"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Automatically refund all charges for the cancelled shore excursions to the passengers' onboard accounts.",
+      "expected_outcome": "Agent successfully processes a bulk refund for all cancelled tours.",
+      "required_tools": [
+        "process_bulk_onboard_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

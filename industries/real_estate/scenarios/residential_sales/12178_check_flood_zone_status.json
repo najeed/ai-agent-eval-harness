@@ -1,0 +1,50 @@
+{
+  "scenario_id": "realestate-rs-12178",
+  "title": "Check Property's Flood Zone Status",
+  "description": "A buyer is interested in a property near a river and wants to know if it's in a flood zone, which would require flood insurance.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the full property address.",
+      "expected_outcome": "Agent has the correct address.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the address into the FEMA Flood Map Service Center website.",
+      "expected_outcome": "Agent successfully uses the FEMA portal to search for the property.",
+      "required_tools": [
+        "search_fema_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Interpret the map to determine the property's flood zone designation and inform the client.",
+      "expected_outcome": "Agent identifies the property is in 'Zone AE', a special flood hazard area, and informs the client that flood insurance will likely be required by their lender.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

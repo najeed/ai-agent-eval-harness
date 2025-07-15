@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ldr-11103",
+  "title": "Conduct Document Review for Relevance",
+  "description": "A paralegal is assigned a batch of 1,000 documents in an e-discovery platform and must code them for relevance to the case.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Discovery & E-Discovery",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the assigned batch of documents in the e-discovery tool.",
+      "expected_outcome": "Agent successfully accesses the document batch.",
+      "required_tools": [
+        "ediscovery_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each document, read its content and determine if it is responsive to the litigation's discovery requests.",
+      "expected_outcome": "Agent makes a relevance determination for each document.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply the appropriate tag ('Responsive' or 'Not Responsive') to each document in the batch.",
+      "expected_outcome": "All documents in the batch are correctly coded.",
+      "required_tools": [
+        "ediscovery_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

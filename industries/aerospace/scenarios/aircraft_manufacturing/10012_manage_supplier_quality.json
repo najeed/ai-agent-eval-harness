@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10012",
+  "title": "Manage a Supplier Quality Issue",
+  "description": "A batch of fasteners from a supplier has failed incoming quality inspection. A quality engineer must manage the non-conformance.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Supply Chain & Procurement",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a non-conformance report (NCR) detailing the failed inspection results.",
+      "expected_outcome": "Agent generates a complete NCR with all required details.",
+      "required_tools": [
+        "create_ncr"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notify the supplier of the non-conformance and request a root cause analysis and corrective action plan.",
+      "expected_outcome": "Agent sends a formal notification to the supplier.",
+      "required_tools": [
+        "send_supplier_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place the non-conforming parts in quarantine to prevent them from being used in production.",
+      "expected_outcome": "Agent updates the inventory system to place the parts on hold.",
+      "required_tools": [
+        "update_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

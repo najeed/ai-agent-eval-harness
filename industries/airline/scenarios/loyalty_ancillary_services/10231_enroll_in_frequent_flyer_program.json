@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10231",
+  "title": "Enroll a New Member in the Frequent Flyer Program",
+  "description": "A customer wants to sign up for the airline's loyalty program.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Frequent Flyer Program",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Collect the customer's personal details (name, address, email) to create the account.",
+      "expected_outcome": "Agent gathers all required information.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new frequent flyer account in the system.",
+      "expected_outcome": "Agent successfully creates the account.",
+      "required_tools": [
+        "create_frequent_flyer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the customer with their new frequent flyer number and explain the program's basic benefits.",
+      "expected_outcome": "Agent provides the new number and welcomes the member to the program.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

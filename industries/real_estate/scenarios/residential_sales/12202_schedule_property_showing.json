@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-12202",
+  "title": "Schedule a Property Showing",
+  "description": "A buyer client wants to see a property tomorrow afternoon. The agent must coordinate with the listing agent to schedule a showing.",
+  "use_case": "Residential Sales",
+  "core_function": "Buyer & Seller Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the property the buyer wants to see and retrieve the listing agent's contact information from the MLS.",
+      "expected_outcome": "Agent correctly identifies the target property and listing agent.",
+      "required_tools": [
+        "get_mls_listing_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the listing agent with the requested showing time (tomorrow, 2-3 PM).",
+      "expected_outcome": "Agent sends a clear request to the listing agent.",
+      "required_tools": [
+        "send_email_to_agent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive confirmation from the listing agent and update the buyer client's calendar with the appointment details.",
+      "expected_outcome": "Agent successfully confirms the showing and updates the client's calendar.",
+      "required_tools": [
+        "update_calendar_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

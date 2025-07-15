@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ac-ap-17",
+  "title": "Handle a Vendor Invoice Dispute",
+  "description": "A vendor calls to inquire about an unpaid invoice. The system shows the invoice is on hold due to a price discrepancy.",
+  "use_case": "Accounts Payable",
+  "core_function": "Vendor Management",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the invoice status for the vendor.",
+      "expected_outcome": "Agent confirms the invoice is on hold and finds the reason code is 'Price Mismatch'.",
+      "required_tools": [
+        "get_invoice_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the details of the mismatch, showing the invoice price is higher than the purchase order price.",
+      "expected_outcome": "Agent finds the PO price was $10/unit, but the invoice price was $11/unit.",
+      "required_tools": [
+        "get_match_discrepancy_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the vendor of the specific discrepancy and request they submit a corrected invoice or a credit memo for the difference.",
+      "expected_outcome": "Agent clearly communicates the issue and the required action to the vendor.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

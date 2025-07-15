@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-ar-11",
+  "title": "Generate Customer Invoices from Shipping Data",
+  "description": "The company ships products and needs to generate daily invoices for all goods shipped the previous day.",
+  "use_case": "Accounts Receivable",
+  "core_function": "Billing & Invoicing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all shipping records from the previous day from the warehouse management system.",
+      "expected_outcome": "Agent gets a list of all shipments, including customer, products, and quantities.",
+      "required_tools": [
+        "get_shipping_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each shipment, create a customer invoice, pulling pricing from the customer's master record.",
+      "expected_outcome": "Agent successfully generates invoices for all shipments.",
+      "required_tools": [
+        "create_customer_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Email the generated invoices to the respective customers.",
+      "expected_outcome": "Agent successfully sends out all the invoices.",
+      "required_tools": [
+        "email_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

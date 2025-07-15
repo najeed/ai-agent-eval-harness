@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-ia-10302",
+  "title": "Plan Annual Warehouse Inventory Audit",
+  "description": "An internal auditor needs to plan the annual audit of a key distribution warehouse.",
+  "use_case": "Internal Audit",
+  "core_function": "Audit Planning & Scoping",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the prior year's audit workpapers to understand previous findings and risks.",
+      "expected_outcome": "Auditor identifies recurring issues like inventory count discrepancies.",
+      "required_tools": [
+        "get_prior_audit_workpapers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft an audit planning memo outlining the scope (including specific locations to be cycle counted), objectives, and required resources.",
+      "expected_outcome": "A formal planning memo is created.",
+      "required_tools": [
+        "generate_audit_planning_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a kick-off meeting with the warehouse management to discuss the audit timeline and logistics.",
+      "expected_outcome": "A meeting is scheduled and confirmed with the auditee.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

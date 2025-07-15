@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10239",
+  "title": "Request a Special Meal",
+  "description": "A passenger with dietary restrictions needs to request a vegetarian meal for their long-haul flight.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Post-Booking Services",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's booking.",
+      "expected_outcome": "Agent finds the correct reservation.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if the flight and fare type are eligible for complimentary meal service.",
+      "expected_outcome": "Agent confirms the flight is eligible.",
+      "required_tools": [
+        "check_meal_service_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the Special Service Request (SSR) code for a vegetarian meal (VGML) to the booking.",
+      "expected_outcome": "Agent successfully adds the meal request to the booking.",
+      "required_tools": [
+        "add_ssr_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

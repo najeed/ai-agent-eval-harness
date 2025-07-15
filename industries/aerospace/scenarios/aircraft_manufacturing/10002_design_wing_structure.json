@@ -1,0 +1,53 @@
+{
+  "scenario_id": "aerospace-am-10002",
+  "title": "Design a New Wing Structure",
+  "description": "An engineer needs to design a new composite wing structure for a next-generation aircraft, focusing on weight reduction and strength.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Design & Engineering",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the aerodynamic load cases and performance requirements for the wing.",
+      "expected_outcome": "Agent defines a complete set of load and performance parameters.",
+      "required_tools": [
+        "get_aircraft_specs",
+        "get_performance_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a detailed 3D CAD model of the wing structure, including spars, ribs, and skin.",
+      "expected_outcome": "Agent generates a complete and valid CAD model.",
+      "required_tools": [
+        "create_cad_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a Finite Element Analysis (FEA) to simulate stress and deformation under the defined load cases.",
+      "expected_outcome": "Agent runs the simulation and confirms that stress levels are within safety margins.",
+      "required_tools": [
+        "run_fea_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "scenario_id": "airline-ago-10203",
+  "title": "Check-in a Passenger with Baggage",
+  "description": "A passenger arrives at the airport check-in counter for their international flight and needs to check in and drop off one bag.",
+  "use_case": "Airport & Ground Operations",
+  "core_function": "Check-in & Baggage",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's booking using their passport or confirmation number.",
+      "expected_outcome": "Agent successfully finds the passenger's reservation.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the passenger's travel documents (passport and visa) are valid for their destination.",
+      "expected_outcome": "Agent confirms the documents are valid.",
+      "required_tools": [
+        "verify_travel_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Weigh the passenger's bag, confirm it is within the weight limit, collect any baggage fees, and print the bag tag and boarding pass.",
+      "expected_outcome": "Agent checks the bag, takes payment, and provides the passenger with their travel documents.",
+      "required_tools": [
+        "weigh_bag",
+        "process_payment",
+        "print_bag_tag",
+        "print_boarding_pass"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

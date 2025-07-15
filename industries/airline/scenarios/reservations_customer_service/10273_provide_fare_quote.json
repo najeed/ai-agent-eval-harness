@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-res-10273",
+  "title": "Provide a Fare Quote",
+  "description": "A customer calls to ask for the price of a round-trip flight without wanting to book it yet.",
+  "use_case": "Reservations & Customer Service",
+  "core_function": "Customer Support",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the desired dates and destination from the customer.",
+      "expected_outcome": "Agent collects the search parameters.",
+      "required_tools": [
+        "get_customer_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for available flights and find the lowest available fare.",
+      "expected_outcome": "Agent finds the best price for the requested trip.",
+      "required_tools": [
+        "search_flights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the customer with a verbal quote for the total price, including all taxes and fees.",
+      "expected_outcome": "Agent clearly communicates the all-inclusive price.",
+      "required_tools": [
+        "quote_fare"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

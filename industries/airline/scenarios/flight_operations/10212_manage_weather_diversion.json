@@ -1,0 +1,54 @@
+{
+  "scenario_id": "airline-fo-10212",
+  "title": "Manage a Weather Diversion",
+  "description": "A flight en route to Boston (BOS) cannot land due to a thunderstorm. The flight operations controller must divert the flight to an alternate airport.",
+  "use_case": "Flight Operations",
+  "core_function": "Operations Control (OCC)",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the pilot's report that they cannot land at BOS and review the designated alternate airports from the flight plan.",
+      "expected_outcome": "Agent identifies Providence (PVD) as the primary alternate.",
+      "required_tools": [
+        "get_flight_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the weather and airport conditions at PVD to ensure it is suitable for landing.",
+      "expected_outcome": "Agent confirms that PVD is open and has favorable weather.",
+      "required_tools": [
+        "get_weather_data",
+        "get_airport_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Authorize the flight crew to divert to PVD and coordinate with the ground staff at PVD to handle the unexpected arrival.",
+      "expected_outcome": "Agent approves the diversion and notifies the destination airport.",
+      "required_tools": [
+        "authorize_diversion",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "audit-it-10383",
+  "title": "Test Audit Trail Integrity",
+  "description": "An IT auditor tests to ensure that application audit trails cannot be altered.",
+  "use_case": "IT Audit",
+  "core_function": "Application Controls Testing",
+  "industry": "Audit",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the permissions on the database table where the audit trail is stored.",
+      "expected_outcome": "The auditor verifies that business users do not have write or delete permissions on the audit trail table.",
+      "required_tools": [
+        "get_database_table_permissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attempt, in a test environment, to alter an audit log entry using a standard user account.",
+      "expected_outcome": "The attempt is blocked by the system.",
+      "required_tools": [
+        "perform_application_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "control_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the audit logs are being backed up regularly to a separate, secure location.",
+      "expected_outcome": "The auditor confirms the backup process for the audit logs is working correctly.",
+      "required_tools": [
+        "review_backup_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "auto-csra-10439",
+  "title": "Recall Announced but Remedy Not Yet Available",
+  "description": "A customer calls about a new recall, but the parts required for the fix are not yet available.",
+  "use_case": "Customer Support & Roadside Assistance",
+  "core_function": "Recall Management",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm the customer's vehicle is affected by the recall.",
+      "expected_outcome": "Agent confirms the VIN is part of the recall population.",
+      "required_tools": [
+        "check_vin_for_recalls"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of the recall remedy and inform the customer that parts are not yet available.",
+      "expected_outcome": "Agent finds the recall status is 'Announced - Remedy Not Available'.",
+      "required_tools": [
+        "get_recall_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reassure the customer that they will receive an official notification letter once the remedy is available and add them to a priority notification list.",
+      "expected_outcome": "Agent clearly sets expectations and adds the customer to a notification list.",
+      "required_tools": [
+        "add_to_notification_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

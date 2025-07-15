@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-am-10052",
+  "title": "Perform Aircraft Systems Integration",
+  "description": "An integration engineer must test the interaction between the hydraulic system and the flight control system on a new aircraft.",
+  "use_case": "Aircraft Manufacturing",
+  "core_function": "Design & Engineering",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Power up the aircraft's hydraulic and flight control systems in a ground test rig.",
+      "expected_outcome": "Agent successfully powers on both systems.",
+      "required_tools": [
+        "power_on_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a test script that sends commands from the flight control computer to the hydraulic actuators for the control surfaces (e.g., ailerons, rudder).",
+      "expected_outcome": "Agent runs the script and observes the control surfaces moving as commanded.",
+      "required_tools": [
+        "run_integration_test_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the sensor data from the actuators to ensure their response time and range of motion meet the design specifications.",
+      "expected_outcome": "Agent analyzes the data and confirms the system performance is within spec.",
+      "required_tools": [
+        "analyze_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

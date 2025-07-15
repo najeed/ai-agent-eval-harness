@@ -1,0 +1,51 @@
+{
+  "scenario_id": "heavy-industries-fld-11466",
+  "title": "Perform Non-Destructive Testing (NDT) on a Weld",
+  "description": "A critical weld requires ultrasonic testing (UT) to check for internal defects.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Field Inspections & Testing",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the ITP, which specifies that this weld requires 100% UT inspection.",
+      "expected_outcome": "The NDT technician confirms the testing requirement.",
+      "required_tools": [
+        "get_itp"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform the ultrasonic test on the weld according to the approved procedure.",
+      "expected_outcome": "The technician performs the scan.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the UT results, which show no defects. Log the passing result and generate the NDT report.",
+      "expected_outcome": "Agent analyzes the scan data, finds it acceptable, and creates the formal NDT report.",
+      "required_tools": [
+        "analyze_ndt_data",
+        "generate_ndt_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

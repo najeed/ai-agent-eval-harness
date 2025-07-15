@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ag-cm-10164",
+  "title": "Interpret Soil Test Results",
+  "description": "A farmer has received a soil test report and needs help interpreting the results and generating fertilizer recommendations.",
+  "use_case": "Crop Management",
+  "core_function": "Fertilization & Nutrition",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Parse the soil test report to extract the values for pH, phosphorus (P), and potassium (K).",
+      "expected_outcome": "Agent successfully extracts the key nutrient values.",
+      "required_tools": [
+        "parse_soil_test_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the target crop to be grown (e.g., corn) and its nutrient requirements.",
+      "expected_outcome": "Agent gets the nutrient uptake values for corn.",
+      "required_tools": [
+        "get_crop_nutrient_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a fertilizer recommendation for P and K based on the soil test results and the crop's needs.",
+      "expected_outcome": "Agent provides a recommendation in pounds per acre for P and K.",
+      "required_tools": [
+        "generate_fertilizer_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "If the pH is low, recommend a lime application to correct the soil acidity.",
+      "expected_outcome": "Agent identifies a low pH and recommends applying 2 tons of lime per acre.",
+      "required_tools": [
+        "generate_lime_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

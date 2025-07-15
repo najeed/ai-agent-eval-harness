@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-sc-10636",
+  "title": "Identify Unsafe Excavation Hazard",
+  "description": "A safety officer on a site walk notices an excavation over 5 feet deep that lacks proper shoring or sloping.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Hazard Analysis",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the non-compliant excavation and immediately issue a stop-work order for that area.",
+      "expected_outcome": "Work in the hazardous area is halted.",
+      "required_tools": [
+        "issue_stop_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the hazard in the safety system, citing the specific OSHA violation for excavation safety.",
+      "expected_outcome": "A new hazard is logged with the correct regulatory reference.",
+      "required_tools": [
+        "log_safety_hazard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign a corrective action to the site superintendent to install proper shoring before work can resume.",
+      "expected_outcome": "A corrective action is assigned to the responsible party.",
+      "required_tools": [
+        "assign_corrective_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

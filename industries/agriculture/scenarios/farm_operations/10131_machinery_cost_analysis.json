@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ag-fo-10131",
+  "title": "Analyze Machinery Ownership vs. Custom Hire",
+  "description": "A farmer is considering buying a new sprayer and wants to know if it's more cost-effective than continuing to use a custom application service.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Equipment Management & Maintenance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the costs of ownership for the new sprayer, including purchase price, interest, insurance, and estimated maintenance.",
+      "expected_outcome": "Agent compiles all ownership costs.",
+      "required_tools": [
+        "get_equipment_cost_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather the farmer's current custom application costs per acre and the total acres sprayed annually.",
+      "expected_outcome": "Agent collects the custom hire cost data.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform a break-even analysis to determine how many acres the farmer would need to spray to make ownership cheaper than custom hiring.",
+      "expected_outcome": "Agent calculates the break-even point.",
+      "required_tools": [
+        "run_breakeven_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Present a report comparing the costs and outlining the non-financial pros and cons (e.g., timeliness of application).",
+      "expected_outcome": "Agent provides a comprehensive report to support the farmer's decision.",
+      "required_tools": [
+        "generate_comparison_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

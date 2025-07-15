@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-mid-12488",
+  "title": "Schedule LNG Cargo Loading",
+  "description": "An LNG plant scheduler creates a plan to load an LNG carrier that is due to arrive in three days.",
+  "use_case": "Midstream",
+  "core_function": "Logistics & Scheduling",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the LNG storage tank inventory to ensure there is enough product available to fill the ship.",
+      "expected_outcome": "The system confirms sufficient LNG inventory is on hand.",
+      "required_tools": [
+        "get_tank_gauge_reading"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the ship's specifications to determine its cargo capacity and the required loading time.",
+      "expected_outcome": "The required loading volume and duration are identified.",
+      "required_tools": [
+        "get_vessel_specifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a loading schedule in the terminal operations system and reserve the jetty for the vessel's ETA.",
+      "expected_outcome": "The vessel is officially scheduled, and the jetty is booked.",
+      "required_tools": [
+        "create_loading_schedule",
+        "reserve_jetty"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

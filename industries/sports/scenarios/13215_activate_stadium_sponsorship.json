@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-bm-13215",
+  "title": "Activate Stadium Sponsorship Deal",
+  "description": "A new sponsor has signed a deal that includes digital signage inside the stadium. An agent must ensure their ads are displayed during games.",
+  "use_case": "Broadcasting & Media",
+  "core_function": "Sponsorship & Advertising",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the sponsorship agreement to confirm the ad placement details.",
+      "expected_outcome": "Agent confirms the sponsor gets 5 minutes of screen time on the main video board per game.",
+      "required_tools": [
+        "get_sponsorship_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the sponsor's ad creatives to the stadium's digital signage system.",
+      "expected_outcome": "Agent successfully uploads the video ads.",
+      "required_tools": [
+        "upload_to_signage_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the ads to run at specified times during the next game.",
+      "expected_outcome": "Agent programs the signage system to display the ads during game breaks.",
+      "required_tools": [
+        "schedule_digital_signage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

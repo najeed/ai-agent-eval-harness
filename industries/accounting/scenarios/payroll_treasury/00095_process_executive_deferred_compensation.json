@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ac-pt-95",
+  "title": "Process Executive Deferred Compensation",
+  "description": "An executive has elected to defer a portion of their bonus into a non-qualified deferred compensation plan.",
+  "use_case": "Treasury & Payroll",
+  "core_function": "Payroll Processing",
+  "industry": "Accounting",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the executive's deferral election form.",
+      "expected_outcome": "Agent gets the form specifying the deferral amount.",
+      "required_tools": [
+        "get_deferral_election_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "When processing the executive's bonus, reduce the cash payment by the deferred amount.",
+      "expected_outcome": "Agent correctly calculates the net bonus payment.",
+      "required_tools": [
+        "calculate_payroll"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a journal entry to record the deferred amount, debiting 'Bonus Expense' and crediting 'Deferred Compensation Liability'.",
+      "expected_outcome": "Agent posts the correct entry to record the long-term liability.",
+      "required_tools": [
+        "create_journal_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

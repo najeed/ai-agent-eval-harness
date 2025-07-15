@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ag-fo-10108",
+  "title": "File a Crop Insurance Claim for Hail Damage",
+  "description": "A farmer needs to file a crop insurance claim after a severe hailstorm damaged their corn crop.",
+  "use_case": "Farm Operations & Finance",
+  "core_function": "Financial Management & Compliance",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the farmer's active crop insurance policy details.",
+      "expected_outcome": "Agent successfully retrieves the correct policy information.",
+      "required_tools": [
+        "get_insurance_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather information about the hail event, including date, time, and estimated percentage of crop loss.",
+      "expected_outcome": "Agent correctly documents the details of the loss event.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a First Notice of Loss (FNOL) and submit it to the insurance provider.",
+      "expected_outcome": "Agent successfully generates and submits the FNOL document.",
+      "required_tools": [
+        "submit_insurance_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-pm-12320",
+  "title": "Market a Vacant Rental Unit",
+  "description": "A property manager needs to market a newly vacant apartment to find a new tenant quickly.",
+  "use_case": "Property Management",
+  "core_function": "Leasing & Tenant Screening",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the optimal market rent for the unit by analyzing current listings for comparable units.",
+      "expected_outcome": "Agent sets a competitive rental price.",
+      "required_tools": [
+        "get_rental_comps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a high-quality rental listing with professional photos and a detailed description.",
+      "expected_outcome": "A compelling listing is created.",
+      "required_tools": [
+        "generate_listing_description"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Syndicate the listing to multiple rental websites like Zillow, Trulia, and Apartments.com.",
+      "expected_outcome": "The listing is published across all major rental platforms.",
+      "required_tools": [
+        "syndicate_rental_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

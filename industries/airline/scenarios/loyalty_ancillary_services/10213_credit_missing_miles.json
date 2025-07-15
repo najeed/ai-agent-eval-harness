@@ -1,0 +1,52 @@
+{
+  "scenario_id": "airline-las-10213",
+  "title": "Credit Missing Miles from a Partner Flight",
+  "description": "A frequent flyer member took a flight on a partner airline, but the miles were not credited to their account. They are requesting a manual credit.",
+  "use_case": "Loyalty & Ancillary Services",
+  "core_function": "Frequent Flyer Program",
+  "industry": "Airline",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the member's frequent flyer number and the ticket number from their partner airline flight.",
+      "expected_outcome": "Agent collects the required information.",
+      "required_tools": [
+        "get_member_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the flight details and fare class to determine the correct number of miles to be awarded.",
+      "expected_outcome": "Agent calculates the correct mileage accrual based on the partner agreement.",
+      "required_tools": [
+        "get_partner_accrual_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually credit the miles to the member's account and send a confirmation.",
+      "expected_outcome": "Agent successfully adds the miles to the member's account.",
+      "required_tools": [
+        "credit_miles_manually"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

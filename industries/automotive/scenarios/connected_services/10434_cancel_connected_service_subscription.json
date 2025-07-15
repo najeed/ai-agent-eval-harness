@@ -1,0 +1,53 @@
+{
+  "scenario_id": "auto-cs-10434",
+  "title": "Cancel Connected Service Subscription",
+  "description": "A customer wants to cancel their paid subscription for the real-time traffic feature.",
+  "use_case": "Connected Services & In-Car Experience",
+  "core_function": "Subscription Management",
+  "industry": "Automotive",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the specific subscription they wish to cancel.",
+      "expected_outcome": "Agent identifies the active 'Live Traffic' subscription.",
+      "required_tools": [
+        "get_customer_details",
+        "get_connected_service_subscriptions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attempt a retention offer, such as a discount for the next 3 months.",
+      "expected_outcome": "Agent presents a retention offer, which the customer declines.",
+      "required_tools": [
+        "get_retention_offers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the cancellation and inform the customer when the service will cease to function.",
+      "expected_outcome": "Agent cancels the subscription, effective at the end of the current billing cycle.",
+      "required_tools": [
+        "cancel_connected_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

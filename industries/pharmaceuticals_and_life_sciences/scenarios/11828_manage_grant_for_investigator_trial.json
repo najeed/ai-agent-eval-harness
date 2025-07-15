@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-cm-11828",
+  "title": "Manage Grant for Investigator-Initiated Trial",
+  "description": "An MSL must process a grant request from an investigator who wants to conduct their own study using the company's drug.",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Key Opinion Leader (KOL) Engagement",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and log the grant proposal from the investigator.",
+      "expected_outcome": "Agent logs the proposal, including the study protocol and budget, into the grant management system.",
+      "required_tools": [
+        "log_grant_proposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Route the proposal to an internal review committee for scientific and medical merit assessment.",
+      "expected_outcome": "Agent routes the proposal to the appropriate review board.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive the committee's decision, which is to approve the grant with a reduced budget.",
+      "expected_outcome": "Agent logs the committee's decision and the approved funding amount.",
+      "required_tools": [
+        "update_grant_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Communicate the decision to the investigator and initiate the contract and payment process.",
+      "expected_outcome": "Agent sends a formal notification to the investigator and creates a task for the legal team to draft a contract.",
+      "required_tools": [
+        "send_notification",
+        "assign_tasks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

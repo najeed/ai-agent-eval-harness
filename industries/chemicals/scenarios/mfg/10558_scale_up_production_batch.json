@@ -1,0 +1,52 @@
+{
+  "scenario_id": "chemicals-mfg-10558",
+  "title": "Scale-Up Production Batch",
+  "description": "A product that was made in a small pilot-plant reactor now needs to be scheduled for its first full-scale production run.",
+  "use_case": "Manufacturing & Operations",
+  "core_function": "Production Scheduling",
+  "industry": "Chemicals",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the approved master batch record for the product.",
+      "expected_outcome": "Agent finds the recipe and instructions for the product.",
+      "required_tools": [
+        "get_master_batch_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a system tool to scale the recipe quantities from the 100L pilot scale to the 5000L production scale.",
+      "expected_outcome": "Agent successfully scales all raw material quantities by a factor of 50.",
+      "required_tools": [
+        "scale_recipe_quantities"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new production order for the scaled-up batch on the large-scale reactor.",
+      "expected_outcome": "Agent successfully creates the first full-scale production order.",
+      "required_tools": [
+        "create_production_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

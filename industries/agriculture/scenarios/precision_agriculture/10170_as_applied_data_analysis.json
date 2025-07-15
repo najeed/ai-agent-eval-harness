@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ag-pa-10170",
+  "title": "Analyze As-Applied Data",
+  "description": "After planting, a farmer wants to verify that their planter correctly executed the variable rate seeding prescription.",
+  "use_case": "Precision Agriculture",
+  "core_function": "Yield Forecasting & Mapping",
+  "industry": "Agriculture",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the variable rate seeding prescription map that was sent to the planter.",
+      "expected_outcome": "Agent gets the original prescription map.",
+      "required_tools": [
+        "get_prescription_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the as-applied map from the planter's controller, which shows the actual seeding rates applied.",
+      "expected_outcome": "Agent gets the map of the actual rates.",
+      "required_tools": [
+        "get_as_applied_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the prescription map to the as-applied map to identify any significant deviations.",
+      "expected_outcome": "Agent generates a difference map and confirms that the planter applied the rates with over 98% accuracy.",
+      "required_tools": [
+        "compare_prescription_to_as_applied"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ret-ecom-12431",
+  "title": "Handle BOPIS Order Cancellation",
+  "description": "A customer's 'Buy Online, Pick up In Store' order was not picked up within the 7-day window and needs to be cancelled.",
+  "use_case": "E-commerce & Order Management",
+  "core_function": "Click & Collect / BOPIS",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A system job identifies BOPIS orders that have exceeded the pickup time limit.",
+      "expected_outcome": "The system flags the abandoned order.",
+      "required_tools": [
+        "find_aging_bopis_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically cancels the order and triggers a refund to the customer's original form of payment.",
+      "expected_outcome": "The order is cancelled, and the refund process is initiated.",
+      "required_tools": [
+        "cancel_order",
+        "initiate_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "A task is created for a store associate to return the items from the staging area back to the sales floor.",
+      "expected_outcome": "The inventory is returned to a sellable state.",
+      "required_tools": [
+        "create_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

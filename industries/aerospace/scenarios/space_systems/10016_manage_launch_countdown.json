@@ -1,0 +1,52 @@
+{
+  "scenario_id": "aerospace-ss-10016",
+  "title": "Manage Launch Countdown",
+  "description": "A launch director is managing the final countdown for a rocket launch. They must monitor all systems and give the final 'go' for launch.",
+  "use_case": "Space Systems & Satellites",
+  "core_function": "Launch Operations",
+  "industry": "Aerospace",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the countdown clock and the status of all key systems (propulsion, avionics, range safety) on the mission control dashboard.",
+      "expected_outcome": "Agent observes all systems are 'green' or 'go'.",
+      "required_tools": [
+        "get_mission_control_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Conduct the final 'go/no-go' poll with all lead engineers.",
+      "expected_outcome": "Agent receives a 'go' from all stations.",
+      "required_tools": [
+        "conduct_go_no_go_poll"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "At T-minus 10 seconds, give the final command to enable the automated launch sequence.",
+      "expected_outcome": "Agent issues the final 'go for launch' command.",
+      "required_tools": [
+        "send_launch_command"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}
