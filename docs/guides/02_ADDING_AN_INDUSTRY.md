@@ -14,7 +14,7 @@ This guide provides a step-by-step process for adding a new industry to the eval
 
 ## Step 2: Add Your First Scenario
 
-1.  Inside the `scenarios` folder, you may want to create sub-folders for different use cases (e.g., `fraud_detection` in the `finance` industry).
+1.  Inside the `scenarios` folder, you may want to create sub-folders for different use cases (e.g., `crop_management` in the `agriculture` industry).
 2.  Create your first scenario `.json` file. The name should be numbered and descriptive (e.g., `01_mortgage_application_check.json`).
 3.  Populate the JSON file using the structure defined in the [Evaluation Guide](01_EVALUATION_GUIDE.md). Use existing scenarios as a reference.
 
