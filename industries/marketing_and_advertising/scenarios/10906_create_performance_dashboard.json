@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-ar-10906",
+  "title": "Create a Performance Dashboard",
+  "description": "An analyst needs to create a new live dashboard in a tool like Google Data Studio to track key campaign metrics.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Dashboarding & Visualization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Connect the dashboarding tool to the necessary data sources (Google Ads, Google Analytics).",
+      "expected_outcome": "Agent successfully establishes the data connections.",
+      "required_tools": [
+        "dashboarding_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create visualizations (scorecards, time-series charts, tables) for key metrics like Spend, Clicks, and Conversions.",
+      "expected_outcome": "Agent builds a dashboard with clear and relevant charts.",
+      "required_tools": [
+        "dashboarding_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "visualization_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add filters to the dashboard to allow users to view data by date range and campaign.",
+      "expected_outcome": "Agent adds interactive controls to the dashboard.",
+      "required_tools": [
+        "dashboarding_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

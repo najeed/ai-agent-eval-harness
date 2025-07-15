@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-pc-10524",
+  "title": "File a Windshield Repair Claim",
+  "description": "A customer has a small chip in their windshield and wants to file a claim under their comprehensive coverage.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Claims Processing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and verify they have comprehensive coverage.",
+      "expected_outcome": "Agent confirms the customer has the necessary coverage for glass repair.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain that windshield repair is often covered with no deductible.",
+      "expected_outcome": "Agent informs the customer there will likely be no out-of-pocket cost.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Connect the customer with a network glass repair shop to schedule the service.",
+      "expected_outcome": "Agent successfully schedules an appointment for the customer with a local approved vendor.",
+      "required_tools": [
+        "schedule_glass_repair"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

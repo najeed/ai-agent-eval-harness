@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-12358",
+  "title": "Book a Cruise Cabin",
+  "description": "A couple wants to book an oceanview cabin on a 7-night Caribbean cruise.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Itinerary Planning & Booking",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for available Caribbean cruises and check for oceanview cabin availability.",
+      "expected_outcome": "Agent finds a suitable cruise with available oceanview cabins.",
+      "required_tools": [
+        "search_cruises"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the couple with the total price, including port fees and taxes.",
+      "expected_outcome": "Agent gives a clear and accurate price breakdown.",
+      "required_tools": [
+        "calculate_cruise_price"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the cruise cabin and process the deposit payment.",
+      "expected_outcome": "Agent successfully creates the cruise booking and provides a confirmation.",
+      "required_tools": [
+        "book_cruise"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

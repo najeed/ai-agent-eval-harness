@@ -1,0 +1,53 @@
+{
+  "scenario_id": "tax-bus-12102",
+  "title": "Calculate Quarterly Sales Tax",
+  "description": "An online retail business needs to calculate and prepare its quarterly state sales tax return.",
+  "use_case": "Business Tax Services",
+  "core_function": "Sales & Use Tax Compliance",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the total sales data for the quarter.",
+      "expected_outcome": "Agent successfully imports sales transaction data.",
+      "required_tools": [
+        "import_sales_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Separate sales by jurisdiction and distinguish between taxable and non-taxable sales.",
+      "expected_outcome": "Agent correctly segregates sales based on location and taxability.",
+      "required_tools": [
+        "categorize_sales_by_jurisdiction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total sales tax due for each jurisdiction and prepare the state sales tax return for filing.",
+      "expected_outcome": "Agent accurately calculates the tax owed and prepares the final return.",
+      "required_tools": [
+        "calculate_sales_tax_due",
+        "prepare_sales_tax_return"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

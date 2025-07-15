@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-vm-23",
+  "title": "Monthly Workstation Patching",
+  "description": "An analyst must deploy the latest 'Patch Tuesday' security updates to all corporate workstations.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Patch Management & Remediation",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the latest security patches from Microsoft and identify which are critical and relevant to the workstation environment.",
+      "expected_outcome": "Analyst correctly identifies all critical patches to be deployed.",
+      "required_tools": [
+        "review_patch_tuesday_bulletins"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "First, deploy the patches to a small pilot group of test workstations to check for any negative impacts.",
+      "expected_outcome": "The patches are successfully deployed to the pilot group with no reported issues.",
+      "required_tools": [
+        "deploy_patch_to_pilot_group"
+      ],
+      "success_criteria": [
+        {
+          "metric": "testing_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After a successful pilot, schedule the patch deployment for all remaining workstations during the nightly maintenance window.",
+      "expected_outcome": "Analyst successfully schedules the enterprise-wide deployment.",
+      "required_tools": [
+        "schedule_patch_deployment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

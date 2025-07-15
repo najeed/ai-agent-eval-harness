@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-pd-10261",
+  "title": "Offshore Wind Export Cable Routing",
+  "description": "An engineer needs to plan the optimal route for the subsea export cable from an offshore wind farm to the onshore grid connection point.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Site Assessment & Feasibility",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze bathymetric (seabed topography) data to identify potential cable routes.",
+      "expected_outcome": "Agent identifies routes that avoid major obstacles and steep gradients.",
+      "required_tools": [
+        "get_bathymetric_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify and map exclusion zones, such as shipping lanes, other subsea cables, and marine protected areas.",
+      "expected_outcome": "Agent creates a map overlaying the exclusion zones on the potential routes.",
+      "required_tools": [
+        "get_marine_exclusion_zones"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select the shortest possible route that avoids all exclusion zones and minimizes technical challenges.",
+      "expected_outcome": "Agent proposes a final, optimized cable route.",
+      "required_tools": [
+        "optimize_cable_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "optimization_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

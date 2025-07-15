@@ -1,0 +1,62 @@
+{
+  "scenario_id": "tr-pt-12068",
+  "title": "Analyze On-Time Performance",
+  "description": "A manager wants to review the on-time performance (OTP) for a specific bus route from the previous month.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Service Planning & Scheduling",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate the on-time performance report for the selected route and date range.",
+      "expected_outcome": "A report is generated.",
+      "required_tools": [
+        "generate_otp_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The report shows the percentage of trips that were 'on time' (e.g., between 1 minute early and 5 minutes late).",
+      "expected_outcome": "The overall OTP for the route is displayed as 88%.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the specific time points or stops along the route with the highest number of delays.",
+      "expected_outcome": "The analysis shows most delays occur in the downtown segment during the afternoon peak.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Recommend a schedule adjustment for the afternoon trips to add more running time through the downtown segment.",
+      "expected_outcome": "The manager proposes a data-driven solution to improve OTP.",
+      "required_tools": [
+        "propose_schedule_change"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-maint-11187",
+  "title": "Manage Equipment Defect Elimination",
+  "description": "A supervisor finds a defect on a piece of equipment (e.g., a cracked weld) during an inspection and reports it for repair.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Work Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "During a pre-start inspection, a cracked weld is found on a loader bucket.",
+      "expected_outcome": "The defect is identified.",
+      "required_tools": [
+        "perform_prestart_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new defect notification in the CMMS, describing the problem and attaching a photo.",
+      "expected_outcome": "A new notification is created in the system.",
+      "required_tools": [
+        "create_defect_notification",
+        "attach_photo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The planner converts the notification into a work order for a welder to repair the crack.",
+      "expected_outcome": "A work order is created to ensure the defect is repaired before it leads to a failure.",
+      "required_tools": [
+        "convert_notification_to_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

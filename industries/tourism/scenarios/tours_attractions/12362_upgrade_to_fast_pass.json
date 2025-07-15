@@ -1,0 +1,53 @@
+{
+  "scenario_id": "tourism-ta-12362",
+  "title": "Upgrade to a Fast Pass",
+  "description": "A visitor already inside a theme park decides they want to upgrade their standard ticket to a Fast Pass to skip the lines.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Access & Entry Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the visitor's current ticket or wristband to retrieve their details.",
+      "expected_outcome": "Agent successfully identifies the visitor's standard entry ticket.",
+      "required_tools": [
+        "scan_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the price difference to upgrade to a Fast Pass.",
+      "expected_outcome": "Agent provides the correct upgrade cost.",
+      "required_tools": [
+        "calculate_upgrade_price"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the payment and update the visitor's ticket/wristband to Fast Pass status.",
+      "expected_outcome": "Agent successfully completes the upgrade, and the visitor's pass is now enabled for fast lanes.",
+      "required_tools": [
+        "process_payment",
+        "upgrade_ticket_access"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

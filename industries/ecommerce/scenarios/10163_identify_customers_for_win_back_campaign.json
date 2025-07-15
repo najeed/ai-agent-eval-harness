@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ecommerce-mce-10163",
+  "title": "Identify Customers for Win-Back Campaign",
+  "description": "A marketer wants to send a special offer to customers who haven't made a purchase in the last six months.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Customer Analytics",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query the customer database for all customers whose last purchase date was more than 180 days ago.",
+      "expected_outcome": "System generates a list of 'lapsed' customers.",
+      "required_tools": [
+        "query_customer_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter out any customers who have unsubscribed from marketing emails.",
+      "expected_outcome": "System refines the list to only include mailable customers.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the final list as a 'Win-Back Campaign' audience segment.",
+      "expected_outcome": "Agent saves the new segment for a marketing campaign.",
+      "required_tools": [
+        "save_customer_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

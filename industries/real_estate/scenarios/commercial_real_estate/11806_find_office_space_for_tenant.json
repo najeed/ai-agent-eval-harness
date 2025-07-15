@@ -1,0 +1,53 @@
+{
+  "scenario_id": "real_estate-cre-11806",
+  "title": "Find Office Space for a Tenant",
+  "description": "A tenant representative agent must find suitable office space for a client.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Leasing & Tenant Representation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the client's requirements: location, square footage, budget, and specific needs (e.g., conference rooms).",
+      "expected_outcome": "Agent has a clear, documented list of the client's needs.",
+      "required_tools": [
+        "client_needs_assessment_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search commercial listing databases (e.g., CoStar, LoopNet) for available properties that match the criteria.",
+      "expected_outcome": "Agent generates a list of 5-10 potential properties.",
+      "required_tools": [
+        "search_commercial_listings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "search_relevance",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare a tour book of the selected properties and schedule a day of tours with the client.",
+      "expected_outcome": "Agent creates a professional tour package and schedules the property tours.",
+      "required_tools": [
+        "generate_tour_book",
+        "schedule_property_tour"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

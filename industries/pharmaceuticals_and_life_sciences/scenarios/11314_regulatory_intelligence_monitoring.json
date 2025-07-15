@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-rc-11314",
+  "title": "Monitor for Regulatory Intelligence Updates",
+  "description": "A regulatory intelligence specialist must monitor global health authority websites for new draft guidances that could impact the company's products.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Regulatory Intelligence",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the websites of the FDA, EMA, and PMDA for new documents published in the last 24 hours.",
+      "expected_outcome": "Agent successfully scrapes the websites for new publications.",
+      "required_tools": [
+        "scan_regulatory_websites"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the results for keywords relevant to the company's therapeutic areas (e.g., 'oncology', 'gene therapy').",
+      "expected_outcome": "Agent filters the list and identifies a new draft guidance on gene therapy from the FDA.",
+      "required_tools": [
+        "filter_documents_by_keyword"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform an initial impact assessment of the new draft guidance.",
+      "expected_outcome": "Agent provides a summary of the guidance and notes that it will affect one of the company's pipeline products.",
+      "required_tools": [
+        "perform_impact_assessment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Distribute an alert with the summary and a link to the guidance document to the relevant internal teams.",
+      "expected_outcome": "Agent successfully sends a notification to the gene therapy development team.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

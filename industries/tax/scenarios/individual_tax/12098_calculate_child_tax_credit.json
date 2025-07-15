@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-ind-12098",
+  "title": "Calculate Child Tax Credit",
+  "description": "A married couple with two qualifying children needs their Child Tax Credit calculated.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Deductions & Credits Optimization",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Enter the personal and financial information for the couple and their two children.",
+      "expected_outcome": "Agent correctly inputs all taxpayer and dependent data.",
+      "required_tools": [
+        "enter_dependent_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the children meet all the eligibility tests for the Child Tax Credit.",
+      "expected_outcome": "Agent confirms both children are qualifying dependents for the credit.",
+      "required_tools": [
+        "verify_ctc_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total Child Tax Credit amount, including any phase-outs based on income.",
+      "expected_outcome": "Agent correctly calculates the maximum allowable credit for the family.",
+      "required_tools": [
+        "calculate_child_tax_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "sports-fe-12018",
+  "title": "Process Fan Ticket Resale",
+  "description": "A season ticket holder cannot attend a game and wants to sell their tickets on the team's official resale marketplace.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Ticketing & Access Control",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the fan and the specific tickets they wish to sell.",
+      "expected_outcome": "Agent locates the fan's tickets for the upcoming game.",
+      "required_tools": [
+        "get_fan_account_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the fan to list their tickets on the resale marketplace, helping them set a price.",
+      "expected_outcome": "Agent assists the fan in creating the ticket listing.",
+      "required_tools": [
+        "list_tickets_on_marketplace"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once sold, transfer the ticket barcode to the new buyer and process the payout to the original ticket holder.",
+      "expected_outcome": "Agent successfully facilitates the transfer and payment.",
+      "required_tools": [
+        "transfer_ticket_barcode",
+        "process_resale_payout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

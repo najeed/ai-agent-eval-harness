@@ -1,0 +1,50 @@
+{
+  "scenario_id": "pharma-rc-11379",
+  "title": "Manage a REMS Program",
+  "description": "A product has a Risk Evaluation and Mitigation Strategy (REMS) program. An agent must verify that a physician is certified before a prescription can be dispensed.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Pharmacovigilance & Safety Reporting",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a request to authorize a prescription, including the physician's name and NPI number.",
+      "expected_outcome": "Agent receives the required information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the physician's status in the REMS certification database.",
+      "expected_outcome": "Agent queries the database and confirms the physician is certified.",
+      "required_tools": [
+        "check_rems_certification_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide an authorization code to the pharmacy to allow them to dispense the drug.",
+      "expected_outcome": "Agent generates and provides the authorization code.",
+      "required_tools": [
+        "generate_dispensing_authorization"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-as-10472",
+  "title": "Protocol an Imaging Study",
+  "description": "A radiologist needs to review an order for a 'CT Abdomen' and select the specific technical protocol for the CT technologist to use (e.g., with or without contrast).",
+  "use_case": "Ancillary Services",
+  "core_function": "Radiology & Imaging Services",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the list of exams waiting to be protocoled.",
+      "expected_outcome": "Radiologist views their worklist of pending exams.",
+      "required_tools": [
+        "get_protocoling_worklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the patient's clinical history and the reason for the exam.",
+      "expected_outcome": "Radiologist gathers clinical context to make the best decision.",
+      "required_tools": [
+        "review_patient_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select the appropriate protocol ('CT Abdomen/Pelvis with IV Contrast') and approve it.",
+      "expected_outcome": "The exam is now ready for the technologist to perform, with clear instructions on the specific imaging technique to use.",
+      "required_tools": [
+        "select_imaging_protocol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_logic",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

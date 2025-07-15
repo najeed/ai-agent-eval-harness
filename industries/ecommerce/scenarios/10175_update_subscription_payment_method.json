@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-mce-10175",
+  "title": "Update Subscription Payment Method",
+  "description": "A customer with a recurring subscription needs to update the credit card used for their monthly payments.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Loyalty Programs",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the customer's active subscription.",
+      "expected_outcome": "Agent finds the subscription details.",
+      "required_tools": [
+        "get_customer_subscriptions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the customer with a secure portal or link to update their payment information.",
+      "expected_outcome": "Agent guides the customer to the secure payment update form.",
+      "required_tools": [
+        "generate_secure_payment_link"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm that the new payment method has been successfully saved for the subscription.",
+      "expected_outcome": "Agent verifies the update in the system.",
+      "required_tools": [
+        "get_customer_subscriptions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

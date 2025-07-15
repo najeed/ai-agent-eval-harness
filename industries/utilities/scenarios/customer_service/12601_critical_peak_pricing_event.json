@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-cs-12601",
+  "title": "Notify Customers of Critical Peak Pricing Event",
+  "description": "Due to extreme heat and high demand, the utility is calling a Critical Peak Pricing (CPP) event for the next day, where electricity prices will be much higher for a few hours.",
+  "use_case": "Customer Service",
+  "core_function": "Conservation & Efficiency",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all customers enrolled in the CPP rate plan.",
+      "expected_outcome": "System generates a list of all CPP customers.",
+      "required_tools": [
+        "get_customers_by_rate_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a day-ahead notification to these customers via their preferred method (email, text, phone call) about the event timing and prices.",
+      "expected_outcome": "System successfully sends the CPP event notifications.",
+      "required_tools": [
+        "send_customer_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Include tips on how to reduce energy use during the event to save money.",
+      "expected_outcome": "The notification includes actionable conservation advice.",
+      "required_tools": [
+        "get_conservation_tips"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

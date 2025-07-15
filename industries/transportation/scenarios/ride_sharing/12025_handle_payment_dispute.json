@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-rs-12025",
+  "title": "Handle a Trip Payment Dispute",
+  "description": "A rider claims they were charged for a trip they didn't take. A support agent must investigate.",
+  "use_case": "Ride-Sharing & On-Demand Mobility",
+  "core_function": "Customer & Driver Support",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the disputed trip charge in the rider's history.",
+      "expected_outcome": "Agent locates the specific trip record.",
+      "required_tools": [
+        "get_trip_history_by_rider"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the trip data, including GPS start/end points and device information used to request the trip.",
+      "expected_outcome": "Agent reviews the trip's digital footprint.",
+      "required_tools": [
+        "get_trip_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The data shows the trip was requested from the rider's registered device and started near their home address. Conclude the charge is likely valid.",
+      "expected_outcome": "Agent makes an evidence-based decision.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Inform the rider of the findings and deny the refund request, explaining the evidence.",
+      "expected_outcome": "Agent communicates the decision clearly and professionally.",
+      "required_tools": [
+        "send_customer_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

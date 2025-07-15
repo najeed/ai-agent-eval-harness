@@ -1,0 +1,50 @@
+{
+  "scenario_id": "energy-cs-10276",
+  "title": "Renewable Natural Gas (RNG) Sourcing",
+  "description": "A large industrial customer wants to source Renewable Natural Gas (RNG) to reduce the carbon footprint of their thermal processes.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "Billing & Program Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify available RNG suppliers that can inject into the customer's local gas distribution network.",
+      "expected_outcome": "Agent finds two eligible RNG producers (from landfills and dairy farms).",
+      "required_tools": [
+        "find_rng_suppliers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request quotes from the suppliers for a 5-year fixed-price contract for a specific volume of RNG.",
+      "expected_outcome": "Agent retrieves quotes from both suppliers.",
+      "required_tools": [
+        "request_rng_quotes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the quotes and advise the customer on the most cost-effective option.",
+      "expected_outcome": "Agent recommends a supplier and summarizes the contract terms.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

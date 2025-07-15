@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-11763",
+  "title": "Schedule Carpet Cleaning for Unit Turnover",
+  "description": "A unit is now vacant and needs carpet cleaning before the new tenant moves in. The manager must schedule a vendor.",
+  "use_case": "Property Management",
+  "core_function": "Maintenance & Operations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the vacant unit and verify that it requires carpet cleaning as part of the standard turnover process.",
+      "expected_outcome": "Agent confirms the need for carpet cleaning.",
+      "required_tools": [
+        "check_unit_turnover_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select a preferred carpet cleaning vendor and request a quote or schedule the service based on standard pricing.",
+      "expected_outcome": "Agent contacts an approved vendor to book the service.",
+      "required_tools": [
+        "contact_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for the carpet cleaning and schedule it to be completed before the new tenant's move-in date.",
+      "expected_outcome": "Agent creates and schedules the work order correctly.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "scenario_id": "tr-to-12075",
+  "title": "Manage a DOT Audit",
+  "description": "A safety manager receives a notification of an upcoming DOT compliance audit and must prepare the required documentation.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Safety & Compliance",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the audit notification and the list of requested documents (e.g., driver qualification files, hours-of-service logs, maintenance records).",
+      "expected_outcome": "The manager understands the scope of the audit.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate reports from the system for the requested driver files.",
+      "expected_outcome": "All requested DQ files are exported.",
+      "required_tools": [
+        "export_driver_qualification_files"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate reports for the requested HOS and maintenance records for the specified time period.",
+      "expected_outcome": "All requested logs and records are exported.",
+      "required_tools": [
+        "export_hos_logs",
+        "export_maintenance_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Compile all documents into a digital folder to be securely provided to the auditor.",
+      "expected_outcome": "All required documentation is gathered and organized for the audit.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

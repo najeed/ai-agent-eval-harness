@@ -1,0 +1,67 @@
+{
+  "scenario_id": "telecom-cs-11802",
+  "title": "Customer Plan Change Request - Downgrade",
+  "description": "A customer wants to downgrade their plan to save money.",
+  "use_case": "Customer Service",
+  "core_function": "Plan Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their current plan.",
+      "expected_outcome": "Agent correctly identifies the customer and their current service plan.",
+      "required_tools": [
+        "get_customer_details",
+        "get_plan_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the customer's average monthly usage (data, calls, texts) over the last 6 months.",
+      "expected_outcome": "Agent determines the customer's typical usage profile.",
+      "required_tools": [
+        "get_usage_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Present suitable downgrade options that still meet their average usage, explaining the cost savings and feature differences.",
+      "expected_outcome": "Agent recommends 2-3 appropriate lower-tier plans.",
+      "required_tools": [
+        "get_available_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Process the plan change selected by the customer and confirm the date it becomes effective.",
+      "expected_outcome": "Agent successfully updates the plan and informs the customer of the activation date.",
+      "required_tools": [
+        "update_customer_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

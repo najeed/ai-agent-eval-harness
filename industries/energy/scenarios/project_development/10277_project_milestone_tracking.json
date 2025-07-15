@@ -1,0 +1,53 @@
+{
+  "scenario_id": "energy-pd-10277",
+  "title": "Project Construction Milestone Tracking",
+  "description": "A project manager needs an update on the progress of a solar farm construction project against its planned milestones.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Supply Chain & Procurement",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the project's original Gantt chart and the latest progress reports from the construction contractor.",
+      "expected_outcome": "Agent gathers the planned schedule and the actual progress data.",
+      "required_tools": [
+        "get_project_plan",
+        "get_progress_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the actual completion dates of key milestones (e.g., 'site grading complete', 'racking installed') against the planned dates.",
+      "expected_outcome": "Agent identifies that the racking installation is 2 weeks behind schedule.",
+      "required_tools": [
+        "compare_plan_vs_actual"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the project schedule to reflect the delay and forecast a new project completion date.",
+      "expected_outcome": "Agent provides a revised project timeline.",
+      "required_tools": [
+        "update_project_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

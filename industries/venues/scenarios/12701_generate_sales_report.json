@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-em-12701",
+  "title": "Generate a Sales Report",
+  "description": "A sales director needs a report on all confirmed bookings for the next quarter.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Settlement & Post-Event Reporting",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the booking or CRM system.",
+      "expected_outcome": "Agent logs into the system.",
+      "required_tools": [
+        "access_crm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter all bookings for the specified date range (next quarter) and with a status of 'Confirmed'.",
+      "expected_outcome": "Agent correctly applies the filters.",
+      "required_tools": [
+        "filter_bookings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report showing the event name, client, dates, and contracted revenue for each booking.",
+      "expected_outcome": "Agent successfully generates the requested report.",
+      "required_tools": [
+        "generate_sales_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

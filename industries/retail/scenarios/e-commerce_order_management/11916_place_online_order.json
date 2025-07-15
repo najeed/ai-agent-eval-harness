@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ret-ecom-11916",
+  "title": "Place an Online Order",
+  "description": "A customer browses a retail website and places an order for several items.",
+  "use_case": "E-commerce & Order Management",
+  "core_function": "Online Order Placement",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Add multiple items to the online shopping cart.",
+      "expected_outcome": "All selected items are successfully added to the cart.",
+      "required_tools": [
+        "add_to_cart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Proceed to checkout, enter shipping and billing information.",
+      "expected_outcome": "The customer accurately fills out their address and payment details.",
+      "required_tools": [
+        "enter_shipping_info",
+        "enter_payment_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the order and receive an order confirmation number and email.",
+      "expected_outcome": "The order is successfully placed, and a confirmation is sent to the customer.",
+      "required_tools": [
+        "submit_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

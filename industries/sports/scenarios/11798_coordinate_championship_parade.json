@@ -1,0 +1,67 @@
+{
+  "scenario_id": "sports-vo-11798",
+  "title": "Coordinate a Championship Parade",
+  "description": "After winning a championship, a team needs to work with the city to plan a championship parade.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Event Day Operations",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Work with city officials to plan and approve a parade route.",
+      "expected_outcome": "A final parade route is agreed upon.",
+      "required_tools": [
+        "plan_parade_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Secure all necessary permits from the city for street closures and security.",
+      "expected_outcome": "Agent obtains all required permits.",
+      "required_tools": [
+        "apply_for_parade_permit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate with local police for security and traffic management along the parade route.",
+      "expected_outcome": "A comprehensive security plan is in place.",
+      "required_tools": [
+        "coordinate_with_police"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Announce the details of the parade (date, time, route) to the public.",
+      "expected_outcome": "Agent releases the parade information to the media and fans.",
+      "required_tools": [
+        "draft_press_release",
+        "post_to_social_media"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

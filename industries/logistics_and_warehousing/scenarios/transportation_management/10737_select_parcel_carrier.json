@@ -1,0 +1,64 @@
+{
+  "scenario_id": "lw-tm-10737",
+  "title": "Select Best Parcel Carrier",
+  "description": "When packing a small e-commerce order, the system must automatically select the cheapest parcel carrier for the required service level.",
+  "use_case": "Transportation Management",
+  "core_function": "Shipment Planning & Execution",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system gets the package weight, dimensions, destination, and required service level ('Standard Ground').",
+      "expected_outcome": "The system gathers all necessary rating data.",
+      "required_tools": [
+        "get_package_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system sends rate requests to all integrated parcel carriers (e.g., UPS, FedEx, USPS).",
+      "expected_outcome": "The system receives rate responses from all carriers.",
+      "required_tools": [
+        "get_parcel_rates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system compares the rates and selects the cheapest option.",
+      "expected_outcome": "The system identifies USPS Ground Advantage as the lowest-cost option.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The system automatically generates the shipping label for the selected carrier.",
+      "expected_outcome": "A USPS shipping label is printed.",
+      "required_tools": [
+        "generate_shipping_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

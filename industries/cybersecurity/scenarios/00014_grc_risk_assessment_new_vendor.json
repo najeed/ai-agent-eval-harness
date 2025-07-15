@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-grc-14",
+  "title": "New Vendor Risk Assessment",
+  "description": "A GRC analyst must conduct a security risk assessment of a new SaaS vendor that will handle sensitive customer data.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Risk Assessment & Management",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Send the standard vendor security questionnaire to the new vendor.",
+      "expected_outcome": "Analyst successfully sends the questionnaire.",
+      "required_tools": [
+        "send_vendor_questionnaire"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the vendor's responses and their supporting documentation (e.g., SOC 2 report).",
+      "expected_outcome": "Analyst analyzes the vendor's security posture based on their documentation.",
+      "required_tools": [
+        "review_vendor_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify a potential risk related to the vendor's data breach notification policy and create a risk mitigation plan requiring contractual changes.",
+      "expected_outcome": "Analyst identifies a key risk and proposes a concrete plan to mitigate it.",
+      "required_tools": [
+        "identify_risk",
+        "create_risk_mitigation_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_identification_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

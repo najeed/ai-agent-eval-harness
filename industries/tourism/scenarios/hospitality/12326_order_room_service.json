@@ -1,0 +1,51 @@
+{
+  "scenario_id": "tourism-ha-12326",
+  "title": "Order Room Service",
+  "description": "An in-house guest calls to order a club sandwich and a soda from the room service menu.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Guest Services & In-Stay Support",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the guest by their room number and confirm their name.",
+      "expected_outcome": "Agent correctly identifies the guest.",
+      "required_tools": [
+        "get_guest_details_by_room"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Take the guest's order and confirm the items and price.",
+      "expected_outcome": "Agent correctly records the order for one club sandwich and one soda.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place the order with the kitchen and post the charge to the guest's folio.",
+      "expected_outcome": "Agent successfully sends the order and updates the guest's bill.",
+      "required_tools": [
+        "place_room_service_order",
+        "add_folio_charge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

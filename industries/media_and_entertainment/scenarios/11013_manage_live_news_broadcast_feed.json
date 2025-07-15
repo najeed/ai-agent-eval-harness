@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-bo-11013",
+  "title": "Manage Live News Broadcast Feed",
+  "description": "During a live news broadcast, the primary video feed from a remote journalist fails. The agent must switch to a backup feed.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Live Event Broadcasting",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the 'Loss of Signal' alarm on the primary remote feed.",
+      "expected_outcome": "Agent immediately identifies the failed feed.",
+      "required_tools": [
+        "get_broadcast_feed_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Instantly switch the live program output to the available backup satellite feed.",
+      "expected_outcome": "Agent successfully executes the feed switch with minimal on-air disruption.",
+      "required_tools": [
+        "switch_live_broadcast_feed"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a ticket for the engineering team to diagnose the failure of the primary feed.",
+      "expected_outcome": "Agent creates a high-priority ticket for the engineering team.",
+      "required_tools": [
+        "create_ops_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-vo-12025",
+  "title": "Manage VIP Suite Holder Request",
+  "description": "During a game, a VIP suite holder requests extra chairs for their suite.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Hospitality & VIP Services",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the request from the suite holder via the venue's mobile app.",
+      "expected_outcome": "Agent gets the request, including the suite number and number of chairs needed.",
+      "required_tools": [
+        "get_vip_service_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the inventory of available chairs.",
+      "expected_outcome": "Agent confirms there are enough chairs in storage.",
+      "required_tools": [
+        "check_furniture_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a member of the event staff to deliver the chairs to the suite.",
+      "expected_outcome": "Agent creates a task for the event staff and dispatches it to the nearest staff member.",
+      "required_tools": [
+        "dispatch_event_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-ops-11196",
+  "title": "Manage Shift Handover",
+  "description": "A control room dispatcher finishing their shift must provide a complete and accurate handover to the incoming dispatcher.",
+  "use_case": "Mine Operations",
+  "core_function": "Load & Haul",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the events of the last shift, including any production issues, safety incidents, or equipment status changes.",
+      "expected_outcome": "The outgoing dispatcher has a full summary of the shift's events.",
+      "required_tools": [
+        "review_shift_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Fill out the digital shift handover form, documenting the current status of the mine and any ongoing issues.",
+      "expected_outcome": "The handover form is completed accurately.",
+      "required_tools": [
+        "complete_digital_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Conduct a verbal handover with the incoming dispatcher, walking them through the report to ensure a full understanding.",
+      "expected_outcome": "A successful handover is completed, ensuring continuity of operations.",
+      "required_tools": [
+        "conduct_verbal_handover"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

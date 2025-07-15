@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-ind-12186",
+  "title": "Prepare Return with HSA Contributions",
+  "description": "A taxpayer made contributions to a Health Savings Account (HSA) and wants to claim the deduction.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Deductions & Credits Optimization",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather information on the taxpayer's HSA contributions from Form 5498-SA and W-2.",
+      "expected_outcome": "Agent collects all relevant HSA data.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the total contributions do not exceed the annual limit.",
+      "expected_outcome": "Agent confirms the contributions are within the legal limits.",
+      "required_tools": [
+        "verify_hsa_contribution_limits"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare Form 8889 to report the HSA activity and calculate the deduction.",
+      "expected_outcome": "Agent accurately calculates the HSA deduction.",
+      "required_tools": [
+        "prepare_form_8889"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

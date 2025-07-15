@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tourism-tr-11920",
+  "title": "Book a One-Way Flight",
+  "description": "A traveler needs to book a one-way flight from New York (JFK) to Los Angeles (LAX).",
+  "use_case": "Transportation & Travel",
+  "core_function": "Itinerary Planning & Booking",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for available one-way flights from JFK to LAX on the specified date.",
+      "expected_outcome": "Agent returns a list of available flights with times and prices.",
+      "required_tools": [
+        "search_flights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the flight chosen by the customer and confirm the total price.",
+      "expected_outcome": "Agent confirms the selection and total cost.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Complete the booking with the traveler's details and issue the e-ticket.",
+      "expected_outcome": "Agent successfully books the flight and provides a booking reference.",
+      "required_tools": [
+        "book_flight"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-brc-10454",
+  "title": "Process Denial for No Coverage",
+  "description": "A claim is denied because the payer reports the patient did not have coverage on the date of service. The balance needs to be transferred to the patient.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Denial Management",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the denial for 'no coverage'.",
+      "expected_outcome": "Biller identifies the denied claim and reason.",
+      "required_tools": [
+        "get_denial_workqueue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that no other insurance is on file for the patient.",
+      "expected_outcome": "Biller confirms there is no other active coverage in the patient's record.",
+      "required_tools": [
+        "get_patient_insurance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Transfer the full balance of the claim to patient responsibility.",
+      "expected_outcome": "The balance is moved from the insurance bucket to the patient bucket, so it will appear on the patient's next statement.",
+      "required_tools": [
+        "transfer_balance_to_patient"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

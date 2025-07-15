@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-ro-12471",
+  "title": "Manage a Track Maintenance Window",
+  "description": "A maintenance crew needs a section of track to be taken out of service for 4 hours to perform repairs.",
+  "use_case": "Rail Operations",
+  "core_function": "Network Control & Dispatch",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A maintenance foreman requests a maintenance window for a specific track segment and time period.",
+      "expected_outcome": "The dispatcher receives the work request.",
+      "required_tools": [
+        "get_maintenance_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The dispatcher checks the train schedule to ensure no trains are scheduled to run through that segment during the requested time.",
+      "expected_outcome": "The dispatcher confirms the track will be clear.",
+      "required_tools": [
+        "get_train_schedules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The dispatcher grants the maintenance window, placing a block on the track segment in the control system.",
+      "expected_outcome": "The track is marked as out-of-service for the specified time.",
+      "required_tools": [
+        "block_track_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "When the work is complete, the foreman reports the track is clear, and the dispatcher removes the block, returning the track to service.",
+      "expected_outcome": "The track is safely returned to service after maintenance.",
+      "required_tools": [
+        "unblock_track_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

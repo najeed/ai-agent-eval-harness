@@ -1,0 +1,54 @@
+{
+  "scenario_id": "og-up-11199",
+  "title": "Seismic Data Interpretation for Prospect ID",
+  "description": "A geoscientist analyzes a new 3D seismic survey to identify potential hydrocarbon traps and define a drilling prospect.",
+  "use_case": "Upstream",
+  "core_function": "Geoscience & Exploration",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the 3D seismic data volume and associated well log data into the interpretation software.",
+      "expected_outcome": "All relevant data is loaded and quality-checked for consistency.",
+      "required_tools": [
+        "load_seismic_data",
+        "load_well_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Interpret and map key geological horizons and faults across the seismic volume.",
+      "expected_outcome": "Geoscientist accurately maps the structural framework of the area.",
+      "required_tools": [
+        "map_horizons",
+        "map_faults"
+      ],
+      "success_criteria": [
+        {
+          "metric": "geological_interpretation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a structural map of a target reservoir and identify potential closures (traps).",
+      "expected_outcome": "A map showing potential hydrocarbon traps is created and high-graded.",
+      "required_tools": [
+        "create_structure_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prospect_identification_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "scenario_id": "tr-to-12059",
+  "title": "Handle a Lumper Fee",
+  "description": "A driver has to pay a 'lumper' (third-party service) to unload their trailer at a receiving facility. The driver needs to be reimbursed.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Billing & Settlements",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The driver pays the lumper service and gets a receipt.",
+      "expected_outcome": "The driver has proof of the expense.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The driver uploads a photo of the lumper receipt via their mobile app.",
+      "expected_outcome": "The receipt image is submitted to the system.",
+      "required_tools": [
+        "upload_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "An agent reviews the receipt, verifies its legitimacy, and approves it as a reimbursable expense.",
+      "expected_outcome": "The expense is approved.",
+      "required_tools": [
+        "approve_reimbursable_expense"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The lumper fee is added to the driver's next settlement for reimbursement and billed to the customer if applicable.",
+      "expected_outcome": "The reimbursement and customer billing are correctly processed.",
+      "required_tools": [
+        "add_expense_to_settlement",
+        "add_charge_to_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

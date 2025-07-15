@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-12152",
+  "title": "Automated Capacitor Bank Switching",
+  "description": "The DMS automatically switches capacitor banks on a feeder to manage reactive power and improve voltage.",
+  "use_case": "Grid Operations",
+  "core_function": "Distribution Automation",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor real-time power factor on the feeder.",
+      "expected_outcome": "System gathers live power factor readings.",
+      "required_tools": [
+        "get_real_time_power_factor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system detects a low power factor, indicating a need for reactive power support.",
+      "expected_outcome": "System identifies the need to switch on a capacitor bank.",
+      "required_tools": [
+        "analyze_power_factor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a command to close the switch for the optimal capacitor bank to bring the power factor closer to unity.",
+      "expected_outcome": "System successfully operates the capacitor bank switch.",
+      "required_tools": [
+        "execute_capacitor_bank_command"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "scenario_id": "realestate-tc-11591",
+  "title": "Handle Removal of Contingencies",
+  "description": "The buyer is satisfied with their investigations and is ready to remove their inspection and appraisal contingencies.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive instructions from the buyer's agent to remove the contingencies.",
+      "expected_outcome": "TC gets an email from the agent confirming the buyer is moving forward.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the contingency removal form, specifying which contingencies are being removed.",
+      "expected_outcome": "The correct legal form is filled out, listing the inspection, appraisal, and loan contingencies.",
+      "required_tools": [
+        "draft_legal_addendum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the form to the buyer for signature and then deliver the signed copy to the seller's agent.",
+      "expected_outcome": "The form is fully executed and delivered, making the buyer's deposit non-refundable.",
+      "required_tools": [
+        "send_document_for_signature",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

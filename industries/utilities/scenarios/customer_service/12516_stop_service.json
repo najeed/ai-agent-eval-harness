@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-cs-12516",
+  "title": "Stop Utility Service",
+  "description": "A customer is moving out and needs to stop all utility services (electric and water) at their address.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the customer and identify their active services.",
+      "expected_outcome": "Agent verifies the customer's identity and confirms they have both electric and water service.",
+      "required_tools": [
+        "verify_customer_identity",
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule a service stop date and collect a forwarding address for the final bill.",
+      "expected_outcome": "Agent schedules the disconnection and records the new address.",
+      "required_tools": [
+        "schedule_service_order",
+        "update_customer_address"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the final billing process, including how any deposit will be applied.",
+      "expected_outcome": "Agent clearly communicates the next steps for account closure.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

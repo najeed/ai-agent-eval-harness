@@ -1,0 +1,62 @@
+{
+  "scenario_id": "tr-ro-12451",
+  "title": "Report on Terminal Dwell Time",
+  "description": "A manager wants to analyze the average time railcars spend in a specific yard (dwell time) to identify inefficiencies.",
+  "use_case": "Rail Operations",
+  "core_function": "Yard & Terminal Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a report of all railcar arrivals and departures for a specific yard over the last month.",
+      "expected_outcome": "Agent successfully retrieves the raw data.",
+      "required_tools": [
+        "get_yard_activity_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each railcar, calculate the dwell time (departure time - arrival time).",
+      "expected_outcome": "The dwell time is calculated for each car.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the average dwell time for the entire yard.",
+      "expected_outcome": "The average dwell time is found to be 28 hours.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Compare the average dwell time to the system target of 24 hours and highlight the negative variance in a performance dashboard.",
+      "expected_outcome": "The manager can easily see that the yard is underperforming against its target.",
+      "required_tools": [
+        "update_performance_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

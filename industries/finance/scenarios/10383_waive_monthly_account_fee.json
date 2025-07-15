@@ -1,0 +1,53 @@
+{
+  "scenario_id": "finance-rb-10383",
+  "title": "Waive Monthly Account Fee",
+  "description": "A long-time customer requests to have their monthly maintenance fee waived after their balance temporarily dropped below the minimum.",
+  "use_case": "Retail Banking",
+  "core_function": "Account Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the monthly fee charge on their statement.",
+      "expected_outcome": "Agent locates the $15 monthly fee.",
+      "required_tools": [
+        "get_customer_details",
+        "get_billing_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the customer's account history and tenure.",
+      "expected_outcome": "Agent confirms the customer has been with the bank for 10 years with no prior fee waivers.",
+      "required_tools": [
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Waive the fee for the current month as a one-time courtesy.",
+      "expected_outcome": "Agent successfully applies a credit for the fee amount.",
+      "required_tools": [
+        "apply_manual_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

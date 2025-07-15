@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-12543",
+  "title": "Cathodic Protection Monitoring",
+  "description": "An integrity engineer checks the status of the cathodic protection system, which prevents corrosion on a steel gas pipeline.",
+  "use_case": "Gas Operations",
+  "core_function": "Asset Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest pipe-to-soil potential readings from remote test points along the pipeline.",
+      "expected_outcome": "System gathers the latest voltage readings.",
+      "required_tools": [
+        "get_cathodic_protection_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the readings against the required protection levels (e.g., more negative than -850 mV).",
+      "expected_outcome": "System identifies a section where the potential is less negative than the required level, indicating under-protection.",
+      "required_tools": [
+        "analyze_protection_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for a technician to investigate the issue, which could be a rectifier failure or a damaged anode.",
+      "expected_outcome": "System dispatches a technician to troubleshoot the cathodic protection system.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

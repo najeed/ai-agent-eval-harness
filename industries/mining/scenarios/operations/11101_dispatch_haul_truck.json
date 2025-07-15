@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-ops-11101",
+  "title": "Dispatch Haul Truck",
+  "description": "A mine dispatcher in the control room receives a request from a shovel and dispatches the nearest available haul truck to be loaded.",
+  "use_case": "Mine Operations",
+  "core_function": "Load & Haul",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an automated 'Ready to Load' signal from Shovel SH-101 in the Fleet Management System (FMS).",
+      "expected_outcome": "The dispatcher is alerted that the shovel is ready for a truck.",
+      "required_tools": [
+        "get_fms_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "response_time_seconds",
+          "threshold": 30
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the nearest available haul truck (HT-55) that is currently empty.",
+      "expected_outcome": "The optimal truck is selected to minimize shovel wait time.",
+      "required_tools": [
+        "find_nearest_available_truck"
+      ],
+      "success_criteria": [
+        {
+          "metric": "resource_allocation_efficiency",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a dispatch instruction to the operator of HT-55 to proceed to Shovel SH-101 for loading.",
+      "expected_outcome": "The truck driver receives and accepts the dispatch instruction on their in-cab screen.",
+      "required_tools": [
+        "dispatch_haul_truck"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

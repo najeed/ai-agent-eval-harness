@@ -1,0 +1,66 @@
+{
+  "scenario_id": "wholesale-im-12729",
+  "title": "Investigate an Inventory Discrepancy",
+  "description": "A significant discrepancy is found for a high-value item during a stock take. A manager must investigate the cause.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Inventory Control",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the item with the discrepancy.",
+      "expected_outcome": "Agent confirms the item and the size of the discrepancy.",
+      "required_tools": [
+        "get_inventory_discrepancy_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review all transaction history for the item (shipments, receipts, adjustments) for the last 90 days.",
+      "expected_outcome": "Agent reviews the transaction log.",
+      "required_tools": [
+        "get_item_transaction_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review warehouse security footage for the item's location around the time of the last known accurate count.",
+      "expected_outcome": "The footage reveals nothing unusual.",
+      "required_tools": [
+        "review_security_footage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Conclude the cause is likely a mis-shipment and create a report.",
+      "expected_outcome": "Agent writes a report on the investigation, concluding the items were likely shipped in error on another order.",
+      "required_tools": [
+        "generate_investigation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

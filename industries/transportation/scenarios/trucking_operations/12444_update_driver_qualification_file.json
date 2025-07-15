@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-to-12444",
+  "title": "Update a Driver Qualification File",
+  "description": "A driver's medical certificate is about to expire. A compliance manager must get the new certificate and update their file.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Safety & Compliance",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a system alert that a driver's medical card expires in 30 days.",
+      "expected_outcome": "Agent is notified of the pending expiration.",
+      "required_tools": [
+        "get_compliance_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send an automated notification to the driver reminding them to renew their medical certificate.",
+      "expected_outcome": "The driver is reminded of the requirement.",
+      "required_tools": [
+        "send_driver_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The driver uploads a photo of their new medical card.",
+      "expected_outcome": "The new document is received.",
+      "required_tools": [
+        "get_driver_uploads"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the driver's qualification file with the new medical card and its expiration date.",
+      "expected_outcome": "The driver's file is now up-to-date and compliant.",
+      "required_tools": [
+        "update_driver_qualification_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

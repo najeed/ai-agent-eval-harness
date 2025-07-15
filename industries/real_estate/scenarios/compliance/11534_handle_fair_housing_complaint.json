@@ -1,0 +1,51 @@
+{
+  "scenario_id": "realestate-cp-11534",
+  "title": "Handle Fair Housing Complaint Inquiry",
+  "description": "An applicant who was denied housing calls, claiming discrimination. The manager must handle the call according to policy.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Listen to the complaint without admitting fault and express empathy.",
+      "expected_outcome": "Agent maintains a professional and calm demeanor while acknowledging the caller's frustration.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the applicant's file and the documented, non-discriminatory reason for their denial (e.g., poor credit score).",
+      "expected_outcome": "Agent pulls up the application file and confirms the denial was based on standard rental criteria.",
+      "required_tools": [
+        "get_application_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Escalate the call to the brokerage's legal counsel or senior manager and document the incident.",
+      "expected_outcome": "The agent does not attempt to resolve the legal complaint themselves but escalates it to the proper channel and creates a detailed incident report.",
+      "required_tools": [
+        "create_incident_report",
+        "escalate_to_legal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

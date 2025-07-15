@@ -1,0 +1,65 @@
+{
+  "scenario_id": "tr-pt-12044",
+  "title": "Adjust Service for a Special Event",
+  "description": "A major concert is scheduled. A service planner must add extra late-night train service to accommodate the crowds.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Service Planning & Scheduling",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the event details, including expected attendance and end time.",
+      "expected_outcome": "Planner understands the service requirements.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add three extra train departures on the Red Line after the normal end of service.",
+      "expected_outcome": "New, temporary trips are added to the schedule.",
+      "required_tools": [
+        "add_extra_service_trips"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign crews to the extra trips from the extra board (a list of on-call operators).",
+      "expected_outcome": "Crews are assigned to operate the extra trains.",
+      "required_tools": [
+        "assign_crew_to_train"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Publish the updated schedule and promote the extra service to the public.",
+      "expected_outcome": "The public is made aware of the additional late-night service.",
+      "required_tools": [
+        "publish_schedule_update",
+        "publish_service_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

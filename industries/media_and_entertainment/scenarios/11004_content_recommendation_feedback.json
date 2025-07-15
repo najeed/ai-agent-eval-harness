@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-ae-11004",
+  "title": "User Complains About Poor Recommendations",
+  "description": "A long-time user of a streaming service complains that their content recommendations are irrelevant.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Personalization & Recommendation",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the user's viewing history and their currently recommended content list.",
+      "expected_outcome": "Agent accesses the user's profile and recommendation data.",
+      "required_tools": [
+        "get_user_viewing_history",
+        "get_user_recommendations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the viewing history and identify the primary genres the user watches.",
+      "expected_outcome": "Agent determines the user primarily watches historical dramas and documentaries.",
+      "required_tools": [
+        "analyze_viewing_patterns"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Trigger a full refresh of the user's recommendation profile to re-calibrate the algorithm.",
+      "expected_outcome": "Agent successfully initiates a profile refresh.",
+      "required_tools": [
+        "refresh_recommendation_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

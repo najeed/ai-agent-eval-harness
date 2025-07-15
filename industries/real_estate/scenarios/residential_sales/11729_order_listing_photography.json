@@ -1,0 +1,54 @@
+{
+  "scenario_id": "realestate-res-11729",
+  "title": "Order Listing Photography",
+  "description": "For a new listing, the agent needs to schedule a professional photographer.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the property address and the preferred real estate photographer from the vendor list.",
+      "expected_outcome": "Agent selects the correct property and photographer.",
+      "required_tools": [
+        "get_listing_details",
+        "get_vendor_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the photographer to check their availability and schedule the photoshoot.",
+      "expected_outcome": "Agent successfully books the photographer for a specific date and time.",
+      "required_tools": [
+        "contact_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the appointment with the seller and add it to their calendar.",
+      "expected_outcome": "Agent coordinates with the seller and updates their calendar.",
+      "required_tools": [
+        "send_email_to_client",
+        "update_calendar_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

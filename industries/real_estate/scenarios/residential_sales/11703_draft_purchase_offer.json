@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-11703",
+  "title": "Draft a Purchase Offer",
+  "description": "A buyer client is ready to make an offer on a property. The agent must draft the residential purchase agreement.",
+  "use_case": "Residential Sales",
+  "core_function": "Offer & Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all offer details from the buyer: price, financing terms, contingencies (inspection, appraisal), and desired closing date.",
+      "expected_outcome": "Agent correctly collects all necessary terms for the offer.",
+      "required_tools": [
+        "get_client_instructions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Populate the standard residential purchase agreement form with the property and offer details.",
+      "expected_outcome": "Agent generates a correctly filled-out purchase agreement.",
+      "required_tools": [
+        "draft_purchase_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the drafted offer to the buyer for their electronic signature.",
+      "expected_outcome": "Agent successfully sends the document for signature using a tool like DocuSign.",
+      "required_tools": [
+        "send_for_e_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

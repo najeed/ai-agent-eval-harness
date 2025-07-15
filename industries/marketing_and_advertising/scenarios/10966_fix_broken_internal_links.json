@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cc-10966",
+  "title": "Fix Broken Internal Links",
+  "description": "A technical SEO audit has found several broken internal links on the website that need to be fixed.",
+  "use_case": "Content & Creative Development",
+  "core_function": "SEO & Content Optimization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the list of broken links and the pages they are on from the SEO audit report.",
+      "expected_outcome": "Agent has a clear list of URLs to fix.",
+      "required_tools": [
+        "get_seo_audit_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each broken link, find the correct new URL for the intended destination page.",
+      "expected_outcome": "Agent identifies the correct destination for each link.",
+      "required_tools": [
+        "web_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Edit the source pages to update the broken links with the correct URLs.",
+      "expected_outcome": "Agent successfully fixes all the identified broken links.",
+      "required_tools": [
+        "content_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

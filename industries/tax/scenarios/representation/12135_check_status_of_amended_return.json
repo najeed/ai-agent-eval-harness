@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tax-rep-12135",
+  "title": "Check Status of Amended Return",
+  "description": "A taxpayer filed an amended return (Form 1040-X) several months ago and wants to know its status.",
+  "use_case": "Taxpayer Representation & Resolution",
+  "core_function": "Notice & Correspondence Management",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the taxpayer's personal information and the tax year of the amended return.",
+      "expected_outcome": "Agent collects the required information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the IRS 'Where's My Amended Return?' online tool.",
+      "expected_outcome": "Agent successfully accesses the IRS portal.",
+      "required_tools": [
+        "access_wheres_my_amended_return_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the taxpayer's information to retrieve the status and inform the client.",
+      "expected_outcome": "Agent finds the status is 'Processing' and informs the client.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

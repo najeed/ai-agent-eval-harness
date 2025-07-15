@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hc-brc-10455",
+  "title": "Apply a Contractual Adjustment",
+  "description": "A biller is manually posting a payment and needs to apply the correct contractual adjustment based on the payer's allowed amount.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Charge Capture & Coding",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the claim, the total charges, and the allowed amount from the explanation of benefits (EOB).",
+      "expected_outcome": "Biller has all the necessary financial figures.",
+      "required_tools": [
+        "get_claim_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the contractual adjustment amount (Total Charges - Allowed Amount).",
+      "expected_outcome": "Biller correctly calculates the amount that needs to be written off.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the payment and the contractual adjustment to the claim.",
+      "expected_outcome": "The payment is posted, the adjustment is applied, and the remaining balance is correctly identified.",
+      "required_tools": [
+        "post_insurance_payment",
+        "post_contractual_adjustment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

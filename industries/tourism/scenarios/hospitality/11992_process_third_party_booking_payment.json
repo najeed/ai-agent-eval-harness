@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tourism-ha-11992",
+  "title": "Process Payment for Third-Party Booking",
+  "description": "A guest checking out booked through a third-party website (e.g., Expedia) and needs to pay for incidental charges.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Billing & Folio Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the guest's folio and confirm that the room and tax were prepaid through the third party.",
+      "expected_outcome": "Agent confirms the main charges are covered and only incidentals are due.",
+      "required_tools": [
+        "get_guest_folio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Present the guest with the list of incidental charges (e.g., room service, parking).",
+      "expected_outcome": "Agent clearly communicates the outstanding balance.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Collect payment from the guest for the incidental charges.",
+      "expected_outcome": "Agent successfully processes the payment and provides the guest with a zero-balance receipt.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-to-11441",
+  "title": "Conduct a Yard Inventory Check",
+  "description": "The system shows a container should be in a specific location, but the truck driver cannot find it. An operator must verify its physical location.",
+  "use_case": "Terminal Operations",
+  "core_function": "Yard & Stowage Planning",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a report of a 'lost' container and its expected yard location from the TOS.",
+      "expected_outcome": "Operator is notified that container YYYY9876543 cannot be found at location A1-02-03.",
+      "required_tools": [
+        "get_operational_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch a yard checker to the location to physically look for the container.",
+      "expected_outcome": "A yard checker is sent to the area to investigate.",
+      "required_tools": [
+        "dispatch_yard_checker"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The checker finds the container in the adjacent slot (A1-02-04) and reports the correct location to have the TOS updated.",
+      "expected_outcome": "The checker reports the correct location, and the operator updates the container's position in the system, resolving the issue.",
+      "required_tools": [
+        "update_container_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-11792",
+  "title": "Manage a Transaction Checklist",
+  "description": "For a new property under contract, an agent needs to use a transaction checklist to ensure all tasks and deadlines are met.",
+  "use_case": "Residential Sales",
+  "core_function": "Offer & Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Apply a standard 'Buyer Side' transaction checklist template to the new transaction.",
+      "expected_outcome": "Agent successfully creates a new checklist for the property.",
+      "required_tools": [
+        "apply_transaction_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the key dates from the contract (e.g., effective date, contingency deadlines, closing date) into the checklist.",
+      "expected_outcome": "Agent accurately populates the checklist with all critical deadlines.",
+      "required_tools": [
+        "update_checklist_dates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "As tasks are completed (e.g., 'Earnest Money Deposited'), mark them as done in the system.",
+      "expected_outcome": "Agent keeps the checklist updated in real-time throughout the transaction.",
+      "required_tools": [
+        "update_task_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

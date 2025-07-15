@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ports-go-11469",
+  "title": "Assign a Trouble Ticket at the Gate",
+  "description": "A gate kiosk's printer stops working. The clerk needs to report the issue.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Gate Processing & Appointments",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify that the printer at Lane 3 is not working.",
+      "expected_outcome": "The clerk recognizes the hardware failure.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new trouble ticket in the IT helpdesk system.",
+      "expected_outcome": "A new ticket is created with the problem description 'Printer not working' and location 'Gate Lane 3'.",
+      "required_tools": [
+        "create_it_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the ticket to the on-site hardware support team.",
+      "expected_outcome": "The ticket is assigned to the correct support queue for resolution.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

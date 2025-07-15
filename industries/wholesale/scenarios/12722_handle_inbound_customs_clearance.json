@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-sp-12722",
+  "title": "Handle Inbound Customs Clearance",
+  "description": "An international shipment from a supplier is being held by customs. An agent must provide the necessary documentation to clear it.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Inbound Logistics",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a notification from the customs broker that a shipment is on hold.",
+      "expected_outcome": "Agent is alerted to the customs hold.",
+      "required_tools": [
+        "get_customs_broker_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the commercial invoice, packing list, and bill of lading for the shipment.",
+      "expected_outcome": "Agent gathers all the required shipping documents.",
+      "required_tools": [
+        "get_shipping_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the required documentation to the customs broker.",
+      "expected_outcome": "Agent successfully sends the documents to the broker.",
+      "required_tools": [
+        "submit_documents_to_broker"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "real_estate-rs-016",
+  "title": "Host a Weekend Open House",
+  "description": "An agent is hosting an open house and must manage marketing, setup, and visitor follow-up.",
+  "use_case": "Residential Sales",
+  "core_function": "Showings & Open Houses",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Market the open house on the MLS, Zillow, and social media platforms.",
+      "expected_outcome": "Marketing posts are created and scheduled for the week leading up to the event.",
+      "required_tools": [
+        "create_social_media_post",
+        "update_mls_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the open house, greet visitors and use a digital sign-in sheet to capture their contact information.",
+      "expected_outcome": "Agent collects contact information from at least 10 potential buyers.",
+      "required_tools": [
+        "digital_sign_in_app"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a follow-up email to all attendees thanking them for coming and asking for feedback.",
+      "expected_outcome": "A follow-up campaign is executed the next day.",
+      "required_tools": [
+        "send_bulk_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

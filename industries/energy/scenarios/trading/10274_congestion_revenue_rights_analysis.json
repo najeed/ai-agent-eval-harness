@@ -1,0 +1,50 @@
+{
+  "scenario_id": "energy-tr-10274",
+  "title": "Congestion Revenue Rights (CRR) Analysis",
+  "description": "A trader wants to analyze the value of Congestion Revenue Rights (CRRs), also known as FTRs, to see if they are a profitable investment.",
+  "use_case": "Energy Trading & Portfolio Management",
+  "core_function": "Market Analysis & Forecasting",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the top 10 most historically congested transmission paths in the market.",
+      "expected_outcome": "Agent produces a ranked list of congested paths.",
+      "required_tools": [
+        "get_historical_congestion_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each path, compare the historical auction price of the CRR to its actual payout (the congestion rent).",
+      "expected_outcome": "Agent calculates the historical profitability of holding CRRs on each path.",
+      "required_tools": [
+        "analyze_crr_profitability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the most historically profitable CRRs to bid on in the next auction.",
+      "expected_outcome": "Agent provides a list of the top 3 CRRs to target.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

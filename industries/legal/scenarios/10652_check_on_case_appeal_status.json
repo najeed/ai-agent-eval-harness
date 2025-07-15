@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-10652",
+  "title": "Check on Case Appeal Status",
+  "description": "A client wants to know the status of their appeal. A paralegal needs to check the appellate court's docket.",
+  "use_case": "Law Practice Management",
+  "core_function": "Docketing & Calendar Management",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the case name and docket number for the appeal.",
+      "expected_outcome": "Agent has the correct case identifiers.",
+      "required_tools": [
+        "case_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the appellate court's online docketing system (e.g., PACER for federal courts).",
+      "expected_outcome": "Agent logs into the court's system.",
+      "required_tools": [
+        "pacer_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Search for the case docket and review the most recent entries to determine the current status.",
+      "expected_outcome": "Agent finds that the case has been scheduled for oral argument next month.",
+      "required_tools": [
+        "pacer_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ecommerce-css-10178",
+  "title": "Verify Customer Age for Restricted Product",
+  "description": "A customer is trying to purchase an age-restricted item (e.g., wine, a rated video game) and must have their age verified.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Account Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When an age-restricted item is added to the cart, prompt the user for their date of birth.",
+      "expected_outcome": "System displays an age verification prompt.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a third-party service to verify that the customer's name and date of birth indicate they are of legal age.",
+      "expected_outcome": "The verification service returns a 'pass' status.",
+      "required_tools": [
+        "verify_customer_age"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If verification passes, allow the checkout to proceed. If it fails, block the purchase and display a message.",
+      "expected_outcome": "System correctly allows or blocks the transaction based on the verification result.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

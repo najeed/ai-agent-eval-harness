@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-go-11416",
+  "title": "Coordinate Train Loading",
+  "description": "A train has arrived at the intermodal yard to be loaded with containers for an inland destination.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Rail Operations",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the train's consist (list of railcars) and the list of containers to be loaded.",
+      "expected_outcome": "Rail planner has the full work order for the train.",
+      "required_tools": [
+        "get_train_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a sequence of moves for the rail-mounted gantry (RMG) cranes to load the containers onto the correct railcars.",
+      "expected_outcome": "An optimized work queue is created for the RMG crane operators.",
+      "required_tools": [
+        "generate_rail_crane_sequence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch the work to the crane operators and track the progress of the train loading.",
+      "expected_outcome": "Work instructions are sent, and the planner monitors the loading in real-time.",
+      "required_tools": [
+        "dispatch_rail_crane_work",
+        "monitor_rail_operations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "scenario_id": "tr-pt-12469",
+  "title": "Handle a Fare Evasion Incident",
+  "description": "A fare inspector finds a passenger on a train without a valid ticket. The inspector must issue a citation.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Fare & Revenue Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The inspector asks the passenger for their ticket and finds they do not have one.",
+      "expected_outcome": "A fare evasion is identified.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The inspector requests the passenger's identification.",
+      "expected_outcome": "The passenger's ID is obtained.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Using a handheld device, the inspector enters the passenger's information and issues a citation for fare evasion.",
+      "expected_outcome": "A citation is generated and printed.",
+      "required_tools": [
+        "issue_citation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The incident is logged in the system for tracking.",
+      "expected_outcome": "The citation is recorded in the compliance database.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

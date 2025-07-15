@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-iam-76",
+  "title": "Dormant Account Review",
+  "description": "An analyst must run a quarterly report to find accounts that have not been used for over 90 days and disable them.",
+  "use_case": "Identity & Access Management (IAM)",
+  "core_function": "Identity Governance & Attestation",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query Active Directory logs to find all accounts with a 'lastLogonTimestamp' older than 90 days.",
+      "expected_outcome": "Analyst generates an accurate list of all dormant accounts.",
+      "required_tools": [
+        "query_ad_for_dormant_accounts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the list with business unit managers to confirm the accounts are no longer needed.",
+      "expected_outcome": "Analyst verifies that the accounts can be safely disabled.",
+      "required_tools": [
+        "confirm_with_manager"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Disable all confirmed dormant accounts.",
+      "expected_outcome": "Analyst successfully disables the accounts, reducing the organization's attack surface.",
+      "required_tools": [
+        "disable_ad_user_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "remediation_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

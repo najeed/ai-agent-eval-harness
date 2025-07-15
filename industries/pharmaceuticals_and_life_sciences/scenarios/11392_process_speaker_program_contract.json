@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-cm-11392",
+  "title": "Process a Speaker Program Contract",
+  "description": "A medical affairs coordinator needs to process a contract and payment for a physician who is speaking at a company-sponsored event.",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Key Opinion Leader (KOL) Engagement",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a speaker contract using an approved legal template.",
+      "expected_outcome": "Agent creates a new contract populated with the speaker's details and the honorarium amount.",
+      "required_tools": [
+        "generate_contract_from_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the contract to the physician for their electronic signature.",
+      "expected_outcome": "Agent sends the contract via a secure e-signature platform.",
+      "required_tools": [
+        "send_for_esignature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the contract is executed, process the payment for the honorarium.",
+      "expected_outcome": "Agent submits a payment request to the finance department.",
+      "required_tools": [
+        "submit_payment_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Report the payment to comply with transparency regulations (e.g., the Sunshine Act).",
+      "expected_outcome": "Agent logs the payment in the transparency reporting system.",
+      "required_tools": [
+        "log_transparency_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

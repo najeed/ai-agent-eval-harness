@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-cc-10930",
+  "title": "Propose an A/B Test Hypothesis",
+  "description": "A CRO specialist wants to propose a new A/B test for the checkout page.",
+  "use_case": "Content & Creative Development",
+  "core_function": "User Experience (UX) & Conversion Rate Optimization (CRO)",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the checkout funnel and identify the step with the highest drop-off rate.",
+      "expected_outcome": "Agent finds that the 'shipping information' step has the highest exit rate.",
+      "required_tools": [
+        "google_analytics_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Formulate a hypothesis in the 'If we..., then..., because...' format.",
+      "expected_outcome": "Agent writes a clear hypothesis: 'If we change the CTA button color from blue to orange, then the conversion rate will increase, because orange has higher contrast and will draw more attention.'",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a mock-up of the proposed change (the 'B' version).",
+      "expected_outcome": "Agent designs a visual representation of the test variant.",
+      "required_tools": [
+        "design_software_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "design_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

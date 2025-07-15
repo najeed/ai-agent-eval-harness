@@ -1,0 +1,66 @@
+{
+  "scenario_id": "venues-fb-12290",
+  "title": "Set up a Temporary Bar",
+  "description": "For a large festival, a temporary beer garden is being set up on an outdoor plaza.",
+  "use_case": "Food & Beverage (Concessions)",
+  "core_function": "Staff & Stand Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a work order for the operations team to set up the physical bar and barriers.",
+      "expected_outcome": "Agent creates the setup task.",
+      "required_tools": [
+        "create_operations_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Place an order for the required inventory (kegs, cups) to be delivered to the temporary location.",
+      "expected_outcome": "Agent places the inventory order.",
+      "required_tools": [
+        "place_inventory_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule bartenders to staff the temporary bar.",
+      "expected_outcome": "Agent creates and fills the necessary shifts in the scheduling system.",
+      "required_tools": [
+        "create_staff_shifts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Request a temporary POS terminal from the IT department for the location.",
+      "expected_outcome": "Agent logs a request for the IT team.",
+      "required_tools": [
+        "log_technical_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

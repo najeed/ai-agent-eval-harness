@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-isr-10097",
+  "title": "Layered ISR Planning",
+  "description": "A planner must create a layered ISR plan to provide 24/7 surveillance of a high-threat area, using a mix of satellites, high-altitude drones, and medium-altitude drones.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "ISR Asset Planning & Tasking",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the surveillance area and the required level of coverage.",
+      "expected_outcome": "Planner accurately defines the mission parameters.",
+      "required_tools": [
+        "define_surveillance_area"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule satellite passes for periodic, wide-area coverage.",
+      "expected_outcome": "Planner schedules regular satellite imagery to get the big picture.",
+      "required_tools": [
+        "schedule_satellite_passes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule overlapping shifts of high-altitude and medium-altitude drones to provide persistent, 24/7 video coverage of the area.",
+      "expected_outcome": "Planner creates a detailed and continuous surveillance schedule using multiple drone assets.",
+      "required_tools": [
+        "schedule_drone_sorties"
+      ],
+      "success_criteria": [
+        {
+          "metric": "coverage_continuity",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

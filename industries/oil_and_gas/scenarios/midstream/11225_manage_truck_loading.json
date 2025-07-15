@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-mid-11225",
+  "title": "Manage Truck Loading at Terminal",
+  "description": "A terminal operator manages the process of a tanker truck arriving, loading gasoline, and departing from the loading rack.",
+  "use_case": "Midstream",
+  "core_function": "Logistics & Scheduling",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A truck arrives. Scan the driver's ID and the order number to authorize entry and pull up the loading details.",
+      "expected_outcome": "The driver and order are validated, and the system assigns them to an available loading bay.",
+      "required_tools": [
+        "validate_driver_and_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate the loading process, ensuring the correct product and volume are loaded and all safety connections are made.",
+      "expected_outcome": "The truck is loaded with the specified amount of gasoline safely.",
+      "required_tools": [
+        "start_product_loading"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Finalize the transaction, print the Bill of Lading (BOL), and log the truck's departure.",
+      "expected_outcome": "The transaction is completed, a BOL is generated, and the truck exits the terminal.",
+      "required_tools": [
+        "generate_bill_of_lading",
+        "log_truck_departure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

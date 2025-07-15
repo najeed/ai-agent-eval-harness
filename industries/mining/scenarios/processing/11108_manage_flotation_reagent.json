@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-proc-11108",
+  "title": "Manage Flotation Reagent Dosing",
+  "description": "A metallurgist adjusts the dosing rate of a collector reagent in a flotation circuit to improve copper recovery.",
+  "use_case": "Processing & Metallurgy",
+  "core_function": "Mineral Separation",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the latest lab assay results for the feed, concentrate, and tailings streams, which show copper recovery is slightly below target.",
+      "expected_outcome": "The metallurgist identifies that recovery needs to be improved.",
+      "required_tools": [
+        "get_lab_assay_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the current reagent dosing rates and decide to slightly increase the collector addition.",
+      "expected_outcome": "A decision is made to increase the collector dosing rate by 5%.",
+      "required_tools": [
+        "get_reagent_dosing_rates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Adjust the setpoint for the collector dosing pump in the plant's control system.",
+      "expected_outcome": "The pump's setpoint is updated, and subsequent lab results show copper recovery has increased to the target level.",
+      "required_tools": [
+        "set_reagent_pump_setpoint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

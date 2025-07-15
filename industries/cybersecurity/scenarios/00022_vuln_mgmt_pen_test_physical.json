@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-vm-22",
+  "title": "Physical Security Penetration Test",
+  "description": "A penetration tester is tasked with gaining unauthorized physical access to a corporate office building to test security controls.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Penetration Testing",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Conduct reconnaissance on the building to identify potential weaknesses like unmonitored entrances or smoking areas.",
+      "expected_outcome": "Tester identifies a side entrance used by employees on smoke breaks.",
+      "required_tools": [
+        "conduct_physical_recon"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attempt to tailgate an employee through the side entrance to bypass the badge reader.",
+      "expected_outcome": "Tester successfully follows an employee inside without being challenged.",
+      "required_tools": [
+        "attempt_tailgating"
+      ],
+      "success_criteria": [
+        {
+          "metric": "exploit_success_rate",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Locate an empty desk with an unlocked computer and plug in a malicious USB device to gain network access, achieving the test's objective.",
+      "expected_outcome": "Tester successfully demonstrates a physical breach leading to a network compromise.",
+      "required_tools": [
+        "plant_malicious_usb"
+      ],
+      "success_criteria": [
+        {
+          "metric": "objective_completion",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

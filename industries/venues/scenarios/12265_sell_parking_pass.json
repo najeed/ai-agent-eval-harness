@@ -1,0 +1,66 @@
+{
+  "scenario_id": "venues-tb-12265",
+  "title": "Sell Advance Parking Pass",
+  "description": "A customer who has already purchased event tickets wants to add a pre-paid parking pass to their order.",
+  "use_case": "Ticketing & Box Office",
+  "core_function": "Ticket Sales & Transactions",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the customer's existing ticket order.",
+      "expected_outcome": "Agent finds the customer's order.",
+      "required_tools": [
+        "search_ticket_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add a parking pass for the main lot to their order.",
+      "expected_outcome": "Agent successfully adds the parking pass to the customer's cart.",
+      "required_tools": [
+        "add_item_to_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the payment for the parking pass.",
+      "expected_outcome": "Agent charges the customer's card on file for the pass.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send an updated order confirmation including the digital parking pass.",
+      "expected_outcome": "Agent emails the parking pass to the customer.",
+      "required_tools": [
+        "deliver_digital_tickets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

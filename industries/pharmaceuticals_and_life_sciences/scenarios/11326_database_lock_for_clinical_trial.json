@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-ct-11326",
+  "title": "Prepare for Clinical Trial Database Lock",
+  "description": "A data manager is preparing for the final database lock of a completed clinical trial.",
+  "use_case": "Clinical Trials",
+  "core_function": "Clinical Data Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a final report of all open data queries in the EDC system.",
+      "expected_outcome": "Agent generates a report showing 5 remaining open queries.",
+      "required_tools": [
+        "generate_query_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Work with the clinical monitoring team to ensure all open queries are resolved and closed.",
+      "expected_outcome": "Agent follows up with CRAs until all queries are closed.",
+      "required_tools": [
+        "monitor_query_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform the final data reconciliation between the clinical and safety databases.",
+      "expected_outcome": "Agent runs a reconciliation and confirms there are no discrepancies in adverse event reporting.",
+      "required_tools": [
+        "perform_database_reconciliation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Execute the database lock procedure in the EDC system, making the data read-only.",
+      "expected_outcome": "Agent successfully locks the database and generates an audit trail of the action.",
+      "required_tools": [
+        "lock_edc_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

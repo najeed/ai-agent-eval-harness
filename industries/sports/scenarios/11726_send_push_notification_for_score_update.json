@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-fe-11726",
+  "title": "Send Push Notification for Score Update",
+  "description": "A fan has subscribed to receive score alerts for their favorite team. An agent must send a push notification after the team scores.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Fan Communications & Support",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a real-time alert that the team has scored.",
+      "expected_outcome": "Agent gets a notification from the live stats feed.",
+      "required_tools": [
+        "get_live_game_events"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify all fans who have subscribed to score alerts for that team.",
+      "expected_outcome": "Agent generates a list of recipients for the push notification.",
+      "required_tools": [
+        "get_notification_subscribers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a push notification to the subscribers with the new score.",
+      "expected_outcome": "Agent successfully sends the notification to all subscribed fans.",
+      "required_tools": [
+        "send_push_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

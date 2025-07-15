@@ -1,0 +1,66 @@
+{
+  "scenario_id": "lw-om-10727",
+  "title": "Handle a Lost Shipment Inquiry",
+  "description": "A customer calls because their tracking information has not updated in several days, and they believe the shipment is lost.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Claims Management",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the shipment's tracking history from the carrier.",
+      "expected_outcome": "Agent confirms the tracking has not updated in 5 days.",
+      "required_tools": [
+        "get_carrier_tracking_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate a 'tracer' request with the carrier to have them search for the package in their network.",
+      "expected_outcome": "Agent successfully files a tracer request with the carrier.",
+      "required_tools": [
+        "initiate_carrier_tracer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After 48 hours, the carrier confirms the package is lost. File a 'lost in transit' claim with the carrier.",
+      "expected_outcome": "Agent files a claim for the value of the goods.",
+      "required_tools": [
+        "submit_carrier_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Ship a replacement order to the customer free of charge.",
+      "expected_outcome": "Agent resolves the issue for the customer by sending a new shipment.",
+      "required_tools": [
+        "create_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

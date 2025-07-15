@@ -1,0 +1,53 @@
+{
+  "scenario_id": "telecom-sl-11843",
+  "title": "New Customer Acquisition - Business Account",
+  "description": "A small business owner wants to set up 5 lines with a shared data pool.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "New Customer Acquisition",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather business details and credit check requirements.",
+      "expected_outcome": "Agent collects all necessary information for a business account setup.",
+      "required_tools": [
+        "run_business_credit_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Recommend a suitable business plan with a shared data pool.",
+      "expected_outcome": "Agent recommends the 'Business Flex 100GB' plan.",
+      "required_tools": [
+        "get_business_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the master business account and process the order for the 5 lines.",
+      "expected_outcome": "Agent successfully creates the account and order.",
+      "required_tools": [
+        "create_business_account",
+        "process_new_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

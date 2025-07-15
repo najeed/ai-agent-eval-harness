@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-cp-11091",
+  "title": "Generate Dubbing Script for Foreign Language",
+  "description": "A TV show needs to be dubbed into German. An agent must generate a time-coded script for the German voice actors.",
+  "use_case": "Content Production & Management",
+  "core_function": "Post-production & VFX",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the original English dialogue script and the final video file.",
+      "expected_outcome": "Agent has the source materials.",
+      "required_tools": [
+        "get_dialogue_script",
+        "get_video_asset"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Translate the English script into German.",
+      "expected_outcome": "Agent generates a German translation of the dialogue.",
+      "required_tools": [
+        "translate_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "translation_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the video file to add precise time-codes to the German script, indicating when each line should be spoken.",
+      "expected_outcome": "Agent produces a final, time-coded dubbing script ready for the recording studio.",
+      "required_tools": [
+        "generate_time_coded_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

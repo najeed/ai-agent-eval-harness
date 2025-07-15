@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ret-cs-11657",
+  "title": "Resolve Double Charge Claim",
+  "description": "A customer calls claiming they were charged twice for a single online order.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Issue Resolution",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the customer's order.",
+      "expected_outcome": "The agent finds the customer's order in the system.",
+      "required_tools": [
+        "find_online_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the payment transaction history for that order.",
+      "expected_outcome": "The agent sees two payment authorization attempts but confirms that only one was actually captured.",
+      "required_tools": [
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain to the customer that one charge is a temporary authorization that will drop off their statement, and that they were only truly charged once. Offer to send a copy of the payment receipt.",
+      "expected_outcome": "The agent clarifies the situation and resolves the customer's concern.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

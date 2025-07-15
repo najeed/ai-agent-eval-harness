@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-cy-10055",
+  "title": "Military Deception Planning",
+  "description": "An IO officer must plan a military deception (MILDEC) operation to make an adversary believe an attack is coming from one direction, while the real attack comes from another.",
+  "use_case": "Cybersecurity & Information Warfare",
+  "core_function": "Information Operations (IO) Planning",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the adversary's intelligence collection capabilities to understand what they are looking for.",
+      "expected_outcome": "Officer correctly assesses the adversary's ISR patterns and capabilities.",
+      "required_tools": [
+        "analyze_adversary_isr"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Develop a deception plan that uses a combination of fake radio traffic, decoy equipment, and cyber effects to create a believable, fictitious force.",
+      "expected_outcome": "Officer creates a detailed and credible deception story.",
+      "required_tools": [
+        "develop_mildec_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_credibility",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a plan to monitor the adversary's reaction to the deception to assess its effectiveness.",
+      "expected_outcome": "Officer includes measures of effectiveness in the plan.",
+      "required_tools": [
+        "develop_assessment_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

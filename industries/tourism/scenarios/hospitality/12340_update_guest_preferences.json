@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tourism-ha-12340",
+  "title": "Update Guest Preferences",
+  "description": "A returning loyalty member wants to update their profile to always request a high-floor room away from the elevator.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Loyalty & Guest Relations",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the guest's loyalty profile using their member number.",
+      "expected_outcome": "Agent successfully locates the guest's profile.",
+      "required_tools": [
+        "get_loyalty_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Navigate to the preferences section of the profile.",
+      "expected_outcome": "Agent finds the correct area to update preferences.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add 'High floor' and 'Away from elevator' as permanent stay preferences.",
+      "expected_outcome": "Agent successfully saves the new preferences to the guest's profile.",
+      "required_tools": [
+        "update_guest_preferences"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

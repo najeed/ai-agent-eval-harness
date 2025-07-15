@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-rs-11562",
+  "title": "Search for Off-Market Properties",
+  "description": "In a competitive market, a buyer client asks their agent to find potential off-market properties (pocket listings).",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Property Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Post an inquiry to the brokerage's internal network or private agent groups about potential upcoming listings matching the buyer's criteria.",
+      "expected_outcome": "A message is posted to the company's Slack channel and a local agent Facebook group.",
+      "required_tools": [
+        "post_to_internal_network"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the brokerage's internal 'coming soon' or 'private exclusive' listings database.",
+      "expected_outcome": "Agent queries the internal system for any properties that are not yet on the public MLS.",
+      "required_tools": [
+        "search_internal_listings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact agents who frequently list properties in the desired neighborhood to ask about any unlisted inventory.",
+      "expected_outcome": "Agent identifies and sends emails to 5 top agents in the target area.",
+      "required_tools": [
+        "identify_top_agents",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

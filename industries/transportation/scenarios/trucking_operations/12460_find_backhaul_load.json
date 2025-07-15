@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-to-12460",
+  "title": "Find a Backhaul Load",
+  "description": "A driver is about to deliver a load, leaving them empty. A dispatcher needs to find a 'backhaul' load originating near the delivery location to avoid an empty return trip.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Dispatch & Load Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify that a driver will be empty in a specific city tomorrow.",
+      "expected_outcome": "Dispatcher knows they need to find a load for this driver.",
+      "required_tools": [
+        "get_driver_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search an external load board for available loads picking up in or near the driver's location.",
+      "expected_outcome": "The system returns a list of available loads from various brokers.",
+      "required_tools": [
+        "search_load_boards"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Filter the loads to find one that is profitable and matches the driver's equipment and destination preference.",
+      "expected_outcome": "The dispatcher identifies a suitable load.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Contact the broker to book the load.",
+      "expected_outcome": "The backhaul load is secured, ensuring a profitable return trip.",
+      "required_tools": [
+        "book_brokered_load"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

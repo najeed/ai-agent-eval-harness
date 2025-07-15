@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tourism-ta-12360",
+  "title": "Provide Event Schedule for a Festival",
+  "description": "A visitor at a music festival wants to know the performance schedule for the main stage today.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Visitor Information & Support",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the event (music festival) and the specific request (main stage schedule for today).",
+      "expected_outcome": "Agent understands the visitor's query.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the event schedule from the information system.",
+      "expected_outcome": "Agent pulls up the list of bands and their set times for the main stage.",
+      "required_tools": [
+        "get_event_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Communicate the schedule to the visitor.",
+      "expected_outcome": "Agent clearly lists the bands and their performance times.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

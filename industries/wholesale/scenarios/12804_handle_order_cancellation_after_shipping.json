@@ -1,0 +1,51 @@
+{
+  "scenario_id": "wholesale-om-12804",
+  "title": "Handle Order Cancellation After Shipping",
+  "description": "A customer calls to cancel an order, but it has already been shipped.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Order Processing & Fulfillment",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the order and check its status.",
+      "expected_outcome": "Agent confirms the order has already been shipped and provides the tracking number.",
+      "required_tools": [
+        "get_sales_order_details",
+        "get_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the customer that the order cannot be cancelled but they can return it for a refund once it arrives.",
+      "expected_outcome": "Agent clearly explains the return process.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create an RMA for the customer in advance so they can easily process the return.",
+      "expected_outcome": "Agent proactively creates the RMA for the customer.",
+      "required_tools": [
+        "create_rma"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

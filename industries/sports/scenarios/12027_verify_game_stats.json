@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-lm-12027",
+  "title": "Verify Official Game Statistics",
+  "description": "After a game, a league official must verify the official statistics before they are published.",
+  "use_case": "League & Competition Management",
+  "core_function": "Standings & Results Management",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the preliminary stats sheet from the on-site scorer.",
+      "expected_outcome": "Agent gets the raw statistical data from the game.",
+      "required_tools": [
+        "get_preliminary_stats"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cross-reference the stats with the video of the game to check for any errors.",
+      "expected_outcome": "Agent reviews key plays and finds a scoring error, incorrectly crediting an assist.",
+      "required_tools": [
+        "review_game_footage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Correct the error in the official stats sheet.",
+      "expected_outcome": "Agent successfully corrects the assist credit.",
+      "required_tools": [
+        "update_official_stats"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Finalize and publish the official game statistics.",
+      "expected_outcome": "Agent locks the stats sheet and publishes it.",
+      "required_tools": [
+        "publish_official_stats"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

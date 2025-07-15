@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-ph-10491",
+  "title": "Send Automated Appointment Confirmation",
+  "description": "A patient schedules an appointment online. The system needs to automatically send them a confirmation.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Patient Outreach & Engagement",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the new appointment data from the online scheduling portal.",
+      "expected_outcome": "The system detects a new appointment has been booked.",
+      "required_tools": [
+        "receive_appointment_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the patient's preferred communication method (email or text).",
+      "expected_outcome": "The system checks the patient's preferences.",
+      "required_tools": [
+        "get_patient_preferences"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Automatically send a confirmation message with the appointment details.",
+      "expected_outcome": "The patient receives an immediate confirmation of their appointment, reducing no-shows.",
+      "required_tools": [
+        "send_automated_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

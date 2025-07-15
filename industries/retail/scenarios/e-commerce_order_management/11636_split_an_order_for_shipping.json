@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ecom-11636",
+  "title": "Split an Order for Shipping",
+  "description": "An online order contains two items, but one is in a different warehouse. The order needs to be split into two separate shipments.",
+  "use_case": "E-commerce & Order Management",
+  "core_function": "Order Fulfillment & Status",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The order management system identifies that items in the order are sourced from different locations.",
+      "expected_outcome": "The system's logic flags the order for splitting.",
+      "required_tools": [
+        "check_item_sourcing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically splits the single order into two separate fulfillment orders, one for each warehouse.",
+      "expected_outcome": "Two new fulfillment requests are created from the original sales order.",
+      "required_tools": [
+        "split_order_for_fulfillment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Each warehouse picks and packs their part of the order, and the customer receives two separate shipping notifications with two tracking numbers.",
+      "expected_outcome": "The order is fulfilled efficiently from multiple locations.",
+      "required_tools": [
+        "send_shipping_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

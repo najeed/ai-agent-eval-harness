@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-cf-10307",
+  "title": "Process Corporate ACH Payment File",
+  "description": "A corporate client's treasury department needs to process a payroll file via ACH.",
+  "use_case": "Corporate Finance",
+  "core_function": "Treasury & Cash Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and validate the format of the ACH payment file.",
+      "expected_outcome": "Agent confirms the file format is correct and all required fields are present.",
+      "required_tools": [
+        "validate_ach_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the corporate account for sufficient funds to cover the total payroll amount.",
+      "expected_outcome": "Agent confirms the account balance is sufficient.",
+      "required_tools": [
+        "check_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the ACH batch for processing on the specified settlement date.",
+      "expected_outcome": "Agent successfully schedules the payment batch and provides a confirmation ID.",
+      "required_tools": [
+        "schedule_ach_batch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-10616",
+  "title": "Check for New Ethics Opinions",
+  "description": "A law firm's ethics counsel needs to check for any new ethics opinions issued by the state bar association in the last month.",
+  "use_case": "Law Practice Management",
+  "core_function": "Conflicts & Ethics",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Navigate to the state bar association's website and find the 'Ethics Opinions' section.",
+      "expected_outcome": "Agent successfully locates the correct webpage.",
+      "required_tools": [
+        "web_browser"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the opinions by date to see what has been published in the last 30 days.",
+      "expected_outcome": "Agent identifies one new ethics opinion.",
+      "required_tools": [
+        "web_browser"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Summarize the new opinion and its potential impact on the firm's practices.",
+      "expected_outcome": "Agent produces a concise summary for internal distribution.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "insight_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-pa-11545",
+  "title": "Process a Vendor Invoice",
+  "description": "An accounts payable clerk needs to process an invoice submitted by a vendor for services rendered.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Procurement & Contracts",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the invoice and match it to a purchase order in the system.",
+      "expected_outcome": "The clerk successfully matches the invoice to the correct PO.",
+      "required_tools": [
+        "match_invoice_to_po"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the services have been marked as received or completed by the requesting department.",
+      "expected_outcome": "The clerk confirms receipt of services has been logged.",
+      "required_tools": [
+        "verify_receipt_of_services"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the invoice and schedule it for payment in the next payment run.",
+      "expected_outcome": "The clerk approves the invoice for payment.",
+      "required_tools": [
+        "approve_invoice_for_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

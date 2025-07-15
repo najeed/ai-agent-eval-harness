@@ -1,0 +1,53 @@
+{
+  "scenario_id": "finance-cf-10320",
+  "title": "Update Financial Forecast",
+  "description": "An FP&A analyst needs to update the quarterly revenue forecast based on new sales data.",
+  "use_case": "Corporate Finance",
+  "core_function": "Financial Planning & Analysis (FP&A)",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the latest sales data into the financial planning model.",
+      "expected_outcome": "Agent successfully imports the new data, which shows higher-than-expected sales.",
+      "required_tools": [
+        "import_data_to_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Rerun the revenue forecast calculation in the planning tool.",
+      "expected_outcome": "Agent updates the forecast, which now projects a 5% increase in quarterly revenue.",
+      "required_tools": [
+        "run_forecast_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Publish the updated forecast and notify stakeholders.",
+      "expected_outcome": "Agent saves the new forecast version and sends a notification to the management team.",
+      "required_tools": [
+        "publish_forecast",
+        "notify_stakeholders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

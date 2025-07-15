@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-grc-63",
+  "title": "SOX ITGC Audit",
+  "description": "An analyst must test IT General Controls (ITGCs) for a Sarbanes-Oxley (SOX) audit, specifically focusing on change management.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Compliance Auditing & Reporting",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a sample of recent changes made to a financially-significant application.",
+      "expected_outcome": "Analyst selects a representative sample of changes from the change management system.",
+      "required_tools": [
+        "get_change_management_tickets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "sampling_randomness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each change, verify that it has documented approval from management and evidence of successful testing before it was deployed.",
+      "expected_outcome": "Analyst checks for the required evidence for each change in the sample.",
+      "required_tools": [
+        "verify_change_approval",
+        "verify_change_testing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "audit_thoroughness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the results of the testing, noting one change that was missing manager approval, and report it as a control deficiency.",
+      "expected_outcome": "Analyst correctly identifies and documents a control failure for remediation.",
+      "required_tools": [
+        "document_audit_finding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "finding_accuracy_and_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

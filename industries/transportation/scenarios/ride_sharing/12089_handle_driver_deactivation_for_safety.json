@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-rs-12089",
+  "title": "Handle Driver Deactivation for Safety Violation",
+  "description": "A driver's background check re-run reveals a new, serious criminal conviction. Their account must be immediately deactivated.",
+  "use_case": "Ride-Sharing & On-Demand Mobility",
+  "core_function": "Safety & Incident Response",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system receives results from a continuous background check, flagging a driver for a disqualifying offense.",
+      "expected_outcome": "A high-priority alert is sent to the safety team.",
+      "required_tools": [
+        "get_background_check_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "A safety agent reviews the report and confirms the offense violates the platform's safety standards.",
+      "expected_outcome": "The agent validates the reason for deactivation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The agent immediately and permanently deactivates the driver's account.",
+      "expected_outcome": "The driver's access to the platform is revoked.",
+      "required_tools": [
+        "deactivate_driver_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send a formal notification to the driver informing them of the deactivation, citing the safety policy violation.",
+      "expected_outcome": "A formal notice is sent.",
+      "required_tools": [
+        "send_driver_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

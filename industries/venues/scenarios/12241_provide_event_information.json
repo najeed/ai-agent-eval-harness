@@ -1,0 +1,62 @@
+{
+  "scenario_id": "venues-gs-12241",
+  "title": "Provide General Event Information",
+  "description": "A guest calls to ask what time the doors open for a concert tonight and what the venue's bag policy is.",
+  "use_case": "Guest & Patron Services",
+  "core_function": "General Inquiries & Support",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the event details for tonight's concert.",
+      "expected_outcome": "Agent finds the event information in the system.",
+      "required_tools": [
+        "get_event_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the guest that doors open at 7:00 PM.",
+      "expected_outcome": "Agent provides the correct door time.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Retrieve the standard venue bag policy from the knowledge base.",
+      "expected_outcome": "Agent finds the policy stating only small clear bags are allowed.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Clearly explain the bag policy to the guest.",
+      "expected_outcome": "Agent accurately communicates the bag size and type restrictions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

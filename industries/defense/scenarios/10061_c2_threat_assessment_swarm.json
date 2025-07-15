@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-c2-10061",
+  "title": "Drone Swarm Threat Assessment",
+  "description": "An operator must assess an approaching swarm of small, unidentified drones to determine if they are a coordinated threat to a naval vessel.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Threat Assessment & Prioritization",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Detect and track the multiple small, fast-moving drone contacts on radar.",
+      "expected_outcome": "Operator successfully tracks all individual elements of the swarm.",
+      "required_tools": [
+        "track_multiple_targets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tracking_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the swarm's behavior, noting its cohesive formation and direct vector towards the ship.",
+      "expected_outcome": "Operator correctly identifies the behavior as coordinated and hostile.",
+      "required_tools": [
+        "analyze_swarm_behavior"
+      ],
+      "success_criteria": [
+        {
+          "metric": "behavioral_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Classify the swarm as an imminent threat and recommend engagement with close-in weapon systems (CIWS).",
+      "expected_outcome": "Operator makes a rapid and correct threat assessment and recommends the appropriate defensive action.",
+      "required_tools": [
+        "classify_threat",
+        "recommend_course_of_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_speed",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

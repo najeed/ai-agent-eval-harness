@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-dev-11842",
+  "title": "Respond to a Request for Proposals (RFP)",
+  "description": "A city issues an RFP for the development of a city-owned parcel of land. A development company decides to respond.",
+  "use_case": "Real Estate Development",
+  "core_function": "Site Acquisition & Feasibility",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Thoroughly review the RFP document to understand all submission requirements, evaluation criteria, and deadlines.",
+      "expected_outcome": "Agent creates a checklist of all required components for the RFP response.",
+      "required_tools": [
+        "analyze_rfp_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assemble a project team (architect, engineer, financial analyst) to develop a concept and proposal.",
+      "expected_outcome": "A project team is formed and a project plan is created.",
+      "required_tools": [
+        "create_project_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the final RFP response, including conceptual drawings, financial pro-forma, and team qualifications, and submit it by the deadline.",
+      "expected_outcome": "A complete and compliant RFP response is submitted on time.",
+      "required_tools": [
+        "compile_rfp_response"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-up-11272",
+  "title": "Monitor Well Annulus Pressure",
+  "description": "An integrity engineer monitors the pressure in the annulus of an offshore well for any signs of a leak or pressure buildup.",
+  "use_case": "Upstream",
+  "core_function": "Production Operations",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the last 30 days of pressure readings from the 'A' annulus of well SB-101.",
+      "expected_outcome": "A trend chart of the annulus pressure is displayed.",
+      "required_tools": [
+        "get_realtime_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the trend for any sustained pressure increase, which could indicate a leak.",
+      "expected_outcome": "The analysis shows a slow but steady pressure increase over the last week.",
+      "required_tools": [
+        "analyze_pressure_trend"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Flag the well for further investigation and schedule a diagnostic test (e.g., an echo test) to find the leak source.",
+      "expected_outcome": "The well is flagged in the integrity management system, and a diagnostic work order is created.",
+      "required_tools": [
+        "flag_well_for_review",
+        "create_diagnostic_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

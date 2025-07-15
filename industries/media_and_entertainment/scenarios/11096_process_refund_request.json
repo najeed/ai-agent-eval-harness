@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-ae-11096",
+  "title": "Process Refund for Accidental Purchase",
+  "description": "A user accidentally purchased a movie on a VOD service and immediately requests a refund.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Customer & Community Support",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the user and the recent movie purchase.",
+      "expected_outcome": "Agent locates the transaction.",
+      "required_tools": [
+        "get_subscriber_details",
+        "get_purchase_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the playback history for the movie to ensure it has not been watched.",
+      "expected_outcome": "Agent confirms the user has not started watching the movie.",
+      "required_tools": [
+        "get_user_viewing_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the policy for unwatched content, process a full refund for the purchase.",
+      "expected_outcome": "Agent successfully issues a refund to the user's payment method.",
+      "required_tools": [
+        "issue_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

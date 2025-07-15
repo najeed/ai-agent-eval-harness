@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-pm-11879",
+  "title": "Coordinate Apartment Unit Turnover",
+  "description": "After a tenant moves out, a property manager must coordinate the 'turnover' process to get the unit ready for the next tenant.",
+  "use_case": "Property Management",
+  "core_function": "Maintenance & Repairs",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "After the move-out inspection, create a scope of work for the turnover, including painting, cleaning, and any necessary repairs.",
+      "expected_outcome": "A detailed turnover checklist is created.",
+      "required_tools": [
+        "create_scope_of_work"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule multiple vendors (painter, cleaner, handyman) to complete the work in the correct sequence.",
+      "expected_outcome": "All vendors are scheduled efficiently to minimize vacancy time.",
+      "required_tools": [
+        "schedule_vendor_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "coordination_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Conduct a final 'rent-ready' inspection to ensure all work has been completed to standard before marketing the unit.",
+      "expected_outcome": "The unit is confirmed to be in rent-ready condition.",
+      "required_tools": [
+        "conduct_digital_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

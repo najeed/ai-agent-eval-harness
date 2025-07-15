@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-om-12808",
+  "title": "Handle Customer Account Reactivation",
+  "description": "A former customer wants to start ordering again. An agent must reactivate their old account.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Customer Account Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's old, inactive account.",
+      "expected_outcome": "Agent locates the account.",
+      "required_tools": [
+        "get_inactive_customer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the customer's information and check if a new credit check is needed.",
+      "expected_outcome": "Agent confirms the customer's details and determines a new credit check is required due to the time elapsed.",
+      "required_tools": [
+        "run_credit_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reactivate the customer's account in the system.",
+      "expected_outcome": "Agent successfully marks the account as 'active'.",
+      "required_tools": [
+        "reactivate_customer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

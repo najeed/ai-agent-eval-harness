@@ -1,0 +1,64 @@
+{
+  "scenario_id": "wholesale-im-12408",
+  "title": "Handle Wave Picking for Multiple Orders",
+  "description": "A warehouse manager wants to improve picking efficiency by creating a 'wave' to pick items for multiple orders at once.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Picking, Packing, & Shipping",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select a group of orders to be included in the picking wave.",
+      "expected_outcome": "Agent selects 20 small orders that are all shipping via the same carrier.",
+      "required_tools": [
+        "get_unshipped_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system consolidates all items from all orders in the wave into a single, optimized pick list.",
+      "expected_outcome": "The system generates one master pick list for the entire wave.",
+      "required_tools": [
+        "create_wave_pick_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "A worker picks all the items in the wave and brings them to a central packing area.",
+      "expected_outcome": "The worker completes the master pick list.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "At the packing station, the items are sorted and packed into their individual orders.",
+      "expected_outcome": "All 20 orders are packed correctly.",
+      "required_tools": [
+        "sort_items_by_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

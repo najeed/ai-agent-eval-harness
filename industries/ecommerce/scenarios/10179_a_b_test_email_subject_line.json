@@ -1,0 +1,64 @@
+{
+  "scenario_id": "ecommerce-mce-10179",
+  "title": "A/B Test an Email Subject Line",
+  "description": "A marketer wants to test two different subject lines for a promotional email to see which one has a better open rate.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Campaign Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the two subject lines (A and B) to be tested.",
+      "expected_outcome": "Agent correctly inputs the two subject lines.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the target audience and configure the A/B test to send each version to 50% of the audience.",
+      "expected_outcome": "Agent correctly sets up the split test parameters.",
+      "required_tools": [
+        "setup_ab_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Launch the email campaign.",
+      "expected_outcome": "System sends the emails with the two different subject lines.",
+      "required_tools": [
+        "schedule_email_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "After 24 hours, compare the open rates for version A and version B to determine the winner.",
+      "expected_outcome": "Agent retrieves the results and identifies the subject line with the higher open rate.",
+      "required_tools": [
+        "get_campaign_analytics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-pw-11547",
+  "title": "Track Asset Maintenance History",
+  "description": "A public works manager wants to see the maintenance history for a specific city vehicle.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Asset Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the vehicle in the asset management system using its asset ID number.",
+      "expected_outcome": "The manager successfully locates the vehicle's record.",
+      "required_tools": [
+        "get_asset_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve all maintenance work orders associated with the vehicle.",
+      "expected_outcome": "The manager gets a complete list of all past repairs and preventive maintenance.",
+      "required_tools": [
+        "get_asset_maintenance_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the history to identify any recurring issues.",
+      "expected_outcome": "The manager reviews the data and notes the vehicle has had recurring transmission problems.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

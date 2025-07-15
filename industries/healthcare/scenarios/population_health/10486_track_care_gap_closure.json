@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hc-ph-10486",
+  "title": "Track Care Gap Closure",
+  "description": "A population health manager wants to see if their outreach campaign for diabetic eye exams has been effective.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Reporting & Analytics",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a report on the 'Diabetic Eye Exam' quality measure for the current year.",
+      "expected_outcome": "Manager generates the performance report for the measure.",
+      "required_tools": [
+        "run_quality_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the current performance rate to the rate from the previous quarter, before the outreach campaign began.",
+      "expected_outcome": "The manager compares the two data points.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Note that the performance rate has increased by 10%, indicating the campaign was successful.",
+      "expected_outcome": "The manager is able to measure the impact of their population health intervention.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

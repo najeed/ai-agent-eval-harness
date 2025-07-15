@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-sp-10957",
+  "title": "Select Influencers for a Campaign",
+  "description": "A marketing manager needs to identify and select 3-5 micro-influencers for a new product launch campaign.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Media Planning",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use an influencer marketing platform to search for influencers in a specific niche (e.g., 'home decor').",
+      "expected_outcome": "Agent generates a list of potential influencer partners.",
+      "required_tools": [
+        "influencer_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the potential influencers' audience demographics, engagement rates, and past brand collaborations.",
+      "expected_outcome": "Agent vets the influencers to ensure they are a good fit for the brand.",
+      "required_tools": [
+        "influencer_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select the final list of 3-5 influencers and reach out to them with the campaign proposal.",
+      "expected_outcome": "Agent finalizes the list and initiates contact.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

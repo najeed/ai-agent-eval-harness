@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-pw-11449",
+  "title": "Stop Water Service",
+  "description": "A resident is moving out of the city and needs to close their water utility account.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Utility Billing",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the resident's utility account and their requested service stop date.",
+      "expected_outcome": "Agent finds the account and notes the move-out date.",
+      "required_tools": [
+        "get_utility_account_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule a final meter reading for the service stop date.",
+      "expected_outcome": "Agent successfully schedules the final read.",
+      "required_tools": [
+        "schedule_meter_read"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the account closure and explain that a final bill will be mailed to their forwarding address.",
+      "expected_outcome": "Agent closes the account and clearly explains the final billing process.",
+      "required_tools": [
+        "close_utility_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

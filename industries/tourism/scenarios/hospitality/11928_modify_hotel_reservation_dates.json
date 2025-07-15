@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-ha-11928",
+  "title": "Modify Hotel Reservation Dates",
+  "description": "A customer needs to change the dates of their existing hotel reservation, moving it one week later.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Booking & Reservation Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the existing reservation using the confirmation number.",
+      "expected_outcome": "Agent locates the correct booking.",
+      "required_tools": [
+        "get_reservation_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for availability for the same room type for the new dates.",
+      "expected_outcome": "Agent confirms the room is available for the new dates.",
+      "required_tools": [
+        "check_room_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the reservation with the new dates and inform the customer of any price difference.",
+      "expected_outcome": "Agent successfully modifies the booking and communicates the new total.",
+      "required_tools": [
+        "modify_reservation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

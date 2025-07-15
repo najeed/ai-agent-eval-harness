@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-tc-11561",
+  "title": "Distribute Final Closing Documents",
+  "description": "After a successful closing, the TC must create a final package of all transaction documents for the client.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all signed contracts, addenda, disclosures, and the final closing statement from the transaction file.",
+      "expected_outcome": "Agent compiles a complete set of all executed documents from the transaction.",
+      "required_tools": [
+        "get_transaction_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Combine all documents into a single, organized PDF file.",
+      "expected_outcome": "A single, bookmarked PDF containing all documents is created.",
+      "required_tools": [
+        "compile_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the final document package to the client for their records via a secure link.",
+      "expected_outcome": "A secure email with a link to download the final documents is sent to the client.",
+      "required_tools": [
+        "send_secure_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

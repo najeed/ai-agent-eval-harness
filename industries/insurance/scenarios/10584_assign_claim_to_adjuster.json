@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-10584",
+  "title": "Assign a Claim to an Adjuster",
+  "description": "A new, complex disability claim has been filed and needs to be assigned to a senior claims adjuster.",
+  "use_case": "Life & Annuities",
+  "core_function": "Claims & Payouts",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the new claim to assess its complexity.",
+      "expected_outcome": "A claims manager reviews the file and determines it requires an experienced adjuster.",
+      "required_tools": [
+        "get_claim_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the workload and specialty of available senior adjusters.",
+      "expected_outcome": "The manager reviews the team's current assignments to find an adjuster with capacity.",
+      "required_tools": [
+        "get_adjuster_workload"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the claim to the selected adjuster.",
+      "expected_outcome": "The manager successfully assigns the new claim to the appropriate adjuster's queue.",
+      "required_tools": [
+        "assign_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-isr-10082",
+  "title": "Imagery Change Detection",
+  "description": "An imagery analyst must compare a new satellite image with an older one of the same location to detect any changes, such as new military construction.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "ISR Data Fusion & Analysis",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the new and archival satellite images for the specified area of interest.",
+      "expected_outcome": "Analyst successfully retrieves both images.",
+      "required_tools": [
+        "get_satellite_imagery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run an automated change detection algorithm to highlight differences between the two images.",
+      "expected_outcome": "The tool highlights several areas of significant change.",
+      "required_tools": [
+        "run_change_detection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually inspect the highlighted changes and identify the construction of new missile silos.",
+      "expected_outcome": "Analyst correctly interprets the changes and identifies the new military threat.",
+      "required_tools": [
+        "analyze_imagery_changes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "interpretation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

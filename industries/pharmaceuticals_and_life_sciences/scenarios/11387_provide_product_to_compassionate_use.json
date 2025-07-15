@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-cm-11387",
+  "title": "Provide Product via Compassionate Use",
+  "description": "A physician requests access to an investigational drug for a seriously ill patient who is not eligible for a clinical trial (compassionate use).",
+  "use_case": "Commercial & Medical Affairs",
+  "core_function": "Patient Support Programs",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and log the compassionate use request from the physician.",
+      "expected_outcome": "Agent logs the request in the appropriate system.",
+      "required_tools": [
+        "log_compassionate_use_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Route the request to an internal review committee to assess the medical rationale and ethical considerations.",
+      "expected_outcome": "Agent routes the request for review.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If approved, submit the request to the appropriate regulatory authority (e.g., as a single-patient IND to the FDA).",
+      "expected_outcome": "Agent prepares and submits the required regulatory paperwork.",
+      "required_tools": [
+        "submit_to_regulatory_gateway"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Once approved by regulators, coordinate the shipment of the drug to the physician.",
+      "expected_outcome": "Agent creates a shipment order for the investigational drug.",
+      "required_tools": [
+        "create_shipment_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

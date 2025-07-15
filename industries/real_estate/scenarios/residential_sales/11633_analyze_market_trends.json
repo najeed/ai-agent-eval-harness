@@ -1,0 +1,50 @@
+{
+  "scenario_id": "realestate-rs-11633",
+  "title": "Analyze Quarterly Market Trends",
+  "description": "An agent wants to create a quarterly market report for their client newsletter.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Valuation & Market Analysis",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve MLS data for the last quarter for a specific zip code (e.g., median sales price, days on market, inventory levels).",
+      "expected_outcome": "Agent successfully pulls the key market statistics from the MLS.",
+      "required_tools": [
+        "get_mls_market_stats"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the data to the previous quarter and the same quarter last year.",
+      "expected_outcome": "Agent calculates the percentage change for key metrics to identify trends.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate charts and write a brief summary of the market trends for the newsletter.",
+      "expected_outcome": "A summary with data visualizations is created, ready for inclusion in marketing materials.",
+      "required_tools": [
+        "generate_report_with_charts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tourism-ha-12365",
+  "title": "Apply a Corporate Rate to a Booking",
+  "description": "An employee of a partner company is booking a room and wants to use their corporate discount.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Billing & Folio Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the customer for their corporate discount code or company name.",
+      "expected_outcome": "Agent receives the corporate code.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Validate the corporate code and retrieve the associated discounted rate.",
+      "expected_outcome": "Agent confirms the code is valid and finds the 15% discount rate.",
+      "required_tools": [
+        "validate_corporate_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new reservation with the corporate rate applied.",
+      "expected_outcome": "Agent successfully books the room at the discounted price.",
+      "required_tools": [
+        "create_reservation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "defense-mp-10024",
+  "title": "Course of Action Analysis for Cyber Attack",
+  "description": "A cyber mission planner must evaluate two COAs to neutralize an adversary's air defense network: a kinetic strike vs. a non-kinetic cyberattack.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Course of Action (COA) Analysis",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Develop the plans for both the kinetic strike COA (using missiles) and the cyberattack COA (using malware).",
+      "expected_outcome": "Planner creates two detailed and distinct plans.",
+      "required_tools": [
+        "develop_course_of_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assess the risks for each COA, including potential for collateral damage (kinetic) and risk of malware discovery (cyber).",
+      "expected_outcome": "Planner accurately identifies the unique risks associated with each COA.",
+      "required_tools": [
+        "assess_mission_risk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_assessment_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the COAs based on probability of success, cost, and potential for escalation.",
+      "expected_outcome": "Planner provides a clear comparison of the two options.",
+      "required_tools": [
+        "compare_courses_of_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Recommend the cyberattack COA due to lower risk of escalation and no physical collateral damage.",
+      "expected_outcome": "Planner makes a well-justified recommendation.",
+      "required_tools": [
+        "generate_coa_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_justification_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

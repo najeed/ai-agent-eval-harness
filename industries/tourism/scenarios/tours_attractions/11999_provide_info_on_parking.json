@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tourism-ta-11999",
+  "title": "Provide Information on Parking",
+  "description": "A visitor planning a trip to a botanical garden wants to know about parking availability and cost.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Visitor Information & Support",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the attraction (botanical garden) and the query (parking).",
+      "expected_outcome": "Agent understands the user's request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve parking information from the attraction's knowledge base.",
+      "expected_outcome": "Agent finds that there is an on-site parking garage that costs $15 per day.",
+      "required_tools": [
+        "get_attraction_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Communicate the parking details, including location and cost, to the visitor.",
+      "expected_outcome": "Agent clearly provides the correct parking information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

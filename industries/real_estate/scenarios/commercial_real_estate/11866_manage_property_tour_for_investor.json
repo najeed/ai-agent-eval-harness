@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-cre-11866",
+  "title": "Manage Property Tour for an Investor",
+  "description": "An out-of-state investor is flying in to tour a portfolio of three potential investment properties.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Investment Sales",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a detailed tour schedule, including travel time between properties.",
+      "expected_outcome": "An efficient tour itinerary is created.",
+      "required_tools": [
+        "create_itinerary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate with the listing agents or property managers of all three properties to ensure access.",
+      "expected_outcome": "Access is confirmed for all properties on the tour.",
+      "required_tools": [
+        "schedule_property_tour"
+      ],
+      "success_criteria": [
+        {
+          "metric": "coordination_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare a tour book with the Offering Memorandum for each property.",
+      "expected_outcome": "A professional package of materials is prepared for the investor.",
+      "required_tools": [
+        "compile_tour_book"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

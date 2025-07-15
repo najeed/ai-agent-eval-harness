@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-pc-10556",
+  "title": "Handle Rental Car Coverage on a Claim",
+  "description": "A customer's car is in the shop for a covered repair, and they need to arrange for a rental car under their policy.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Claims Processing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their open claim, and verify they have rental reimbursement coverage.",
+      "expected_outcome": "The adjuster confirms the customer has rental coverage with a limit of $30/day.",
+      "required_tools": [
+        "get_claim_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the coverage limits to the customer.",
+      "expected_outcome": "The adjuster clearly explains the daily limit and maximum number of days.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up a direct billing arrangement with a network rental car company.",
+      "expected_outcome": "The adjuster makes a reservation for the customer and sets up direct billing.",
+      "required_tools": [
+        "setup_rental_car"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

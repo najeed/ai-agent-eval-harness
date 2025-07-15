@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-so-11611",
+  "title": "Suspend and Resume a Transaction",
+  "description": "A customer at checkout realizes they forgot an item and needs to leave the line to get it. The associate needs to suspend the transaction to help the next customer.",
+  "use_case": "Store Operations",
+  "core_function": "Point of Sale (POS) Transactions",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the customer's items.",
+      "expected_outcome": "The items are added to the transaction.",
+      "required_tools": [
+        "scan_item_barcode"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the 'Suspend Transaction' function on the POS.",
+      "expected_outcome": "The current transaction is saved, and the POS is ready for a new sale. A slip with a barcode is printed to resume the transaction.",
+      "required_tools": [
+        "suspend_transaction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "When the customer returns, scan the barcode on the slip to resume the transaction, add the final item, and complete the sale.",
+      "expected_outcome": "The saved transaction is successfully retrieved and completed.",
+      "required_tools": [
+        "resume_transaction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "scenario_id": "tr-to-12508",
+  "title": "Handle an Overage, Shortage, and Damage (OS&D) Report",
+  "description": "A driver at a delivery location reports a discrepancy between the bill of lading and what is being unloaded (e.g., one pallet is over).",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Safety & Compliance",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The driver calls to report an overage of one pallet at the delivery.",
+      "expected_outcome": "The dispatcher is aware of the discrepancy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The dispatcher creates an OS&D report in the system, detailing the issue.",
+      "expected_outcome": "A formal record of the discrepancy is created.",
+      "required_tools": [
+        "create_osd_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The dispatcher instructs the driver to have the receiver sign for what they received and to note the overage on the POD.",
+      "expected_outcome": "The driver gets the proper documentation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The OS&D team investigates the source of the extra pallet and arranges for its return or proper disposition.",
+      "expected_outcome": "The discrepancy is investigated and resolved.",
+      "required_tools": [
+        "assign_osd_investigation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

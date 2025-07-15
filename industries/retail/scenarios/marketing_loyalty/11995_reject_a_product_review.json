@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ml-11995",
+  "title": "Reject a Product Review",
+  "description": "A product review is submitted that contains profanity and is not a legitimate review of the product.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Customer Feedback & Reviews",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "An agent reviews a new submission in the moderation queue.",
+      "expected_outcome": "The agent reads the submitted text.",
+      "required_tools": [
+        "get_review_moderation_queue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The agent identifies that the review violates the site's terms of service due to profanity.",
+      "expected_outcome": "The agent correctly applies the content policy.",
+      "required_tools": [
+        "review_product_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "policy_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The agent rejects the review, providing 'Inappropriate Language' as the reason, and the review is not published.",
+      "expected_outcome": "Inappropriate content is prevented from appearing on the website.",
+      "required_tools": [
+        "reject_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

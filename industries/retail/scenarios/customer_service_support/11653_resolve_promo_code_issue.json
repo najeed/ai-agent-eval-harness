@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ret-cs-11653",
+  "title": "Resolve a Promo Code Issue",
+  "description": "A customer is trying to use a promo code online, but the website says it's invalid. They contact customer support.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Issue Resolution",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the customer for the promo code they are trying to use.",
+      "expected_outcome": "The agent gets the specific code.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the promo code in the marketing system to check its terms and validity.",
+      "expected_outcome": "The agent discovers the code was only valid for new customers, and this is a returning customer.",
+      "required_tools": [
+        "lookup_promo_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the terms to the customer and, as a goodwill gesture, provide them with a different, valid promo code for a small discount.",
+      "expected_outcome": "The agent resolves the customer's frustration and provides a valid discount.",
+      "required_tools": [
+        "generate_one_time_promo_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

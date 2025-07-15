@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-12283",
+  "title": "Diagnose GPS Timing Failure on Cell Site",
+  "description": "A cell site reports a 'Loss of Sync' alarm, indicating a problem with its GPS timing source.",
+  "use_case": "Network Operations",
+  "core_function": "Fault Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the 'Loss of Sync' alarm for the specific cell site.",
+      "expected_outcome": "Agent identifies the site and alarm.",
+      "required_tools": [
+        "get_network_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Remotely check the status of the GPS receiver at the site.",
+      "expected_outcome": "Agent finds the GPS receiver is not tracking any satellites.",
+      "required_tools": [
+        "get_gps_receiver_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a ticket for a field technician to inspect the GPS antenna and cabling.",
+      "expected_outcome": "Agent creates a ticket with specific instructions to check the physical GPS equipment.",
+      "required_tools": [
+        "create_trouble_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

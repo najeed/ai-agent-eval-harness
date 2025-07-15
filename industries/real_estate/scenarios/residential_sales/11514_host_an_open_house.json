@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-rs-11514",
+  "title": "Manage an Open House",
+  "description": "An agent is holding an open house. They need to market it and manage sign-ins.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Property Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule the open house for Saturday from 1-4 PM in the MLS.",
+      "expected_outcome": "The open house event is successfully added to the MLS listing.",
+      "required_tools": [
+        "update_mls_listing_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a digital sign-in form for the event.",
+      "expected_outcome": "A web form to capture visitor names and contact information is created.",
+      "required_tools": [
+        "create_digital_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the event, import the sign-in data into the CRM as new leads.",
+      "expected_outcome": "All open house visitors are added as new contacts in the CRM for follow-up.",
+      "required_tools": [
+        "import_leads_to_crm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

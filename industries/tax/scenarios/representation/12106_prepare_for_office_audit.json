@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-rep-12106",
+  "title": "Prepare for an IRS Office Audit",
+  "description": "A taxpayer has been selected for an office audit regarding their Schedule C business expenses.",
+  "use_case": "Taxpayer Representation & Resolution",
+  "core_function": "Examination & Audit Support",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the IRS audit notice to identify the specific items under examination.",
+      "expected_outcome": "Agent confirms the audit is focused on travel and meal expenses.",
+      "required_tools": [
+        "analyze_irs_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather all relevant documentation from the taxpayer, such as receipts, mileage logs, and bank statements.",
+      "expected_outcome": "Agent compiles a complete set of supporting documents.",
+      "required_tools": [
+        "request_client_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Organize the documentation and prepare an audit file to present to the IRS agent.",
+      "expected_outcome": "Agent creates a well-organized file that substantiates the expenses claimed.",
+      "required_tools": [
+        "organize_audit_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

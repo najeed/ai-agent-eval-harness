@@ -1,0 +1,50 @@
+{
+  "scenario_id": "energy-cs-10244",
+  "title": "Community Solar Program Subscription",
+  "description": "A residential customer wants to sign up for a local community solar program to support renewable energy and receive bill credits.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "Billing & Program Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Based on the customer's address, identify available community solar projects with open subscriptions.",
+      "expected_outcome": "Agent finds one local solar farm with 10 remaining subscription slots.",
+      "required_tools": [
+        "find_community_solar_projects"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the program's terms, including the subscription fee and the estimated monthly bill credit.",
+      "expected_outcome": "Agent clearly communicates the costs and benefits.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the customer's subscription application and sign them up for a 5 kW share of the project.",
+      "expected_outcome": "Agent successfully enrolls the customer in the program.",
+      "required_tools": [
+        "process_solar_subscription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

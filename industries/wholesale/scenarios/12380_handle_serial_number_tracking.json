@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-im-12380",
+  "title": "Handle Serial Number Tracking",
+  "description": "A wholesaler of high-value electronics must track the unique serial number of each item.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Inventory Control",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When receiving items, scan the serial number of each individual unit.",
+      "expected_outcome": "All serial numbers are recorded in the inventory system upon receipt.",
+      "required_tools": [
+        "scan_serial_number"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "When shipping an order, scan the serial number of each unit being sent to a customer.",
+      "expected_outcome": "The system links specific serial numbers to the customer's sales order.",
+      "required_tools": [
+        "assign_serial_number_to_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "When a customer has a warranty claim, use the serial number to verify the purchase date and details.",
+      "expected_outcome": "Agent can use the serial number to instantly look up the item's entire history.",
+      "required_tools": [
+        "trace_serial_number"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-11505",
+  "title": "Handle Late Rent Payment",
+  "description": "A tenant's rent has not been received by the due date. The system flags the account, and the PM must take action.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management & Reporting",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the tenant with the overdue balance from the system alert.",
+      "expected_outcome": "Agent confirms the tenant's name, unit, and overdue amount.",
+      "required_tools": [
+        "get_delinquency_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the standard late fee to the tenant's ledger.",
+      "expected_outcome": "The correct late fee, as specified in the lease, is posted to the tenant's account.",
+      "required_tools": [
+        "apply_late_fee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a formal 'Late Rent Notice' to the tenant via email.",
+      "expected_outcome": "The standard legal notice is generated and sent to the tenant, and the communication is logged in the system.",
+      "required_tools": [
+        "send_legal_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

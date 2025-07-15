@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-11716",
+  "title": "Handle a Tenant Noise Complaint",
+  "description": "A tenant complains about excessive noise from a neighboring unit. The agent must address the issue according to policy.",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and document the noise complaint, including the date, time, and nature of the noise.",
+      "expected_outcome": "Agent accurately logs the complaint in the system.",
+      "required_tools": [
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the lease agreements for both the complaining tenant and the accused tenant regarding quiet hours and nuisance clauses.",
+      "expected_outcome": "Agent confirms the relevant lease clauses.",
+      "required_tools": [
+        "get_lease_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a formal warning notice to the tenant accused of making noise, referencing the lease terms.",
+      "expected_outcome": "Agent sends a standardized, professional warning.",
+      "required_tools": [
+        "send_lease_violation_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

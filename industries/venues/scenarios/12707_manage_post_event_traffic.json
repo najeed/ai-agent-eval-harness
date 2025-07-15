@@ -1,0 +1,67 @@
+{
+  "scenario_id": "venues-vo-12707",
+  "title": "Manage Post-Event Traffic Flow",
+  "description": "As a sold-out event ends, the operations center must manage the flow of vehicle and pedestrian traffic leaving the venue.",
+  "use_case": "Venue Operations & Logistics",
+  "core_function": "Security & Emergency Response",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Coordinate with local police to manage traffic signals at key intersections near the venue.",
+      "expected_outcome": "Agent communicates with police to prioritize traffic leaving the venue's parking lots.",
+      "required_tools": [
+        "contact_local_police"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch parking attendants and security to direct traffic within the parking lots.",
+      "expected_outcome": "Agent sends staff to all major parking areas to direct drivers.",
+      "required_tools": [
+        "dispatch_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use digital signage on nearby roadways to direct drivers to the least congested routes.",
+      "expected_outcome": "Agent updates digital signs with real-time traffic advice.",
+      "required_tools": [
+        "update_digital_signage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Monitor CCTV feeds of parking lots and roadways to identify and resolve any bottlenecks.",
+      "expected_outcome": "Agent watches the cameras and re-deploys staff as needed to keep traffic moving.",
+      "required_tools": [
+        "monitor_cctv",
+        "dispatch_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

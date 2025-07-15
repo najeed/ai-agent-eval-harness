@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-plan-11135",
+  "title": "Design Mine Haul Road",
+  "description": "A mine planning engineer designs a new haul road to access a lower phase of the open pit.",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Long-Term Planning & Feasibility",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the start and end points of the new haul road on the mine plan.",
+      "expected_outcome": "The road's corridor is defined.",
+      "required_tools": [
+        "define_road_corridor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Design the road's alignment, ensuring the gradient does not exceed the maximum allowed for the haul trucks (e.g., 10%).",
+      "expected_outcome": "A safe and efficient road alignment is designed.",
+      "required_tools": [
+        "design_road_alignment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "engineering_design_compliance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the final design, including cut and fill volumes needed to construct the road.",
+      "expected_outcome": "A complete road design package is created for the construction team.",
+      "required_tools": [
+        "generate_road_design_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

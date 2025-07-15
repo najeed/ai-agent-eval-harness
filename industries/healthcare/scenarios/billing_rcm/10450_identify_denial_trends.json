@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-brc-10450",
+  "title": "Identify Denial Trends",
+  "description": "A revenue cycle manager needs to run a report to identify the top reasons for claim denials over the last quarter.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Denial Management",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the reporting module in the billing system.",
+      "expected_outcome": "Manager accesses the analytics dashboard.",
+      "required_tools": [
+        "open_reporting_module"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a 'Denial Analysis' report for the previous quarter, grouped by denial reason code.",
+      "expected_outcome": "The system generates a report summarizing all denials.",
+      "required_tools": [
+        "run_denial_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the report and identify that the top denial reason is 'Duplicate Claim', indicating a potential system issue.",
+      "expected_outcome": "Manager successfully uses data to identify a root cause for denials that needs to be investigated.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "energy-op-10203",
+  "title": "Wind Turbine Performance Fault Diagnosis",
+  "description": "An operations manager receives an alert for a wind turbine producing 15% less power than expected given current wind speeds. The agent must diagnose the potential cause.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Asset Performance Monitoring",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the turbine's real-time operational data (RPM, blade pitch, generator temperature, yaw error).",
+      "expected_outcome": "Agent fetches the current sensor readings from the SCADA system.",
+      "required_tools": [
+        "get_scada_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the turbine's power curve to its historical performance and the manufacturer's specification.",
+      "expected_outcome": "Agent identifies a deviation from the expected power curve.",
+      "required_tools": [
+        "get_power_curve_data",
+        "analyze_performance_deviation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check for recent maintenance logs or active error codes for the turbine.",
+      "expected_outcome": "Agent finds no recent error codes but notes the last maintenance was 6 months ago.",
+      "required_tools": [
+        "get_maintenance_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Based on the data, suggest the most likely causes (e.g., blade icing, yaw misalignment, sensor drift) and recommend dispatching a technician.",
+      "expected_outcome": "Agent provides a prioritized list of potential issues and creates a work order.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

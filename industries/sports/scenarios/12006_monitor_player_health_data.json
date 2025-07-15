@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-tm-12006",
+  "title": "Monitor Player Health Data",
+  "description": "A team's sports scientist needs to analyze GPS and heart rate data from a training session to identify players at risk of overexertion.",
+  "use_case": "Team & Player Management",
+  "core_function": "Player Performance & Health",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ingest the GPS and heart rate data from the players' wearable devices after a training session.",
+      "expected_outcome": "Agent successfully loads the data for all players.",
+      "required_tools": [
+        "ingest_wearable_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to calculate each player's total distance covered, high-speed running distance, and time spent in high heart rate zones.",
+      "expected_outcome": "Agent generates a performance summary for each player.",
+      "required_tools": [
+        "analyze_player_training_load"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Flag any players whose training load is significantly higher than their weekly average.",
+      "expected_outcome": "Agent identifies two players who are at high risk of fatigue.",
+      "required_tools": [
+        "compare_to_player_baseline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send a report to the head coach recommending a lighter training day for the flagged players.",
+      "expected_outcome": "Agent creates and sends a report with actionable recommendations.",
+      "required_tools": [
+        "generate_player_load_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

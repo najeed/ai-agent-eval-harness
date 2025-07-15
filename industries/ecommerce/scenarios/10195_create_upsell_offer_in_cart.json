@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ecommerce-mce-10195",
+  "title": "Create an Upsell Offer in the Cart",
+  "description": "When a customer adds a specific product to their cart, the system should offer them a related, more premium product as an upsell.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Personalization & Recommendations",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Detect when a specific item (e.g., 'Standard Headphones') is added to the cart.",
+      "expected_outcome": "System correctly identifies the trigger product.",
+      "required_tools": [
+        "monitor_cart_activity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on a predefined rule, display a promotion for a related, higher-margin item (e.g., 'Noise-Cancelling Headphones').",
+      "expected_outcome": "System shows a relevant upsell offer to the customer in the cart view.",
+      "required_tools": [
+        "display_upsell_promotion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "scenario_id": "legal-ldr-10656",
+  "title": "Prepare for Oral Argument",
+  "description": "An attorney is preparing for an oral argument before an appellate court and needs to anticipate potential questions from the judges.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Legal Research & Writing",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review all the briefs filed by both sides in the appeal.",
+      "expected_outcome": "Agent has a deep understanding of all arguments.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the weakest points in their own argument and the strongest points in the opponent's argument.",
+      "expected_outcome": "Agent pinpoints the most challenging aspects of the case.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Brainstorm a list of 10-15 difficult questions the judges are likely to ask, focusing on the identified weak points.",
+      "expected_outcome": "Agent generates a list of potential questions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Draft concise and persuasive answers to each potential question.",
+      "expected_outcome": "Agent creates a prep document to be used in a moot court session.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

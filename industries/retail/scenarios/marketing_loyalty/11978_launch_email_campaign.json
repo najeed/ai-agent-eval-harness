@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ret-ml-11978",
+  "title": "Launch an Email Campaign",
+  "description": "A marketing manager needs to launch a weekly email campaign announcing new arrivals to all subscribed customers.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Campaign Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the email template for 'New Arrivals'.",
+      "expected_outcome": "The manager chooses the correct email design.",
+      "required_tools": [
+        "select_email_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the target audience (e.g., 'All Subscribed Customers').",
+      "expected_outcome": "The manager defines the recipient list for the campaign.",
+      "required_tools": [
+        "select_target_audience"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the email to be sent at the desired date and time and activate the campaign.",
+      "expected_outcome": "The email campaign is successfully scheduled for delivery.",
+      "required_tools": [
+        "schedule_campaign",
+        "launch_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "media-ae-11080",
+  "title": "Update User Content Preferences",
+  "description": "A user wants to update their content preferences to get better recommendations.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Personalization & Recommendation",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Guide the user to the content preference settings in their account.",
+      "expected_outcome": "Agent provides clear instructions for the user to find the settings.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Allow the user to select their favorite genres and rate several movies and shows.",
+      "expected_outcome": "The user updates their preferences in the UI.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Trigger a refresh of the user's recommendation profile based on their new preferences.",
+      "expected_outcome": "Agent initiates a profile refresh, and the user's homepage is updated with new recommendations.",
+      "required_tools": [
+        "refresh_recommendation_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

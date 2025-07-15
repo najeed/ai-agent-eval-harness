@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-grc-79",
+  "title": "Automated Audit Evidence Collection",
+  "description": "An analyst must configure a GRC tool to automatically collect evidence for a compliance audit.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Compliance Auditing & Reporting",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Map a specific compliance control (e.g., 'Antivirus is installed on all workstations') to a data source (e.g., the EDR tool).",
+      "expected_outcome": "Analyst correctly maps the control to the technical data source.",
+      "required_tools": [
+        "map_control_to_data_source"
+      ],
+      "success_criteria": [
+        {
+          "metric": "mapping_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Configure an API connector in the GRC tool to query the EDR tool's API on a daily basis.",
+      "expected_outcome": "Analyst successfully configures the API integration.",
+      "required_tools": [
+        "configure_api_connector"
+      ],
+      "success_criteria": [
+        {
+          "metric": "configuration_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up a rule to automatically assess compliance based on the API data (e.g., if EDR agent is present, control is 'Compliant').",
+      "expected_outcome": "Analyst successfully automates the evidence collection and control testing process.",
+      "required_tools": [
+        "create_compliance_automation_rule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "automation_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

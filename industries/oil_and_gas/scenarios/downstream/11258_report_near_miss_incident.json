@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-down-11258",
+  "title": "Report a Near Miss Incident",
+  "description": "A field operator reports a 'near miss' incident where a dropped tool nearly hit another worker, to ensure it is investigated and learned from.",
+  "use_case": "Downstream",
+  "core_function": "Health, Safety & Environment (HSE)",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the safety reporting application and select 'Report Near Miss'.",
+      "expected_outcome": "The correct reporting form is opened.",
+      "required_tools": [
+        "load_reporting_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Describe the incident, including the location, time, and what happened. Optionally, attach a photo of the scene.",
+      "expected_outcome": "The details of the near miss are entered into the form.",
+      "required_tools": [
+        "complete_digital_form",
+        "attach_photo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the report, which automatically triggers an investigation by the HSE department.",
+      "expected_outcome": "The report is submitted, and a case is created in the incident management system.",
+      "required_tools": [
+        "submit_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

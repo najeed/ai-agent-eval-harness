@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ecommerce-osm-10176",
+  "title": "Deactivate Expired Coupon Codes",
+  "description": "An automated job runs daily to find and deactivate any coupon codes that have passed their expiration date.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Pricing & Promotions",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query the system for all active coupon codes whose expiration date is in the past.",
+      "expected_outcome": "System generates a list of expired codes.",
+      "required_tools": [
+        "get_expired_coupons"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each expired code, change its status to 'Inactive'.",
+      "expected_outcome": "System successfully deactivates all the identified coupon codes.",
+      "required_tools": [
+        "update_coupon_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

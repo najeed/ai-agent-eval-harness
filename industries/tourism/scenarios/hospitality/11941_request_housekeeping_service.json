@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-ha-11941",
+  "title": "Request Housekeeping Service",
+  "description": "An in-house guest requests extra towels and for their trash to be emptied.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Guest Services & In-Stay Support",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the guest by their room number.",
+      "expected_outcome": "Agent correctly identifies the guest making the request.",
+      "required_tools": [
+        "get_guest_details_by_room"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the service request for 'extra towels' and 'empty trash' in the system.",
+      "expected_outcome": "Agent correctly logs the two distinct housekeeping tasks.",
+      "required_tools": [
+        "log_service_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch the request to the housekeeping department and provide the guest with an estimated time.",
+      "expected_outcome": "Agent successfully sends the request to housekeeping and informs the guest it will be handled within 30 minutes.",
+      "required_tools": [
+        "dispatch_housekeeping_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

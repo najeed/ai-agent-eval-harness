@@ -1,0 +1,51 @@
+{
+  "scenario_id": "finance-rb-10374",
+  "title": "Refinance an Auto Loan",
+  "description": "A customer wants to refinance their existing auto loan from another lender to get a lower interest rate.",
+  "use_case": "Retail Banking",
+  "core_function": "Loan & Mortgage Services",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather details of the existing loan (lender, payoff amount) and the customer's information.",
+      "expected_outcome": "Agent collects all necessary information for the refinance application.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a credit check and provide a refinance offer, including a new, lower interest rate.",
+      "expected_outcome": "Agent gets approval and offers the customer a new loan that lowers their monthly payment.",
+      "required_tools": [
+        "run_credit_check",
+        "get_loan_decision"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If accepted, process the new loan and send the payoff check to the previous lender.",
+      "expected_outcome": "Agent completes the new loan and issues payment to the other bank to pay off the old loan.",
+      "required_tools": [
+        "disburse_loan_funds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

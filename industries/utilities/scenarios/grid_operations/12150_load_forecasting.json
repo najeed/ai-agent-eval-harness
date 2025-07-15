@@ -1,0 +1,51 @@
+{
+  "scenario_id": "utils-go-12150",
+  "title": "Short-Term System Load Forecast",
+  "description": "A system operator needs an accurate 24-hour load forecast for the entire grid to plan for generation dispatch.",
+  "use_case": "Grid Operations",
+  "core_function": "System Control & Monitoring",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve historical load data and the latest weather forecast (temperature, humidity, cloud cover).",
+      "expected_outcome": "System gathers all necessary input data.",
+      "required_tools": [
+        "get_historical_system_load",
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate an hourly load forecast for the next 24 hours using a machine learning model.",
+      "expected_outcome": "System produces the load forecast with confidence intervals.",
+      "required_tools": [
+        "generate_load_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "forecast_accuracy_mape",
+          "threshold": 0.03
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Visualize the forecast on a dashboard for the system operators.",
+      "expected_outcome": "System displays the forecast graph.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

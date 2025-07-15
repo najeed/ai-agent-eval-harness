@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-11658",
+  "title": "Schedule Annual Fire Alarm System Test",
+  "description": "The PM needs to schedule the legally required annual fire alarm system test for a commercial building.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Contact the certified fire safety vendor to schedule a date for the inspection and test.",
+      "expected_outcome": "An appointment is scheduled with 'SafeGuard Fire Co.' for the test.",
+      "required_tools": [
+        "get_vendor_details",
+        "schedule_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a notice to all building tenants informing them of the date and time of the alarm test.",
+      "expected_outcome": "A building-wide notice is sent out at least 48 hours in advance.",
+      "required_tools": [
+        "send_bulk_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the test, obtain the certificate of compliance from the vendor and save it to the property's file.",
+      "expected_outcome": "The compliance certificate is received and filed correctly.",
+      "required_tools": [
+        "log_compliance_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-rs-11690",
+  "title": "Schedule Professional Photography for a New Listing",
+  "description": "A new listing needs professional photos taken before it goes live. The agent's assistant must schedule the shoot.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Property Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Contact the brokerage's preferred real estate photographer.",
+      "expected_outcome": "Assistant finds the contact info for 'Picture Perfect Homes'.",
+      "required_tools": [
+        "get_vendor_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate with the seller to find a suitable date and time for the photo shoot.",
+      "expected_outcome": "A time that works for both the seller and photographer is agreed upon.",
+      "required_tools": [
+        "schedule_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a 'Preparing for Photos' checklist to the seller to help them get the house ready.",
+      "expected_outcome": "A helpful checklist is emailed to the seller.",
+      "required_tools": [
+        "send_document_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

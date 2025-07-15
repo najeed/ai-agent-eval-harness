@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-cre-11872",
+  "title": "Evaluate an Early Lease Termination Request",
+  "description": "A commercial tenant wants to terminate their lease early. The landlord's agent must evaluate the request and its financial impact.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Leasing & Tenant Representation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the tenant's lease to understand the penalties and clauses related to early termination.",
+      "expected_outcome": "Agent identifies the financial obligations of the tenant for early termination.",
+      "required_tools": [
+        "get_lease_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total cost of the termination fee, which may include unamortized leasing commissions and tenant improvements.",
+      "expected_outcome": "A precise termination fee is calculated.",
+      "required_tools": [
+        "calculate_lease_buyout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Present the buyout calculation to the tenant and negotiate the final termination agreement.",
+      "expected_outcome": "A lease termination agreement is executed, and the tenant pays the agreed-upon fee.",
+      "required_tools": [
+        "generate_termination_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "negotiation_success",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

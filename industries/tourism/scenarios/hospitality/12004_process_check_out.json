@@ -1,0 +1,51 @@
+{
+  "scenario_id": "tourism-ha-12004",
+  "title": "Process a Standard Guest Check-out",
+  "description": "A guest is at the front desk and wishes to check out of their room.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Billing & Folio Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the guest's folio using their room number.",
+      "expected_outcome": "Agent locates the guest's bill.",
+      "required_tools": [
+        "get_guest_folio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the charges with the guest and confirm the total balance.",
+      "expected_outcome": "Agent clearly presents the final bill to the guest.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the final payment using the credit card on file and provide the guest with a printed receipt.",
+      "expected_outcome": "Agent successfully closes the folio, processes payment, and provides a receipt.",
+      "required_tools": [
+        "process_payment",
+        "generate_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

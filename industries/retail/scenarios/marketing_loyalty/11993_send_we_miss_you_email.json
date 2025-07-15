@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ml-11993",
+  "title": "Send 'We Miss You' Email",
+  "description": "The marketing system needs to send a re-engagement email to customers who have not made a purchase in the last six months.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Personalized Offers",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A system job identifies all customers with no purchases in the last 180 days.",
+      "expected_outcome": "A list of lapsed customers is generated.",
+      "required_tools": [
+        "find_lapsed_customers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system sends them a 'We Miss You!' email that includes a special discount to encourage them to return.",
+      "expected_outcome": "A targeted campaign is sent to win back lapsed customers.",
+      "required_tools": [
+        "send_marketing_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system tracks which of these customers use the discount to measure the campaign's effectiveness.",
+      "expected_outcome": "The ROI of the win-back campaign can be calculated.",
+      "required_tools": [
+        "track_promo_code_usage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

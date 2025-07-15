@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-om-12403",
+  "title": "Handle Customer Account Consolidation",
+  "description": "A retail company acquires another, and they want to consolidate their two separate accounts into one.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Customer Account Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the two customer accounts to be merged.",
+      "expected_outcome": "Agent has the details for both accounts.",
+      "required_tools": [
+        "get_customer_account_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Merge the order history and contact information from the secondary account into the primary account.",
+      "expected_outcome": "All historical data is consolidated under one account.",
+      "required_tools": [
+        "merge_customer_accounts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deactivate the secondary account.",
+      "expected_outcome": "The old account is marked as inactive.",
+      "required_tools": [
+        "deactivate_customer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-fe-12013",
+  "title": "Manage Online Merchandise Store Inventory",
+  "description": "A team's new home jersey is selling out quickly online. An agent needs to check inventory and order more.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Merchandise & Concessions",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current inventory level for the new home jersey in the e-commerce system.",
+      "expected_outcome": "Agent confirms that several sizes are close to selling out.",
+      "required_tools": [
+        "check_merchandise_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the sales velocity to forecast when the remaining stock will be depleted.",
+      "expected_outcome": "The forecast shows all stock will be gone in 48 hours.",
+      "required_tools": [
+        "forecast_inventory_depletion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place a rush reorder with the jersey manufacturer.",
+      "expected_outcome": "Agent successfully places a new purchase order for more jerseys.",
+      "required_tools": [
+        "place_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-la-10570",
+  "title": "Withdraw a Life Insurance Application",
+  "description": "An applicant has changed their mind and wants to withdraw their pending life insurance application.",
+  "use_case": "Life & Annuities",
+  "core_function": "New Business & Underwriting",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the applicant and their pending application.",
+      "expected_outcome": "Agent locates the correct application file.",
+      "required_tools": [
+        "get_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm the applicant's request to withdraw.",
+      "expected_outcome": "Agent speaks with the applicant and confirms their intent.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Close the application file in the system as 'Withdrawn by Applicant'.",
+      "expected_outcome": "Agent successfully updates the application status to closed.",
+      "required_tools": [
+        "update_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

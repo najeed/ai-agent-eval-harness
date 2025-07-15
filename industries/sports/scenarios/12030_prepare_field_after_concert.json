@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-vo-12030",
+  "title": "Prepare Field After a Concert",
+  "description": "A stadium hosted a concert, and the grounds crew needs to prepare the grass field for a soccer game in two days.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Facility & Turf Management",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Assess the condition of the field after the concert flooring has been removed.",
+      "expected_outcome": "Agent logs the condition of the turf, noting areas of compaction.",
+      "required_tools": [
+        "log_turf_condition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a turf recovery plan, including aeration, watering, and mowing schedules.",
+      "expected_outcome": "Agent creates a detailed, hour-by-hour plan for the grounds crew.",
+      "required_tools": [
+        "generate_turf_recovery_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the necessary grounds crew staff and equipment for the recovery work.",
+      "expected_outcome": "Agent successfully schedules all required resources.",
+      "required_tools": [
+        "schedule_grounds_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

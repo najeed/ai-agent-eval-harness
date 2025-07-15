@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ecommerce-css-10135",
+  "title": "Proactively Ask for Customer Feedback",
+  "description": "A few days after an order is delivered, an automated system should ask the customer for feedback on their experience.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Feedback & Reviews",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify orders that were marked as 'Delivered' 3-5 days ago.",
+      "expected_outcome": "System generates a list of recent, completed orders.",
+      "required_tools": [
+        "get_recently_delivered_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each order, send a personalized email asking the customer to rate their experience and review the products they purchased.",
+      "expected_outcome": "System successfully sends out feedback request emails.",
+      "required_tools": [
+        "send_feedback_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

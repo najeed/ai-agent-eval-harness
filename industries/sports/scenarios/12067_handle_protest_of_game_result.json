@@ -1,0 +1,54 @@
+{
+  "scenario_id": "sports-lm-12067",
+  "title": "Handle a Team's Protest of a Game Result",
+  "description": "A team files a formal protest of a game's result, claiming a rule was misapplied by the officials on the final play.",
+  "use_case": "League & Competition Management",
+  "core_function": "Standings & Results Management",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the formal protest from the team.",
+      "expected_outcome": "Agent logs the protest.",
+      "required_tools": [
+        "receive_formal_protest"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the official rulebook and the video of the play in question.",
+      "expected_outcome": "Agent reviews the play and determines the officials did, in fact, misapply the rule.",
+      "required_tools": [
+        "get_rulebook",
+        "review_game_footage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Uphold the protest and schedule the final play of the game to be replayed.",
+      "expected_outcome": "Agent makes a ruling and schedules the replay.",
+      "required_tools": [
+        "uphold_protest",
+        "reschedule_game_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

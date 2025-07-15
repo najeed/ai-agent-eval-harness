@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-im-11677",
+  "title": "Work a Restocking Report",
+  "description": "A system-generated report shows items on the sales floor that have fallen below their presentation minimum. An associate needs to restock them.",
+  "use_case": "Inventory & Merchandising",
+  "core_function": "Receiving & Restocking",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate or view the daily 'shelf replenishment' report.",
+      "expected_outcome": "The associate gets a prioritized list of items that need restocking.",
+      "required_tools": [
+        "get_replenishment_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Go to the backroom and pick the items and quantities specified on the report.",
+      "expected_outcome": "The associate gathers all the needed stock.",
+      "required_tools": [
+        "check_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Restock the items on the sales floor and mark the tasks as complete on the report.",
+      "expected_outcome": "All low-stock items from the report are replenished on the shelves.",
+      "required_tools": [
+        "complete_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

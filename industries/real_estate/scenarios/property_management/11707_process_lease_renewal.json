@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-11707",
+  "title": "Process a Lease Renewal",
+  "description": "A tenant whose lease is expiring in 60 days has agreed to renew. The agent must generate and send the renewal agreement.",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the tenant's current lease and the agreed-upon renewal terms (e.g., 12 months, 3% rent increase).",
+      "expected_outcome": "Agent correctly identifies the lease and renewal terms.",
+      "required_tools": [
+        "get_lease_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a new lease agreement with the updated dates, rent amount, and terms.",
+      "expected_outcome": "Agent creates a legally compliant lease renewal document.",
+      "required_tools": [
+        "generate_lease_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the lease renewal to the tenant for electronic signature.",
+      "expected_outcome": "Agent successfully sends the document for signing.",
+      "required_tools": [
+        "send_for_e_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

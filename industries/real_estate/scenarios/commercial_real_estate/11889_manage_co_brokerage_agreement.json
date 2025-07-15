@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-cre-11889",
+  "title": "Manage a Co-Brokerage Agreement",
+  "description": "Two brokers from different firms are working together on a large transaction and need to formalize their commission split.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Investment Sales",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft a co-brokerage agreement that clearly defines each broker's roles, responsibilities, and the agreed-upon commission split.",
+      "expected_outcome": "A clear and comprehensive agreement is drafted.",
+      "required_tools": [
+        "generate_co_brokerage_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the agreement to the other broker for review and signature.",
+      "expected_outcome": "The agreement is sent for execution.",
+      "required_tools": [
+        "send_document_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the transaction closes, ensure the title company is aware of the agreement and disburses the commission checks correctly to each brokerage.",
+      "expected_outcome": "The commission is paid out correctly according to the agreement.",
+      "required_tools": [
+        "contact_title_company"
+      ],
+      "success_criteria": [
+        {
+          "metric": "coordination_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

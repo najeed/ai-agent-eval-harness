@@ -1,0 +1,64 @@
+{
+  "scenario_id": "lw-om-10763",
+  "title": "Handle an Order with High Fraud Risk",
+  "description": "An online order is automatically flagged by the system as having a high risk of fraud (e.g., mismatched billing/shipping addresses, proxy IP).",
+  "use_case": "Order & Customer Management",
+  "core_function": "Order Processing",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system places a new order on 'Fraud Review' hold and creates an alert.",
+      "expected_outcome": "The order is prevented from being fulfilled automatically.",
+      "required_tools": [
+        "monitor_order_holds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "A fraud analyst reviews the order details and the reasons it was flagged.",
+      "expected_outcome": "The analyst confirms the high-risk indicators.",
+      "required_tools": [
+        "get_order_fraud_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The analyst attempts to contact the customer via phone to verify the order details.",
+      "expected_outcome": "The phone number is out of service, increasing the suspicion of fraud.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The analyst cancels the order to prevent a fraudulent shipment and chargeback.",
+      "expected_outcome": "The order is cancelled with 'Suspected Fraud' as the reason.",
+      "required_tools": [
+        "cancel_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-isr-10037",
+  "title": "Satellite Re-tasking for Imagery",
+  "description": "An analyst needs to urgently re-task an imaging satellite to capture pictures of a suspected new military construction site.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "ISR Asset Planning & Tasking",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Submit a new collection request with the target coordinates and required image resolution.",
+      "expected_outcome": "Analyst accurately fills out and submits the collection request form.",
+      "required_tools": [
+        "submit_collection_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for available satellite passes over the target area in the next 24 hours.",
+      "expected_outcome": "Analyst identifies a suitable satellite pass occurring in 3 hours.",
+      "required_tools": [
+        "get_satellite_pass_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Task the satellite to take the image during the identified pass.",
+      "expected_outcome": "Analyst successfully sends the collection command to the satellite operations center.",
+      "required_tools": [
+        "task_satellite_imint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

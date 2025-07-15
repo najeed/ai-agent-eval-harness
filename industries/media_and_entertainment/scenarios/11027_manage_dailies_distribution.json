@@ -1,0 +1,67 @@
+{
+  "scenario_id": "media-cp-11027",
+  "title": "Manage Distribution of Dailies",
+  "description": "An agent needs to process the raw footage from a day's shoot (dailies) and make it securely available for review by the director and producers.",
+  "use_case": "Content Production & Management",
+  "core_function": "Post-production & VFX",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ingest the raw footage from the camera cards into the asset management system.",
+      "expected_outcome": "Agent successfully transfers all footage from the day's shoot.",
+      "required_tools": [
+        "ingest_raw_footage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Transcode the high-resolution raw footage into low-resolution proxy files for easy streaming.",
+      "expected_outcome": "Agent initiates and completes the transcoding process for all clips.",
+      "required_tools": [
+        "transcode_video_files"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload the proxy files to a secure online viewing platform.",
+      "expected_outcome": "Agent successfully uploads all proxy files.",
+      "required_tools": [
+        "upload_to_review_platform"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Grant access to the director and producers and send them a notification with the viewing link.",
+      "expected_outcome": "Agent correctly sets permissions and sends the notification.",
+      "required_tools": [
+        "set_user_permissions",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

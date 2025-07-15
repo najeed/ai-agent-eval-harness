@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-ph-10496",
+  "title": "Document in a Shared Care Plan",
+  "description": "A home health nurse visits a patient and needs to add a note to the shared care plan that is visible to the patient's PCP and other specialists.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Care Coordination & Planning",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient's shared care plan.",
+      "expected_outcome": "The nurse accesses the collaborative care plan document.",
+      "required_tools": [
+        "get_care_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new progress note within the care plan.",
+      "expected_outcome": "The nurse begins a new entry.",
+      "required_tools": [
+        "create_note"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document their findings from the home visit and save the note.",
+      "expected_outcome": "The note is saved to the shared plan, and other members of the care team are notified of the update.",
+      "required_tools": [
+        "update_note_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

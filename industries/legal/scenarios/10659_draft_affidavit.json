@@ -1,0 +1,50 @@
+{
+  "scenario_id": "legal-ldr-10659",
+  "title": "Draft an Affidavit",
+  "description": "In support of a motion, an attorney needs to draft an affidavit for a witness to sign, attesting to certain facts.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Pleadings & Motions Practice",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Interview the witness to gather the facts they can attest to under oath.",
+      "expected_outcome": "Agent has a clear understanding of the witness's testimony.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the affidavit, presenting the facts in a series of numbered paragraphs.",
+      "expected_outcome": "Agent creates a clearly written factual statement.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Include a notary block for the witness to sign the affidavit under penalty of perjury.",
+      "expected_outcome": "The draft affidavit is legally formatted and ready for execution.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

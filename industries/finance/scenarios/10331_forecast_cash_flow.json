@@ -1,0 +1,53 @@
+{
+  "scenario_id": "finance-cf-10331",
+  "title": "Forecast Short-Term Corporate Cash Flow",
+  "description": "A treasury analyst needs to create a 13-week cash flow forecast for the company.",
+  "use_case": "Corporate Finance",
+  "core_function": "Treasury & Cash Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather data on expected cash inflows (e.g., accounts receivable) and outflows (e.g., accounts payable, payroll).",
+      "expected_outcome": "Agent successfully pulls all required data from various financial systems.",
+      "required_tools": [
+        "get_accounts_receivable_data",
+        "get_accounts_payable_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Input the data into the cash flow forecasting model.",
+      "expected_outcome": "Agent accurately populates the forecasting template.",
+      "required_tools": [
+        "populate_forecast_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the 13-week forecast and identify any potential future cash shortfalls.",
+      "expected_outcome": "Agent generates the forecast and highlights a potential liquidity issue in week 9.",
+      "required_tools": [
+        "run_cash_flow_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

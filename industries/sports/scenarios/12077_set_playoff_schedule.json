@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-lm-12077",
+  "title": "Set the Playoff Schedule",
+  "description": "The regular season has ended, and a league administrator needs to set the schedule for the first round of the playoffs.",
+  "use_case": "League & Competition Management",
+  "core_function": "Scheduling & Fixtures",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the final league standings to determine the playoff matchups and seedings.",
+      "expected_outcome": "Agent has the final, verified standings and the first-round matchups.",
+      "required_tools": [
+        "get_league_standings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult with broadcast partners to select the best dates and time slots for the playoff games.",
+      "expected_outcome": "Agent finalizes the game times with the broadcasters.",
+      "required_tools": [
+        "check_broadcast_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Publish the official first-round playoff schedule.",
+      "expected_outcome": "Agent releases the schedule to the public and the teams.",
+      "required_tools": [
+        "publish_playoff_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "venues-em-12239",
+  "title": "Reschedule a Booked Event",
+  "description": "A client needs to reschedule their booked wedding from a Saturday in June to a Saturday in September.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Event Booking & Contracting",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the client's existing booking.",
+      "expected_outcome": "Agent finds the original booking for the June date.",
+      "required_tools": [
+        "get_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check availability for the requested new date in September.",
+      "expected_outcome": "Agent finds that the ballroom is available on the new date.",
+      "required_tools": [
+        "get_booking_calendar"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the booking in the system to the new date.",
+      "expected_outcome": "Agent successfully moves the event to the new date.",
+      "required_tools": [
+        "update_booking_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate and send a contract addendum to the client reflecting the date change.",
+      "expected_outcome": "Agent sends the addendum for signature.",
+      "required_tools": [
+        "generate_contract_addendum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

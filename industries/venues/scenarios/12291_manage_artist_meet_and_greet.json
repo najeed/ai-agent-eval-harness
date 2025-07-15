@@ -1,0 +1,66 @@
+{
+  "scenario_id": "venues-sh-12291",
+  "title": "Manage an Artist Meet and Greet",
+  "description": "A limited number of fans have purchased VIP packages that include a pre-show meet and greet with the artist.",
+  "use_case": "Sales & Hospitality",
+  "core_function": "VIP & Hospitality Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a guest list of all fans who purchased the VIP package.",
+      "expected_outcome": "Agent pulls the list from the ticketing system.",
+      "required_tools": [
+        "generate_guest_list_from_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set up a check-in station at the designated meet and greet location.",
+      "expected_outcome": "Agent coordinates the setup of the check-in area.",
+      "required_tools": [
+        "create_operations_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check in guests against the list as they arrive.",
+      "expected_outcome": "Agent manages the check-in process.",
+      "required_tools": [
+        "check_in_guest"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Coordinate with the artist's security to manage the flow of guests and ensure the event runs smoothly.",
+      "expected_outcome": "Agent works with the tour manager to execute the meet and greet.",
+      "required_tools": [
+        "communicate_with_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

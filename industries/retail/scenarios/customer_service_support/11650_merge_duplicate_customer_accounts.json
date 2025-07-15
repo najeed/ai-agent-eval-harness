@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-cs-11650",
+  "title": "Merge Duplicate Customer Accounts",
+  "description": "A customer service agent discovers a customer has two online accounts (e.g., one with a typo in the email). The accounts need to be merged.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Account Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the two duplicate accounts in the customer management system.",
+      "expected_outcome": "The agent confirms both accounts belong to the same person.",
+      "required_tools": [
+        "find_customer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the primary account to keep and the secondary account to be merged.",
+      "expected_outcome": "The agent chooses the account with the correct email as the primary.",
+      "required_tools": [
+        "select_records_for_merge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_logic",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Initiate the account merge, which combines the order history and loyalty points into the primary account.",
+      "expected_outcome": "The customer now has a single, unified account with all their historical data.",
+      "required_tools": [
+        "merge_customer_accounts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

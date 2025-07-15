@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-12594",
+  "title": "Gas Compressor Station Monitoring",
+  "description": "An operator monitors the health and performance of a natural gas compressor station.",
+  "use_case": "Gas Operations",
+  "core_function": "Pipeline & Pressure Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor real-time operational data from the compressor, including suction pressure, discharge pressure, and engine vibration.",
+      "expected_outcome": "System displays a live dashboard of compressor health.",
+      "required_tools": [
+        "get_compressor_station_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system detects an increasing trend in engine vibration levels.",
+      "expected_outcome": "System generates a predictive maintenance alert for the compressor.",
+      "required_tools": [
+        "analyze_vibration_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for a maintenance crew to inspect the compressor before a failure occurs.",
+      "expected_outcome": "System schedules a preventive maintenance task.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

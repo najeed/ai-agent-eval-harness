@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-plan-11118",
+  "title": "Design Underground Ventilation Circuit",
+  "description": "A ventilation engineer designs a ventilation system for a new section of an underground mine to ensure sufficient air is supplied.",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Ventilation & Services Design",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a 3D model of the new mine tunnels (drifts) in the ventilation simulation software.",
+      "expected_outcome": "An accurate model of the mine layout is created.",
+      "required_tools": [
+        "model_mine_drifts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the required airflow in each tunnel based on the diesel equipment that will be used and the number of personnel.",
+      "expected_outcome": "The required air quantities for each part of the new section are calculated.",
+      "required_tools": [
+        "calculate_airflow_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "engineering_design_compliance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a ventilation simulation to select the correct size and location for new fans and regulators to achieve the required airflows.",
+      "expected_outcome": "The simulation results in a ventilation design that is safe and energy-efficient.",
+      "required_tools": [
+        "run_ventilation_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

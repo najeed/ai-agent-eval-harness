@@ -1,0 +1,67 @@
+{
+  "scenario_id": "finance-rb-10312",
+  "title": "Report a Lost or Stolen Credit Card",
+  "description": "A customer calls in a panic because they have lost their credit card.",
+  "use_case": "Retail Banking",
+  "core_function": "Fraud & Security",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify and authenticate the customer.",
+      "expected_outcome": "Agent quickly and securely verifies the customer's identity.",
+      "required_tools": [
+        "get_customer_details",
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately deactivate the lost credit card to prevent any transactions.",
+      "expected_outcome": "Agent successfully deactivates the specified card.",
+      "required_tools": [
+        "set_card_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review recent transactions with the customer to identify any potential fraud.",
+      "expected_outcome": "Agent and customer review the last 5 transactions and confirm they are all legitimate.",
+      "required_tools": [
+        "get_transaction_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Order a replacement card to be sent to the customer's address on file.",
+      "expected_outcome": "Agent successfully issues a new card.",
+      "required_tools": [
+        "order_replacement_card"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

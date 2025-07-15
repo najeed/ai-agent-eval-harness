@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-hs-11425",
+  "title": "Issue a Permit to Work for Hot Work",
+  "description": "A maintenance team needs to perform welding (hot work) on a crane. A safety officer must issue a permit to work.",
+  "use_case": "Health, Safety, Security & Environment (HSSE)",
+  "core_function": "Safety & Incident Management",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the request for a hot work permit, including the location and scope of work.",
+      "expected_outcome": "Officer receives the request to perform welding on QC-03.",
+      "required_tools": [
+        "get_work_permit_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that a risk assessment has been completed and all required safety precautions are in place (e.g., fire extinguisher, fire watch).",
+      "expected_outcome": "Officer confirms all safety prerequisites are met.",
+      "required_tools": [
+        "verify_risk_assessment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_verification",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a time-limited hot work permit and log it in the safety system.",
+      "expected_outcome": "A permit is issued for a specific time frame, and the maintenance team is authorized to begin work.",
+      "required_tools": [
+        "issue_work_permit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

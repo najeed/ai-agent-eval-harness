@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ps-rc-11546",
+  "title": "Redact a Document for FOIA Release",
+  "description": "A public records officer is preparing a document for release under FOIA and needs to redact exempt information.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Public Records & FOIA",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the document to identify information that is exempt from disclosure (e.g., personal private information, deliberative process).",
+      "expected_outcome": "The officer identifies several pieces of personally identifiable information (PII) in the document.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a redaction tool to black out the exempt information.",
+      "expected_outcome": "The officer successfully redacts all PII.",
+      "required_tools": [
+        "redact_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the redacted version of the document, ready for release to the requestor.",
+      "expected_outcome": "The officer prepares the final, redacted document for delivery.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

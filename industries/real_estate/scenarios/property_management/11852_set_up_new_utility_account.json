@@ -1,0 +1,50 @@
+{
+  "scenario_id": "real_estate-pm-11852",
+  "title": "Set Up Utility Account for Vacant Unit",
+  "description": "Between tenants, a property manager must transfer the electric utility account for a unit into the management company's name.",
+  "use_case": "Property Management",
+  "core_function": "Rent Collection & Financials",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Contact the electric utility company to report a change in occupancy.",
+      "expected_outcome": "The utility company is notified of the tenant move-out.",
+      "required_tools": [
+        "contact_utility_company"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the utility company with the management company's information to establish service.",
+      "expected_outcome": "A new account is created for the management company.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm that the utility service has been successfully transferred and the account is active.",
+      "expected_outcome": "Agent receives confirmation of the new active account.",
+      "required_tools": [
+        "verify_utility_account_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

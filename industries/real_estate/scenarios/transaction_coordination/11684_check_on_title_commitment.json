@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-tc-11684",
+  "title": "Check on Title Commitment",
+  "description": "The TC needs to ensure the title commitment has been issued and reviewed by the deadline.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the transaction timeline for the title review deadline.",
+      "expected_outcome": "Agent confirms the deadline is this Friday.",
+      "required_tools": [
+        "get_transaction_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the title company to get the status of the title commitment.",
+      "expected_outcome": "Agent learns from the title company that the commitment has been issued and was sent yesterday.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the buyer's agent has received and reviewed the title commitment and that there are no issues.",
+      "expected_outcome": "The buyer's agent confirms they have reviewed the commitment and have no objections.",
+      "required_tools": [
+        "send_email",
+        "update_transaction_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-pa-10410",
+  "title": "Check Secondary Insurance Benefits",
+  "description": "A patient has both primary and secondary insurance. A billing specialist needs to check the benefits for the secondary payer.",
+  "use_case": "Patient Administration",
+  "core_function": "Insurance & Eligibility Verification",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the patient's record and identify their secondary insurance policy.",
+      "expected_outcome": "Agent finds the secondary payer information in the patient's chart.",
+      "required_tools": [
+        "get_patient_insurance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Submit an electronic eligibility request to the secondary payer.",
+      "expected_outcome": "Agent successfully sends the eligibility query.",
+      "required_tools": [
+        "submit_eligibility_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the response to confirm the policy is active and understand the coordination of benefits.",
+      "expected_outcome": "Agent confirms the secondary coverage and understands how it will apply after the primary pays.",
+      "required_tools": [
+        "review_eligibility_response"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

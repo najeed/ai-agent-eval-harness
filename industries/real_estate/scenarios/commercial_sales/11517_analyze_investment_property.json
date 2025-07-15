@@ -1,0 +1,50 @@
+{
+  "scenario_id": "realestate-cs-11517",
+  "title": "Analyze Multi-Family Investment Property",
+  "description": "An investor client is interested in a 10-unit apartment building and needs an analysis of its financial performance.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Valuation & Market Analysis",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the property's financial documents: rent roll and trailing 12-months P&L statement.",
+      "expected_outcome": "Agent acquires the necessary financial documents from the listing agent.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the documents to calculate the Net Operating Income (NOI) and Capitalization Rate (Cap Rate).",
+      "expected_outcome": "Agent correctly calculates the NOI and the asking Cap Rate.",
+      "required_tools": [
+        "calculate_property_financials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a pro-forma analysis and summary report for the investor.",
+      "expected_outcome": "A report detailing the property's financial metrics and potential ROI is created.",
+      "required_tools": [
+        "generate_investment_analysis_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ml-11689",
+  "title": "Create A/B Test for an Email Campaign",
+  "description": "A marketing manager wants to test two different subject lines for an upcoming promotional email to see which one gets a higher open rate.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Campaign Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Set up a new email campaign in the marketing platform.",
+      "expected_outcome": "The manager begins creating the new campaign.",
+      "required_tools": [
+        "create_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the 'A/B Test' option and enter two different subject lines (Version A and Version B).",
+      "expected_outcome": "The manager configures the A/B test with the two variations.",
+      "required_tools": [
+        "setup_ab_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Launch the campaign. The system will send Version A to a small portion of the audience and Version B to another small portion. After a set time, it will automatically send the winning version to the rest of the audience.",
+      "expected_outcome": "An A/B test is executed to optimize the campaign's performance.",
+      "required_tools": [
+        "launch_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

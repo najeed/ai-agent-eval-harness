@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-wm-10317",
+  "title": "Update Client KYC Information",
+  "description": "A periodic review requires a client to update their KYC information, such as employment and source of funds.",
+  "use_case": "Wealth Management",
+  "core_function": "Client Onboarding & KYC",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Notify the client that a periodic KYC update is required.",
+      "expected_outcome": "Agent sends a secure message to the client requesting the updated information.",
+      "required_tools": [
+        "send_secure_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the updated information from the client (e.g., new employer, annual income).",
+      "expected_outcome": "Agent securely receives and records the new client information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the client's profile in the system with the new KYC data.",
+      "expected_outcome": "Agent successfully updates the client's record.",
+      "required_tools": [
+        "update_client_kyc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

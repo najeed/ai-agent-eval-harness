@@ -1,0 +1,50 @@
+{
+  "scenario_id": "realestate-rs-11606",
+  "title": "Create New Property Listing",
+  "description": "An agent has signed a new listing agreement. They need to create the property listing in the MLS.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Property Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all property details, photos, and the seller's disclosure document.",
+      "expected_outcome": "Agent compiles all necessary information including property features and required legal documents.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter all property data into the MLS new listing form.",
+      "expected_outcome": "Agent accurately fills out all required fields in the MLS system.",
+      "required_tools": [
+        "create_mls_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload photos and all required documents (e.g., disclosures, floor plans) to the listing.",
+      "expected_outcome": "All media and documents are successfully uploaded and attached to the new MLS listing.",
+      "required_tools": [
+        "upload_listing_media"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

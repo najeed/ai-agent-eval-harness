@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-cp-11618",
+  "title": "Audit Closed Transaction File",
+  "description": "A brokerage manager needs to audit a recently closed transaction file for compliance.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the transaction file for a specified property address.",
+      "expected_outcome": "Agent pulls up the complete transaction folder with all documents.",
+      "required_tools": [
+        "get_transaction_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the documents in the file against the brokerage's required document checklist.",
+      "expected_outcome": "Agent verifies that all required contracts, addenda, and disclosures are present and signed.",
+      "required_tools": [
+        "compare_documents_to_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If any documents are missing, create a task for the agent of record to obtain them.",
+      "expected_outcome": "Agent identifies a missing addendum and assigns a task to the agent to upload it.",
+      "required_tools": [
+        "create_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

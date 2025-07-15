@@ -1,0 +1,50 @@
+{
+  "scenario_id": "media-cp-11087",
+  "title": "Track a Shipment of Hard Drives",
+  "description": "A production needs to track a shipment of hard drives containing raw footage being sent from a location shoot back to the studio.",
+  "use_case": "Content Production & Management",
+  "core_function": "Asset Management & Logistics",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the tracking number for the shipment from the location manager.",
+      "expected_outcome": "Agent has the correct tracking number.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of the shipment using the courier's tracking service.",
+      "expected_outcome": "Agent finds the shipment is currently in transit and scheduled for delivery tomorrow.",
+      "required_tools": [
+        "track_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the post-production supervisor of the estimated delivery time.",
+      "expected_outcome": "Agent sends a clear notification with the tracking details.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

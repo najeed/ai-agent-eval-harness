@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-sh-12250",
+  "title": "Prospect for New Suite Owners",
+  "description": "A sales manager wants to identify potential corporate clients to target for unsold luxury suites.",
+  "use_case": "Sales & Hospitality",
+  "core_function": "Premium Seating & Suite Sales",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search a business database for large companies headquartered in the local area.",
+      "expected_outcome": "Agent generates a list of potential corporate clients.",
+      "required_tools": [
+        "search_business_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cross-reference the list against the current and past suite holder list to identify new prospects.",
+      "expected_outcome": "Agent filters out existing clients to create a list of new targets.",
+      "required_tools": [
+        "compare_client_lists"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the new prospects to sales representatives to begin outreach.",
+      "expected_outcome": "Agent divides the prospect list and assigns them to the sales team in the CRM.",
+      "required_tools": [
+        "assign_sales_leads"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

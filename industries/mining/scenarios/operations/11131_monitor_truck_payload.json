@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-ops-11131",
+  "title": "Monitor Haul Truck Payload",
+  "description": "A dispatcher monitors haul truck payloads in real-time to ensure they are being loaded correctly, avoiding underloading (inefficient) and overloading (unsafe).",
+  "use_case": "Mine Operations",
+  "core_function": "Load & Haul",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the live feed of payload data from the Fleet Management System.",
+      "expected_outcome": "A dashboard shows the payload for each truck as it is loaded.",
+      "required_tools": [
+        "get_fms_payload_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive an alert that truck HT-61 was overloaded by 10% on its last load from shovel SH-203.",
+      "expected_outcome": "The dispatcher acknowledges the overload alert.",
+      "required_tools": [
+        "get_fms_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "response_time_seconds",
+          "threshold": 60
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a message to the operator of shovel SH-203 to be more careful with the number of passes per truck.",
+      "expected_outcome": "The shovel operator receives and acknowledges the feedback.",
+      "required_tools": [
+        "send_message_to_operator"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

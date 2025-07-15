@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-mce-10128",
+  "title": "Apply Loyalty Points to an Order",
+  "description": "A customer wants to use their loyalty points to get a discount on their current purchase.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Loyalty Programs",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the customer's available loyalty points balance.",
+      "expected_outcome": "Agent confirms the customer has enough points for a discount.",
+      "required_tools": [
+        "get_loyalty_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the point redemption as a discount to the customer's shopping cart.",
+      "expected_outcome": "Agent successfully adds the discount to the order total.",
+      "required_tools": [
+        "apply_discount_to_cart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the customer's loyalty point balance to reflect the points that were used.",
+      "expected_outcome": "Agent correctly deducts the redeemed points from the customer's account.",
+      "required_tools": [
+        "update_loyalty_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "transaction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

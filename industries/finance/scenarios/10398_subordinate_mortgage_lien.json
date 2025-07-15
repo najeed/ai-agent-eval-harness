@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-rb-10398",
+  "title": "Subordinate a Mortgage Lien",
+  "description": "A customer is refinancing their first mortgage with another lender and needs the bank to subordinate its second mortgage (HELOC) to the new first mortgage.",
+  "use_case": "Retail Banking",
+  "core_function": "Loan & Mortgage Services",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the subordination request from the other lender.",
+      "expected_outcome": "Agent receives the request and all supporting documents.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the request to ensure it meets the bank's policy for subordination (e.g., loan-to-value ratio is acceptable).",
+      "expected_outcome": "Agent reviews the new loan terms and confirms they meet policy guidelines.",
+      "required_tools": [
+        "review_subordination_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the request and generate the subordination agreement to be sent to the other lender.",
+      "expected_outcome": "Agent approves the request and sends the legal agreement to the title company.",
+      "required_tools": [
+        "generate_subordination_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-to-12079",
+  "title": "Handle an Accessorial Charge Dispute",
+  "description": "A customer is disputing a detention charge on an invoice, claiming the driver was not detained.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Billing & Settlements",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the invoice and the specific detention charge being disputed.",
+      "expected_outcome": "Agent locates the correct invoice and charge.",
+      "required_tools": [
+        "get_invoice_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the signed Proof of Delivery for the load, which should have the driver's in and out times.",
+      "expected_outcome": "Agent pulls the POD document.",
+      "required_tools": [
+        "get_pod_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the in/out times, which show the driver was at the facility for 4 hours, justifying the detention charge.",
+      "expected_outcome": "The agent finds evidence that the charge is valid.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Contact the customer, provide them with a copy of the signed POD, and explain why the charge is valid.",
+      "expected_outcome": "The agent provides evidence to the customer and upholds the charge.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

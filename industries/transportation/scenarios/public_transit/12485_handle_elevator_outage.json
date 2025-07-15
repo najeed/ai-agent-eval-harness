@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-pt-12485",
+  "title": "Handle a Station Elevator Outage",
+  "description": "An elevator at a subway station is out of service, impacting accessibility. The control center must manage the response.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Passenger Information Systems",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an alert that an elevator at a specific station is offline.",
+      "expected_outcome": "The agent is notified of the accessibility issue.",
+      "required_tools": [
+        "get_facility_status_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Post a service alert on the website and app, informing passengers that the station is not currently accessible.",
+      "expected_outcome": "A public alert is published.",
+      "required_tools": [
+        "publish_service_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a high-priority work order for the elevator maintenance team.",
+      "expected_outcome": "A repair ticket is created.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Arrange for a temporary shuttle bus to connect the inaccessible station to the next nearest accessible station.",
+      "expected_outcome": "A bus bridge is set up to maintain accessibility.",
+      "required_tools": [
+        "dispatch_shuttle_bus"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "scenario_id": "venues-gs-12703",
+  "title": "Handle Complaint About Staff Member",
+  "description": "A guest reports that an usher was rude to them.",
+  "use_case": "Guest & Patron Services",
+  "core_function": "Issue Resolution & Complaints",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Apologize to the guest and get the details of the incident, including the location and a description of the usher.",
+      "expected_outcome": "Agent gathers all relevant information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the complaint in the incident management system.",
+      "expected_outcome": "Agent creates a new incident report.",
+      "required_tools": [
+        "log_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Forward the report to the supervisor in charge of the ushers for investigation and follow-up.",
+      "expected_outcome": "Agent assigns the incident to the appropriate manager.",
+      "required_tools": [
+        "assign_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Offer the guest a gesture of goodwill, such as a voucher for a free soda.",
+      "expected_outcome": "Agent offers a service recovery gesture.",
+      "required_tools": [
+        "issue_voucher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

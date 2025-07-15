@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-tm-11724",
+  "title": "Manage Player Injury Status",
+  "description": "A player gets injured during a game. The medical staff needs to update their status and create a recovery plan.",
+  "use_case": "Team & Player Management",
+  "core_function": "Player Performance & Health",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the injury details (e.g., type, severity, date) in the player's medical record.",
+      "expected_outcome": "Agent successfully creates a new injury record.",
+      "required_tools": [
+        "log_player_injury"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the player's official status on the team roster to 'Injured'.",
+      "expected_outcome": "Agent updates the player's status.",
+      "required_tools": [
+        "update_player_roster_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the injury type, generate a standard rehabilitation plan.",
+      "expected_outcome": "Agent creates a day-by-day recovery and therapy plan for the player.",
+      "required_tools": [
+        "generate_rehab_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

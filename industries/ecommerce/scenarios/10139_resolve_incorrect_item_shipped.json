@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-css-10139",
+  "title": "Resolve Incorrect Item Shipped",
+  "description": "A customer ordered a red shirt but received a blue one. The agent needs to fix the mistake.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Issue Resolution",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the customer's original order to confirm they ordered the red shirt.",
+      "expected_outcome": "Agent confirms the original order was for the red shirt.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apologize for the error and process a new, no-charge order for the correct red shirt.",
+      "expected_outcome": "Agent creates a replacement order for the correct item.",
+      "required_tools": [
+        "create_replacement_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the customer with a free return label to send back the incorrect blue shirt.",
+      "expected_outcome": "Agent sends a return label to the customer.",
+      "required_tools": [
+        "create_return_authorization"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

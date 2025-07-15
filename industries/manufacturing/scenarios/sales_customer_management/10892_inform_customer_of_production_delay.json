@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sc-10892",
+  "title": "Inform Customer of a Production Delay",
+  "description": "A production delay means a customer's order will be late. A sales rep needs to proactively inform the customer.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Order Status & Fulfillment Tracking",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the sales order affected by the production delay.",
+      "expected_outcome": "Agent finds the relevant sales order.",
+      "required_tools": [
+        "find_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the revised estimated completion date from the production planning team.",
+      "expected_outcome": "Agent receives a new ETA for the order.",
+      "required_tools": [
+        "get_revised_completion_date"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the customer, explain the situation, provide the new ETA, and apologize for the delay.",
+      "expected_outcome": "Agent clearly and proactively communicates the delay to the customer.",
+      "required_tools": [
+        "send_email_to_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-10660",
+  "title": "Onboard a New Attorney",
+  "description": "A new attorney is joining the firm. The practice manager needs to set them up in all firm systems.",
+  "use_case": "Law Practice Management",
+  "core_function": "Case Management & Intake",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a user account for the new attorney in the time and billing system.",
+      "expected_outcome": "The attorney can now record their time.",
+      "required_tools": [
+        "billing_software_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a user account in the document management system.",
+      "expected_outcome": "The attorney can now access client files.",
+      "required_tools": [
+        "document_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the new attorney to the firm's conflicts database.",
+      "expected_outcome": "The attorney is now included in all future conflicts checks.",
+      "required_tools": [
+        "conflicts_database_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

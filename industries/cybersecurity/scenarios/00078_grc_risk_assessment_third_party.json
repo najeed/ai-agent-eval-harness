@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-grc-78",
+  "title": "Third-Party Breach Risk Assessment",
+  "description": "A third-party vendor announces they have suffered a data breach. A GRC analyst must assess the risk to their own company.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Risk Assessment & Management",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the vendor's breach notification to understand what data was compromised.",
+      "expected_outcome": "Analyst determines that the compromised data includes credentials for their company's employees.",
+      "required_tools": [
+        "review_breach_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assess the risk that the compromised credentials could be used to access the company's internal systems.",
+      "expected_outcome": "Analyst identifies a high risk of credential stuffing attacks.",
+      "required_tools": [
+        "assess_third_party_risk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_assessment_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Initiate a company-wide mandatory password reset to mitigate the risk from the compromised credentials.",
+      "expected_outcome": "Analyst takes a decisive, proactive step to protect the organization.",
+      "required_tools": [
+        "force_password_reset_all_users"
+      ],
+      "success_criteria": [
+        {
+          "metric": "mitigation_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

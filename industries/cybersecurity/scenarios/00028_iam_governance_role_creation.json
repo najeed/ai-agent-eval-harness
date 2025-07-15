@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-iam-28",
+  "title": "New Access Role Creation",
+  "description": "A new project requires a new access role to be created that combines permissions from multiple applications. An IAM analyst must design and create the role.",
+  "use_case": "Identity & Access Management (IAM)",
+  "core_function": "Identity Governance & Attestation",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Work with the business unit to define the specific, minimum-necessary permissions the new role requires.",
+      "expected_outcome": "Analyst gathers a precise list of required permissions.",
+      "required_tools": [
+        "gather_permission_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "requirements_gathering_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Design a new role in the Identity Governance tool that aggregates the required permissions.",
+      "expected_outcome": "Analyst successfully designs the new role.",
+      "required_tools": [
+        "design_access_role"
+      ],
+      "success_criteria": [
+        {
+          "metric": "design_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the new role for approval from the data owners of the affected applications before making it available for assignment.",
+      "expected_outcome": "Analyst follows the governance process to get the new role approved.",
+      "required_tools": [
+        "submit_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

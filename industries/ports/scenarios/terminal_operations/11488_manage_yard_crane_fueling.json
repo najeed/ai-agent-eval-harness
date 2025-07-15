@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-to-11488",
+  "title": "Manage Yard Crane Fueling",
+  "description": "A rubber-tired gantry (RTG) crane in the yard is running low on fuel. The fleet manager must arrange for refueling.",
+  "use_case": "Terminal Operations",
+  "core_function": "Asset Management & Maintenance",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a low-fuel alert from the RTG's onboard monitoring system.",
+      "expected_outcome": "The system sends an alert that RTG-5 has 10% fuel remaining.",
+      "required_tools": [
+        "get_equipment_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch the port's mobile fuel truck to the crane's location.",
+      "expected_outcome": "A job is sent to the fuel truck driver to go to RTG-5.",
+      "required_tools": [
+        "dispatch_fuel_truck"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the amount of fuel dispensed into the asset management system.",
+      "expected_outcome": "The fuel truck operator confirms that 200 liters of diesel were dispensed, and this is logged against the asset's record.",
+      "required_tools": [
+        "log_fuel_dispensing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-12307",
+  "title": "Diagnose Cell Tower Failure - Power Loss",
+  "description": "An automated alert indicates a cell tower is offline. The agent must diagnose the root cause.",
+  "use_case": "Network Operations",
+  "core_function": "Fault Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the alert for the specific tower ID and retrieve its diagnostic logs.",
+      "expected_outcome": "Agent correctly pulls the last 24 hours of logs for the specified cell tower.",
+      "required_tools": [
+        "get_tower_diagnostic_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze logs for critical errors, identifying a 'power failure' error code.",
+      "expected_outcome": "Agent correctly identifies the primary error code from the logs.",
+      "required_tools": [
+        "analyze_log_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a trouble ticket and assign it to the field engineering team responsible for power systems.",
+      "expected_outcome": "Agent creates a ticket with the correct diagnosis and assigns it to the power systems team.",
+      "required_tools": [
+        "create_trouble_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

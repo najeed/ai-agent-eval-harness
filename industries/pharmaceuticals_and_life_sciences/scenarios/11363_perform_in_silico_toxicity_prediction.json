@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-rd-11363",
+  "title": "Perform In Silico Toxicity Prediction",
+  "description": "A computational chemist needs to predict the potential toxicity of a new drug candidate using a computer model before conducting animal studies.",
+  "use_case": "Research & Development",
+  "core_function": "Preclinical Research",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Input the chemical structure of the new drug candidate into a toxicity prediction software.",
+      "expected_outcome": "Agent successfully inputs the structure in SMILES or MOL format.",
+      "required_tools": [
+        "input_chemical_structure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a panel of in silico toxicology models (e.g., for mutagenicity, carcinogenicity).",
+      "expected_outcome": "Agent successfully runs the prediction models.",
+      "required_tools": [
+        "run_toxicity_prediction_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the model outputs to identify any potential toxicity alerts.",
+      "expected_outcome": "Agent analyzes the report and finds a structural alert for potential hERG channel binding, indicating cardiotoxicity risk.",
+      "required_tools": [
+        "analyze_toxicity_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a report summarizing the potential risks to guide future preclinical testing.",
+      "expected_outcome": "Agent creates a report recommending a specific in vitro hERG assay be conducted.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

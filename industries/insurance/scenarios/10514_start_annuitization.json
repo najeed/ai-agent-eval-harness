@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-10514",
+  "title": "Start Annuity Annuitization",
+  "description": "An annuity owner is retiring and wants to convert their deferred annuity into a stream of regular income payments.",
+  "use_case": "Life & Annuities",
+  "core_function": "Annuity Management",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the contract holder and their annuity.",
+      "expected_outcome": "Agent correctly identifies the customer and contract.",
+      "required_tools": [
+        "get_annuity_contract_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate and present the different income payout options (e.g., life only, life with 10-year period certain).",
+      "expected_outcome": "Agent provides clear calculations for the various annuitization options.",
+      "required_tools": [
+        "calculate_annuitization_options"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the paperwork to start the annuitization based on the customer's chosen option.",
+      "expected_outcome": "Agent successfully initiates the annuitization process.",
+      "required_tools": [
+        "process_annuitization"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

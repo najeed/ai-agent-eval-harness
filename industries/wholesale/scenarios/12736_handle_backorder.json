@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-om-12736",
+  "title": "Handle a Backordered Item on an Order",
+  "description": "A customer places an order for an item that is currently out of stock. An agent must manage the backorder.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Order Processing & Fulfillment",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system automatically flags the order line item as backordered.",
+      "expected_outcome": "The order is placed on hold pending stock arrival.",
+      "required_tools": [
+        "auto_flag_backorder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notify the customer of the backorder and provide the estimated in-stock date.",
+      "expected_outcome": "An automated email is sent to the customer with the backorder information.",
+      "required_tools": [
+        "send_backorder_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "When the item arrives from the supplier, automatically release the backorder for fulfillment.",
+      "expected_outcome": "The system allocates the new stock to the backorder and sends it to the warehouse for picking.",
+      "required_tools": [
+        "auto_release_backorder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ps-cs-11551",
+  "title": "Check Voter Registration Status",
+  "description": "A citizen wants to check if they are registered to vote at their current address.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Information & Inquiry Resolution",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the citizen's name, address, and date of birth.",
+      "expected_outcome": "Agent collects the information needed to perform the search.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the statewide voter registration database.",
+      "expected_outcome": "Agent successfully searches the database.",
+      "required_tools": [
+        "search_voter_registration_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the citizen of their registration status and polling place location.",
+      "expected_outcome": "Agent confirms the citizen is registered and provides their polling location.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

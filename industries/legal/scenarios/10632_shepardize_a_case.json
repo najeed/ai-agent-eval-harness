@@ -1,0 +1,48 @@
+{
+  "scenario_id": "legal-ldr-10632",
+  "title": "Shepardize a Case",
+  "description": "Before citing a case in a brief, an associate must Shepardize it (or use a similar tool like KeyCite) to ensure it is still good law.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Legal Research & Writing",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the case citation to be checked.",
+      "expected_outcome": "Agent has the correct case citation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the citation into a citator tool like Shepard's or KeyCite.",
+      "expected_outcome": "Agent uses the legal research tool to check the case's history.",
+      "required_tools": [
+        "legal_research_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the results to see if the case has been overruled, reversed, or criticized by later cases.",
+      "expected_outcome": "Agent confirms the case is still good law and has not been negatively treated.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

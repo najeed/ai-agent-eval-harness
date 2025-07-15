@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-pw-11461",
+  "title": "Handle a Utility Billing Dispute",
+  "description": "A customer disputes their water bill, claiming the meter reading must be wrong.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Utility Billing",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the bill in question.",
+      "expected_outcome": "Agent locates the customer's account and the disputed bill.",
+      "required_tools": [
+        "get_utility_account_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the meter reading history for anomalies.",
+      "expected_outcome": "Agent reviews the history and sees a consistent pattern of usage, with no obvious errors.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the findings to the customer and offer to schedule a meter accuracy test.",
+      "expected_outcome": "Agent communicates the findings and offers a path to resolution for the customer.",
+      "required_tools": [
+        "schedule_meter_test"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

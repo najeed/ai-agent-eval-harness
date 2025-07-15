@@ -1,0 +1,53 @@
+{
+  "scenario_id": "tourism-ta-12373",
+  "title": "Create a Honeymoon Package",
+  "description": "A couple wants to book a romantic honeymoon package in Hawaii, including flights, a luxury resort, a private dinner, and a helicopter tour.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Package & Itinerary Creation",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the couple's travel dates and preferences.",
+      "expected_outcome": "Agent collects all necessary details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for and select components for the package: flights, a 5-star resort, a helicopter tour, and a restaurant for the private dinner.",
+      "expected_outcome": "Agent finds high-quality, available options for all components.",
+      "required_tools": [
+        "search_flights",
+        "search_hotels",
+        "check_tour_availability",
+        "check_restaurant_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a detailed itinerary, price the complete package, and present it to the couple.",
+      "expected_outcome": "Agent builds a comprehensive honeymoon package with a total price.",
+      "required_tools": [
+        "create_vacation_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

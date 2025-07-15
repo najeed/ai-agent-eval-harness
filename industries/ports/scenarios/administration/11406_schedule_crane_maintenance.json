@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-af-11406",
+  "title": "Schedule Preventive Maintenance for a Crane",
+  "description": "A ship-to-shore (STS) crane is due for its 500-hour preventive maintenance check. The maintenance planner must schedule it.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Asset Management & Maintenance",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all cranes approaching their preventive maintenance (PM) service intervals.",
+      "expected_outcome": "Planner generates a report showing crane QC-03 is due for its 500-hour PM.",
+      "required_tools": [
+        "get_asset_maintenance_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the terminal's operational schedule to find a low-traffic window to take the crane offline.",
+      "expected_outcome": "Planner identifies a 4-hour window on Wednesday with no vessel operations at the crane's berth.",
+      "required_tools": [
+        "check_berth_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a maintenance work order and assign it to the engineering team for the identified window.",
+      "expected_outcome": "A work order for the PM is created and scheduled in the maintenance system.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

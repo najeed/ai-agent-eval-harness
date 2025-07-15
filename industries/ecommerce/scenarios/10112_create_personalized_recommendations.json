@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-mce-10112",
+  "title": "Create Personalized Product Recommendations",
+  "description": "A customer is browsing a product page. The system should display personalized recommendations for related products.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Personalization & Recommendations",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the product the customer is currently viewing.",
+      "expected_outcome": "System identifies the current product SKU.",
+      "required_tools": [
+        "get_current_product"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the customer's browsing history and past purchases.",
+      "expected_outcome": "System retrieves the customer's activity data.",
+      "required_tools": [
+        "get_customer_activity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a list of recommended products based on collaborative filtering ('customers who bought this also bought...').",
+      "expected_outcome": "System generates a relevant list of 3-5 product recommendations.",
+      "required_tools": [
+        "get_product_recommendations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.8
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-vo-11427",
+  "title": "Arrange a Vessel Crew Change",
+  "description": "A vessel agent needs to arrange for five crew members to sign off the ship and five to sign on.",
+  "use_case": "Vessel Operations",
+  "core_function": "Vessel Services & Husbandry",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the crew change request with the names and details of the signing on/off crew.",
+      "expected_outcome": "Operator has the full list of crew members.",
+      "required_tools": [
+        "log_service_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate with immigration and customs authorities to get the necessary clearances and shore passes.",
+      "expected_outcome": "The operator submits the crew list to the authorities for approval.",
+      "required_tools": [
+        "submit_crew_list_to_authorities"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange for transportation to take the signing-off crew from the vessel to the airport and the signing-on crew to the vessel.",
+      "expected_outcome": "Transport is booked with an approved provider.",
+      "required_tools": [
+        "schedule_transport_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

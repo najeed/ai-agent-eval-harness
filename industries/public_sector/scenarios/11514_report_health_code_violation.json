@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ps-rc-11514",
+  "title": "Report a Health Code Violation",
+  "description": "A citizen wants to file a complaint about unsanitary conditions at a local restaurant.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Inspections & Enforcement",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather details of the complaint, including the restaurant name, address, and the specific nature of the violation.",
+      "expected_outcome": "Agent accurately documents the citizen's complaint.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the complaint in the health department's case management system.",
+      "expected_outcome": "Agent successfully creates a new complaint case.",
+      "required_tools": [
+        "log_complaint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the citizen that the complaint has been received and will be assigned to a health inspector for follow-up.",
+      "expected_outcome": "Agent provides assurance that the complaint will be investigated.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

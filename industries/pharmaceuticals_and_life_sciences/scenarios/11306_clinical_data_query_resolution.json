@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-ct-11306",
+  "title": "Resolve Clinical Data Query",
+  "description": "A clinical data manager finds a discrepancy in the EDC system and must issue a query to the clinical site for clarification.",
+  "use_case": "Clinical Trials",
+  "core_function": "Clinical Data Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a validation check in the EDC system that flags an error.",
+      "expected_outcome": "Agent identifies a patient's reported birth year as 1890, which is inconsistent with their enrollment date.",
+      "required_tools": [
+        "run_edc_validation_checks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a data query for the clinical site staff.",
+      "expected_outcome": "Agent writes a clear, concise query: 'Please verify patient's date of birth. The reported year of 1890 seems unlikely.'",
+      "required_tools": [
+        "create_data_query"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the query to the specific site and responsible user in the EDC system.",
+      "expected_outcome": "Agent correctly routes the query to the site's Clinical Research Coordinator.",
+      "required_tools": [
+        "assign_query"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Monitor the query status until it is resolved by the site.",
+      "expected_outcome": "Agent tracks the query until the site responds with a correction (e.g., to 1980) and closes the query.",
+      "required_tools": [
+        "monitor_query_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

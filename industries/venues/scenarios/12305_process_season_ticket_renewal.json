@@ -1,0 +1,65 @@
+{
+  "scenario_id": "venues-tb-12305",
+  "title": "Process Season Ticket Renewal Payment",
+  "description": "A season ticket holder calls to make a payment for their renewal invoice.",
+  "use_case": "Ticketing & Box Office",
+  "core_function": "Ticket Administration",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the customer's account and their renewal invoice.",
+      "expected_outcome": "Agent finds the open invoice.",
+      "required_tools": [
+        "get_season_ticket_holder_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm the amount due with the customer.",
+      "expected_outcome": "Agent states the correct amount.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the payment via credit card.",
+      "expected_outcome": "Agent successfully takes the payment.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Mark the invoice as 'Paid' and send a receipt to the customer.",
+      "expected_outcome": "Agent closes the invoice and sends a confirmation.",
+      "required_tools": [
+        "update_invoice_status",
+        "send_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

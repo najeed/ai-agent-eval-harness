@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-com-11714",
+  "title": "Negotiate a Letter of Intent (LOI)",
+  "description": "A tenant client wants to lease an office space. The agent must draft and negotiate the LOI with the landlord's broker.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Leasing & Tenant Representation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft the LOI with the client's desired terms: lease rate, term length, tenant improvement allowance, and other concessions.",
+      "expected_outcome": "Agent creates a detailed LOI reflecting the client's goals.",
+      "required_tools": [
+        "draft_loi"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Submit the LOI to the landlord's broker.",
+      "expected_outcome": "Agent successfully sends the LOI.",
+      "required_tools": [
+        "send_email_to_agent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive a counter-offer from the landlord's broker, analyze the changes, and advise the client on the next steps.",
+      "expected_outcome": "Agent clearly explains the counter-offer and provides strategic advice.",
+      "required_tools": [
+        "analyze_document_changes",
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

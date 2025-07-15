@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-tm-10797",
+  "title": "File for Guaranteed Service Refund",
+  "description": "A shipment booked with a 'Guaranteed by 10 AM' service was delivered late. The company is entitled to a full refund.",
+  "use_case": "Transportation Management",
+  "core_function": "Freight & Carrier Management",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system receives the delivery confirmation from the carrier, noting the delivery time was 11:30 AM.",
+      "expected_outcome": "The system captures the actual delivery time.",
+      "required_tools": [
+        "get_pod_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system compares the actual delivery time to the guaranteed time and flags a 'Service Failure'.",
+      "expected_outcome": "An alert is created for the service failure.",
+      "required_tools": [
+        "verify_guaranteed_service_performance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "An agent submits a 'Guaranteed Service Failure' claim to the carrier to have the freight charges refunded.",
+      "expected_outcome": "A claim is filed to recover the shipping costs.",
+      "required_tools": [
+        "submit_carrier_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

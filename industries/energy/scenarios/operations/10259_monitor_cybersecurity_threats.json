@@ -1,0 +1,66 @@
+{
+  "scenario_id": "energy-op-10259",
+  "title": "Monitor SCADA System for Cybersecurity Threats",
+  "description": "A cybersecurity analyst is monitoring the network traffic of a power plant's SCADA system for anomalies that could indicate a cyber attack.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Maintenance & Outage Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor network logs and firewall activity in real-time.",
+      "expected_outcome": "Agent's monitoring tool flags an unusual number of failed login attempts from an unrecognized IP address.",
+      "required_tools": [
+        "monitor_network_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "threat_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cross-reference the suspicious IP address with a threat intelligence database.",
+      "expected_outcome": "Agent confirms the IP address is associated with known malicious actors.",
+      "required_tools": [
+        "check_threat_intelligence_db"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Immediately block the malicious IP address at the firewall.",
+      "expected_outcome": "Agent successfully applies the firewall rule.",
+      "required_tools": [
+        "update_firewall_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Initiate a security incident response protocol and document the event.",
+      "expected_outcome": "Agent creates a formal incident report.",
+      "required_tools": [
+        "initiate_incident_response"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

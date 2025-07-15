@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-rd-11334",
+  "title": "Schedule Lab Equipment Maintenance",
+  "description": "A lab manager needs to schedule preventative maintenance for a high-performance liquid chromatography (HPLC) machine.",
+  "use_case": "Research & Development",
+  "core_function": "Lab & Sample Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the maintenance schedule for the specific HPLC machine.",
+      "expected_outcome": "Agent finds that the annual preventative maintenance is due next month.",
+      "required_tools": [
+        "get_equipment_maintenance_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the equipment vendor to schedule a service visit.",
+      "expected_outcome": "Agent contacts the vendor and schedules a service engineer for a specific date.",
+      "required_tools": [
+        "contact_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Block off the equipment's time in the lab scheduling system for the day of the maintenance.",
+      "expected_outcome": "Agent successfully makes the HPLC unavailable for booking on the scheduled date.",
+      "required_tools": [
+        "update_equipment_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Log the completion of the maintenance and upload the service report once the visit is complete.",
+      "expected_outcome": "Agent updates the maintenance record and attaches the vendor's service report.",
+      "required_tools": [
+        "log_maintenance_activity",
+        "attach_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

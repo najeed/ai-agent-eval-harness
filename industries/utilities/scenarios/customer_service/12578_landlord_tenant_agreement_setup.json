@@ -1,0 +1,50 @@
+{
+  "scenario_id": "utils-cs-12578",
+  "title": "Set up Landlord-Tenant Agreement",
+  "description": "A landlord wants to set up an agreement where the utility service for a rental property automatically reverts to their name when a tenant moves out.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the landlord's account and the specific rental property address.",
+      "expected_outcome": "Agent correctly identifies the relevant account and service address.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the terms of the automatic reversion agreement.",
+      "expected_outcome": "Agent clearly communicates how the process works.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the agreement form and link the landlord's account to the service address.",
+      "expected_outcome": "Agent successfully sets up the reversion agreement in the system.",
+      "required_tools": [
+        "setup_landlord_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

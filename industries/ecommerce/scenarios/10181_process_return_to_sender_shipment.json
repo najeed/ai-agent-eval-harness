@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ecommerce-omf-10181",
+  "title": "Process 'Return to Sender' Shipment",
+  "description": "A package is returned to the warehouse by the carrier because of an invalid address. The agent needs to process this return.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Shipping & Logistics",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the returned package to identify the original order.",
+      "expected_outcome": "System retrieves the order details.",
+      "required_tools": [
+        "get_order_details_from_tracking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process a refund for the cost of the items, but not the original shipping fee.",
+      "expected_outcome": "Agent issues a partial refund for the product value only.",
+      "required_tools": [
+        "process_partial_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "transaction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Restock the returned items into inventory.",
+      "expected_outcome": "Agent updates the inventory levels for the returned products.",
+      "required_tools": [
+        "update_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send an email to the customer informing them of the return and refund due to the invalid address.",
+      "expected_outcome": "Agent clearly communicates the situation to the customer.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

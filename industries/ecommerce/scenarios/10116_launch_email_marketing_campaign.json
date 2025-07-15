@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-mce-10116",
+  "title": "Launch Email Marketing Campaign",
+  "description": "A marketing manager wants to send a promotional email for a new product line to all customers who have previously purchased from a related category.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Campaign Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of customers who have purchased items from the 'Outdoor Gear' category.",
+      "expected_outcome": "Agent creates a target audience segment.",
+      "required_tools": [
+        "get_customers_by_purchase_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Load the promotional email template.",
+      "expected_outcome": "Agent retrieves the correct email content.",
+      "required_tools": [
+        "get_email_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the email to be sent to the generated customer list.",
+      "expected_outcome": "Agent successfully schedules the email campaign.",
+      "required_tools": [
+        "schedule_email_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-pc-10581",
+  "title": "Quote Policy for Customer with Prior Lapse",
+  "description": "A potential customer is requesting a quote but had a lapse in their previous insurance coverage.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Underwriting & Quoting",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather applicant information and ask about prior insurance history.",
+      "expected_outcome": "The applicant discloses a 60-day lapse in coverage within the last year.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check underwriting guidelines regarding lapses in coverage.",
+      "expected_outcome": "The agent confirms that a lapse in coverage results in a higher premium but does not make the applicant ineligible.",
+      "required_tools": [
+        "check_underwriting_guidelines"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a quote that includes the surcharge for the lapse in coverage.",
+      "expected_outcome": "Agent provides an accurate quote that reflects the higher risk.",
+      "required_tools": [
+        "generate_auto_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

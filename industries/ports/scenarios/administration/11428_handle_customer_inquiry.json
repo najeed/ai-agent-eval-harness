@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ports-af-11428",
+  "title": "Handle a Customer Inquiry about Container Status",
+  "description": "A freight forwarder calls customer service to ask for the status of a specific container.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Customer Service & Claims",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the container number from the customer.",
+      "expected_outcome": "Agent correctly records the container ID.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for the container in the Terminal Operating System (TOS).",
+      "expected_outcome": "The agent successfully finds the container in the system.",
+      "required_tools": [
+        "find_container_in_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the container's current status (e.g., 'In yard, available for pickup', 'On vessel', 'Not yet discharged') to the customer.",
+      "expected_outcome": "Agent accurately communicates the container's status to the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

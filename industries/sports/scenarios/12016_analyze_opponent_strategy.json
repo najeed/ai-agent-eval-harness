@@ -1,0 +1,53 @@
+{
+  "scenario_id": "sports-tm-12016",
+  "title": "Analyze Opponent's Strategy",
+  "description": "A coach needs an analysis of their next opponent's playing style and tendencies.",
+  "use_case": "Team & Player Management",
+  "core_function": "Player Scouting & Recruitment",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather video footage and statistical data from the opponent's last five games.",
+      "expected_outcome": "Agent compiles a complete dataset for the opponent.",
+      "required_tools": [
+        "get_team_game_history",
+        "get_team_stats_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_aggregation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to identify common formations, set-piece strategies, and key player tendencies.",
+      "expected_outcome": "Agent identifies that the opponent frequently uses a high-press defense and targets their star striker on counter-attacks.",
+      "required_tools": [
+        "analyze_team_tactics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a pre-game report for the coaching staff highlighting the opponent's key strategies and potential weaknesses.",
+      "expected_outcome": "Agent produces a concise, actionable report for the coaches.",
+      "required_tools": [
+        "generate_opponent_analysis_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

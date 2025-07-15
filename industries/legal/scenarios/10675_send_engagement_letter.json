@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-10675",
+  "title": "Send an Engagement Letter to a New Client",
+  "description": "After a new client agrees to retain the firm, a paralegal needs to send them the official engagement letter for signature.",
+  "use_case": "Law Practice Management",
+  "core_function": "Case Management & Intake",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the firm's standard engagement letter template.",
+      "expected_outcome": "Agent retrieves the correct template.",
+      "required_tools": [
+        "get_document_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Populate the template with the client's name, the scope of the representation, and the agreed-upon fee structure.",
+      "expected_outcome": "Agent customizes the letter for the specific client and matter.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the engagement letter to the client for their review and signature via an e-signature platform.",
+      "expected_outcome": "The client receives the letter and can sign it electronically.",
+      "required_tools": [
+        "esignature_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

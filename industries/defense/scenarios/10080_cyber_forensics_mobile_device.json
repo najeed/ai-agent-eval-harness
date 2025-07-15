@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-cy-10080",
+  "title": "Mobile Device Forensics",
+  "description": "An analyst must conduct a forensic analysis of a captured enemy combatant's smartphone to extract intelligence.",
+  "use_case": "Cybersecurity & Information Warfare",
+  "core_function": "Cyber Forensics & Attribution",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use specialized tools to bypass the phone's password and create a forensic image of its internal memory.",
+      "expected_outcome": "Analyst successfully gains access to the phone's data.",
+      "required_tools": [
+        "bypass_mobile_password",
+        "create_forensic_image_mobile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_access_success_rate",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Extract and analyze call logs, text messages, photos, and location history from the image.",
+      "expected_outcome": "Analyst extracts all relevant data from the phone.",
+      "required_tools": [
+        "extract_mobile_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an intelligence report based on the extracted data, identifying other enemy combatants, locations, and plans.",
+      "expected_outcome": "Analyst produces a valuable intelligence product from the forensic analysis.",
+      "required_tools": [
+        "generate_intelligence_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_utility",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

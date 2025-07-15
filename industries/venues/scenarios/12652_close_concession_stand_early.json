@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-fb-12652",
+  "title": "Close a Concession Stand Early",
+  "description": "Towards the end of an event, a food and beverage manager decides to close a low-traffic concession stand early.",
+  "use_case": "Food & Beverage (Concessions)",
+  "core_function": "Staff & Stand Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the real-time sales data for all concession stands.",
+      "expected_outcome": "Agent identifies that Stand 22 has had no sales in the last 30 minutes.",
+      "required_tools": [
+        "get_real_time_sales_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Authorize the manager of Stand 22 to begin closing procedures.",
+      "expected_outcome": "Agent sends an authorization message.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reassign the staff from Stand 22 to help with closing procedures at busier stands.",
+      "expected_outcome": "Agent updates the staff assignments to reinforce other locations.",
+      "required_tools": [
+        "update_staff_assignment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

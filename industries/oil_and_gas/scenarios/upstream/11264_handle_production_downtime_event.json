@@ -1,0 +1,54 @@
+{
+  "scenario_id": "og-up-11264",
+  "title": "Analyze Production Downtime Event",
+  "description": "After an unplanned shutdown of an offshore platform, a production engineer analyzes the event to correctly categorize the cause and the amount of deferred production.",
+  "use_case": "Upstream",
+  "core_function": "Production Operations",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the start and end time of the platform shutdown from the event log.",
+      "expected_outcome": "The exact duration of the downtime is determined.",
+      "required_tools": [
+        "get_event_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the root cause of the shutdown by reviewing alarms and operator logs (e.g., 'Compressor Failure').",
+      "expected_outcome": "The root cause is correctly identified and categorized.",
+      "required_tools": [
+        "get_alarm_history",
+        "get_operator_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total volume of deferred production (oil and gas) by multiplying the downtime duration by the platform's normal production rate.",
+      "expected_outcome": "The lost production volume is calculated and logged in the downtime tracking system.",
+      "required_tools": [
+        "calculate_deferred_production",
+        "log_downtime_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

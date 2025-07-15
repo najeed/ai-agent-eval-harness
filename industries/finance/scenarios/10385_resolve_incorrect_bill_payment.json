@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-rb-10385",
+  "title": "Resolve Incorrect Bill Payment",
+  "description": "A customer used bill pay to send money to a utility company, but entered the wrong account number and the payment was not credited.",
+  "use_case": "Retail Banking",
+  "core_function": "Payments & Transfers",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the specific bill payment in question.",
+      "expected_outcome": "Agent locates the payment and confirms the details with the customer.",
+      "required_tools": [
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate a payment trace to determine the status of the funds.",
+      "expected_outcome": "Agent starts a trace and finds the payment was rejected by the utility company's bank.",
+      "required_tools": [
+        "initiate_payment_trace"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once funds are returned, credit the customer's account and advise them to resubmit the payment with the correct account number.",
+      "expected_outcome": "Agent returns the money to the customer's account and provides clear instructions for resubmission.",
+      "required_tools": [
+        "apply_manual_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

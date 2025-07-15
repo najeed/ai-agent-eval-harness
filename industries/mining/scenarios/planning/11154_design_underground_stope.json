@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-plan-11154",
+  "title": "Design Underground Stope Shape",
+  "description": "An underground planning engineer designs the optimal shape for a stope (the underground excavation for ore removal) to maximize ore recovery while remaining stable.",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Short-Term Scheduling",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the geological block model for the area to be mined.",
+      "expected_outcome": "The block model showing ore grades is loaded.",
+      "required_tools": [
+        "import_block_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a stope shape optimizer tool to automatically generate a financially optimal stope design based on the block model grades and a cut-off grade.",
+      "expected_outcome": "An initial, financially optimal stope shape is generated.",
+      "required_tools": [
+        "run_stope_optimizer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "optimization_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually adjust the stope shape to ensure it is practical to mine and geotechnically stable, then finalize the design.",
+      "expected_outcome": "A final, practical, and stable stope design is created and ready for inclusion in the mine schedule.",
+      "required_tools": [
+        "edit_stope_design"
+      ],
+      "success_criteria": [
+        {
+          "metric": "engineering_design_compliance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

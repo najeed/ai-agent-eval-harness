@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-mid-11295",
+  "title": "Manage Pipeline Drag-Reducing Agent (DRA)",
+  "description": "To increase the throughput of a pipeline without adding new pumps, an operator injects a chemical called a Drag-Reducing Agent (DRA).",
+  "use_case": "Midstream",
+  "core_function": "Pipeline Operations & Control",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the current pipeline flow rate and pressure drop to determine the potential benefit of injecting DRA.",
+      "expected_outcome": "The analysis shows that DRA injection could increase throughput by 15%.",
+      "required_tools": [
+        "run_hydraulic_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the optimal injection rate (in ppm) for the DRA to achieve the desired throughput increase most cost-effectively.",
+      "expected_outcome": "An optimal injection rate is calculated.",
+      "required_tools": [
+        "calculate_optimal_dra_rate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Start the DRA injection pump at the calculated rate and monitor the pipeline's flow rate to confirm the expected increase.",
+      "expected_outcome": "The DRA injection is started, and the pipeline's flow rate increases as predicted.",
+      "required_tools": [
+        "set_chemical_injection_rate",
+        "monitor_pipeline_flow"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

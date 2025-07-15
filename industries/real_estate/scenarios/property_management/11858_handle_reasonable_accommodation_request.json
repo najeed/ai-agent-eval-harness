@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-pm-11858",
+  "title": "Handle a Reasonable Accommodation Request",
+  "description": "A tenant with a disability requests to install grab bars in the bathroom as a reasonable accommodation under the Fair Housing Act.",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations & Renewals",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the tenant's request and verify their disability-related need if it is not apparent.",
+      "expected_outcome": "Agent receives the request and understands its basis.",
+      "required_tools": [
+        "log_tenant_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the request to ensure it is reasonable and does not pose an undue financial or administrative burden.",
+      "expected_outcome": "Agent determines the request is reasonable.",
+      "required_tools": [
+        "analyze_accommodation_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the request and allow the tenant to install the grab bars at their own expense, potentially requiring them to restore the wall upon move-out.",
+      "expected_outcome": "The accommodation is approved in compliance with fair housing laws.",
+      "required_tools": [
+        "send_tenant_approval_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

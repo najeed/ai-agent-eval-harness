@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-ha-12314",
+  "title": "Request a Late Check-out",
+  "description": "An in-house guest requests a late check-out for their room.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Guest Services & In-Stay Support",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the guest's current reservation by their room number.",
+      "expected_outcome": "Agent correctly identifies the guest's folio.",
+      "required_tools": [
+        "get_guest_details_by_room"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check room availability and housekeeping schedules to see if a late check-out is possible.",
+      "expected_outcome": "Agent confirms that a 2 PM late check-out can be accommodated.",
+      "required_tools": [
+        "check_late_checkout_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the reservation with the new departure time and inform the guest.",
+      "expected_outcome": "Agent successfully updates the guest's booking and confirms the late check-out time.",
+      "required_tools": [
+        "update_reservation_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

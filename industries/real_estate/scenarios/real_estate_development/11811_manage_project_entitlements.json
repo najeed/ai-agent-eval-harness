@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-dev-11811",
+  "title": "Manage Project Entitlements",
+  "description": "A developer needs to secure the necessary permits and approvals (entitlements) from the city for a new retail development.",
+  "use_case": "Real Estate Development",
+  "core_function": "Project Management & Entitlements",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare and submit the complete application package to the city planning department.",
+      "expected_outcome": "The application is submitted correctly with all required documents.",
+      "required_tools": [
+        "compile_permit_application"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Track the application's progress through the city's review process.",
+      "expected_outcome": "Agent provides regular status updates to the development team.",
+      "required_tools": [
+        "track_permit_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Represent the project at public hearings and planning commission meetings.",
+      "expected_outcome": "Agent effectively presents the project and addresses community concerns.",
+      "required_tools": [
+        "prepare_presentation_deck"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

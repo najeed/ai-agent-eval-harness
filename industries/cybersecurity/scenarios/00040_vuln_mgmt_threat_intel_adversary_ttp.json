@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-vm-40",
+  "title": "Analyzing Adversary TTPs",
+  "description": "A threat intelligence analyst is researching a specific adversary group to understand their tactics, techniques, and procedures (TTPs).",
+  "use_case": "Vulnerability Management",
+  "core_function": "Threat Intelligence Integration",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all available reporting on the adversary group (e.g., APT28) from internal and external sources.",
+      "expected_outcome": "Analyst successfully collects a corpus of reports on the target group.",
+      "required_tools": [
+        "search_threat_intel_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the reports and map the group's observed behaviors to the MITRE ATT&CK framework.",
+      "expected_outcome": "Analyst creates a detailed ATT&CK map showing the group's preferred TTPs.",
+      "required_tools": [
+        "map_to_mitre_attack"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the ATT&CK map to identify gaps in the company's own security controls and recommend improvements.",
+      "expected_outcome": "Analyst uses the intelligence to provide actionable recommendations for improving defenses against that specific adversary.",
+      "required_tools": [
+        "identify_defensive_gaps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-rs-11667",
+  "title": "Manage a Multiple Offer Situation",
+  "description": "A seller has received three offers on their property simultaneously. The listing agent must organize them for review.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge receipt of all offers to the respective buyers' agents.",
+      "expected_outcome": "Confirmation emails are sent for all three offers.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a spreadsheet or summary sheet comparing the key terms of each offer (price, contingencies, closing date, financing).",
+      "expected_outcome": "A clear, side-by-side comparison of the offers is created.",
+      "required_tools": [
+        "create_spreadsheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a meeting with the seller to present the offer summary and advise on next steps (accept, counter, or ask for highest and best).",
+      "expected_outcome": "A meeting is scheduled, and the seller is sent the summary sheet in advance.",
+      "required_tools": [
+        "schedule_appointment",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

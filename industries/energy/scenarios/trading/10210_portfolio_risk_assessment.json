@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-tr-10210",
+  "title": "Energy Portfolio Risk Assessment",
+  "description": "A risk manager needs to assess the market risk of a portfolio of solar, wind, and battery storage assets.",
+  "use_case": "Energy Trading & Portfolio Management",
+  "core_function": "Portfolio Optimization",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the current positions and forward commitments for all assets in the portfolio.",
+      "expected_outcome": "Agent compiles a complete list of portfolio assets and their contracted obligations.",
+      "required_tools": [
+        "get_portfolio_positions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Simulate portfolio performance under various market price scenarios (e.g., price spikes, low prices).",
+      "expected_outcome": "Agent runs Monte Carlo simulations to model potential profit and loss.",
+      "required_tools": [
+        "run_market_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the portfolio's Value at Risk (VaR) at a 95% confidence level.",
+      "expected_outcome": "Agent provides a single VaR figure representing potential losses.",
+      "required_tools": [
+        "calculate_value_at_risk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

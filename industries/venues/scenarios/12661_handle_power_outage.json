@@ -1,0 +1,66 @@
+{
+  "scenario_id": "venues-vo-12661",
+  "title": "Handle a Partial Power Outage",
+  "description": "A power outage affects one section of the venue during an event, causing lights and concession stands to lose power.",
+  "use_case": "Venue Operations & Logistics",
+  "core_function": "Security & Emergency Response",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive reports of a power outage in a specific area.",
+      "expected_outcome": "Agent confirms the outage is affecting the west side of the venue.",
+      "required_tools": [
+        "get_system_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the backup generators have activated for emergency lighting.",
+      "expected_outcome": "Agent confirms that emergency lights are on in the affected area.",
+      "required_tools": [
+        "check_generator_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch electricians to the affected electrical room to diagnose the issue.",
+      "expected_outcome": "Agent sends the on-site electricians to investigate.",
+      "required_tools": [
+        "dispatch_technician"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Dispatch staff to the area to provide assistance and information to guests.",
+      "expected_outcome": "Agent sends guest services staff to the dark concourse to help guests.",
+      "required_tools": [
+        "dispatch_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

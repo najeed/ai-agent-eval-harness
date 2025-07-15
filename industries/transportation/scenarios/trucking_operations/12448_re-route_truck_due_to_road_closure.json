@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-to-12448",
+  "title": "Re-route a Truck Due to Road Closure",
+  "description": "A dispatcher receives an alert about an unexpected highway closure on a driver's route. They must re-route the driver.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Dispatch & Load Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a traffic alert about a major accident and highway closure.",
+      "expected_outcome": "Dispatcher is aware of the road closure.",
+      "required_tools": [
+        "get_traffic_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify all trucks whose current routes are affected by the closure.",
+      "expected_outcome": "The system identifies one truck that is routed onto the closed highway.",
+      "required_tools": [
+        "find_trucks_by_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate an optimal detour route for the affected truck.",
+      "expected_outcome": "A new route is generated that bypasses the closure.",
+      "required_tools": [
+        "calculate_detour_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send the new route and instructions to the driver's in-cab navigation device.",
+      "expected_outcome": "The driver receives the updated route.",
+      "required_tools": [
+        "send_route_to_driver"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-to-12023",
+  "title": "Log a Safety Incident",
+  "description": "A driver reports a minor, non-injury accident. A safety manager must log the incident and begin the investigation process.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Safety & Compliance",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a call from a driver reporting an incident.",
+      "expected_outcome": "Agent gathers initial details: driver, location, and a brief description.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new safety incident report in the system.",
+      "expected_outcome": "A new incident record is created with a unique ID.",
+      "required_tools": [
+        "create_safety_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Request photos of the damage from the driver and upload them to the incident report.",
+      "expected_outcome": "Photos are successfully attached to the report.",
+      "required_tools": [
+        "upload_incident_photos"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Assign the incident to a claims adjuster for follow-up.",
+      "expected_outcome": "The report is assigned to the correct person for investigation.",
+      "required_tools": [
+        "assign_incident_to_adjuster"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

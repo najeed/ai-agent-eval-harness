@@ -1,0 +1,54 @@
+{
+  "scenario_id": "defense-mp-10069",
+  "title": "Submarine Route Deconfliction",
+  "description": "A submarine planner must plot a safe underwater transit route that avoids known undersea obstacles, neutral submarine operating areas, and surface shipping.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Route & Airspace Deconfliction",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Plot the desired route and depth profile for the submarine.",
+      "expected_outcome": "Planner accurately enters the intended transit plan.",
+      "required_tools": [
+        "plot_submarine_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Overlay data on undersea mountains, known wrecks, neutral submarine patrol boxes, and dense shipping lanes.",
+      "expected_outcome": "Planner creates a comprehensive 3D map of all underwater and surface hazards.",
+      "required_tools": [
+        "get_bathymetric_data",
+        "get_neutral_opareas",
+        "get_shipping_lane_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_fusion_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Adjust the submarine's route and depth to create a safe path that is clear of all identified hazards.",
+      "expected_outcome": "Planner successfully creates a safe and deconflicted underwater route.",
+      "required_tools": [
+        "adjust_submarine_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "conflict_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-pa-11467",
+  "title": "Apply for a Homestead Exemption",
+  "description": "A new homeowner wants to apply for a homestead exemption to reduce their property taxes.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Taxation & Revenue",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the homeowner's information and property details.",
+      "expected_outcome": "Agent collects the necessary information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the homeowner meets the eligibility criteria (e.g., it is their primary residence).",
+      "expected_outcome": "Agent confirms the homeowner is eligible for the exemption.",
+      "required_tools": [
+        "check_exemption_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the application for the homestead exemption.",
+      "expected_outcome": "Agent successfully applies the exemption to the property record, which will lower future tax bills.",
+      "required_tools": [
+        "apply_tax_exemption"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

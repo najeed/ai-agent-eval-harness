@@ -1,0 +1,50 @@
+{
+  "scenario_id": "lw-tm-10757",
+  "title": "Track Shipment by PRO Number",
+  "description": "A clerk needs to find the status of an LTL shipment using the carrier's progressive (PRO) number.",
+  "use_case": "Transportation Management",
+  "core_function": "Real-time Tracking & Visibility",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Enter the carrier's PRO number into the tracking system.",
+      "expected_outcome": "Agent correctly inputs the PRO number.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system identifies the carrier associated with the PRO number format.",
+      "expected_outcome": "The system correctly determines the PRO number belongs to 'XPO Logistics'.",
+      "required_tools": [
+        "identify_carrier_by_pro"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Query the identified carrier's API for tracking information using the PRO number.",
+      "expected_outcome": "The system retrieves the latest tracking status, 'In Transit to Destination Terminal'.",
+      "required_tools": [
+        "get_carrier_tracking_by_pro"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

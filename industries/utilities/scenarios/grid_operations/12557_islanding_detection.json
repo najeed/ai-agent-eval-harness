@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-12557",
+  "title": "Islanding Detection and Response",
+  "description": "A large solar farm's connection to the main grid is lost, but it continues to energize a section of the distribution network, creating a dangerous 'island'. The system must detect this and trip the solar farm offline.",
+  "use_case": "Grid Operations",
+  "core_function": "Distribution Automation",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor voltage and frequency at the solar farm's point of interconnection using synchrophasor data.",
+      "expected_outcome": "System is continuously monitoring grid conditions.",
+      "required_tools": [
+        "get_phasor_measurement_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system detects a phase angle shift and frequency deviation that are characteristic of an islanding condition.",
+      "expected_outcome": "System's anti-islanding algorithm triggers an alarm.",
+      "required_tools": [
+        "detect_islanding_condition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a direct trip signal to the solar farm's protective relay to immediately de-energize it.",
+      "expected_outcome": "System successfully trips the solar farm offline, eliminating the safety hazard.",
+      "required_tools": [
+        "execute_protection_command"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

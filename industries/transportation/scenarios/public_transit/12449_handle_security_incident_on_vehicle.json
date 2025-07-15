@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-pt-12449",
+  "title": "Handle Security Incident on a Vehicle",
+  "description": "A train operator uses an emergency button to report a disruptive passenger. A controller must coordinate a response.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Real-time Operations & Control",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an emergency alert from a specific train.",
+      "expected_outcome": "The controller is immediately notified of the incident.",
+      "required_tools": [
+        "get_emergency_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Establish radio contact with the train operator to get details about the situation.",
+      "expected_outcome": "The controller understands the nature of the security threat.",
+      "required_tools": [
+        "contact_driver"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the transit police and provide them with the train's location and direction of travel.",
+      "expected_outcome": "Law enforcement is notified and given accurate information.",
+      "required_tools": [
+        "contact_transit_police"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Instruct the train operator to stop at the next station and wait for police to arrive.",
+      "expected_outcome": "The train is held at the station to allow police to board and handle the situation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

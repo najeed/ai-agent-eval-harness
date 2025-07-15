@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tourism-ha-12003",
+  "title": "Book a Spa Appointment",
+  "description": "A hotel guest wants to book a 60-minute deep tissue massage at the hotel spa.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Guest Services & In-Stay Support",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the spa's availability for a 60-minute deep tissue massage.",
+      "expected_outcome": "Agent finds an open appointment slot for the desired time.",
+      "required_tools": [
+        "check_spa_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Book the appointment under the guest's name and room number.",
+      "expected_outcome": "Agent successfully reserves the spa appointment.",
+      "required_tools": [
+        "book_spa_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the appointment details with the guest and inform them the charge will be posted to their room folio.",
+      "expected_outcome": "Agent provides a clear confirmation of the booking.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-pa-10405",
+  "title": "Process an Inpatient Discharge",
+  "description": "A unit clerk needs to process the discharge for a patient who has been cleared to go home.",
+  "use_case": "Patient Administration",
+  "core_function": "Admissions, Discharge, & Transfer (ADT)",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the discharge order from the physician.",
+      "expected_outcome": "Agent verifies the discharge order is signed and present in the patient's chart.",
+      "required_tools": [
+        "get_patient_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the discharge ADT message in the system.",
+      "expected_outcome": "Agent successfully updates the patient's status to 'Discharged'.",
+      "required_tools": [
+        "process_adt_discharge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the bed management system to show the patient's bed is now 'dirty' and requires cleaning.",
+      "expected_outcome": "Agent updates the bed status, triggering a notification to environmental services.",
+      "required_tools": [
+        "update_bed_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

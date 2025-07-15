@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-ph-10483",
+  "title": "Document Patient Outreach Call",
+  "description": "A care manager calls a high-risk patient to check on their status after a recent hospital discharge.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Patient Outreach & Engagement",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient's record in the care management platform.",
+      "expected_outcome": "Care manager finds the correct patient.",
+      "required_tools": [
+        "get_patient_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Make the phone call to the patient.",
+      "expected_outcome": "The care manager speaks with the patient to assess their condition.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the call in a new note, including that the patient has scheduled their follow-up appointment and has obtained their medications.",
+      "expected_outcome": "The outreach attempt and its outcome are documented, closing the loop on the post-discharge follow-up.",
+      "required_tools": [
+        "create_note"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

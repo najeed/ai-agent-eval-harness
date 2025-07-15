@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-rb-10361",
+  "title": "Inquiry About an Incoming Wire Transfer",
+  "description": "A customer is expecting an incoming wire transfer and wants to know if it has arrived.",
+  "use_case": "Retail Banking",
+  "core_function": "Payments & Transfers",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their account.",
+      "expected_outcome": "Agent correctly identifies the customer.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for recent incoming wire transfers to the customer's account.",
+      "expected_outcome": "Agent searches the system but finds no matching incoming wire transfer yet.",
+      "required_tools": [
+        "search_for_incoming_wire"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer that the wire has not yet been received and explain typical processing times.",
+      "expected_outcome": "Agent clearly communicates that the funds are not yet available and provides an estimated timeframe.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

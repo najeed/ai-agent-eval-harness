@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-tr-10206",
+  "title": "Short-Term Energy Demand Forecast",
+  "description": "A trading analyst requires a day-ahead demand forecast for a specific grid region to inform bidding strategy.",
+  "use_case": "Energy Trading & Portfolio Management",
+  "core_function": "Market Analysis & Forecasting",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve historical demand data for the past 7 days for the target region.",
+      "expected_outcome": "Agent fetches hourly historical load data.",
+      "required_tools": [
+        "get_historical_demand_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the weather forecast (temperature, cloud cover) for the next 24 hours for the same region.",
+      "expected_outcome": "Agent retrieves the relevant hourly weather forecast.",
+      "required_tools": [
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an hourly demand forecast for the next 24 hours using the historical and weather data.",
+      "expected_outcome": "Agent produces a forecast with confidence intervals.",
+      "required_tools": [
+        "generate_demand_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "forecast_accuracy_mape",
+          "threshold": 0.05
+        }
+      ]
+    }
+  ]
+}

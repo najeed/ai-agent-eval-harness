@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ml-11982",
+  "title": "Track Campaign Performance",
+  "description": "A marketing analyst wants to check the performance of an email campaign that was sent yesterday.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Campaign Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log into the marketing analytics platform.",
+      "expected_outcome": "The analyst accesses the reporting tools.",
+      "required_tools": [
+        "open_analytics_platform"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Locate the specific email campaign and open its performance dashboard.",
+      "expected_outcome": "The analyst finds the report for the correct campaign.",
+      "required_tools": [
+        "find_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review key metrics such as open rate, click-through rate, and revenue generated from the campaign.",
+      "expected_outcome": "The analyst can measure the effectiveness and ROI of the marketing campaign.",
+      "required_tools": [
+        "get_campaign_metrics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

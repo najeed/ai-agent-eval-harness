@@ -1,0 +1,57 @@
+{
+  "scenario_id": "real_estate-pm-11813",
+  "title": "Handle Tenant Move-Out and Security Deposit",
+  "description": "A tenant is moving out, and the property manager must inspect the unit and process the security deposit return.",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations & Renewals",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Conduct a move-out inspection of the property, documenting any damages beyond normal wear and tear with photos.",
+      "expected_outcome": "A detailed move-out inspection report is completed.",
+      "required_tools": [
+        "conduct_digital_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Obtain cost estimates for repairing the documented damages.",
+      "expected_outcome": "Agent gets quotes from vendors for the necessary repairs.",
+      "required_tools": [
+        "request_vendor_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the amount of the security deposit to be returned, deducting for damages, and send the final accounting and any refund to the former tenant within the legally required timeframe.",
+      "expected_outcome": "The security deposit is reconciled and returned according to state law.",
+      "required_tools": [
+        "calculate_security_deposit_return",
+        "send_tenant_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        },
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

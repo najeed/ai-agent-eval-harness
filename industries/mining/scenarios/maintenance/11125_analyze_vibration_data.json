@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-maint-11125",
+  "title": "Analyze Conveyor Vibration Data",
+  "description": "A reliability engineer analyzes vibration data from a critical conveyor belt's gearbox to detect early signs of a bearing fault.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Reliability & Condition Monitoring",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Download the latest vibration data from the online sensor attached to the conveyor gearbox.",
+      "expected_outcome": "The vibration waveform and spectrum data are downloaded.",
+      "required_tools": [
+        "download_vibration_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_ingestion_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the vibration spectrum and identify specific frequencies that correspond to a bearing defect.",
+      "expected_outcome": "The analysis reveals a clear spike in the spectrum at the characteristic frequency for an outer race bearing fault.",
+      "required_tools": [
+        "analyze_vibration_spectrum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a high-priority work order to replace the gearbox bearing during the next planned maintenance shutdown.",
+      "expected_outcome": "A work order is created to proactively replace the failing component before it causes a catastrophic failure.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

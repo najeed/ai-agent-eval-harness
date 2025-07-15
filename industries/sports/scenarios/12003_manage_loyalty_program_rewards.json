@@ -1,0 +1,54 @@
+{
+  "scenario_id": "sports-fe-12003",
+  "title": "Manage Fan Loyalty Program Rewards",
+  "description": "A fan wants to redeem their loyalty points for a signed jersey.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Membership & Loyalty Programs",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the fan and check their current loyalty point balance.",
+      "expected_outcome": "Agent confirms the fan has enough points for the jersey.",
+      "required_tools": [
+        "get_fan_account_details",
+        "get_loyalty_points_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the inventory of available signed jerseys.",
+      "expected_outcome": "Agent confirms there are jerseys in stock.",
+      "required_tools": [
+        "check_merchandise_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the redemption, deducting the points from the fan's account and creating a shipping order for the jersey.",
+      "expected_outcome": "Agent successfully completes the redemption and schedules the jersey for shipment.",
+      "required_tools": [
+        "deduct_loyalty_points",
+        "create_shipping_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

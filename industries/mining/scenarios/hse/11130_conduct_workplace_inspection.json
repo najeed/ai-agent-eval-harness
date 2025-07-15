@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-hse-11130",
+  "title": "Conduct Workplace Safety Inspection",
+  "description": "A safety officer conducts a planned inspection of a maintenance workshop using a digital checklist on a tablet.",
+  "use_case": "Health, Safety & Environment (HSE)",
+  "core_function": "Safety Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the 'Workshop Inspection Checklist' on the tablet.",
+      "expected_outcome": "The correct digital inspection form is loaded.",
+      "required_tools": [
+        "load_audit_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Walk through the workshop and complete the checklist, inspecting items like fire extinguishers, machine guarding, and housekeeping.",
+      "expected_outcome": "The inspection is completed, and a few minor issues are identified, such as a blocked fire exit.",
+      "required_tools": [
+        "complete_digital_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log a corrective action for the blocked fire exit and assign it to the workshop supervisor for immediate resolution.",
+      "expected_outcome": "A corrective action is created and tracked in the safety management system.",
+      "required_tools": [
+        "log_corrective_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

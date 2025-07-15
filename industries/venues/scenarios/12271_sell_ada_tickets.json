@@ -1,0 +1,63 @@
+{
+  "scenario_id": "venues-tb-12271",
+  "title": "Sell ADA Tickets",
+  "description": "A guest calls the box office to purchase tickets in a wheelchair accessible section.",
+  "use_case": "Ticketing & Box Office",
+  "core_function": "Ticket Sales & Transactions",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the event the guest is interested in.",
+      "expected_outcome": "Agent confirms the event.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the availability of wheelchair accessible seating for that event.",
+      "expected_outcome": "Agent finds several available wheelchair spaces.",
+      "required_tools": [
+        "get_accessible_seating_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ask the guest if they also need a companion seat.",
+      "expected_outcome": "The guest requests one companion seat.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Sell the guest one wheelchair space and one companion seat, and process the payment.",
+      "expected_outcome": "Agent successfully completes the sale.",
+      "required_tools": [
+        "sell_tickets",
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

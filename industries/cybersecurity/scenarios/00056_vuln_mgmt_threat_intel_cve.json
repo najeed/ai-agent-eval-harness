@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-vm-56",
+  "title": "Prioritizing a new CVE",
+  "description": "A new critical CVE is announced. A threat intelligence analyst must determine its relevance and risk to the organization.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Threat Intelligence Integration",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the CVE details to understand the affected software and the nature of the vulnerability.",
+      "expected_outcome": "Analyst understands the technical details of the new CVE.",
+      "required_tools": [
+        "get_cve_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "technical_understanding",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check threat intelligence feeds to see if the CVE is being actively exploited in the wild.",
+      "expected_outcome": "Analyst confirms that multiple threat actors are already exploiting this CVE.",
+      "required_tools": [
+        "check_threat_intel_for_exploitation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Combine the technical severity of the CVE with the evidence of active exploitation to assign it the highest possible internal priority for patching.",
+      "expected_outcome": "Analyst makes an accurate risk-based decision to escalate the priority of the vulnerability.",
+      "required_tools": [
+        "prioritize_vulnerability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prioritization_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

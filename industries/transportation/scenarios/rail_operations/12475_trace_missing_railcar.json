@@ -1,0 +1,60 @@
+{
+  "scenario_id": "tr-ro-12475",
+  "title": "Trace a Missing Railcar",
+  "description": "A customer is asking for the location of their railcar, but it is not showing up at its expected location. An agent must trace it.",
+  "use_case": "Rail Operations",
+  "core_function": "Yard & Terminal Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the railcar's ID number from the customer.",
+      "expected_outcome": "Agent has the correct ID.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the inter-railroad CLM (Car Location Message) database for the latest reported sighting of the car.",
+      "expected_outcome": "The system returns the last reported location and time.",
+      "required_tools": [
+        "query_clm_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The last sighting shows the car was delivered to a different railroad's yard. The agent must now check that railroad's system.",
+      "expected_outcome": "Agent identifies the need to check a partner system.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Contact the other railroad's customer service to get the current status and ETA for the car.",
+      "expected_outcome": "The agent gets an update from the partner railroad and can now inform the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

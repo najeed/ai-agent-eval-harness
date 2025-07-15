@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-plan-11158",
+  "title": "Design Tailings Delivery Pipeline",
+  "description": "An engineer designs the pipeline system to transport tailings from the processing plant to the tailings storage facility (TSF).",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Ventilation & Services Design",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the required throughput of the pipeline based on the plant's production rate and the slurry's density.",
+      "expected_outcome": "The required flow rate for the pipeline is calculated.",
+      "required_tools": [
+        "calculate_slurry_flow_rate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a hydraulic analysis to determine the optimal pipe diameter and the pressure required from the pumps.",
+      "expected_outcome": "The pipe size and pump specifications are determined.",
+      "required_tools": [
+        "run_hydraulic_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "engineering_design_compliance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Design the pipeline route from the plant to the TSF, minimizing length and elevation changes where possible.",
+      "expected_outcome": "A final pipeline design and layout is created.",
+      "required_tools": [
+        "design_pipeline_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-pd-10265",
+  "title": "Land Lease Agreement Management",
+  "description": "A land manager needs to track and manage upcoming payments for dozens of land lease agreements for a solar project.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Permitting & Compliance",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the database of all land lease agreements and identify all payments due in the next 90 days.",
+      "expected_outcome": "Agent produces a list of 15 upcoming payments with amounts and due dates.",
+      "required_tools": [
+        "query_lease_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each payment, verify the landowner's contact and payment information is up to date.",
+      "expected_outcome": "Agent confirms all information is current.",
+      "required_tools": [
+        "verify_landowner_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate payment authorization requests for the finance department for all due payments.",
+      "expected_outcome": "Agent creates and submits all necessary payment requests.",
+      "required_tools": [
+        "create_payment_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

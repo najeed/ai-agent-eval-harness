@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cm-10983",
+  "title": "Set Up a Search Remarketing List (RLSA)",
+  "description": "An SEM manager wants to create a remarketing list to bid more aggressively for users who have previously visited the website when they search on Google.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Paid Search (SEM)",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "In Google Ads, create a new audience based on 'Website Visitors'.",
+      "expected_outcome": "Agent starts the audience creation process.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define the list to include all users who have visited in the last 90 days.",
+      "expected_outcome": "Agent sets the correct membership duration.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply this audience to an existing search campaign with a '+25%' bid adjustment.",
+      "expected_outcome": "Agent successfully sets up the RLSA, which will increase bids for past visitors.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

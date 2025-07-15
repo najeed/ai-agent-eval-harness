@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-com-11761",
+  "title": "Manage a Tenant Improvement (TI) Project",
+  "description": "A new office tenant receives a TI allowance to build out their space. The property manager must oversee the project.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Property & Asset Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the lease to confirm the TI allowance amount and any landlord responsibilities.",
+      "expected_outcome": "Agent correctly identifies the scope and budget of the TI project.",
+      "required_tools": [
+        "get_lease_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the tenant's construction plans to ensure they comply with building rules and regulations.",
+      "expected_outcome": "Agent checks plans for compliance.",
+      "required_tools": [
+        "review_construction_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Track the project's progress and process disbursement requests from the TI allowance for completed work.",
+      "expected_outcome": "Agent manages the financial aspects of the build-out correctly.",
+      "required_tools": [
+        "track_project_milestones",
+        "process_payment_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

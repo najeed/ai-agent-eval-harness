@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-021",
+  "title": "Advertise a Vacant Rental Unit",
+  "description": "A rental unit will be vacant soon. The manager needs to create a listing and post it to multiple rental websites.",
+  "use_case": "Property Management",
+  "core_function": "Leasing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather details for the vacant unit, including rent price, photos, and amenities.",
+      "expected_outcome": "Agent collects all necessary information for the listing.",
+      "required_tools": [
+        "get_property_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a compelling rental listing description.",
+      "expected_outcome": "Agent generates an attractive and accurate description of the unit.",
+      "required_tools": [
+        "generate_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Syndicate the listing to Zillow, Apartments.com, and other rental platforms.",
+      "expected_outcome": "Agent successfully posts the rental listing to multiple websites.",
+      "required_tools": [
+        "syndicate_rental_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

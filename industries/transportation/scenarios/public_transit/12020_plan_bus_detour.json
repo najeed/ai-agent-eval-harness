@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-pt-12020",
+  "title": "Plan a Bus Detour for a Parade",
+  "description": "A city has announced a parade that will close several streets. A transit planner must create a detour for an affected bus route.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Service Planning & Scheduling",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all bus routes that pass through the parade area.",
+      "expected_outcome": "Agent identifies that Route 12 is affected.",
+      "required_tools": [
+        "get_routes_by_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Using a map interface, plot a detour route for Route 12 that bypasses the street closures.",
+      "expected_outcome": "A new, temporary route path is drawn.",
+      "required_tools": [
+        "plot_detour_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create temporary virtual bus stops along the detour route.",
+      "expected_outcome": "New stops are added for the duration of the detour.",
+      "required_tools": [
+        "create_virtual_stop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Publish the detour information, which updates schedules and sends alerts to subscribed riders.",
+      "expected_outcome": "The detour is activated for the specified date and time, and the public is notified.",
+      "required_tools": [
+        "publish_detour"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

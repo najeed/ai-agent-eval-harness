@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-12588",
+  "title": "Launch 'Call Before You Dig' Campaign",
+  "description": "The public affairs department is launching a public awareness campaign to remind people to call 811 before any digging projects.",
+  "use_case": "Gas Operations",
+  "core_function": "Leak Detection & Repair",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft the content for the campaign, including social media posts, bill inserts, and radio ads.",
+      "expected_outcome": "Agent generates various pieces of marketing content with a consistent message.",
+      "required_tools": [
+        "draft_marketing_content"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule the distribution of the content across the various channels for the spring season, when digging projects increase.",
+      "expected_outcome": "Agent creates a campaign schedule.",
+      "required_tools": [
+        "schedule_media_campaign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Track the number of 811 calls before and during the campaign to measure its effectiveness.",
+      "expected_outcome": "System is set up to monitor and report on campaign metrics.",
+      "required_tools": [
+        "track_campaign_metrics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

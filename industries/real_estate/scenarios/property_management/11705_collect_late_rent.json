@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-11705",
+  "title": "Collect Late Rent and Fees",
+  "description": "A tenant is 5 days late on rent. The agent must notify the tenant, apply the late fee, and record the communication.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify tenants with outstanding balances past the grace period.",
+      "expected_outcome": "Agent correctly identifies the delinquent tenant.",
+      "required_tools": [
+        "get_delinquency_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the contractual late fee to the tenant's ledger.",
+      "expected_outcome": "Agent successfully adds the correct late fee amount to the tenant's balance.",
+      "required_tools": [
+        "apply_late_fee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a formal late rent notice to the tenant via email and log the action in the tenant's communication history.",
+      "expected_outcome": "Agent sends the notice and properly documents the action.",
+      "required_tools": [
+        "send_late_rent_notice",
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

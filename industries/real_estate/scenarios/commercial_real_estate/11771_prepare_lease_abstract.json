@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-com-11771",
+  "title": "Prepare a Lease Abstract",
+  "description": "A new property manager is taking over a building and needs to create abstracts for all existing leases for quick reference.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Property & Asset Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all executed lease agreements for the property.",
+      "expected_outcome": "Agent compiles all the lease documents.",
+      "required_tools": [
+        "get_property_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each lease, extract and summarize critical information: tenant name, suite, lease term, rent schedule, renewal options, and key clauses.",
+      "expected_outcome": "Agent accurately extracts the key data points from a complex legal document.",
+      "required_tools": [
+        "abstract_lease_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the abstracts into a single, organized document for the property management team.",
+      "expected_outcome": "Agent creates a useful summary document for the team.",
+      "required_tools": [
+        "generate_summary_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-tr-10262",
+  "title": "Energy Storage Asset Valuation",
+  "description": "An investment analyst needs to determine the valuation of a standalone battery storage asset based on its potential future revenues.",
+  "use_case": "Energy Trading & Portfolio Management",
+  "core_function": "Portfolio Optimization",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Forecast the asset's potential revenue streams for the next 10 years, including energy arbitrage and ancillary services.",
+      "expected_outcome": "Agent produces a detailed annual revenue forecast.",
+      "required_tools": [
+        "forecast_storage_revenue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "forecast_accuracy_mae",
+          "threshold": 25.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Model the asset's operational costs, including battery degradation and maintenance.",
+      "expected_outcome": "Agent creates a forecast of annual operational expenditures.",
+      "required_tools": [
+        "estimate_opex"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform a discounted cash flow (DCF) analysis to calculate the Net Present Value (NPV) of the asset.",
+      "expected_outcome": "Agent provides a final valuation for the battery storage system.",
+      "required_tools": [
+        "run_dcf_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

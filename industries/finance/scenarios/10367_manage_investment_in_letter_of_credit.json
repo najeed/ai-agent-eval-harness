@@ -1,0 +1,51 @@
+{
+  "scenario_id": "finance-cf-10367",
+  "title": "Issue a Letter of Credit",
+  "description": "A corporate client needs to issue a standby letter of credit (L/C) to a supplier as a guarantee of payment.",
+  "use_case": "Corporate Finance",
+  "core_function": "Treasury & Cash Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all required L/C application details: beneficiary, amount, expiry date, and terms.",
+      "expected_outcome": "Agent accurately collects all necessary information for the L/C.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a credit check and place a hold on the company's funds or credit line for the L/C amount.",
+      "expected_outcome": "Agent confirms the company has sufficient credit and places a hold on the facility.",
+      "required_tools": [
+        "check_commercial_credit",
+        "place_hold_on_funds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue the letter of credit and send it to the beneficiary via SWIFT.",
+      "expected_outcome": "Agent successfully issues the L/C and provides the SWIFT confirmation to the client.",
+      "required_tools": [
+        "issue_letter_of_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

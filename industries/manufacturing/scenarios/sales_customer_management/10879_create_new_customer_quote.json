@@ -1,0 +1,54 @@
+{
+  "scenario_id": "mfg-sc-10879",
+  "title": "Create a New Customer Quote",
+  "description": "A sales representative needs to create a quote for a potential new customer for a standard product.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Quoting & Ordering",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the product and quantity the customer is interested in.",
+      "expected_outcome": "Agent selects the correct product SKU and enters the quantity.",
+      "required_tools": [
+        "get_product_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the standard list price for the product and apply a standard new customer discount.",
+      "expected_outcome": "Agent finds the price and applies the correct discount.",
+      "required_tools": [
+        "get_product_price",
+        "apply_discount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a formal quote document with the final price, terms, and validity date, and email it to the customer.",
+      "expected_outcome": "Agent successfully creates the quote PDF and sends it to the customer.",
+      "required_tools": [
+        "create_quote",
+        "send_email_to_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

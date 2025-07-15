@@ -1,0 +1,68 @@
+{
+  "scenario_id": "tr-ro-12070",
+  "title": "Handle a Derailment Incident",
+  "description": "A train has derailed. A control center manager must coordinate the emergency response.",
+  "use_case": "Rail Operations",
+  "core_function": "Network Control & Dispatch",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an emergency call from a crew reporting a derailment.",
+      "expected_outcome": "A critical incident case is opened.",
+      "required_tools": [
+        "create_critical_incident_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notify external emergency services (fire, police) and internal company leadership.",
+      "expected_outcome": "All relevant parties are notified.",
+      "required_tools": [
+        "notify_emergency_services",
+        "notify_leadership"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Stop all other train traffic in the vicinity of the derailment.",
+      "expected_outcome": "The area is secured from other train movements.",
+      "required_tools": [
+        "broadcast_emergency_stop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Dispatch a hazardous materials team if the derailed cars contain dangerous goods.",
+      "expected_outcome": "A specialized team is dispatched if required.",
+      "required_tools": [
+        "check_train_consist_for_hazmat",
+        "dispatch_hazmat_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

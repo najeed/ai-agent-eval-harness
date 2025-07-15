@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-rc-11304",
+  "title": "Compile a Regulatory Submission Dossier",
+  "description": "A regulatory affairs specialist must compile documents for an Investigational New Drug (IND) application.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Submission Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the required document list for an IND submission from a template.",
+      "expected_outcome": "Agent generates a checklist of all necessary documents (e.g., preclinical data, CMC info, protocol).",
+      "required_tools": [
+        "get_submission_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather all final, approved documents from the document management system.",
+      "expected_outcome": "Agent successfully locates and retrieves all required documents.",
+      "required_tools": [
+        "search_document_management_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assemble the documents into the eCTD (electronic Common Technical Document) format.",
+      "expected_outcome": "Agent correctly places each document in the appropriate section of the eCTD structure.",
+      "required_tools": [
+        "assemble_ectd"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Perform a validation check on the compiled eCTD package to ensure it meets regulatory technical specifications.",
+      "expected_outcome": "Agent runs a validation tool and confirms there are no errors.",
+      "required_tools": [
+        "validate_ectd"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

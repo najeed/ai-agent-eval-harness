@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-rs-003",
+  "title": "Schedule a Property Showing",
+  "description": "A buyer's agent requests to schedule a showing for a listed property.",
+  "use_case": "Residential Sales",
+  "core_function": "Showings & Open Houses",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the showing request and check the property's showing availability calendar.",
+      "expected_outcome": "Agent identifies available time slots based on the seller's preferences.",
+      "required_tools": [
+        "get_showing_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm the requested time with the seller and the buyer's agent.",
+      "expected_outcome": "Agent successfully coordinates and confirms the appointment time with all parties.",
+      "required_tools": [
+        "send_confirmation_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the buyer's agent with lockbox access instructions.",
+      "expected_outcome": "Agent sends the correct and secure access information for the property.",
+      "required_tools": [
+        "get_lockbox_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-rs-12069",
+  "title": "Handle a Pre-Scheduled Ride",
+  "description": "A rider schedules a trip to the airport for the next day. The system must dispatch a driver at the appropriate time.",
+  "use_case": "Ride-Sharing & On-Demand Mobility",
+  "core_function": "Matching & Dispatch",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A rider books a trip for a future time and date.",
+      "expected_outcome": "The scheduled ride is logged in the system.",
+      "required_tools": [
+        "schedule_ride"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Shortly before the scheduled pickup time, the system offers the trip to nearby drivers.",
+      "expected_outcome": "The trip request is sent out to eligible drivers.",
+      "required_tools": [
+        "find_drivers_for_scheduled_ride"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "A driver accepts the scheduled trip.",
+      "expected_outcome": "The trip is assigned to a specific driver.",
+      "required_tools": [
+        "assign_scheduled_ride"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The system instructs the driver to head towards the pickup location to arrive at the scheduled time.",
+      "expected_outcome": "The driver is dispatched to ensure an on-time pickup.",
+      "required_tools": [
+        "send_driver_dispatch_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

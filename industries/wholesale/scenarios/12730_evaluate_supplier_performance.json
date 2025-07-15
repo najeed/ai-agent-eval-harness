@@ -1,0 +1,53 @@
+{
+  "scenario_id": "wholesale-sp-12730",
+  "title": "Evaluate Supplier Performance",
+  "description": "A procurement manager needs to conduct a quarterly performance review of a key supplier.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Supplier Relationship Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all data for the supplier for the last quarter, including on-time delivery rate, order accuracy, and quality inspection results.",
+      "expected_outcome": "Agent compiles a complete dataset of the supplier's performance.",
+      "required_tools": [
+        "get_supplier_performance_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_aggregation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data and score the supplier against key performance indicators (KPIs).",
+      "expected_outcome": "The analysis shows the supplier has an excellent on-time delivery rate but a slightly high defect rate.",
+      "required_tools": [
+        "analyze_supplier_kpis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a supplier scorecard and schedule a meeting with the supplier to discuss the results.",
+      "expected_outcome": "Agent produces the scorecard and sets up a review meeting.",
+      "required_tools": [
+        "generate_supplier_scorecard",
+        "schedule_supplier_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

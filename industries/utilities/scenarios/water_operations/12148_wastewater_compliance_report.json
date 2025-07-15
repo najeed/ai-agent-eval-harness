@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-wo-12148",
+  "title": "Generate Wastewater Compliance Report",
+  "description": "A plant manager needs to generate a monthly Discharge Monitoring Report (DMR) for the environmental regulator.",
+  "use_case": "Water & Wastewater Operations",
+  "core_function": "Treatment & Quality",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all required water quality sample results for the past month from the Laboratory Information Management System (LIMS).",
+      "expected_outcome": "System compiles all required data points (e.g., BOD, TSS, pH).",
+      "required_tools": [
+        "get_lims_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_aggregation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the results against the plant's discharge permit limits.",
+      "expected_outcome": "System confirms all results were within compliance limits.",
+      "required_tools": [
+        "check_compliance_limits"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Populate the official DMR form with the data and prepare it for submission.",
+      "expected_outcome": "System generates the completed DMR in the required format.",
+      "required_tools": [
+        "generate_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-isr-10092",
+  "title": "Supply Route Anomaly Detection",
+  "description": "An analyst must monitor traffic patterns on a main supply route to detect behavior indicative of a planned ambush, like the absence of normal traffic.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "Pattern & Anomaly Detection",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use historical data to establish the normal pattern of life for the supply route, including typical traffic density by time of day.",
+      "expected_outcome": "Analyst successfully models the normal traffic patterns.",
+      "required_tools": [
+        "analyze_historical_traffic_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "baseline_model_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Monitor the live traffic feed from a persistent surveillance drone.",
+      "expected_outcome": "Analyst actively monitors the route.",
+      "required_tools": [
+        "view_live_fmv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_diligence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Flag a sudden and complete lack of civilian traffic on the route as a critical anomaly, suggesting insurgents have blocked the road to set up an ambush.",
+      "expected_outcome": "Analyst correctly identifies the 'negative space' anomaly and issues a warning to upcoming convoys.",
+      "required_tools": [
+        "flag_anomaly",
+        "issue_intelligence_warning"
+      ],
+      "success_criteria": [
+        {
+          "metric": "anomaly_detection_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

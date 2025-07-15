@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tourism-ta-11937",
+  "title": "Ask About Attraction Accessibility",
+  "description": "A visitor with mobility issues wants to know if the Eiffel Tower is wheelchair accessible.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Visitor Information & Support",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the attraction (Eiffel Tower) and the specific query (wheelchair accessibility).",
+      "expected_outcome": "Agent understands the user's request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve accessibility information for the Eiffel Tower from the knowledge base.",
+      "expected_outcome": "Agent finds information stating that elevators provide access to the first and second floors for wheelchair users.",
+      "required_tools": [
+        "get_attraction_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Clearly communicate the accessibility details to the visitor.",
+      "expected_outcome": "Agent accurately explains which parts of the attraction are accessible.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

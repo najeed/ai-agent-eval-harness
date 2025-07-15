@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-vo-11482",
+  "title": "Handle a Vessel Diversion",
+  "description": "A vessel scheduled to arrive at the port is diverted to another port by its owners at the last minute.",
+  "use_case": "Vessel Operations",
+  "core_function": "Berth & Pilotage Management",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive notification from the vessel agent that the vessel will no longer be calling at the port.",
+      "expected_outcome": "The scheduler receives the cancellation notice.",
+      "required_tools": [
+        "get_cancellation_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cancel the vessel's berth allocation in the scheduling system.",
+      "expected_outcome": "The berth previously assigned to the vessel is now shown as available.",
+      "required_tools": [
+        "cancel_berth_allocation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Cancel all associated pilot, tug, and mooring services to avoid cancellation fees.",
+      "expected_outcome": "All booked services for the vessel call are successfully cancelled.",
+      "required_tools": [
+        "cancel_pilot_tugs",
+        "cancel_mooring_gang"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

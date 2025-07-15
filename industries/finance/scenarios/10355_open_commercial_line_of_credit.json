@@ -1,0 +1,51 @@
+{
+  "scenario_id": "finance-cf-10355",
+  "title": "Open a Commercial Line of Credit",
+  "description": "A corporate client needs to open a line of credit to manage working capital.",
+  "use_case": "Corporate Finance",
+  "core_function": "Treasury & Cash Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the company's financial statements and application details.",
+      "expected_outcome": "Agent collects all required documentation for underwriting.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform credit analysis and underwriting on the company.",
+      "expected_outcome": "The credit risk department analyzes the company's financials and approves a credit line.",
+      "required_tools": [
+        "run_commercial_credit_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate loan documents and open the line of credit for the approved amount.",
+      "expected_outcome": "Agent generates the legal agreements and officially opens the credit facility.",
+      "required_tools": [
+        "generate_loan_documents",
+        "open_line_of_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

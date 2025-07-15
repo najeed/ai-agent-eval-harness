@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-cc-10934",
+  "title": "Perform a Technical SEO Audit",
+  "description": "An SEO specialist needs to run a technical audit on a client's website to find issues like broken links and slow page speed.",
+  "use_case": "Content & Creative Development",
+  "core_function": "SEO & Content Optimization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a website crawl using an SEO auditing tool.",
+      "expected_outcome": "The tool crawls the entire website and gathers data.",
+      "required_tools": [
+        "seo_audit_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the audit report to identify critical issues, such as 404 errors (broken links) and pages with slow load times.",
+      "expected_outcome": "Agent identifies a list of technical problems.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a prioritized list of fixes for the development team.",
+      "expected_outcome": "Agent produces an actionable report for the developers, starting with the most critical issues.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}
