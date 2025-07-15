@@ -30,7 +30,7 @@ You can run an evaluation from the command line by specifying the industry and t
 
 1.  Navigate to the parent `ai-agent-eval-harness` directory:
     ```bash
-    cd .
+    cd /path/to/ai-agent-eval-harness
     ```
 
 2.  Run the main script:
