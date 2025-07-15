@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hosp-gs-11579",
+  "title": "Guest Uses Express Check-out",
+  "description": "A guest who is in a hurry drops their key at the desk and asks to be checked out, requesting the receipt be emailed.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Check-in & Check-out",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the guest's folio.",
+      "expected_outcome": "The agent finds the correct guest account.",
+      "required_tools": [
+        "pms_get_guest_folio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the final payment using the credit card on file.",
+      "expected_outcome": "The payment is successfully processed.",
+      "required_tools": [
+        "pms_process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the guest out in the system and email the final folio to the address on file.",
+      "expected_outcome": "The guest is checked out, and the receipt is emailed.",
+      "required_tools": [
+        "pms_update_booking_status",
+        "pms_email_folio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

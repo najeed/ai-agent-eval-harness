@@ -1,0 +1,51 @@
+{
+  "scenario_id": "og-down-12726",
+  "title": "Analyze Product Arbitrage Opportunity",
+  "description": "A trader analyzes price differences for diesel between the US Gulf Coast and Europe to see if an arbitrage opportunity exists.",
+  "use_case": "Downstream",
+  "core_function": "Supply & Trading",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the current spot prices for diesel in the US Gulf Coast and ARA (Amsterdam-Rotterdam-Antwerp).",
+      "expected_outcome": "Current prices for both locations are retrieved.",
+      "required_tools": [
+        "get_product_spot_price"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the price spread (arb) between the two markets.",
+      "expected_outcome": "The price spread is calculated, showing a positive value for shipping from USGC to ARA.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Estimate the transportation costs (shipping freight) and other logistics costs. Compare with the arb to determine profitability.",
+      "expected_outcome": "The analysis shows the price spread is greater than the costs, indicating a profitable arbitrage opportunity.",
+      "required_tools": [
+        "get_freight_rate_estimate",
+        "calculate_arbitrage_pnl"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

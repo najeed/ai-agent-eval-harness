@@ -1,0 +1,50 @@
+{
+  "scenario_id": "lw-im-12212",
+  "title": "Create a Stock Transfer Order",
+  "description": "A distribution center (DC A) is low on stock for a popular item. An inventory planner needs to create a stock transfer order to move inventory from another DC (DC B).",
+  "use_case": "Inventory Management",
+  "core_function": "Replenishment & Ordering",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check inventory levels for the item at all distribution centers.",
+      "expected_outcome": "Agent confirms DC A is low and DC B has a surplus.",
+      "required_tools": [
+        "check_inventory_levels_across_network"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a stock transfer order (STO) to move 500 units from DC B to DC A.",
+      "expected_outcome": "Agent successfully creates the STO in the system.",
+      "required_tools": [
+        "create_stock_transfer_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The STO automatically generates an outbound order for DC B and an inbound notification for DC A.",
+      "expected_outcome": "The system correctly creates linked transactions for both facilities.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

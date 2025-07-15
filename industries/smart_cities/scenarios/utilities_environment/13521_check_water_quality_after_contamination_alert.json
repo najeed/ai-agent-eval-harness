@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ue-13521",
+  "title": "Check Water Quality After Contamination Alert",
+  "description": "An upstream sensor detects a potential contaminant. An operator must check downstream sensors to see if it has reached the public water supply.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Water & Wastewater Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'High Turbidity' alert from a sensor in the main water reservoir.",
+      "expected_outcome": "Agent acknowledges the water quality alert.",
+      "required_tools": [
+        "get_water_system_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query all real-time water quality sensors at various points in the distribution network.",
+      "expected_outcome": "Agent retrieves a list of sensor readings from across the city.",
+      "required_tools": [
+        "get_water_quality_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the data and confirm that all sensors within the public distribution network show normal readings, indicating the contamination is contained in the reservoir.",
+      "expected_outcome": "Agent correctly determines the public water supply is currently safe.",
+      "required_tools": [
+        "analyze_water_quality_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

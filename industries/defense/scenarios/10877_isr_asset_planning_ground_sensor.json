@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-isr-10877",
+  "title": "Unattended Ground Sensor Planning",
+  "description": "An intelligence officer must plan the placement of unattended ground sensors (UGS) to monitor a key trail used by insurgents.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "ISR Asset Planning & Tasking",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze imagery and maps of the area to identify the best locations to place the sensors (e.g., chokepoints, concealed positions).",
+      "expected_outcome": "Officer selects optimal locations for sensor placement.",
+      "required_tools": [
+        "analyze_satellite_imagery",
+        "analyze_maps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "site_selection_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the right type of UGS for the mission (e.g., seismic, acoustic, infrared).",
+      "expected_outcome": "Officer chooses a mix of seismic and infrared sensors for best results.",
+      "required_tools": [
+        "get_ugs_catalog"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a mission plan for a Special Forces team to infiltrate the area and emplace the sensors.",
+      "expected_outcome": "Officer creates a detailed and actionable plan for the emplacement team.",
+      "required_tools": [
+        "create_mission_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

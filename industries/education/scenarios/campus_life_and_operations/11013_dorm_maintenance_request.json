@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-co-11013",
+  "title": "Dorm Room Maintenance Request",
+  "description": "A student reports that the light in their dorm room is not working.",
+  "use_case": "Campus Life & Operations",
+  "core_function": "Housing & Residential Life",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and their dorm room number.",
+      "expected_outcome": "Agent confirms the student's identity and location.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a maintenance work order in the facilities management system.",
+      "expected_outcome": "Agent successfully creates a work order detailing the issue ('light out').",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the student with the work order number and the standard response time for non-emergency requests.",
+      "expected_outcome": "Agent clearly communicates the next steps and timeline.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

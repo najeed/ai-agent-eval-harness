@@ -1,0 +1,64 @@
+{
+  "scenario_id": "hosp-sm-11512",
+  "title": "Upsell to a Suite",
+  "description": "A guest with a standard room reservation is checking in. The agent sees that suites are available and attempts to upsell the guest.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Promotions & Upselling",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "While checking the guest in, notice their anniversary is noted in the reservation.",
+      "expected_outcome": "Agent identifies a special occasion from the reservation notes.",
+      "required_tools": [
+        "pms_lookup_reservation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for suite availability.",
+      "expected_outcome": "Agent confirms that a junior suite is available.",
+      "required_tools": [
+        "pms_check_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Offer the guest a special, discounted rate to upgrade to the suite for their anniversary.",
+      "expected_outcome": "Agent makes a personalized upsell offer, which the guest accepts.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the reservation to the new room type and rate.",
+      "expected_outcome": "Agent successfully modifies the booking to reflect the upgrade.",
+      "required_tools": [
+        "pms_update_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

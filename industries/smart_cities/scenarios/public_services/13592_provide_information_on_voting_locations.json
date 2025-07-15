@@ -1,0 +1,48 @@
+{
+  "scenario_id": "smartcities-pg-13592",
+  "title": "Provide Information on Voting Locations",
+  "description": "On election day, a citizen calls the city's information line to find their assigned polling station.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Public Information & Alerting",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the citizen for their residential address.",
+      "expected_outcome": "Agent gathers the necessary information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the address to look up the citizen's assigned polling station in the voter registration database.",
+      "expected_outcome": "The system returns the name and address of the correct polling location.",
+      "required_tools": [
+        "lookup_polling_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the citizen with the polling station's address and hours of operation.",
+      "expected_outcome": "Agent clearly communicates the requested information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

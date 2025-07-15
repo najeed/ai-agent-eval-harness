@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-cf-11220",
+  "title": "Flag Suspicious Activity for SAR Filing",
+  "description": "A compliance analyst identifies a series of unusual transactions that may require filing a Suspicious Activity Report (SAR).",
+  "use_case": "Corporate Finance",
+  "core_function": "Risk & Compliance",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Investigate a transaction monitoring alert for a corporate account.",
+      "expected_outcome": "Agent reviews an alert showing multiple large, structured cash deposits.",
+      "required_tools": [
+        "get_aml_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather all related transaction data and customer information for the investigation.",
+      "expected_outcome": "Agent compiles a case file with all relevant details.",
+      "required_tools": [
+        "compile_investigation_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Escalate the case to a senior analyst with a recommendation to file a SAR.",
+      "expected_outcome": "Agent escalates the case and documents the reason for the SAR recommendation.",
+      "required_tools": [
+        "escalate_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-ri-12030",
+  "title": "Schedule an Interview with a Hostile Source",
+  "description": "A reporter needs to interview a public figure who is known to be hostile to the press.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Source & Interview Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the contact information for the person's official press secretary or communications director.",
+      "expected_outcome": "Agent gets the correct contact info for the gatekeeper.",
+      "required_tools": [
+        "search_web"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a very professional and carefully worded interview request that clearly states the topic of discussion and why the person's perspective is important.",
+      "expected_outcome": "Agent writes a persuasive and non-confrontational request.",
+      "required_tools": [
+        "draft_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Persistently but politely follow up on the request if no response is received.",
+      "expected_outcome": "Agent follows up via email and phone until a 'yes' or 'no' is received.",
+      "required_tools": [
+        "send_email",
+        "phone_call_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "persistence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

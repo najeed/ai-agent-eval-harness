@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_product-ps-11784",
+  "title": "Develop Custom Training Curriculum",
+  "description": "A new enterprise customer has purchased a custom training package. A consultant must develop the curriculum.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Custom Training Delivery",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Hold a discovery call with the customer's training lead to understand their key learning objectives and user personas.",
+      "expected_outcome": "Consultant gathers all necessary information to design the training.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a detailed curriculum outline and agenda, mapping learning objectives to specific product modules and features.",
+      "expected_outcome": "Consultant creates a structured and logical training plan.",
+      "required_tools": [
+        "create_project_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Get approval from the customer on the curriculum before developing the training materials.",
+      "expected_outcome": "The customer and consultant are aligned on the training plan.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tr-to-14078",
+  "title": "Track a Driver's Location",
+  "description": "A customer is asking for a real-time update on the location of the truck carrying their shipment.",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Dispatch & Load Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the load associated with the customer's order.",
+      "expected_outcome": "Agent identifies the correct load and the driver assigned to it.",
+      "required_tools": [
+        "get_load_by_order_number"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the truck's ELD/GPS system for its current location.",
+      "expected_outcome": "The system returns the truck's current location on a map.",
+      "required_tools": [
+        "get_truck_gps_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Share a secure, temporary tracking link with the customer so they can see the truck's location.",
+      "expected_outcome": "The customer receives a link to a live tracking map.",
+      "required_tools": [
+        "generate_public_tracking_link"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

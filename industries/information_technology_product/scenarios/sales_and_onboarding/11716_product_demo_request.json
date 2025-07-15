@@ -1,0 +1,51 @@
+{
+  "scenario_id": "information_technology_product-sl-11716",
+  "title": "Product Demo Request",
+  "description": "A qualified lead has requested a live product demonstration.",
+  "use_case": "Sales & Account Management",
+  "core_function": "New Customer Acquisition",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the lead's details to understand their industry and needs to tailor the demo.",
+      "expected_outcome": "Agent prepares a demo script focused on the lead's specific use case.",
+      "required_tools": [
+        "view_crm_lead_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Conduct a live, personalized demo of the product, focusing on the features most relevant to the lead.",
+      "expected_outcome": "Agent successfully demonstrates the value of the product.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Follow up after the demo with a summary email and a quote.",
+      "expected_outcome": "Agent sends a timely and professional follow-up.",
+      "required_tools": [
+        "send_email",
+        "generate_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

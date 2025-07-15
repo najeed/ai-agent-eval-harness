@@ -1,0 +1,66 @@
+{
+  "scenario_id": "smartcities-ue-13516",
+  "title": "Restore Power After Localized Outage",
+  "description": "A transformer fails, causing a power outage in a residential neighborhood. An operator must use FLISR to restore power.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Smart Grid & Energy Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an alert from a smart meter indicating a power outage at a specific address.",
+      "expected_outcome": "Agent acknowledges the initial outage report.",
+      "required_tools": [
+        "get_grid_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The FLISR (Fault Location, Isolation, and Service Restoration) system automatically identifies the faulted grid section.",
+      "expected_outcome": "The system pinpoints the outage to a specific transformer and the homes it serves.",
+      "required_tools": [
+        "run_flisr_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Authorize the FLISR system to remotely reroute power from an adjacent circuit, restoring power to most affected homes.",
+      "expected_outcome": "Agent approves the automated action, and power is restored to 90% of customers.",
+      "required_tools": [
+        "authorize_grid_reroute"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Dispatch a repair crew to replace the failed transformer.",
+      "expected_outcome": "Agent creates a work order for the physical repair.",
+      "required_tools": [
+        "dispatch_utility_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

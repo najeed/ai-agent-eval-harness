@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-af-12900",
+  "title": "Invoice Shipping Line for Services",
+  "description": "A vessel has departed. The finance department must generate an invoice for all services rendered.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Billing & Invoicing",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all billable activities for the vessel's port call (e.g., stevedoring moves, wharfage, pilotage fees).",
+      "expected_outcome": "Finance clerk compiles a list of all charges from the TOS and port authority records.",
+      "required_tools": [
+        "get_vessel_visit_charges"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the correct rates from the shipping line's contract or the port tariff.",
+      "expected_outcome": "The correct price is applied to each service line item.",
+      "required_tools": [
+        "get_contract_rates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate and send a formal invoice to the shipping line's accounting department.",
+      "expected_outcome": "A detailed invoice is created and emailed to the customer.",
+      "required_tools": [
+        "generate_invoice",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

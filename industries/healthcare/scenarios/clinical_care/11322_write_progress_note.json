@@ -1,0 +1,54 @@
+{
+  "scenario_id": "hc-cc-11322",
+  "title": "Write a Progress Note",
+  "description": "A resident physician needs to write a SOAP (Subjective, Objective, Assessment, Plan) note for a patient they have just examined.",
+  "use_case": "Clinical Care",
+  "core_function": "Clinical Documentation & Charting",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient's chart and create a new note.",
+      "expected_outcome": "Resident opens the correct patient record and selects the 'Progress Note' template.",
+      "required_tools": [
+        "get_patient_record",
+        "create_note"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Document the subjective, objective, assessment, and plan sections of the note.",
+      "expected_outcome": "Resident accurately and completely documents their findings and clinical reasoning.",
+      "required_tools": [
+        "update_note_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Sign the note and route it to the attending physician for co-signature.",
+      "expected_outcome": "Resident signs the note, and it appears in the attending's inbox for review and co-signature.",
+      "required_tools": [
+        "sign_note",
+        "route_for_cosignature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

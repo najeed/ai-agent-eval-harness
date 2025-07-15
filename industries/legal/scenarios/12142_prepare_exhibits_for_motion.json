@@ -1,0 +1,64 @@
+{
+  "scenario_id": "legal-ldr-12142",
+  "title": "Prepare Exhibits for a Motion",
+  "description": "A paralegal needs to prepare and organize the exhibits that will be filed in support of a motion.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Pleadings & Motions Practice",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a list of documents from the attorney that will be used as exhibits.",
+      "expected_outcome": "Agent has the list of documents to be prepared.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each document, create an exhibit cover page and label it sequentially (Exhibit A, Exhibit B, etc.).",
+      "expected_outcome": "Agent creates properly labeled exhibit pages.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Combine each exhibit cover page with its corresponding document into a single PDF file.",
+      "expected_outcome": "Agent creates a separate, correctly formatted PDF for each exhibit.",
+      "required_tools": [
+        "pdf_conversion_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create an index of all exhibits to be filed with the motion.",
+      "expected_outcome": "Agent produces a final exhibit index.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

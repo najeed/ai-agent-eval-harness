@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-im-11868",
+  "title": "Server & Network - Switch Port Failure",
+  "description": "A user whose computer is connected via an Ethernet cable reports they have no network connection.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Server & Network Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the user for the wall port number they are plugged into and cross-reference it in the documentation to find the corresponding switch and port.",
+      "expected_outcome": "Technician identifies the exact switch port the user is connected to.",
+      "required_tools": [
+        "get_client_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log in to the network switch and check the status of that port.",
+      "expected_outcome": "The switch shows the port is in an 'err-disabled' state, indicating a physical layer issue.",
+      "required_tools": [
+        "get_switch_port_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the user to try a different network cable. If that fails, move their connection to a different port on the switch.",
+      "expected_outcome": "Moving the user to a different switch port resolves the issue, indicating the original port has failed.",
+      "required_tools": [
+        "update_switch_port_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

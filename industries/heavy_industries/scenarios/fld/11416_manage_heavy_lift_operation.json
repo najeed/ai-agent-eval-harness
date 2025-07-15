@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-fld-11416",
+  "title": "Manage a Heavy Lift Operation",
+  "description": "A very large and heavy module needs to be lifted into place by a crane. The site supervisor must ensure all safety and operational checks are complete.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Construction & Assembly",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the approved lift plan for the operation.",
+      "expected_outcome": "Agent finds the lift plan, which details the crane size, rigging, and exclusion zones.",
+      "required_tools": [
+        "get_lift_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the crane has been inspected and the weather conditions (especially wind speed) are within the limits specified in the lift plan.",
+      "expected_outcome": "Agent confirms the crane's daily inspection is complete and the current wind speed is acceptable.",
+      "required_tools": [
+        "check_equipment_inspection_log",
+        "get_weather_conditions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Authorize the lift to proceed.",
+      "expected_outcome": "Agent gives the final go-ahead to the crane operator and rigging crew.",
+      "required_tools": [
+        "authorize_lift"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

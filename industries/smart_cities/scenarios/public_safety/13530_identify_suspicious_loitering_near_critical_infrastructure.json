@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-ps-13530",
+  "title": "Identify Suspicious Loitering Near Critical Infrastructure",
+  "description": "Camera analytics detect a person loitering near a reservoir's perimeter fence for an extended period.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Public Space Monitoring",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'Perimeter Anomaly' alert from a camera at the 'City Reservoir'.",
+      "expected_outcome": "Agent acknowledges the security alert.",
+      "required_tools": [
+        "get_camera_analytics_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the live and archived video of the incident.",
+      "expected_outcome": "Agent confirms a person is pacing back and forth along the fence line.",
+      "required_tools": [
+        "get_live_camera_feed",
+        "get_archived_camera_feed"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a police unit to perform a welfare check and investigate the suspicious activity.",
+      "expected_outcome": "Agent sends a patrol unit to the location.",
+      "required_tools": [
+        "dispatch_emergency_unit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

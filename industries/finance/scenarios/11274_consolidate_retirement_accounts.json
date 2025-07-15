@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-wm-11274",
+  "title": "Consolidate Retirement Accounts (Rollover)",
+  "description": "A new client wants to roll over an old 401(k) from a previous employer into a new IRA.",
+  "use_case": "Wealth Management",
+  "core_function": "Portfolio Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open a new Rollover IRA account for the client.",
+      "expected_outcome": "Agent successfully creates the new IRA account to receive the funds.",
+      "required_tools": [
+        "create_investment_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assist the client in initiating a direct rollover from their old 401(k) provider.",
+      "expected_outcome": "Agent provides the client with the necessary forms and account information to give to their old provider.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the funds are received, invest them according to the client's investment strategy.",
+      "expected_outcome": "Agent confirms receipt of the rollover check and invests the funds into the client's model portfolio.",
+      "required_tools": [
+        "invest_funds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

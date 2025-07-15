@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-13250",
+  "title": "Check HOA Documents for Buyer",
+  "description": "A buyer is considering a condo and the agent needs to review the HOA documents for potential red flags.",
+  "use_case": "Residential Sales",
+  "core_function": "Buyer & Seller Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Request and receive the complete HOA document package from the listing agent or HOA management company.",
+      "expected_outcome": "Agent obtains all HOA docs, including budget, bylaws, and meeting minutes.",
+      "required_tools": [
+        "get_transaction_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the HOA's financial health by reviewing the budget and reserve study.",
+      "expected_outcome": "Agent identifies if the HOA is well-funded or if a special assessment is likely.",
+      "required_tools": [
+        "analyze_financial_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Summarize key findings for the buyer, including any rental restrictions, pending litigation, or major upcoming projects.",
+      "expected_outcome": "Agent provides a clear and concise summary to help the buyer make an informed decision.",
+      "required_tools": [
+        "summarize_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summary_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

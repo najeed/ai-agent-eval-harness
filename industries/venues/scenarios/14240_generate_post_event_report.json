@@ -1,0 +1,68 @@
+{
+  "scenario_id": "venues-em-14240",
+  "title": "Generate Post-Event Report",
+  "description": "Following a large concert, the venue's general manager needs a report summarizing key performance metrics.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Settlement & Post-Event Reporting",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather final attendance data from the access control system.",
+      "expected_outcome": "Agent retrieves the final count of scanned tickets.",
+      "required_tools": [
+        "get_final_attendance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather total gross sales data from the food and beverage and merchandise systems.",
+      "expected_outcome": "Agent retrieves the final sales figures.",
+      "required_tools": [
+        "get_concession_sales_data",
+        "get_merchandise_sales_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Gather a summary of all security and medical incidents from their respective logs.",
+      "expected_outcome": "Agent retrieves the incident counts.",
+      "required_tools": [
+        "get_security_incident_summary",
+        "get_medical_incident_summary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Compile all data into a standardized post-event report template.",
+      "expected_outcome": "Agent generates a comprehensive report summarizing all key metrics.",
+      "required_tools": [
+        "generate_post_event_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

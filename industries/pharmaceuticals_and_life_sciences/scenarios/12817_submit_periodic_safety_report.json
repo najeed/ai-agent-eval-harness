@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-rc-12817",
+  "title": "Prepare and Submit a Periodic Safety Update Report (PSUR)",
+  "description": "A pharmacovigilance specialist must prepare and submit a PSUR to a regulatory authority.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Pharmacovigilance & Safety Reporting",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a line listing of all adverse event cases for the product within the reporting period from the safety database.",
+      "expected_outcome": "Agent successfully extracts all relevant case data for the specified time frame.",
+      "required_tools": [
+        "generate_case_line_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the case data to identify any new or changing safety signals.",
+      "expected_outcome": "Agent analyzes the data and notes an increase in reports of 'headache', but determines it does not constitute a new signal.",
+      "required_tools": [
+        "perform_signal_detection_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft the various sections of the PSUR using a template, incorporating the data and analysis.",
+      "expected_outcome": "Agent populates the PSUR template with the required information.",
+      "required_tools": [
+        "draft_regulatory_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Submit the final, approved PSUR to the health authority via their electronic gateway.",
+      "expected_outcome": "Agent successfully submits the report and receives a submission receipt.",
+      "required_tools": [
+        "submit_to_regulatory_gateway"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

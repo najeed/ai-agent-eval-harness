@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mfg-po-12298",
+  "title": "Create a New Work Order",
+  "description": "A production planner needs to create a new work order for a custom product.",
+  "use_case": "Production & Operations",
+  "core_function": "Work Order Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the Bill of Materials (BOM) and routing information for the specified product.",
+      "expected_outcome": "Agent correctly pulls the complete BOM and routing from the ERP system.",
+      "required_tools": [
+        "get_bom",
+        "get_routing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new work order, specifying the quantity, due date, and associated BOM/routing.",
+      "expected_outcome": "Agent successfully creates the work order with all required details.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Release the work order to the production floor.",
+      "expected_outcome": "Agent changes the work order status to 'Released'.",
+      "required_tools": [
+        "release_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

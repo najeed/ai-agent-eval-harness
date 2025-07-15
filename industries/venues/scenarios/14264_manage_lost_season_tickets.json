@@ -1,0 +1,64 @@
+{
+  "scenario_id": "venues-sh-14264",
+  "title": "Handle Lost Season Tickets",
+  "description": "A season ticket holder reports that they have lost their physical season ticket booklet.",
+  "use_case": "Sales & Hospitality",
+  "core_function": "Group Sales",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the season ticket holder's account.",
+      "expected_outcome": "Agent finds the account and verifies their identity.",
+      "required_tools": [
+        "get_season_ticket_holder_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Deactivate the barcodes for the lost physical tickets to prevent fraudulent use.",
+      "expected_outcome": "Agent successfully voids the old ticket barcodes.",
+      "required_tools": [
+        "deactivate_ticket_barcodes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Re-issue the rest of the season's tickets as digital, mobile-only tickets.",
+      "expected_outcome": "Agent sends the customer a new set of digital tickets.",
+      "required_tools": [
+        "reissue_digital_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Explain to the customer how to access and use their new digital tickets.",
+      "expected_outcome": "Agent clearly explains the new process to the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

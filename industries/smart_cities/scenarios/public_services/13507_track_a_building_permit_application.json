@@ -1,0 +1,48 @@
+{
+  "scenario_id": "smartcities-pg-13507",
+  "title": "Track a Building Permit Application",
+  "description": "A citizen calls to check the status of their building permit application. An operator must look it up and provide an update.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Permit & License Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the permit application using the citizen's provided application number or address.",
+      "expected_outcome": "Agent successfully locates the correct permit application.",
+      "required_tools": [
+        "get_permit_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the current status of the application, which is 'Pending Review by Engineering Dept'.",
+      "expected_outcome": "Agent correctly identifies the application's stage in the workflow.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the citizen of the current status and the estimated time for the next update.",
+      "expected_outcome": "Agent clearly communicates the status and next steps to the citizen.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

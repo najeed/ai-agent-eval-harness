@@ -1,0 +1,67 @@
+{
+  "scenario_id": "lw-om-12273",
+  "title": "Handle 'Wrong Item Shipped' Claim",
+  "description": "A customer reports they received the wrong item. The agent must arrange for the return of the wrong item and shipment of the correct one.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Customer Support",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the customer's order to confirm what they should have received.",
+      "expected_outcome": "Agent confirms the customer ordered a blue shirt but received a red one.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create an RMA and send a prepaid return label to the customer for the incorrect item.",
+      "expected_outcome": "The customer receives a label to return the wrong item.",
+      "required_tools": [
+        "create_rma",
+        "generate_return_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new, no-charge sales order for the correct item to be shipped to the customer immediately.",
+      "expected_outcome": "The correct item is shipped to the customer.",
+      "required_tools": [
+        "create_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a task for the inventory team to investigate how the picking error occurred.",
+      "expected_outcome": "A task is created to research the root cause of the error.",
+      "required_tools": [
+        "create_inventory_investigation_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

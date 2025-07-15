@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-cc-11333",
+  "title": "Receive a Vaccine Reminder",
+  "description": "While documenting in a pediatric patient's chart, a CDS alert reminds the provider that the patient is due for their MMR vaccine.",
+  "use_case": "Clinical Care",
+  "core_function": "Clinical Decision Support",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the immunization forecast alert.",
+      "expected_outcome": "Provider sees the reminder that a vaccine is due.",
+      "required_tools": [
+        "acknowledge_cds_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Discuss the recommended vaccine with the patient's parent.",
+      "expected_outcome": "Provider communicates the recommendation to the guardian.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place an order for the MMR vaccine, which was prompted by the CDS reminder.",
+      "expected_outcome": "Provider orders the vaccine, improving immunization rates and patient care.",
+      "required_tools": [
+        "sign_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

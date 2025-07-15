@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-cc-10689",
+  "title": "Request a Time Extension",
+  "description": "Due to a client-caused delay, a PM needs to submit a formal request for a contract time extension.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Contract Administration",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Document the client-caused delay, including its start date, end date, and impact on the critical path.",
+      "expected_outcome": "The delay is fully documented.",
+      "required_tools": [
+        "log_project_delay"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a formal contract modification request for a time extension, citing the relevant contract clauses.",
+      "expected_outcome": "A formal request is drafted.",
+      "required_tools": [
+        "draft_contract_modification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the request to the client for their approval.",
+      "expected_outcome": "The time extension request is sent to the client.",
+      "required_tools": [
+        "send_client_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

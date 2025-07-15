@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-sa-11018",
+  "title": "Check Position on Course Waitlist",
+  "description": "A student who is on a waitlist for a full course wants to know their position.",
+  "use_case": "Student Administration",
+  "core_function": "Registration & Course Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and the waitlisted course.",
+      "expected_outcome": "Agent confirms the student's identity and the course in question.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the registration system for the student's position on the waitlist.",
+      "expected_outcome": "Agent finds the student is position #3 on the waitlist for 'PSYC250'.",
+      "required_tools": [
+        "get_course_waitlist_position"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the student of their position and explain the automatic enrollment process if a spot opens.",
+      "expected_outcome": "Agent clearly explains the student's status.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

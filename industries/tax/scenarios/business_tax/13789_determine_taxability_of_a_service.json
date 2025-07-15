@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tax-bus-13789",
+  "title": "Determine Sales Taxability of a Service",
+  "description": "A consulting firm is expanding to a new state and needs to know if its services are subject to sales tax there.",
+  "use_case": "Business Tax Services",
+  "core_function": "Sales & Use Tax Compliance",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific type of consulting service being offered.",
+      "expected_outcome": "Agent understands the nature of the service.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Research the sales tax laws of the new state regarding the taxability of services.",
+      "expected_outcome": "Agent finds the state's statutes and regulations on service taxability.",
+      "required_tools": [
+        "research_state_tax_law"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the client on whether they need to collect sales tax on their services in the new state.",
+      "expected_outcome": "Agent determines the consulting services are not taxable in that state and advises the client.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

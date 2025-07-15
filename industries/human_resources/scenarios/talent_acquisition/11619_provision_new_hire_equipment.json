@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-ta-11619",
+  "title": "Provision New Hire Equipment",
+  "description": "As part of the onboarding process, HR needs to trigger a request for IT to provision a laptop and phone for a new hire.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Onboarding",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the new hire and their role/department.",
+      "expected_outcome": "Onboarding specialist identifies the new hire's record.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the standard equipment package for the new hire's role.",
+      "expected_outcome": "Specialist determines the role requires a standard developer laptop.",
+      "required_tools": [
+        "get_standard_equipment_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a service ticket for the IT department with the new hire's details and required equipment.",
+      "expected_outcome": "Specialist successfully creates an IT ticket for hardware provisioning.",
+      "required_tools": [
+        "create_it_support_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

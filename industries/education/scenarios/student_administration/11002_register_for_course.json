@@ -1,0 +1,53 @@
+{
+  "scenario_id": "education-sa-11002",
+  "title": "Student Registers for a Course",
+  "description": "A current student wants to register for an open course for the upcoming semester.",
+  "use_case": "Student Administration",
+  "core_function": "Registration & Course Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and verify their registration eligibility for the semester.",
+      "expected_outcome": "Agent confirms the student has no holds and their registration window is open.",
+      "required_tools": [
+        "get_student_record",
+        "check_registration_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the availability of the requested course (e.g., 'CS101').",
+      "expected_outcome": "Agent confirms that the course has open seats.",
+      "required_tools": [
+        "get_course_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the course registration and confirm the updated schedule with the student.",
+      "expected_outcome": "Agent successfully adds the course to the student's schedule.",
+      "required_tools": [
+        "register_student_for_course"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

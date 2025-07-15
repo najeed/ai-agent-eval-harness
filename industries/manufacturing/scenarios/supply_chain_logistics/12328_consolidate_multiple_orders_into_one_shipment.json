@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sl-12328",
+  "title": "Consolidate Multiple Orders into One Shipment",
+  "description": "A logistics planner has multiple orders going to the same customer and wants to consolidate them into a single, larger shipment to save on freight costs.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Outbound & Shipping",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find all 'Ready to Ship' orders for a specific customer.",
+      "expected_outcome": "Agent generates a list of three separate orders for the same customer.",
+      "required_tools": [
+        "find_orders_by_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new 'consolidated shipment' and link the individual orders to it.",
+      "expected_outcome": "Agent successfully creates a master shipment and associates the three orders.",
+      "required_tools": [
+        "create_consolidated_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Arrange transportation for the single, larger consolidated shipment.",
+      "expected_outcome": "Agent books one truck for the consolidated shipment instead of three separate ones.",
+      "required_tools": [
+        "book_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

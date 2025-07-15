@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ecommerce-osm-10980",
+  "title": "Hide Prices for Logged-Out Users (B2B)",
+  "description": "A B2B e-commerce site wants to hide product pricing for all users who are not logged in to a verified business account.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Pricing & Promotions",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Apply a rule to the product template that checks the user's authentication status.",
+      "expected_outcome": "Agent correctly configures the display logic.",
+      "required_tools": [
+        "configure_display_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "If the user is logged out, display a 'Log in to see price' message instead of the price.",
+      "expected_outcome": "The rule is correctly implemented to hide the price and show a message.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the user is logged in, display the price as normal.",
+      "expected_outcome": "The rule correctly shows the price for authenticated users.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "venues-tb-14211",
+  "title": "Sell Concert Tickets Online",
+  "description": "A customer wants to purchase four tickets for an upcoming concert through the venue's website.",
+  "use_case": "Ticketing & Box Office",
+  "core_function": "Ticket Sales & Transactions",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Help the customer select four adjacent seats in a specific section.",
+      "expected_outcome": "Agent successfully adds four tickets from the selected section to the customer's cart.",
+      "required_tools": [
+        "get_seating_chart",
+        "add_tickets_to_cart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the credit card payment for the tickets.",
+      "expected_outcome": "Agent successfully completes the financial transaction.",
+      "required_tools": [
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deliver the digital tickets to the customer's email address.",
+      "expected_outcome": "Agent sends an email containing the QR codes for the four tickets.",
+      "required_tools": [
+        "deliver_digital_tickets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

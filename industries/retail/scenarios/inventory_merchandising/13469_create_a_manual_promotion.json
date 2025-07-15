@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ret-im-13469",
+  "title": "Create a Manual Promotion",
+  "description": "A store manager decides to create a one-day 'manager's special' on a specific item to clear out slow-moving stock.",
+  "use_case": "Inventory & Merchandising",
+  "core_function": "Pricing & Promotions",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the promotions module in the store management system.",
+      "expected_outcome": "The manager accesses the promotion creation tool.",
+      "required_tools": [
+        "open_promotions_module"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new promotion, define it as a percentage discount (e.g., 30% off), and link it to the specific item number.",
+      "expected_outcome": "The promotion details are entered correctly.",
+      "required_tools": [
+        "create_promotion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set the promotion to be active for today only and activate it.",
+      "expected_outcome": "The temporary promotion is now live in the POS system.",
+      "required_tools": [
+        "set_promotion_dates",
+        "activate_promotion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

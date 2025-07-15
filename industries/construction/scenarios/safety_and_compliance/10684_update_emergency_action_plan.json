@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-sc-10684",
+  "title": "Update Emergency Action Plan",
+  "description": "Due to new construction nearby, the primary evacuation route has changed. The safety manager must update the project's Emergency Action Plan (EAP).",
+  "use_case": "Safety & Compliance",
+  "core_function": "Safety Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the current Emergency Action Plan document.",
+      "expected_outcome": "The EAP is retrieved.",
+      "required_tools": [
+        "get_compliance_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the evacuation map in the EAP to show the new primary route and muster point.",
+      "expected_outcome": "The map is updated with the correct information.",
+      "required_tools": [
+        "update_document_image"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Distribute the revised EAP to all site personnel and post the new maps.",
+      "expected_outcome": "The updated plan is communicated to everyone on site.",
+      "required_tools": [
+        "send_site_notification",
+        "print_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

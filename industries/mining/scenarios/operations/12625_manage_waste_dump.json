@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-ops-12625",
+  "title": "Manage Waste Rock Dump Construction",
+  "description": "A mine operator ensures that waste rock is being placed in the waste dump according to the engineered design.",
+  "use_case": "Mine Operations",
+  "core_function": "Stockpile & Waste Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the waste dump design, which specifies the sequence of lifts and the required slope angles.",
+      "expected_outcome": "The operator is familiar with the current stage of the dump design.",
+      "required_tools": [
+        "get_waste_dump_design"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use GPS on the dozers to monitor that they are pushing the dumped rock to the correct location and creating the designed slope.",
+      "expected_outcome": "Real-time data confirms the dozers are building the dump to specification.",
+      "required_tools": [
+        "get_dozer_gps_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Conduct a drone survey at the end of the week to create a 3D surface of the dump and compare it against the design.",
+      "expected_outcome": "The survey confirms the dump is being constructed according to the plan.",
+      "required_tools": [
+        "schedule_drone_survey",
+        "compare_surface_to_design"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

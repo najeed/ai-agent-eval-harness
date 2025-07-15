@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ports-hs-12981",
+  "title": "Perform a PPE Audit",
+  "description": "A safety officer performs a random audit in the terminal to ensure all workers are wearing the correct Personal Protective Equipment (PPE).",
+  "use_case": "Health, Safety, Security & Environment (HSSE)",
+  "core_function": "Safety & Incident Management",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Observe a work area (e.g., the quay) and check if workers are wearing hard hats, safety vests, and steel-toed boots.",
+      "expected_outcome": "The officer observes the area and the workers.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "observational_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify a worker who is not wearing their hard hat.",
+      "expected_outcome": "The officer spots a violation of the PPE policy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approach the worker, instruct them to stop work and put on their hard hat, and log the safety violation.",
+      "expected_outcome": "The officer corrects the unsafe behavior and logs the event for reporting and trend analysis.",
+      "required_tools": [
+        "log_safety_violation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

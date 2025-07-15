@@ -1,0 +1,64 @@
+{
+  "scenario_id": "marketing-sp-12479",
+  "title": "Schedule a Client Kickoff Meeting",
+  "description": "A project manager needs to schedule a kickoff meeting for a new project with the client and internal team.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Campaign Strategy & Planning",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the required attendees from both the client and internal teams.",
+      "expected_outcome": "Agent has a list of all necessary participants.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the calendars of the internal team members to find a few potential meeting times.",
+      "expected_outcome": "Agent identifies 2-3 available time slots.",
+      "required_tools": [
+        "calendar_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Email the client with the proposed times to find one that works for them.",
+      "expected_outcome": "Agent sends a clear and professional scheduling email.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Once a time is agreed upon, send a calendar invitation to all attendees with a meeting agenda.",
+      "expected_outcome": "Agent successfully schedules the meeting.",
+      "required_tools": [
+        "calendar_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

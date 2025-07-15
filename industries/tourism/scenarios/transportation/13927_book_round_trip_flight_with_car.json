@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-13927",
+  "title": "Book Round-Trip Flight with Rental Car",
+  "description": "A traveler needs to book a round-trip flight and a rental car for a 5-day trip to Denver.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Itinerary Planning & Booking",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for round-trip flights to Denver (DEN) for the specified dates.",
+      "expected_outcome": "Agent finds suitable flight options.",
+      "required_tools": [
+        "search_flights"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for available rental cars at Denver airport for the same dates.",
+      "expected_outcome": "Agent finds suitable rental car options.",
+      "required_tools": [
+        "search_rental_cars"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a single booking containing both the selected flights and rental car.",
+      "expected_outcome": "Agent successfully creates a bundled booking and provides a single confirmation number.",
+      "required_tools": [
+        "create_itinerary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

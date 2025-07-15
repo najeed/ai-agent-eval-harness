@@ -1,0 +1,51 @@
+{
+  "scenario_id": "tourism-tr-13978",
+  "title": "Handle Damaged Luggage Claim",
+  "description": "A passenger's suitcase arrived on the baggage carousel with a broken wheel. They want to file a claim.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Disruption Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's booking and baggage information.",
+      "expected_outcome": "Agent locates the passenger and bag details.",
+      "required_tools": [
+        "get_booking_details",
+        "get_baggage_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inspect the damage and create a new damaged baggage report, documenting the issue with photos.",
+      "expected_outcome": "Agent successfully creates a detailed report of the damage.",
+      "required_tools": [
+        "create_damaged_baggage_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the claims process to the passenger, including options for repair or replacement, and provide a file reference number.",
+      "expected_outcome": "Agent clearly communicates the next steps and provides a reference number.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

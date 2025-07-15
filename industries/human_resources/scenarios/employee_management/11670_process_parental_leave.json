@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-em-11670",
+  "title": "Process a Parental Leave Request",
+  "description": "An employee is requesting to take parental leave provided by company policy.",
+  "use_case": "Employee Management",
+  "core_function": "Time & Attendance",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the employee's request for parental leave and the expected start date.",
+      "expected_outcome": "HR specialist receives the request.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the employee's eligibility for parental leave based on tenure.",
+      "expected_outcome": "Specialist confirms the employee meets the 1-year service requirement.",
+      "required_tools": [
+        "get_parental_leave_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the leave in the HRIS and provide the employee with information on how their pay and benefits will be handled during the leave.",
+      "expected_outcome": "Specialist processes the leave and clearly communicates all relevant details to the employee.",
+      "required_tools": [
+        "approve_leave_of_absence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

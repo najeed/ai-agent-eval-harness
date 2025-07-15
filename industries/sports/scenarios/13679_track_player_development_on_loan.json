@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-tm-13679",
+  "title": "Track Player Development on Loan",
+  "description": "A young player has been sent on loan to another team to get more playing time. A manager needs to track their progress.",
+  "use_case": "Team & Player Management",
+  "core_function": "Player Performance & Health",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the player's game statistics from their loan club.",
+      "expected_outcome": "Agent gets a report of the player's minutes played, goals, and other key stats.",
+      "required_tools": [
+        "get_loan_player_stats"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request and review scouting reports from scouts who have watched the player's games.",
+      "expected_outcome": "Agent reviews reports on the player's development.",
+      "required_tools": [
+        "get_scouting_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a summary report on the player's loan spell for the head coach.",
+      "expected_outcome": "Agent creates a report concluding that the loan has been successful for the player's development.",
+      "required_tools": [
+        "generate_loan_player_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

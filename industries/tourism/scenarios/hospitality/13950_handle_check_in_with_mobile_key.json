@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tourism-ha-13950",
+  "title": "Handle Check-in with Mobile Key",
+  "description": "A guest who has pre-checked in on their mobile app arrives at the hotel and wants to get their mobile key.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Guest Services & In-Stay Support",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the guest's reservation and confirm their pre-check-in status.",
+      "expected_outcome": "Agent confirms the guest is checked in and a room has been assigned.",
+      "required_tools": [
+        "get_reservation_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the guest's identity by checking their ID.",
+      "expected_outcome": "Agent successfully verifies the guest's identity.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Activate and issue the mobile key to the guest's smartphone.",
+      "expected_outcome": "Agent successfully pushes the encrypted mobile key to the guest's app.",
+      "required_tools": [
+        "issue_mobile_key"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

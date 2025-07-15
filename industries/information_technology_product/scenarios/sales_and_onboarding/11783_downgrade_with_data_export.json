@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_product-sl-11783",
+  "title": "Downgrade from Enterprise Plan",
+  "description": "A customer on an 'Enterprise' plan is downgrading and needs to export data from an Enterprise-only feature before they lose access.",
+  "use_case": "Sales & Account Management",
+  "core_function": "Account Renewals & Upselling",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process the plan downgrade request, effective at the end of the month.",
+      "expected_outcome": "Agent schedules the subscription downgrade.",
+      "required_tools": [
+        "update_subscription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the customer they will lose access to the 'Advanced Audit Log' feature.",
+      "expected_outcome": "Agent clearly communicates the impact of the downgrade.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Guide the customer on how to use the data export tool to save their audit log history before the plan change takes effect.",
+      "expected_outcome": "Agent provides helpful instructions to prevent data loss for the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

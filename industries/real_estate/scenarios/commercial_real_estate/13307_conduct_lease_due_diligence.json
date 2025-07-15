@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-cre-13307",
+  "title": "Conduct Lease Due Diligence",
+  "description": "During a property acquisition, an agent must perform due diligence by abstracting all tenant leases.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Due Diligence",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain copies of all current lease agreements for the property.",
+      "expected_outcome": "Agent has all necessary lease documents.",
+      "required_tools": [
+        "request_documents_from_seller"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each lease, extract and summarize key terms: tenant name, lease start/end dates, rent amount, renewal options, and expense responsibilities.",
+      "expected_outcome": "Agent creates a structured summary (lease abstract) for each tenant.",
+      "required_tools": [
+        "abstract_lease_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the lease abstracts to the seller's rent roll to identify any discrepancies.",
+      "expected_outcome": "Agent identifies and flags inconsistencies between the leases and the rent roll for further investigation.",
+      "required_tools": [
+        "compare_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

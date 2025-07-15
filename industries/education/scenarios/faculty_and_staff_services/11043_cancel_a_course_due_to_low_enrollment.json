@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-fs-11043",
+  "title": "Cancel a Course Due to Low Enrollment",
+  "description": "A department needs to cancel a course for the upcoming semester because not enough students registered.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "Curriculum Development & Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the course and verify its current enrollment number.",
+      "expected_outcome": "Agent confirms that 'ART450' has only 2 students enrolled, below the minimum of 8.",
+      "required_tools": [
+        "get_course_enrollment_count"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the course cancellation in the SIS.",
+      "expected_outcome": "Agent successfully cancels the course section.",
+      "required_tools": [
+        "cancel_course_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Trigger automated notifications to the enrolled students and the assigned instructor, advising them of the cancellation.",
+      "expected_outcome": "Agent ensures all affected parties are notified.",
+      "required_tools": [
+        "send_cancellation_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "scenario_id": "tr-rs-14040",
+  "title": "Handle a Vehicle Accident Report",
+  "description": "A driver reports they have been in an accident during a trip. A safety agent must manage the initial response.",
+  "use_case": "Ride-Sharing & On-Demand Mobility",
+  "core_function": "Safety & Incident Response",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a high-priority call from a driver reporting an accident.",
+      "expected_outcome": "Agent opens a critical incident case.",
+      "required_tools": [
+        "create_critical_incident_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm if the driver, rider, and any third parties are safe and if emergency services have been called.",
+      "expected_outcome": "Agent confirms emergency services are on the scene.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Temporarily deactivate the driver's account pending investigation.",
+      "expected_outcome": "The driver's account is put on hold.",
+      "required_tools": [
+        "update_driver_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Provide the driver and rider with insurance information and assign the case to the insurance claims team.",
+      "expected_outcome": "The case is escalated to the claims team for handling.",
+      "required_tools": [
+        "provide_insurance_details",
+        "assign_case_to_claims"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

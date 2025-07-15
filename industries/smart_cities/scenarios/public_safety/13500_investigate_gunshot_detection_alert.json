@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ps-13500",
+  "title": "Investigate Gunshot Detection Alert",
+  "description": "Acoustic sensors detect a gunshot in a public park. An operator must verify the threat and dispatch police.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Public Space Monitoring",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a gunshot detection alert from 'Washington Park'.",
+      "expected_outcome": "Agent acknowledges the high-priority acoustic alert.",
+      "required_tools": [
+        "get_acoustic_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically pivot the nearest PTZ camera to the alert's location to get visual confirmation.",
+      "expected_outcome": "Agent uses the tool to direct a camera to the location.",
+      "required_tools": [
+        "control_ptz_camera"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After visually confirming a potential active shooter situation, dispatch all available police units to the location with high priority.",
+      "expected_outcome": "Agent dispatches police with critical information.",
+      "required_tools": [
+        "dispatch_emergency_unit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

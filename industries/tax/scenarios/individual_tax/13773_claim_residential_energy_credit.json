@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-ind-13773",
+  "title": "Claim Residential Clean Energy Credit",
+  "description": "A homeowner installed solar panels on their roof and wants to claim the federal tax credit.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Deductions & Credits Optimization",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the invoices and proof of payment for the solar panel installation.",
+      "expected_outcome": "Agent collects documentation showing the total cost of the project.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the solar panels are qualifying property for the credit.",
+      "expected_outcome": "Agent confirms the property is eligible.",
+      "required_tools": [
+        "verify_energy_credit_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the credit amount based on the applicable percentage of the cost and complete Form 5695.",
+      "expected_outcome": "Agent accurately calculates the credit and prepares the required form.",
+      "required_tools": [
+        "prepare_form_5695"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

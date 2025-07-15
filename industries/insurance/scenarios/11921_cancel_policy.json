@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-pc-11921",
+  "title": "Cancel an Auto Policy",
+  "description": "A customer sold their car and wants to cancel their auto insurance policy.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Policy Administration",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and verify their request to cancel.",
+      "expected_outcome": "Agent correctly identifies the customer and confirms their intent.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the cancellation effective today.",
+      "expected_outcome": "Agent successfully cancels the policy.",
+      "required_tools": [
+        "cancel_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate and explain any prorated refund the customer will receive.",
+      "expected_outcome": "Agent calculates the refund amount and clearly explains when and how the customer will receive it.",
+      "required_tools": [
+        "calculate_prorated_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

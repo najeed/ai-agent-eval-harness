@@ -1,0 +1,66 @@
+{
+  "scenario_id": "wholesale-sp-14332",
+  "title": "Negotiate Annual Pricing with a Supplier",
+  "description": "It's time for the annual price negotiation with a key supplier. A procurement manager must negotiate for better terms.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Supplier Relationship Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the total purchase volume with the supplier over the last year.",
+      "expected_outcome": "Agent finds that purchase volume has increased by 20%.",
+      "required_tools": [
+        "get_purchase_history_by_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Research market rates for the supplier's products to use as leverage.",
+      "expected_outcome": "Agent finds that competitors offer similar products at a lower price.",
+      "required_tools": [
+        "research_market_pricing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the supplier and use the data to negotiate a 5% price reduction for the upcoming year.",
+      "expected_outcome": "The supplier agrees to the price reduction.",
+      "required_tools": [
+        "negotiate_with_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the pricing for the supplier's products in the system.",
+      "expected_outcome": "Agent successfully updates the cost for all of the supplier's items.",
+      "required_tools": [
+        "update_product_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

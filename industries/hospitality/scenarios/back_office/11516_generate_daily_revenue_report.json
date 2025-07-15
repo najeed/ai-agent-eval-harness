@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hosp-bo-11516",
+  "title": "Generate Daily Revenue Report",
+  "description": "The hotel's general manager needs the daily revenue report from yesterday.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Financial Reporting",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the financial reporting module.",
+      "expected_outcome": "Agent is in the correct system module.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the 'Daily Manager's Report' for the previous day's date.",
+      "expected_outcome": "The system generates the report.",
+      "required_tools": [
+        "acct_generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The report should show a breakdown of revenue by source (rooms, F&B, other) and key metrics like Occupancy, ADR, and RevPAR.",
+      "expected_outcome": "The agent verifies the report contains all the correct data points and is accurate.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

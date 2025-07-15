@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-ue-13496",
+  "title": "Optimize Waste Collection Route",
+  "description": "An operator needs to generate an optimized collection route for a waste management truck based on real-time smart bin fill levels.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Waste Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the designated collection zone for 'Truck 7'.",
+      "expected_outcome": "Agent correctly identifies the geographic zone for the specified truck.",
+      "required_tools": [
+        "get_vehicle_assigned_zone"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the fill levels for all smart bins within that zone that are over the 80% threshold.",
+      "expected_outcome": "Agent gets a list of specific bins that require collection.",
+      "required_tools": [
+        "get_smart_bin_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the most efficient route to service only the identified high-fill-level bins.",
+      "expected_outcome": "Agent successfully generates and sends the optimized route to the truck's navigation system.",
+      "required_tools": [
+        "generate_optimized_route",
+        "send_route_to_vehicle"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

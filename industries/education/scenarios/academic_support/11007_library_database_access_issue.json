@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-as-11007",
+  "title": "Troubleshoot Library Database Access",
+  "description": "A student is off-campus and cannot access a required academic journal database through the library website.",
+  "use_case": "Academic Support",
+  "core_function": "Library & Research Services",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and the specific database they are trying to access (e.g., JSTOR).",
+      "expected_outcome": "Agent confirms the student's identity and the resource they need.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the student on how to log in through the university's proxy server for off-campus access.",
+      "expected_outcome": "Agent provides clear, step-by-step instructions for using the proxy login portal.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the issue persists, verify there are no known outages with the proxy server or the database provider.",
+      "expected_outcome": "Agent checks system status pages and confirms no widespread issues.",
+      "required_tools": [
+        "check_system_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

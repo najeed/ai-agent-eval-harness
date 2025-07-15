@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-c2-10836",
+  "title": "Resolving Conflicting COP Data",
+  "description": "A friendly aircraft's IFF system is malfunctioning, causing it to appear as an 'unidentified' track on the COP, dangerously close to an air defense zone.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Common Operating Picture (COP) Management",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the unidentified track and note its conflict with a friendly air defense zone.",
+      "expected_outcome": "Operator detects the potential blue-on-blue engagement scenario.",
+      "required_tools": [
+        "monitor_cop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "threat_detection_speed",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the track's flight path against all scheduled friendly flight plans.",
+      "expected_outcome": "Operator finds a match between the track's path and a scheduled friendly flight.",
+      "required_tools": [
+        "check_flight_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "correlation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Manually override the track's classification to 'assumed friend' and notify the air defense commander of the IFF malfunction.",
+      "expected_outcome": "Operator successfully deconflicts the situation and prevents a potential friendly fire incident.",
+      "required_tools": [
+        "update_track_classification",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "conflict_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

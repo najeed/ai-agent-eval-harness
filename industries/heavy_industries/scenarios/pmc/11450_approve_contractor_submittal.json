@@ -1,0 +1,50 @@
+{
+  "scenario_id": "heavy-industries-pmc-11450",
+  "title": "Approve a Contractor Submittal",
+  "description": "A contractor has submitted a document for approval (e.g., a safety plan or a technical procedure). A project engineer must review and approve it.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Contract & Procurement Management",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the submittal from the 'Pending Review' queue.",
+      "expected_outcome": "Agent retrieves the contractor's submitted document.",
+      "required_tools": [
+        "get_pending_submittals"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the document to ensure it meets all project requirements.",
+      "expected_outcome": "The engineer confirms the submitted safety plan is compliant.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Mark the submittal as 'Approved' in the system, which notifies the contractor.",
+      "expected_outcome": "Agent approves the document, and the contractor is notified that they can proceed.",
+      "required_tools": [
+        "approve_submittal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

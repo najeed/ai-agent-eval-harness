@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-plan-13722",
+  "title": "Plan for Capital Gains Tax",
+  "description": "An individual is planning to sell a large amount of stock and wants to understand the tax implications.",
+  "use_case": "Tax Planning & Advisory",
+  "core_function": "Individual & Family Planning",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the cost basis and holding period for the stock being sold.",
+      "expected_outcome": "Agent correctly identifies the basis and determines the gain will be long-term.",
+      "required_tools": [
+        "determine_cost_basis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the estimated capital gain from the sale.",
+      "expected_outcome": "Agent accurately calculates the gain.",
+      "required_tools": [
+        "calculate_capital_gain"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Estimate the total capital gains tax due and advise the client on setting aside funds for the tax payment.",
+      "expected_outcome": "Agent provides a clear estimate of the tax liability and advises the client accordingly.",
+      "required_tools": [
+        "estimate_capital_gains_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

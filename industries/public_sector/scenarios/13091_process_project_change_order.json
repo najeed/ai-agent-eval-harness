@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ps-pw-13091",
+  "title": "Process a Project Change Order",
+  "description": "During construction of a new building, an unexpected issue requires a change order to the original contract.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Project Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the change order request from the contractor, including the reason and cost impact.",
+      "expected_outcome": "The project manager receives the formal change order request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the change order for validity and reasonableness.",
+      "expected_outcome": "The project manager reviews the request and agrees that it is necessary.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the change order, which updates the project budget and contract.",
+      "expected_outcome": "The project manager approves the change, and the system updates the project's financials.",
+      "required_tools": [
+        "approve_change_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

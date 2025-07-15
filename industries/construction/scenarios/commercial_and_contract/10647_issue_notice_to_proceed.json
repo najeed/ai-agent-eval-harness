@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-cc-10647",
+  "title": "Issue Notice to Proceed",
+  "description": "After signing a contract with a new subcontractor, the contract manager must issue a formal Notice to Proceed (NTP).",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Contract Administration",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a Notice to Proceed document using the standard template for the specified subcontractor.",
+      "expected_outcome": "A new NTP document is created.",
+      "required_tools": [
+        "generate_document_from_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set the official start date in the NTP and send it to the subcontractor.",
+      "expected_outcome": "The NTP is sent to the subcontractor with the correct start date.",
+      "required_tools": [
+        "send_document_to_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

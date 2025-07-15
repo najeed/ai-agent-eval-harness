@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hosp-hk-11542",
+  "title": "Handle 'Do Not Disturb' Status",
+  "description": "A housekeeper arrives at a room to clean it but sees the 'Do Not Disturb' sign on the door.",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Room Status & Cleaning",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The housekeeper respects the sign and does not enter the room.",
+      "expected_outcome": "Guest privacy is respected.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The housekeeper updates the room status in their device to 'Do Not Disturb'.",
+      "expected_outcome": "The room status is accurately reflected in the system.",
+      "required_tools": [
+        "hms_update_room_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The housekeeper continues to the next room on their list and will check back on the DND room later in their shift.",
+      "expected_outcome": "The workflow is adjusted according to policy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

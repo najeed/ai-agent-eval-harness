@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-bus-13768",
+  "title": "File Form 1099-NEC Transmittal (Form 1096)",
+  "description": "A business has issued multiple paper Forms 1099-NEC and now must file them with the IRS using the summary Form 1096.",
+  "use_case": "Business Tax Services",
+  "core_function": "Payroll & Employment Tax",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Compile all the Forms 1099-NEC that were issued.",
+      "expected_outcome": "Agent has a complete set of the 1099s.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total amount of payments reported on all the 1099s.",
+      "expected_outcome": "Agent accurately sums up the total payments.",
+      "required_tools": [
+        "sum_1099_payments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare Form 1096, Annual Summary and Transmittal of U.S. Information Returns, and mail it with the copies of the 1099s.",
+      "expected_outcome": "Agent prepares and sends the complete paper filing package to the IRS.",
+      "required_tools": [
+        "prepare_form_1096"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-gs-11578",
+  "title": "Booking a Room for Someone Else",
+  "description": "A person calls to book and pay for a room for their family member.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Reservations & Booking",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create the reservation with the guest's name, but the caller's contact information.",
+      "expected_outcome": "The reservation is created with the correct guest and payer details.",
+      "required_tools": [
+        "pms_create_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Securely obtain the caller's credit card information and explain that they are paying for the room.",
+      "expected_outcome": "The agent clarifies the payment arrangement.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a credit card authorization form to the caller to be signed and returned, authorizing the hotel to charge their card for the guest's stay.",
+      "expected_outcome": "A formal authorization form is sent to the payer.",
+      "required_tools": [
+        "pms_send_cc_auth_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

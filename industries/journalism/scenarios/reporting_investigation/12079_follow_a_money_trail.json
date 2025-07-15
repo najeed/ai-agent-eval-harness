@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-ri-12079",
+  "title": "Follow a Money Trail",
+  "description": "A reporter is investigating a politician and wants to follow a money trail from a government contract to the politician's personal finances.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Data Journalism & Fact-Checking",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain records of the government contract, noting the company that received it.",
+      "expected_outcome": "Agent has the details of the contract.",
+      "required_tools": [
+        "search_public_records_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Investigate the ownership of the company that received the contract.",
+      "expected_outcome": "Agent identifies the owners and key executives of the company.",
+      "required_tools": [
+        "search_business_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Search for any connections between the company's owners and the politician, such as campaign donations, shared business interests, or family ties.",
+      "expected_outcome": "Agent finds that the company's owner is a major campaign donor to the politician.",
+      "required_tools": [
+        "search_campaign_finance_database",
+        "people_search_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "connection_discovery_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

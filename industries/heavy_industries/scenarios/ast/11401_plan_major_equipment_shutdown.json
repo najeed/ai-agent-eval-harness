@@ -1,0 +1,54 @@
+{
+  "scenario_id": "heavy-industries-ast-11401",
+  "title": "Plan Major Equipment Shutdown",
+  "description": "A maintenance planner needs to schedule a 10-day major overhaul for a primary crusher at a mine site, coordinating all required resources.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Maintenance Planning & Execution",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a master work order for the crusher overhaul.",
+      "expected_outcome": "Agent successfully creates the main work order for the shutdown.",
+      "required_tools": [
+        "create_master_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a list of all required spare parts from the asset's maintenance plan and check their availability in the warehouse.",
+      "expected_outcome": "Agent generates a list of 50 parts and confirms 48 are in stock, with 2 needing to be ordered.",
+      "required_tools": [
+        "get_required_spares_for_job",
+        "check_spare_parts_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create purchase orders for the missing parts and schedule the shutdown on the master schedule once all parts are confirmed to be available.",
+      "expected_outcome": "Agent orders the missing parts and tentatively schedules the shutdown pending their arrival.",
+      "required_tools": [
+        "create_purchase_order",
+        "update_master_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

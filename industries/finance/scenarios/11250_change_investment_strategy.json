@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-wm-11250",
+  "title": "Change Investment Strategy",
+  "description": "A client's risk tolerance has decreased, and they want to move from a 'Growth' to a 'Balanced' investment strategy.",
+  "use_case": "Wealth Management",
+  "core_function": "Portfolio Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Discuss the implications of changing strategy with the client, including potential tax consequences.",
+      "expected_outcome": "Agent clearly explains the effects of the change.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the client's investment profile and target asset allocation in the system.",
+      "expected_outcome": "Agent changes the client's profile to 'Balanced' with a new target of 50% stocks / 50% bonds.",
+      "required_tools": [
+        "update_client_investment_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a set of trades to align the portfolio with the new strategy.",
+      "expected_outcome": "Agent generates the necessary trades to sell stocks and buy bonds to meet the new target.",
+      "required_tools": [
+        "generate_rebalancing_trades"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

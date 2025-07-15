@@ -1,0 +1,51 @@
+{
+  "scenario_id": "education-sa-11036",
+  "title": "Question About a Specific Tuition Fee",
+  "description": "A student is inquiring about a 'Student Activity Fee' listed on their tuition bill.",
+  "use_case": "Student Administration",
+  "core_function": "Financial Aid & Billing",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and view their itemized tuition bill.",
+      "expected_outcome": "Agent locates the 'Student Activity Fee' on the bill.",
+      "required_tools": [
+        "get_student_record",
+        "get_student_bill_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the definition and purpose of the fee in the university's fee schedule documentation.",
+      "expected_outcome": "Agent finds the fee supports student clubs, events, and government.",
+      "required_tools": [
+        "lookup_fee_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Clearly explain the purpose of the fee to the student.",
+      "expected_outcome": "Agent provides a clear and concise explanation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

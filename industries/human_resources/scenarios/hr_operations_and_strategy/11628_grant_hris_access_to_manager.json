@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11628",
+  "title": "Grant HRIS Access to a New Manager",
+  "description": "A newly promoted manager needs access to the manager self-service portal in the HRIS.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "HRIS Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the access request for the new manager.",
+      "expected_outcome": "HRIS admin receives a ticket to grant access.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the employee's record in the HRIS.",
+      "expected_outcome": "Admin locates the correct employee.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the 'Manager' security role to the employee's user profile.",
+      "expected_outcome": "Admin successfully updates the user's permissions in the system.",
+      "required_tools": [
+        "update_user_security_role"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

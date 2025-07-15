@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-cp-12541",
+  "title": "Archive a Completed Film Production",
+  "description": "A film production has wrapped, and all its digital assets must be archived for long-term storage.",
+  "use_case": "Content Production & Management",
+  "core_function": "Asset Management & Logistics",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all digital assets associated with the completed film project.",
+      "expected_outcome": "Agent generates a complete list of all video, audio, and project files.",
+      "required_tools": [
+        "get_all_project_assets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a data integrity check (e.g., checksum) on all files to ensure they are not corrupt.",
+      "expected_outcome": "Agent verifies the integrity of all files before archiving.",
+      "required_tools": [
+        "run_data_integrity_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Transfer all verified assets to the long-term archival storage system (e.g., LTO tape library).",
+      "expected_outcome": "Agent successfully initiates and completes the transfer to archival storage.",
+      "required_tools": [
+        "transfer_to_archive"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

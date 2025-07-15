@@ -1,0 +1,67 @@
+{
+  "scenario_id": "venues-em-14269",
+  "title": "Handle an Artist Cancellation",
+  "description": "A major artist has canceled their upcoming concert due to illness. The event manager must handle the fallout.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Event Planning & Coordination",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the official cancellation notice from the artist's promoter.",
+      "expected_outcome": "Agent logs the cancellation.",
+      "required_tools": [
+        "log_event_cancellation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Work with the promoter to find a potential rescheduled date.",
+      "expected_outcome": "Agent checks the venue calendar and proposes several open dates to the promoter.",
+      "required_tools": [
+        "get_booking_calendar"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate with the ticketing department to communicate the cancellation/reschedule options to all ticket holders.",
+      "expected_outcome": "Agent provides the ticketing team with the official message to send to customers.",
+      "required_tools": [
+        "send_internal_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Cancel all associated internal work orders and vendor services for the original date.",
+      "expected_outcome": "Agent cancels all work orders for staffing, catering, and security.",
+      "required_tools": [
+        "cancel_work_orders",
+        "notify_vendors"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

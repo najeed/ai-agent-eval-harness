@@ -1,0 +1,66 @@
+{
+  "scenario_id": "lw-im-12264",
+  "title": "Set a Reorder Point for a New Item",
+  "description": "A new product is being introduced. An inventory planner must set its initial reorder point and safety stock levels in the system.",
+  "use_case": "Inventory Management",
+  "core_function": "Replenishment & Ordering",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the new product's details, including forecasted sales and supplier lead time.",
+      "expected_outcome": "Agent gathers the necessary data inputs.",
+      "required_tools": [
+        "get_product_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the safety stock level based on demand variability and lead time.",
+      "expected_outcome": "A safety stock of 50 units is calculated.",
+      "required_tools": [
+        "calculate_safety_stock"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the reorder point (demand during lead time + safety stock).",
+      "expected_outcome": "A reorder point of 200 units is calculated.",
+      "required_tools": [
+        "calculate_reorder_point"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the product's record in the inventory system with the new reorder point and safety stock values.",
+      "expected_outcome": "The item's replenishment parameters are now set.",
+      "required_tools": [
+        "update_inventory_parameters"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

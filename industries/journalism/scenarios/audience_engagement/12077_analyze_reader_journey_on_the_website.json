@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ae-12077",
+  "title": "Analyze Reader Journey on the Website",
+  "description": "An analyst wants to understand the common paths readers take on the website. For example, what article do they often read after reading a story about the mayor?",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Performance Analysis",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the web analytics platform and find the 'Behavior Flow' or 'User Path' report.",
+      "expected_outcome": "Agent accesses the correct pathing analysis tool.",
+      "required_tools": [
+        "get_analytics_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_navigation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the report to only show user journeys that started on a specific, popular article.",
+      "expected_outcome": "The report is filtered to show the 'next page' data for a single article.",
+      "required_tools": [
+        "analyze_analytics_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the top 3 most common articles that readers navigate to next.",
+      "expected_outcome": "Agent identifies common reader pathways, which can inform internal linking strategy.",
+      "required_tools": [
+        "analyze_analytics_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

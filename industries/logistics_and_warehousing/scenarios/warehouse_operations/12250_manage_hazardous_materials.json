@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-wo-12250",
+  "title": "Manage Hazardous Materials Storage",
+  "description": "A shipment of hazardous materials (e.g., flammable liquids) arrives and must be stored in a designated, compliant area.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Inbound & Receiving",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "During receiving, scan an item that the system identifies as a hazardous material.",
+      "expected_outcome": "The system flags the item as HAZMAT and displays its UN number and storage requirements.",
+      "required_tools": [
+        "get_product_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system directs the operator to a specific, segregated area of the warehouse designed for hazardous materials.",
+      "expected_outcome": "The put-away task directs the operator to the HAZMAT cage.",
+      "required_tools": [
+        "create_putaway_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The operator moves the item to the designated area and confirms the put-away, completing the compliant storage process.",
+      "expected_outcome": "The HAZMAT item is stored safely and correctly.",
+      "required_tools": [
+        "confirm_putaway"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

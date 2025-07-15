@@ -1,0 +1,53 @@
+{
+  "scenario_id": "education-fs-11044",
+  "title": "Make Purchase with Grant Funds",
+  "description": "A PI wants to purchase a piece of lab equipment using their grant funds.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "Grant & Research Administration",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the PI, the grant account, and the details of the purchase (item, cost, vendor).",
+      "expected_outcome": "Agent gathers all necessary purchasing information.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the purchase is allowable under the terms of the grant and that sufficient funds are available.",
+      "expected_outcome": "Agent confirms the equipment is an allowable expense and the grant has enough funds.",
+      "required_tools": [
+        "check_grant_fund_balance",
+        "review_grant_spending_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit a purchase requisition through the university's procurement system, charging it to the grant account.",
+      "expected_outcome": "Agent successfully creates the purchase order.",
+      "required_tools": [
+        "create_purchase_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-bm-13662",
+  "title": "Manage Instant Replays During Broadcast",
+  "description": "During a live broadcast, a producer wants to show an instant replay of a key play from multiple angles.",
+  "use_case": "Broadcasting & Media",
+  "core_function": "Live Broadcast Production",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the key play and log the time.",
+      "expected_outcome": "Agent has the timestamp of the play.",
+      "required_tools": [
+        "get_live_play_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cue up the replay from multiple camera angles in the replay system.",
+      "expected_outcome": "Agent has the different angles ready to play.",
+      "required_tools": [
+        "cue_up_replay"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Play the replays on air as directed by the producer.",
+      "expected_outcome": "Agent successfully airs the multi-angle replay.",
+      "required_tools": [
+        "play_replay_on_air"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

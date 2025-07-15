@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-pm-13312",
+  "title": "Enforce a Lease Violation",
+  "description": "A property manager receives a complaint about a tenant's unauthorized pet.",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations & Renewals",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the tenant's lease agreement to confirm the 'no pets' clause.",
+      "expected_outcome": "Agent confirms the lease prohibits pets.",
+      "required_tools": [
+        "get_lease_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Issue a formal 'Cure or Quit' notice to the tenant, stating the violation and the timeframe to resolve it.",
+      "expected_outcome": "A legal notice is generated and delivered to the tenant.",
+      "required_tools": [
+        "generate_legal_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Follow up with an inspection after the notice period to ensure the violation has been cured.",
+      "expected_outcome": "Agent confirms the pet has been removed from the property.",
+      "required_tools": [
+        "schedule_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

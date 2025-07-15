@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-cp-12080",
+  "title": "Write a Weather Forecast Script",
+  "description": "A TV meteorologist needs to write a script for their weather segment.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Writing & Drafting",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest data from weather models (temperature, precipitation, wind).",
+      "expected_outcome": "Agent has all the necessary meteorological data.",
+      "required_tools": [
+        "get_weather_model_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Translate the complex data into simple, understandable language for a general audience.",
+      "expected_outcome": "The script explains the weather in easy-to-understand terms.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Structure the script to align with the graphics that will be shown on screen (e.g., the 7-day forecast graphic).",
+      "expected_outcome": "The script is synchronized with the visual elements of the broadcast.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "structural_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

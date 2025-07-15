@@ -1,0 +1,51 @@
+{
+  "scenario_id": "information_technology_service-sd-11800",
+  "title": "Security - User Reports Phishing Email",
+  "description": "An end-user reports a suspicious email that claims to be from IT and asks for their password.",
+  "use_case": "Service Desk & End-User Support",
+  "core_function": "Security & Access Control",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the user's report and praise them for reporting it.",
+      "expected_outcome": "Agent reinforces positive security behavior.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the email headers and content to confirm it is a phishing attempt.",
+      "expected_outcome": "Agent confirms the email is from an external, malicious source.",
+      "required_tools": [
+        "analyze_email_headers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the security tools to search all mailboxes for the same email and delete it, then block the sender's domain.",
+      "expected_outcome": "The malicious email is purged from the client's environment, and the sender is blocked.",
+      "required_tools": [
+        "run_mailbox_search",
+        "block_sender_domain"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

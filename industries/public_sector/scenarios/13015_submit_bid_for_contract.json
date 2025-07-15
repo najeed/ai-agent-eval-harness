@@ -1,0 +1,51 @@
+{
+  "scenario_id": "ps-pa-13015",
+  "title": "Submit a Bid for a Government Contract",
+  "description": "A registered vendor is submitting a bid for a public works contract.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Procurement & Contracts",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the vendor and the specific contract they are bidding on.",
+      "expected_outcome": "Agent locates the vendor's profile and the open contract.",
+      "required_tools": [
+        "get_vendor_profile",
+        "get_contract_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all required bidding documents have been uploaded.",
+      "expected_outcome": "Agent confirms that the bid package is complete.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Accept and timestamp the bid submission before the deadline.",
+      "expected_outcome": "Agent successfully logs the bid as received on time.",
+      "required_tools": [
+        "submit_bid"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

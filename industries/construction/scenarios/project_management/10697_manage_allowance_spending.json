@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-pm-10697",
+  "title": "Manage Spending Against an Allowance",
+  "description": "The contract includes a $20,000 allowance for light fixtures. The PM must help the client make selections while staying within this allowance.",
+  "use_case": "Project Management",
+  "core_function": "Budgeting & Cost Control",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Provide the client with a list of light fixtures from approved vendors.",
+      "expected_outcome": "A list of options is sent to the client.",
+      "required_tools": [
+        "get_vendor_catalog"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "As the client makes selections, track the total cost against the $20,000 allowance.",
+      "expected_outcome": "A running total of the selected fixtures' cost is maintained.",
+      "required_tools": [
+        "track_allowance_spending"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the client when their selections have reached 90% of the allowance to prevent overspending.",
+      "expected_outcome": "A timely notification is sent to the client.",
+      "required_tools": [
+        "send_client_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-um-13539",
+  "title": "Dispatch Bus to Address Overcrowding",
+  "description": "Passenger counting sensors show a bus on a popular route is dangerously overcrowded. An operator must dispatch a supplementary bus.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "Public Transit Operations",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'Passenger Capacity Exceeded' alert for 'Bus 101' on 'Route 5'.",
+      "expected_outcome": "Agent acknowledges the overcrowding alert.",
+      "required_tools": [
+        "get_transit_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find the nearest available, out-of-service bus from the depot.",
+      "expected_outcome": "Agent identifies a spare bus ready for deployment.",
+      "required_tools": [
+        "get_available_buses"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch the spare bus to run the same route, starting a few stops ahead of the overcrowded bus, to alleviate the passenger load.",
+      "expected_outcome": "Agent successfully dispatches the supplementary bus with a specific mission.",
+      "required_tools": [
+        "dispatch_transit_vehicle"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

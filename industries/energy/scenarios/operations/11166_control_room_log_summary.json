@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-op-11166",
+  "title": "Summarize Control Room Log for Shift Handover",
+  "description": "A control room operator is ending their 12-hour shift and needs the agent to summarize all key events from the logbook for the incoming operator.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Dispatch & Optimization",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the digital control room log for the past 12 hours.",
+      "expected_outcome": "Agent processes all log entries from the shift.",
+      "required_tools": [
+        "get_control_room_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify and extract all significant events, such as plant trips, curtailment orders, and safety incidents.",
+      "expected_outcome": "Agent identifies 3 major events.",
+      "required_tools": [
+        "extract_key_events"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Summarize the events in a clear, concise handover report, including the status of any ongoing issues.",
+      "expected_outcome": "Agent generates a bulleted summary report ready for the shift change.",
+      "required_tools": [
+        "generate_shift_handover_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

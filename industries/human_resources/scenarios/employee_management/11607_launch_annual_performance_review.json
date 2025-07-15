@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-em-11607",
+  "title": "Launch Annual Performance Review Cycle",
+  "description": "An HR administrator needs to launch the annual performance review cycle for the entire company.",
+  "use_case": "Employee Management",
+  "core_function": "Performance Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate the performance review forms for all eligible employees in the performance management system.",
+      "expected_outcome": "Admin successfully creates review forms for all active employees.",
+      "required_tools": [
+        "generate_performance_forms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a company-wide communication announcing the start of the review cycle and the deadlines.",
+      "expected_outcome": "Admin drafts and sends the announcement email.",
+      "required_tools": [
+        "send_mass_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the completion status of self-assessments and manager reviews via a dashboard.",
+      "expected_outcome": "Admin checks the dashboard to track progress against deadlines.",
+      "required_tools": [
+        "view_performance_review_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

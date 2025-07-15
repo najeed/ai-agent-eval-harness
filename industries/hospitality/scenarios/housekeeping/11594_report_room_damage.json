@@ -1,0 +1,62 @@
+{
+  "scenario_id": "hosp-hk-11594",
+  "title": "Report Guest-Caused Room Damage",
+  "description": "After a guest checks out, housekeeping finds significant damage to the room (e.g., a broken chair, stained carpet).",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Maintenance Requests",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The housekeeper immediately reports the damage to the housekeeping manager.",
+      "expected_outcome": "The manager is notified.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The manager takes photos of the damage and documents it thoroughly.",
+      "expected_outcome": "Evidence of the damage is collected.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The manager informs the front office manager or general manager to determine if the guest should be charged for the damages.",
+      "expected_outcome": "The issue is escalated to management for a decision on billing.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The room is placed 'Out of Order' until repairs can be made.",
+      "expected_outcome": "The room is taken out of inventory for maintenance.",
+      "required_tools": [
+        "pms_block_room"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "journalism-ri-12083",
+  "title": "Cover a Protest",
+  "description": "A reporter is sent to cover a protest. They need to report on the size of the crowd, their message, and any interactions with counter-protesters or police.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Field Reporting & Event Coverage",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Interview protesters to understand their motivations and goals.",
+      "expected_outcome": "Agent gathers quotes that represent the protesters' point of view.",
+      "required_tools": [
+        "audio_recorder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "source_diversity",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Interview police or event organizers to get official estimates of the crowd size.",
+      "expected_outcome": "Agent gets an official crowd estimate to balance protester claims.",
+      "required_tools": [
+        "note_taking_app"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Observe and document the overall atmosphere of the protest (e.g., peaceful, tense) and any notable incidents.",
+      "expected_outcome": "Agent captures the qualitative feel of the event.",
+      "required_tools": [
+        "camera",
+        "note_taking_app"
+      ],
+      "success_criteria": [
+        {
+          "metric": "observational_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Write a balanced article that includes the perspectives of the protesters and officials, and accurately describes the events.",
+      "expected_outcome": "A fair and comprehensive article is produced.",
+      "required_tools": [
+        "draft_article"
+      ],
+      "success_criteria": [
+        {
+          "metric": "journalistic_balance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-13871",
+  "title": "Check Network Capacity Before Adding Service",
+  "description": "Before sales can sell a large new service, the agent must verify there is enough network capacity to support it.",
+  "use_case": "Network Operations",
+  "core_function": "Performance Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the bandwidth requirements for the new service from the service catalog.",
+      "expected_outcome": "Agent finds the new service requires 10 Gbps of dedicated bandwidth.",
+      "required_tools": [
+        "get_service_catalog_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the current utilization of the edge router that will serve the customer.",
+      "expected_outcome": "Agent finds the router has 20 Gbps of available capacity.",
+      "required_tools": [
+        "get_router_utilization"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm that there is sufficient capacity and notify the sales team that they can proceed.",
+      "expected_outcome": "Agent sends a confirmation to the sales team.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

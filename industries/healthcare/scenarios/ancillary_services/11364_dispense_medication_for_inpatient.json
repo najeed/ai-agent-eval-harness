@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-as-11364",
+  "title": "Dispense Medication for an Inpatient",
+  "description": "A pharmacy technician needs to fill a medication order for an inpatient.",
+  "use_case": "Ancillary Services",
+  "core_function": "Pharmacy Operations",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve a verified medication order from the pharmacy queue.",
+      "expected_outcome": "Technician selects an order that has already been approved by a pharmacist.",
+      "required_tools": [
+        "get_pharmacy_queue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Pick the correct medication and strength from the pharmacy shelves.",
+      "expected_outcome": "Technician physically retrieves the correct drug.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare the dose, label it for the correct patient, and have it checked by a pharmacist before sending it to the nursing unit.",
+      "expected_outcome": "The medication is correctly prepared and labeled for administration.",
+      "required_tools": [
+        "prepare_medication_dose"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

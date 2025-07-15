@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-os-10679",
+  "title": "Coordinate a Utility Shutdown",
+  "description": "To tie in the new water line, the water supply to the existing building must be shut down for four hours. The site manager must coordinate this.",
+  "use_case": "On-Site Operations",
+  "core_function": "Task Execution & Coordination",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Notify all building occupants of the planned water shutdown, providing the date, time, and duration.",
+      "expected_outcome": "A notification is sent to all affected occupants.",
+      "required_tools": [
+        "send_occupant_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate with the plumbing subcontractor to ensure they are ready to perform the tie-in during the shutdown window.",
+      "expected_outcome": "The subcontractor confirms their readiness.",
+      "required_tools": [
+        "confirm_subcontractor_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-em-11686",
+  "title": "Manage a New Stock Option Grant",
+  "description": "A newly promoted employee is receiving a stock option grant as part of their promotion.",
+  "use_case": "Employee Management",
+  "core_function": "Compensation & Payroll",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the approved grant details (number of shares, strike price, vesting schedule).",
+      "expected_outcome": "The compensation analyst receives the grant information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the new grant into the equity administration platform (e.g., Carta, Shareworks).",
+      "expected_outcome": "Analyst successfully creates the new grant in the system.",
+      "required_tools": [
+        "create_equity_grant"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate and send the grant agreement to the employee for acceptance.",
+      "expected_outcome": "Analyst sends the agreement for e-signature.",
+      "required_tools": [
+        "send_for_e_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

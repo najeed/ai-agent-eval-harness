@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_product-sl-11712",
+  "title": "Inbound Lead Qualification",
+  "description": "A new lead comes in from the website's 'Contact Sales' form. The agent must qualify the lead before assigning it to an Account Executive.",
+  "use_case": "Sales & Account Management",
+  "core_function": "New Customer Acquisition",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the information submitted in the form.",
+      "expected_outcome": "Agent reviews the lead's company size, industry, and stated interest.",
+      "required_tools": [
+        "view_crm_lead_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enrich the lead's data using a third-party tool to find more information about their company.",
+      "expected_outcome": "Agent finds additional details about the company's tech stack and funding.",
+      "required_tools": [
+        "enrich_lead_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the enriched data, score the lead and route it to the appropriate Account Executive based on territory rules.",
+      "expected_outcome": "Agent correctly qualifies the lead as 'high-value' and assigns it to the enterprise sales team.",
+      "required_tools": [
+        "update_lead_score",
+        "assign_lead"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

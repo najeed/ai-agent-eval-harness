@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-um-13529",
+  "title": "Clear Traffic for an Approaching Ambulance",
+  "description": "An ambulance is transporting a critical patient and is stuck in traffic. An operator must create a 'green wave' by adjusting traffic lights.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "Traffic Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'Request for Signal Preemption' from an ambulance along its route to the hospital.",
+      "expected_outcome": "Agent acknowledges the high-priority request from the ambulance.",
+      "required_tools": [
+        "get_emergency_vehicle_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Activate the 'Emergency Vehicle Preemption' mode for all traffic signals along the ambulance's route.",
+      "expected_outcome": "Agent successfully activates the green wave.",
+      "required_tools": [
+        "set_traffic_signal_preemption"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the ambulance's progress and return the traffic signals to normal operation after it has passed.",
+      "expected_outcome": "Agent tracks the vehicle and deactivates the preemption mode once the ambulance is clear.",
+      "required_tools": [
+        "get_vehicle_location",
+        "reset_traffic_signals"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

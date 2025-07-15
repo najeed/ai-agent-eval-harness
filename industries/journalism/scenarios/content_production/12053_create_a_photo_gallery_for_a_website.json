@@ -1,0 +1,66 @@
+{
+  "scenario_id": "journalism-cp-12053",
+  "title": "Create a Photo Gallery for a Website",
+  "description": "A photo editor needs to create a web-based photo gallery from a recent event.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Multimedia & Visuals",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the best 20-30 photos from the event.",
+      "expected_outcome": "A curated set of photos is chosen.",
+      "required_tools": [
+        "photo_management_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "quality_of_selection",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Resize and optimize the photos for fast loading on the web.",
+      "expected_outcome": "The image files are web-ready.",
+      "required_tools": [
+        "image_editing_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "technical_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload the photos to the CMS and arrange them in a gallery format.",
+      "expected_outcome": "A new photo gallery is created in the CMS.",
+      "required_tools": [
+        "cms_interface"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Write a title and introduction for the gallery and publish it.",
+      "expected_outcome": "The photo gallery is live on the website.",
+      "required_tools": [
+        "cms_interface"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "scenario_id": "education-as-11038",
+  "title": "Student Placed on Academic Probation",
+  "description": "A student has received a notification that their GPA has dropped below 2.0 and they are on academic probation. They are calling for guidance.",
+  "use_case": "Academic Support",
+  "core_function": "Tutoring & Academic Advising",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and confirm their academic probation status.",
+      "expected_outcome": "Agent verifies the student's status in the SIS.",
+      "required_tools": [
+        "get_student_record",
+        "check_academic_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain what academic probation means and the requirements to return to good standing.",
+      "expected_outcome": "Agent clearly communicates the university's policy and the GPA requirement.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a mandatory meeting for the student with their academic advisor to create an academic improvement plan.",
+      "expected_outcome": "Agent successfully schedules the required meeting.",
+      "required_tools": [
+        "schedule_advisor_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

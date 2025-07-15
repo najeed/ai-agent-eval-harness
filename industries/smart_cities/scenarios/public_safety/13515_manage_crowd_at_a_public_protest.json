@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ps-13515",
+  "title": "Manage Crowd at a Public Protest",
+  "description": "A large, unplanned protest is forming. An operator must monitor crowd size and density to ensure public safety.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Public Space Monitoring",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use camera analytics to monitor the growing crowd at 'City Hall Plaza'.",
+      "expected_outcome": "Agent gets real-time estimates of crowd count and density.",
+      "required_tools": [
+        "get_camera_analytics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Set an alert threshold for when crowd density exceeds a safe limit.",
+      "expected_outcome": "Agent configures an alert to trigger if density becomes dangerous.",
+      "required_tools": [
+        "set_alert_threshold"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Share the live crowd monitoring dashboard with the police command center.",
+      "expected_outcome": "Agent provides police with situational awareness.",
+      "required_tools": [
+        "share_dashboard_view"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

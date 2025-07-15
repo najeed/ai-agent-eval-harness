@@ -1,0 +1,50 @@
+{
+  "scenario_id": "construction-os-10687",
+  "title": "Verify Installation Against Specifications",
+  "description": "A quality inspector must verify that the newly installed windows match the model number specified in the project's technical specifications.",
+  "use_case": "On-Site Operations",
+  "core_function": "Quality & Punch Lists",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the technical specification document for windows.",
+      "expected_outcome": "The 'Section 085113 - Aluminum Windows' spec is retrieved.",
+      "required_tools": [
+        "get_specification_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Physically check the model number on one of the installed windows.",
+      "expected_outcome": "The model number on the window is noted.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the installed model number with the one required in the specification document.",
+      "expected_outcome": "Agent confirms the installed windows match the specification.",
+      "required_tools": [
+        "compare_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "wholesale-im-14351",
+  "title": "Kitting and Assembly",
+  "description": "A customer orders a 'gift basket' product which is a kit made up of several individual items. A warehouse worker must assemble the kit.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Picking, Packing, & Shipping",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a work order to assemble a specific number of kits.",
+      "expected_outcome": "Agent gets the order to assemble 50 gift baskets.",
+      "required_tools": [
+        "get_assembly_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the bill of materials (BOM) for the kit, which lists all the component items.",
+      "expected_outcome": "Agent gets the list of all individual items needed for the gift basket.",
+      "required_tools": [
+        "get_bill_of_materials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Pick the required quantities of all component items from the warehouse.",
+      "expected_outcome": "The worker gathers all the necessary components.",
+      "required_tools": [
+        "generate_component_pick_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Assemble the components into the final kits and update the inventory.",
+      "expected_outcome": "The worker assembles the 50 kits, and the agent updates the inventory, decreasing component stock and increasing the stock of the final kit product.",
+      "required_tools": [
+        "update_inventory_for_kitting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "smartcities-ps-13505",
+  "title": "Coordinate Response to Flash Flood",
+  "description": "Heavy rainfall has caused flash flooding. An operator must manage the disaster response.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Incident & Disaster Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify flooded areas using data from street-level water sensors and camera analytics.",
+      "expected_outcome": "Agent gets a map overlay of the flooded zones.",
+      "required_tools": [
+        "get_flood_sensor_data",
+        "get_camera_analytics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically close flooded roads in the city's navigation and traffic systems.",
+      "expected_outcome": "Agent successfully updates the status of multiple roads to 'closed'.",
+      "required_tools": [
+        "update_road_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify and dispatch high-water rescue vehicles to assist stranded citizens.",
+      "expected_outcome": "Agent dispatches specialized units to the most critical areas.",
+      "required_tools": [
+        "get_specialized_vehicle_locations",
+        "dispatch_emergency_unit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

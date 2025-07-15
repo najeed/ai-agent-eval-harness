@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-sb-13518",
+  "title": "Identify Faulty Streetlight",
+  "description": "The smart lighting system reports that a specific streetlight is consuming no power, indicating a fault.",
+  "use_case": "Smart Buildings & Infrastructure",
+  "core_function": "Smart Street Lighting",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'Zero Power Consumption' alert for a specific streetlight ID.",
+      "expected_outcome": "Agent acknowledges the fault alert.",
+      "required_tools": [
+        "get_lighting_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a remote diagnostic on the streetlight, which fails to connect.",
+      "expected_outcome": "Agent confirms the light is offline and likely has a bulb or ballast failure.",
+      "required_tools": [
+        "run_lighting_diagnostic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for the lighting maintenance team to replace the faulty component.",
+      "expected_outcome": "Agent successfully creates and assigns a repair ticket.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-iam-10789",
+  "title": "Bulk User Provisioning",
+  "description": "An IAM analyst must provision accounts for a class of 50 new summer interns.",
+  "use_case": "Identity & Access Management (IAM)",
+  "core_function": "User Provisioning & Deprovisioning",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a spreadsheet from HR with the names and details of all 50 interns.",
+      "expected_outcome": "Analyst has the source data for the bulk request.",
+      "required_tools": [
+        "get_hr_bulk_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_processing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a PowerShell script to parse the spreadsheet and create all 50 user accounts in Active Directory.",
+      "expected_outcome": "All 50 accounts are created successfully and consistently.",
+      "required_tools": [
+        "run_bulk_provisioning_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "automation_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add all new accounts to the 'Interns' security group to grant them the standard, limited access for interns.",
+      "expected_outcome": "All interns are assigned the correct, least-privilege access role.",
+      "required_tools": [
+        "add_user_to_group_bulk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "permissioning_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

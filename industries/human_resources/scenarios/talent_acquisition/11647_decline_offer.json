@@ -1,0 +1,49 @@
+{
+  "scenario_id": "hr-ta-11647",
+  "title": "Candidate Declines Offer",
+  "description": "A candidate who received an offer has decided to decline it.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Interview & Selection",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the notification from the candidate that they are declining the offer.",
+      "expected_outcome": "Recruiter is informed by the candidate.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask for the reason for the decline, if the candidate is willing to share.",
+      "expected_outcome": "Recruiter learns the candidate accepted a competing offer with a higher salary.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the candidate's status in the ATS to 'Offer Declined' and log the reason.",
+      "expected_outcome": "Recruiter accurately updates the candidate's record in the ATS.",
+      "required_tools": [
+        "update_candidate_status",
+        "log_decline_reason"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-pg-13557",
+  "title": "Disseminate Information about a Missing Child (Amber Alert)",
+  "description": "Police issue an Amber Alert for a missing child. An operator must broadcast the alert across the city's communication channels.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Public Information & Alerting",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the Amber Alert details from the state police, including child's description and vehicle information.",
+      "expected_outcome": "Agent gets the critical information for the alert.",
+      "required_tools": [
+        "get_emergency_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the alert message for various platforms.",
+      "expected_outcome": "Agent prepares the message content.",
+      "required_tools": [
+        "get_alert_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Broadcast the Amber Alert on all city-controlled dynamic message signs on highways, public transit screens, and social media.",
+      "expected_outcome": "Agent successfully pushes the alert to all available public-facing systems.",
+      "required_tools": [
+        "publish_public_alert",
+        "update_dynamic_message_sign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

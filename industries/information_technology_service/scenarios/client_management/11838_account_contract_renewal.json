@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-cm-11838",
+  "title": "Account Management - Contract Renewal",
+  "description": "A client's annual managed services contract is due for renewal in 60 days.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Account & Relationship Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The account manager contacts the client to initiate the renewal discussion.",
+      "expected_outcome": "A meeting is scheduled to discuss the renewal.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the renewal contract document from a template.",
+      "expected_outcome": "A new contract document is created.",
+      "required_tools": [
+        "generate_renewal_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the contract to the client for e-signature.",
+      "expected_outcome": "The client signs and returns the renewal contract, ensuring service continuity.",
+      "required_tools": [
+        "send_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

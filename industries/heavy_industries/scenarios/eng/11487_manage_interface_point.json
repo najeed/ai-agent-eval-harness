@@ -1,0 +1,50 @@
+{
+  "scenario_id": "heavy-industries-eng-11487",
+  "title": "Manage a Design Interface Point",
+  "description": "One engineering discipline (electrical) needs to provide information (power requirements) to another discipline (mechanical) for them to complete their design.",
+  "use_case": "Engineering & Design",
+  "core_function": "Document Control",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the interface point in the project's interface register (e.g., 'Power supply for Pump P-101').",
+      "expected_outcome": "Agent finds the correct interface point.",
+      "required_tools": [
+        "get_interface_register"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The electrical engineer determines the power requirements and enters the data into the interface system.",
+      "expected_outcome": "The electrical engineer provides the required data.",
+      "required_tools": [
+        "update_interface_point"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system automatically notifies the mechanical engineer that the interface information is now available for them to use.",
+      "expected_outcome": "The mechanical engineer receives a notification and can now complete their design for the pump.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

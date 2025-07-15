@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-ps-13520",
+  "title": "Generate Evacuation Route During Wildfire",
+  "description": "A wildfire is approaching a residential area. An operator must generate and broadcast a safe evacuation route.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Incident & Disaster Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Input the fire's current perimeter and direction of spread into the emergency management system.",
+      "expected_outcome": "Agent defines the hazard zone in the system.",
+      "required_tools": [
+        "define_hazard_zone"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate optimal evacuation routes for the threatened neighborhoods that lead away from the fire and avoid traffic bottlenecks.",
+      "expected_outcome": "The system calculates and displays the safest routes.",
+      "required_tools": [
+        "generate_evacuation_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Push the evacuation routes to public alert channels, Waze, and Google Maps.",
+      "expected_outcome": "Agent disseminates the critical evacuation information widely.",
+      "required_tools": [
+        "publish_public_alert",
+        "update_navigation_providers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

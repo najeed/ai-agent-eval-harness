@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-grc-10748",
+  "title": "Role-Based Security Training",
+  "description": "A security awareness manager needs to assign specialized, role-based training to different departments.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Security Awareness & Training",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the different roles and their specific training needs (e.g., developers need secure coding training, finance needs training on wire fraud).",
+      "expected_outcome": "Manager successfully maps roles to required training modules.",
+      "required_tools": [
+        "map_roles_to_training"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create different assignment groups in the LMS for each department (Developers, Finance, etc.).",
+      "expected_outcome": "Manager successfully creates the assignment groups.",
+      "required_tools": [
+        "create_lms_groups"
+      ],
+      "success_criteria": [
+        {
+          "metric": "configuration_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the appropriate training modules to each group.",
+      "expected_outcome": "Manager successfully assigns the correct, specialized training to each department.",
+      "required_tools": [
+        "assign_training_to_group"
+      ],
+      "success_criteria": [
+        {
+          "metric": "assignment_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

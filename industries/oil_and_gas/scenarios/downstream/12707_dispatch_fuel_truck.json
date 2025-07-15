@@ -1,0 +1,54 @@
+{
+  "scenario_id": "og-down-12707",
+  "title": "Dispatch Fuel Truck to Retail Station",
+  "description": "A dispatcher receives a low inventory alert from a gas station and must dispatch a fuel truck to prevent a stock-out.",
+  "use_case": "Downstream",
+  "core_function": "Distribution & Retail",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the low inventory alert for unleaded gasoline at station #5432.",
+      "expected_outcome": "The alert is acknowledged.",
+      "required_tools": [
+        "get_inventory_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "response_time_minutes",
+          "threshold": 5
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find the nearest available truck and check that it has enough of the required fuel grade.",
+      "expected_outcome": "An available and suitable truck is identified.",
+      "required_tools": [
+        "find_available_trucks",
+        "check_truck_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "resource_allocation_efficiency",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a delivery order and dispatch the truck to the retail station.",
+      "expected_outcome": "The truck is dispatched with the correct order details.",
+      "required_tools": [
+        "create_delivery_order",
+        "dispatch_truck"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

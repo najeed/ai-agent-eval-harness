@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-ri-12014",
+  "title": "Fact-Check a Politician's Speech",
+  "description": "A politician has just given a major speech. A fact-checker needs to verify the claims and statistics used in the speech.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Data Journalism & Fact-Checking",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain a transcript of the speech and identify all factual claims (e.g., 'unemployment has dropped by 10%').",
+      "expected_outcome": "Agent creates a list of all claims that need to be verified.",
+      "required_tools": [
+        "get_speech_transcript"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehensiveness_of_list",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each claim, find the original source data from official government statistics, academic studies, or other reliable sources.",
+      "expected_outcome": "Agent finds primary source data to support or refute each claim.",
+      "required_tools": [
+        "search_government_databases",
+        "search_academic_databases"
+      ],
+      "success_criteria": [
+        {
+          "metric": "source_reliability",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Write a summary for each claim, rating it as 'True', 'False', or 'Misleading', and provide the evidence.",
+      "expected_outcome": "Agent produces a clear, evidence-based fact-check article.",
+      "required_tools": [
+        "draft_article"
+      ],
+      "success_criteria": [
+        {
+          "metric": "accuracy_of_rating",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

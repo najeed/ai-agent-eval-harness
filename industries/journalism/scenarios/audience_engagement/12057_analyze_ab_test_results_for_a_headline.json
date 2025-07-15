@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ae-12057",
+  "title": "Analyze A/B Test Results for a Headline",
+  "description": "An A/B test was run on two different headlines for an article. An editor must analyze the results to see which performed better.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Performance Analysis",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the A/B testing report in the CMS for the specified article.",
+      "expected_outcome": "Agent accesses the correct report.",
+      "required_tools": [
+        "cms_ab_testing_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_navigation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the click-through rate (CTR) for Headline A and Headline B.",
+      "expected_outcome": "Agent identifies which headline had a higher CTR.",
+      "required_tools": [
+        "analyze_analytics_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Declare the headline with the higher CTR as the winner and set it as the permanent headline for the article.",
+      "expected_outcome": "The article is updated with the better-performing headline.",
+      "required_tools": [
+        "cms_interface"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

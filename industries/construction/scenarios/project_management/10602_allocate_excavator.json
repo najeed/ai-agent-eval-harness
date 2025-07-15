@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-pm-10602",
+  "title": "Allocate Excavator to Foundation Work",
+  "description": "A site manager needs to allocate an available excavator to the foundation excavation task for the next five days.",
+  "use_case": "Project Management",
+  "core_function": "Resource Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the equipment schedule for the availability of an excavator.",
+      "expected_outcome": "Agent confirms that 'Excavator #2' is available for the required period.",
+      "required_tools": [
+        "get_equipment_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign 'Excavator #2' to the 'Foundation Excavation' task in the project plan.",
+      "expected_outcome": "The resource allocation in the project plan is updated successfully.",
+      "required_tools": [
+        "assign_resource_to_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

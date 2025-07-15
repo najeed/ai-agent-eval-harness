@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-grc-10729",
+  "title": "Policy Exception Request",
+  "description": "A developer requests a temporary exception to the security policy that blocks outbound traffic so they can connect to a new third-party API for testing.",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Security Policy Management",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the policy exception request, including the business justification and the specific IP address and port required.",
+      "expected_outcome": "Analyst correctly processes the incoming request.",
+      "required_tools": [
+        "get_policy_exception_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_processing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assess the risk of granting the exception, including researching the reputation of the third-party IP address.",
+      "expected_outcome": "Analyst determines the risk is acceptable for a limited time.",
+      "required_tools": [
+        "assess_request_risk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_assessment_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the request for a limited duration (e.g., 1 week) and create a temporary firewall rule to allow the traffic.",
+      "expected_outcome": "Analyst grants the time-bound exception and implements the required technical control.",
+      "required_tools": [
+        "approve_exception_request",
+        "create_temporary_firewall_rule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

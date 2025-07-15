@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-cc-10666",
+  "title": "Request Final Building Inspection",
+  "description": "The project is nearing completion. The PM must formally request the final inspection from the city's building department to obtain the Certificate of Occupancy.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Contract Administration",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that all other required inspections (plumbing, electrical, mechanical, fire) have passed.",
+      "expected_outcome": "Agent confirms all prerequisite inspections are complete and passed.",
+      "required_tools": [
+        "get_inspection_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Submit a 'Final Inspection Request' through the city's online portal.",
+      "expected_outcome": "The request is successfully submitted.",
+      "required_tools": [
+        "submit_city_inspection_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

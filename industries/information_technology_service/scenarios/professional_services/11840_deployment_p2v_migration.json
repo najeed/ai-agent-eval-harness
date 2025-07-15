@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-ps-11840",
+  "title": "Deployment - Physical-to-Virtual Migration",
+  "description": "A project requires migrating an aging physical server to a virtual machine (P2V) on a new hypervisor.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Technology Deployment & Migration",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Install a P2V conversion tool on the source physical server.",
+      "expected_outcome": "The tool is successfully installed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the conversion tool to create a virtual machine image of the physical server.",
+      "expected_outcome": "A VMDK or VHDX file is successfully created.",
+      "required_tools": [
+        "run_p2v_conversion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Import the VM image into the new hypervisor, boot it up, and test for functionality.",
+      "expected_outcome": "The new VM is online and operational, and the old physical server can be decommissioned.",
+      "required_tools": [
+        "import_vm_image"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

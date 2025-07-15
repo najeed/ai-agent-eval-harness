@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-12111",
+  "title": "Generate a Client Invoice",
+  "description": "At the end of the month, a billing coordinator needs to generate an invoice for a client.",
+  "use_case": "Law Practice Management",
+  "core_function": "Billing & Timekeeping",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all unbilled time entries and expenses for a specific client matter for the last month.",
+      "expected_outcome": "Agent gathers all billable items for the client.",
+      "required_tools": [
+        "billing_software_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a draft invoice, itemizing all time entries and expenses.",
+      "expected_outcome": "Agent produces a detailed draft bill.",
+      "required_tools": [
+        "billing_software_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the draft invoice to the responsible partner for review and approval before sending to the client.",
+      "expected_outcome": "Agent follows the firm's pre-bill review process.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

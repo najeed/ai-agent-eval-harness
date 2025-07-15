@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-as-11069",
+  "title": "Merge LMS Course Sections",
+  "description": "A professor is teaching multiple sections of the same course and wants to merge them into a single LMS shell to simplify content management.",
+  "use_case": "Academic Support",
+  "core_function": "Learning Management System (LMS) Support",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the faculty member and the course sections to be merged.",
+      "expected_outcome": "Agent confirms the professor teaches sections 001, 002, and 003 of 'HIST101'.",
+      "required_tools": [
+        "get_faculty_teaching_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the implications of merging, such as how the gradebook will appear.",
+      "expected_outcome": "Agent clearly communicates the features of a merged course shell.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the course merge request in the LMS admin tools.",
+      "expected_outcome": "Agent successfully merges the sections into a single LMS course.",
+      "required_tools": [
+        "merge_lms_courses"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

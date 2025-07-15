@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-sm-11513",
+  "title": "Respond to a Negative Online Review",
+  "description": "A hotel manager needs to respond to a negative review on a travel website where a guest complained about noise.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Guest Feedback & Reviews",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the guest's stay details from the information in the review.",
+      "expected_outcome": "Manager successfully finds the guest's past reservation.",
+      "required_tools": [
+        "pms_lookup_reservation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a public response that is empathetic, apologizes for the specific issue, and avoids being defensive.",
+      "expected_outcome": "A well-written, professional response is drafted.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the response to the review website and offer to connect with the guest offline to resolve the matter further.",
+      "expected_outcome": "The response is posted, and it includes contact information for follow-up.",
+      "required_tools": [
+        "post_online_review_response"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

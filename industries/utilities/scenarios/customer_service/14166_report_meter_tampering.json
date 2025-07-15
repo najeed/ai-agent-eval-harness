@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-cs-14166",
+  "title": "Report Suspected Meter Tampering",
+  "description": "A field technician observes signs of tampering with an electric meter and needs to report it.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The technician documents the signs of tampering (e.g., broken seal, meter upside down) and takes photos.",
+      "expected_outcome": "Technician logs the details and evidence in their mobile work management app.",
+      "required_tools": [
+        "log_field_observation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically flags the account for investigation by the revenue protection department.",
+      "expected_outcome": "System creates a new investigation case.",
+      "required_tools": [
+        "create_revenue_protection_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the customer's historical usage for sudden, unexplained drops in consumption.",
+      "expected_outcome": "System analysis shows a 70% drop in recorded consumption starting 3 months ago.",
+      "required_tools": [
+        "analyze_usage_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

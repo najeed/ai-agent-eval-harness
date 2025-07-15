@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-em-11682",
+  "title": "Process an Employee Transfer",
+  "description": "An employee is transferring to a new role in a different department.",
+  "use_case": "Employee Management",
+  "core_function": "Performance Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the approved transfer details (new role, department, manager, effective date).",
+      "expected_outcome": "HRBP receives all necessary information for the transfer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the employee's record in the HRIS with the new position details.",
+      "expected_outcome": "HRBP successfully updates the employee's job information.",
+      "required_tools": [
+        "update_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a transfer confirmation letter for the employee.",
+      "expected_outcome": "HRBP creates and sends a letter confirming the details of the transfer.",
+      "required_tools": [
+        "generate_document_from_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

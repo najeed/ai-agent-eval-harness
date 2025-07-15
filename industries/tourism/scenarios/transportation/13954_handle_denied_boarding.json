@@ -1,0 +1,51 @@
+{
+  "scenario_id": "tourism-tr-13954",
+  "title": "Handle Denied Boarding Due to Overbooking",
+  "description": "A flight is overbooked, and a passenger is involuntarily denied boarding. The agent must handle the situation.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Disruption Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Apologize to the passenger and explain the situation.",
+      "expected_outcome": "Agent communicates empathetically and clearly.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the passenger's rights and the compensation they are entitled to under regulations.",
+      "expected_outcome": "Agent accurately explains the compensation rules for denied boarding.",
+      "required_tools": [
+        "get_denied_boarding_compensation_rules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "policy_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Rebook the passenger on the next available flight and process their compensation.",
+      "expected_outcome": "Agent successfully rebooks the passenger and issues the required compensation (e.g., check or travel voucher).",
+      "required_tools": [
+        "rebook_passenger",
+        "issue_compensation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

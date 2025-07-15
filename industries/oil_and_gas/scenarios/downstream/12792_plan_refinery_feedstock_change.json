@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-down-12792",
+  "title": "Plan Refinery Feedstock Change",
+  "description": "A refinery plans to switch from processing a light, sweet crude to a heavy, sour crude. A team must assess the impacts of this change.",
+  "use_case": "Downstream",
+  "core_function": "Refinery Operations & Optimization",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Assess the metallurgical impact of the new crude, checking if its higher sulfur content will cause corrosion issues in existing equipment.",
+      "expected_outcome": "The analysis identifies that several heat exchangers will be at higher risk of corrosion.",
+      "required_tools": [
+        "run_corrosion_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_assessment_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Evaluate the impact on product yields using the refinery's LP model.",
+      "expected_outcome": "The LP model predicts lower gasoline yield and higher fuel oil yield with the new crude.",
+      "required_tools": [
+        "run_lp_optimization"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Determine the necessary operational changes, such as adjusting desalter operations and hydrotreater severity, to handle the new crude.",
+      "expected_outcome": "A list of required operational adjustments is created to ensure a smooth transition.",
+      "required_tools": [
+        "generate_operational_change_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_completeness",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

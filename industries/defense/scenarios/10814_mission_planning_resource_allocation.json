@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-mp-10814",
+  "title": "Mission Resource and Ordnance Planning",
+  "description": "A planner must select the optimal aircraft and munitions to destroy a hardened enemy command bunker.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Resource & Ordnance Planning",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze intelligence reports on the bunker's construction and defensive systems.",
+      "expected_outcome": "Planner correctly identifies the target's hardness and air defense capabilities.",
+      "required_tools": [
+        "get_target_intelligence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the available ordnance database for weapons capable of penetrating the target.",
+      "expected_outcome": "Planner identifies several suitable bunker-buster munitions.",
+      "required_tools": [
+        "query_ordnance_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select the most cost-effective combination of aircraft and munitions that can achieve the desired effect while minimizing risk.",
+      "expected_outcome": "Planner selects a stealth aircraft with two specific types of bombs.",
+      "required_tools": [
+        "select_optimal_loadout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "optimization_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

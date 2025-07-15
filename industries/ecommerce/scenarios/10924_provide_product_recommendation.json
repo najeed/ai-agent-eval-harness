@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ecommerce-mce-10924",
+  "title": "Provide Manual Product Recommendation",
+  "description": "A customer asks a support agent for a recommendation for a running shoe for a specific type of terrain.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Personalization & Recommendations",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Understand the customer's needs (terrain: trail, usage: long-distance).",
+      "expected_outcome": "Agent correctly identifies the key requirements.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the product catalog for 'running shoes' with the tag 'trail' and 'high-cushion'.",
+      "expected_outcome": "Agent generates a list of suitable products.",
+      "required_tools": [
+        "filter_product_catalog"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the top-rated shoe from the filtered list and explain why it's a good fit.",
+      "expected_outcome": "Agent makes a relevant, well-justified recommendation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

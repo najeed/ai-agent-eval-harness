@@ -1,0 +1,54 @@
+{
+  "scenario_id": "defense-c2-10801",
+  "title": "Airborne Threat Assessment",
+  "description": "An operator must assess multiple inbound, unidentified aircraft to determine their threat level and recommend an appropriate response.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Threat Assessment & Prioritization",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Fuse radar, IFF (Identify Friend or Foe), and intelligence data for all inbound tracks.",
+      "expected_outcome": "Operator correctly correlates data from multiple sources for each track.",
+      "required_tools": [
+        "fuse_sensor_data",
+        "get_intelligence_brief"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_fusion_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare track behavior (speed, altitude, vector) against known adversary tactics and flight plans.",
+      "expected_outcome": "Operator correctly flags one track as anomalous and potentially hostile.",
+      "required_tools": [
+        "query_threat_database",
+        "check_flight_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "threat_identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prioritize the anomalous track and recommend scrambling interceptor aircraft for visual identification.",
+      "expected_outcome": "Operator makes a timely and correct recommendation in line with standard procedures.",
+      "required_tools": [
+        "recommend_course_of_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

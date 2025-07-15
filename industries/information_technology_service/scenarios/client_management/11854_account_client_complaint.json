@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_service-cm-11854",
+  "title": "Account Management - Handle Client Complaint",
+  "description": "A client's main contact calls the account manager to complain about repeated slow response times from the service desk.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Account & Relationship Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Listen to the client's complaint, empathize with their frustration, and promise to investigate immediately.",
+      "expected_outcome": "The client feels heard and acknowledged.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the client's ticket data for the last 3 months, focusing on 'Time to Respond' and 'Time to Resolution' metrics.",
+      "expected_outcome": "The data confirms that while response times are within SLA, they are slower than average.",
+      "required_tools": [
+        "analyze_ticket_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Follow up with the client, acknowledging the findings and presenting a plan to improve performance, such as assigning a dedicated technician.",
+      "expected_outcome": "The account manager takes ownership of the issue and presents a concrete solution, rebuilding trust with the client.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

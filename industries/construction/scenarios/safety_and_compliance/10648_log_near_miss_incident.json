@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-sc-10648",
+  "title": "Log a Near-Miss Incident",
+  "description": "A worker dropped a tool from scaffolding, but no one was injured. A safety officer needs to log this as a 'near-miss' to prevent future occurrences.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Safety Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new safety incident report.",
+      "expected_outcome": "A new report form is generated.",
+      "required_tools": [
+        "create_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Describe the event and classify the incident as 'Near-Miss'.",
+      "expected_outcome": "The report is correctly filled out and classified.",
+      "required_tools": [
+        "update_incident_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend a corrective action: 'Hold a toolbox talk on tool tethering for all crews working at height.'",
+      "expected_outcome": "A relevant, preventative corrective action is recommended.",
+      "required_tools": [
+        "assign_corrective_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

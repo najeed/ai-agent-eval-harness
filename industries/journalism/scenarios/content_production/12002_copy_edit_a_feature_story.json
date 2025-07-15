@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-cp-12002",
+  "title": "Copy Edit a Feature Story",
+  "description": "An editor needs to review a long-form feature story for grammar, style, clarity, and adherence to the publication's style guide.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Copy Editing & Review",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Read through the entire article to get a sense of the narrative and structure.",
+      "expected_outcome": "Editor understands the story's main points and flow.",
+      "required_tools": [
+        "document_viewer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehension_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a line-by-line edit, correcting all grammatical errors, typos, and punctuation mistakes.",
+      "expected_outcome": "The document is free of basic errors.",
+      "required_tools": [
+        "grammar_and_spell_checker",
+        "text_editor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "error_correction_rate",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the article against the publication's internal style guide (e.g., AP Style) and correct any inconsistencies.",
+      "expected_outcome": "The article conforms to all house style rules.",
+      "required_tools": [
+        "search_style_guide"
+      ],
+      "success_criteria": [
+        {
+          "metric": "style_guide_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

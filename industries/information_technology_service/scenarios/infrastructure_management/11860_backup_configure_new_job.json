@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-im-11860",
+  "title": "Backup - Configure New Backup Job",
+  "description": "A new server has been deployed, and it needs to be added to the nightly backup schedule.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Backup & Disaster Recovery",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Install the backup agent software on the new server.",
+      "expected_outcome": "The agent is successfully installed.",
+      "required_tools": [
+        "deploy_agent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "In the backup console, create a new backup job for the new server.",
+      "expected_outcome": "A new job is created.",
+      "required_tools": [
+        "create_backup_job"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Configure the job with the correct schedule, retention policy, and encryption settings, then run the first backup.",
+      "expected_outcome": "The server is now being backed up according to the client's policy.",
+      "required_tools": [
+        "configure_backup_job"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

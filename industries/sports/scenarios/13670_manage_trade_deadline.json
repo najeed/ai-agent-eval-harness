@@ -1,0 +1,67 @@
+{
+  "scenario_id": "sports-lm-13670",
+  "title": "Manage the Trade Deadline",
+  "description": "On the league's trade deadline day, an administrator must process all last-minute trades before the cutoff time.",
+  "use_case": "League & Competition Management",
+  "core_function": "Officiating & Rules Enforcement",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the incoming trade submissions from teams.",
+      "expected_outcome": "Agent sees a high volume of trades being submitted.",
+      "required_tools": [
+        "monitor_trade_submissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each trade, verify that it is compliant with all league rules (e.g., salary cap, roster limits).",
+      "expected_outcome": "Agent reviews each trade and flags one that is non-compliant.",
+      "required_tools": [
+        "verify_trade_compliance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve all compliant trades and notify the non-compliant team of the issue.",
+      "expected_outcome": "Agent approves valid trades and informs the other team why their trade was rejected.",
+      "required_tools": [
+        "approve_trade",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "At the deadline, officially close the trade window.",
+      "expected_outcome": "Agent closes the system to any new trade submissions.",
+      "required_tools": [
+        "close_trade_window"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

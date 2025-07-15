@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-proc-12612",
+  "title": "Monitor Tailings Dam",
+  "description": "A geotechnical engineer monitors instrumentation on a tailings storage facility (TSF) to ensure its stability.",
+  "use_case": "Processing & Metallurgy",
+  "core_function": "Dewatering & Tailings",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve real-time data from the piezometers within the tailings dam, which measure water pressure.",
+      "expected_outcome": "A trend chart of pore water pressure is displayed.",
+      "required_tools": [
+        "get_piezometer_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the current water pressure levels against the design limits and alarm thresholds.",
+      "expected_outcome": "The analysis shows that pressure in one area is approaching the alarm level.",
+      "required_tools": [
+        "check_against_design_limits"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a notification for the operations team to increase pumping from the decant pond to lower the phreatic surface within the dam.",
+      "expected_outcome": "An instruction is sent to operations to take action to lower the water level.",
+      "required_tools": [
+        "send_operational_instruction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

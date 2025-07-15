@@ -1,0 +1,51 @@
+{
+  "scenario_id": "ports-go-12929",
+  "title": "Handle Truck Arriving for the Wrong Container",
+  "description": "A truck arrives with an appointment to pick up container A, but they have physically brought container B to drop off.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Gate Processing & Appointments",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the mismatch between the appointment details (Pickup container A) and the OCR data (Dropoff container B).",
+      "expected_outcome": "The gate system flags a 'Transaction Mismatch' error.",
+      "required_tools": [
+        "get_ocr_gate_data",
+        "check_vbs_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the driver of the discrepancy.",
+      "expected_outcome": "Clerk clearly explains that their physical container does not match their appointment.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the driver to exit the gate, contact their dispatcher to get a new, correct appointment for container B, and then return.",
+      "expected_outcome": "Clerk provides clear instructions on how to resolve the problem.",
+      "required_tools": [
+        "log_gate_exception"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

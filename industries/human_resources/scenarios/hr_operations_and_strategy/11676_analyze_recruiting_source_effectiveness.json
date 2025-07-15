@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11676",
+  "title": "Analyze Recruiting Source Effectiveness",
+  "description": "The head of talent acquisition wants a report showing which recruiting sources (e.g., LinkedIn, employee referrals, career site) produce the most hires.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Reporting & Analytics",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a report from the ATS of all hires in the last year, including their source.",
+      "expected_outcome": "Analyst generates the raw data of hires and their sources.",
+      "required_tools": [
+        "run_ats_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Group the hires by source and calculate the percentage of total hires for each source.",
+      "expected_outcome": "Analyst creates a summary table showing the breakdown by source.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a presentation for leadership that visualizes the source-of-hire data.",
+      "expected_outcome": "Analyst creates a bar chart showing that employee referrals are the top source of hires.",
+      "required_tools": [
+        "create_presentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_creation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-fs-11025",
+  "title": "New Employee Benefits Enrollment",
+  "description": "A newly hired staff member needs help completing their benefits enrollment before the deadline.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "HR & Onboarding",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the new employee and confirm their enrollment deadline.",
+      "expected_outcome": "Agent confirms the employee has 3 days left to enroll.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Walk the employee through the different health plan options and retirement contributions in the HR portal.",
+      "expected_outcome": "Agent clearly explains the options and helps the employee navigate the portal.",
+      "required_tools": [
+        "get_benefit_options"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm that the employee's selections have been successfully submitted in the system.",
+      "expected_outcome": "Agent verifies the enrollment is complete in the HR system.",
+      "required_tools": [
+        "check_benefit_enrollment_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

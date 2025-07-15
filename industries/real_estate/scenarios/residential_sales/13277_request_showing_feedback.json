@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-13277",
+  "title": "Request Showing Feedback",
+  "description": "An agent showed a listing yesterday. The listing agent needs to request feedback from them.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all agents who showed the property in the last 24 hours from the showing service log.",
+      "expected_outcome": "Agent finds the contact information for the agent who showed the property.",
+      "required_tools": [
+        "get_showing_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a standardized email or text message to the showing agent asking for their and their client's feedback on the property.",
+      "expected_outcome": "Agent sends a polite request for feedback.",
+      "required_tools": [
+        "send_feedback_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive the feedback and log it in the listing's communication file for the seller to review.",
+      "expected_outcome": "Agent receives feedback (e.g., 'client liked the layout but thought the price was high') and logs it.",
+      "required_tools": [
+        "log_showing_feedback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

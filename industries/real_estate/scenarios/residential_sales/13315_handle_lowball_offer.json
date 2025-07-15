@@ -1,0 +1,50 @@
+{
+  "scenario_id": "real_estate-rs-13315",
+  "title": "Handle a Lowball Offer",
+  "description": "A listing agent receives a purchase offer significantly below the asking price and must advise the seller on how to respond.",
+  "use_case": "Residential Sales",
+  "core_function": "Offers & Negotiation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Present the low offer to the seller and provide context based on current market conditions and recent comps.",
+      "expected_outcome": "Agent helps the seller understand the offer in the context of the market.",
+      "required_tools": [
+        "get_market_analysis_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Advise the seller on response options: ignore, reject, or make a counter-offer.",
+      "expected_outcome": "Agent provides clear, strategic advice on how to proceed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The seller decides to counter. Draft a counter-offer with a price closer to the asking price and send it to the buyer's agent.",
+      "expected_outcome": "A formal counter-offer is generated and submitted.",
+      "required_tools": [
+        "generate_counter_offer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

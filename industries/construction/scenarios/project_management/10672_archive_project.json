@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-pm-10672",
+  "title": "Archive a Completed Project",
+  "description": "A project has been completed and all payments settled. The PM must formally archive the project.",
+  "use_case": "Project Management",
+  "core_function": "Budgeting & Cost Control",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a final project closeout report, summarizing schedule performance, cost performance, and major issues.",
+      "expected_outcome": "A comprehensive closeout report is generated.",
+      "required_tools": [
+        "generate_project_closeout_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather all project documents, including contracts, drawings, RFIs, and submittals, into a single archive file.",
+      "expected_outcome": "All project documents are compiled.",
+      "required_tools": [
+        "compile_project_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set the project status to 'Archived' in the project management system, making it read-only.",
+      "expected_outcome": "The project is successfully archived.",
+      "required_tools": [
+        "update_project_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_service-ps-11824",
+  "title": "Auditing - Dark Web Credential Scan",
+  "description": "A security analyst runs a dark web scan for a client to see if any of their corporate email addresses and passwords have been exposed in third-party breaches.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "IT & Security Auditing",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a dark web scan using the client's email domain.",
+      "expected_outcome": "The scan completes successfully.",
+      "required_tools": [
+        "run_dark_web_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the scan results to identify any exposed credentials.",
+      "expected_outcome": "The scan finds 5 users whose credentials were found in a recent breach of another service.",
+      "required_tools": [
+        "analyze_scan_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a report of the findings and force a password reset for the affected users.",
+      "expected_outcome": "The client is notified of the exposure, and the risk is mitigated by forcing password resets.",
+      "required_tools": [
+        "generate_security_report",
+        "reset_ad_password"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

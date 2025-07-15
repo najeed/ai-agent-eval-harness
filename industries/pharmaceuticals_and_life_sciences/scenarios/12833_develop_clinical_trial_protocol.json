@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-ct-12833",
+  "title": "Develop a Clinical Trial Protocol",
+  "description": "A clinical scientist is leading the development of a new protocol for a Phase 1 study.",
+  "use_case": "Clinical Trials",
+  "core_function": "Trial Design & Feasibility",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new protocol document from a company template.",
+      "expected_outcome": "Agent generates a new protocol document with standard sections.",
+      "required_tools": [
+        "generate_document_from_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the study design and methodology sections, including objectives, endpoints, and patient population.",
+      "expected_outcome": "Agent writes the core scientific sections of the protocol.",
+      "required_tools": [
+        "draft_protocol_section"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Collaborate with a biostatistician to develop the statistical analysis plan section.",
+      "expected_outcome": "Agent incorporates the statistical plan provided by the statistician into the protocol.",
+      "required_tools": [
+        "collaborate_on_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Route the draft protocol for review and approval by the cross-functional team.",
+      "expected_outcome": "Agent circulates the document for review, collects feedback, and finalizes the protocol.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

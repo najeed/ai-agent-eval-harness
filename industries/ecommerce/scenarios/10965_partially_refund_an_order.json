@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-omf-10965",
+  "title": "Issue a Partial Refund",
+  "description": "As a goodwill gesture for a delayed shipment, a support agent is authorized to refund the shipping cost to a customer.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Payment & Invoicing",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the customer's order and identify the amount paid for shipping.",
+      "expected_outcome": "Agent finds the order and sees the shipping charge was $9.95.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Issue a partial refund for the shipping amount only.",
+      "expected_outcome": "Agent successfully refunds $9.95 to the customer's original payment method.",
+      "required_tools": [
+        "process_partial_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "transaction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add a note to the order detailing the reason for the partial refund.",
+      "expected_outcome": "Agent adds a note: 'Refunded shipping cost as goodwill for delivery delay.'",
+      "required_tools": [
+        "add_note_to_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

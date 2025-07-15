@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11446",
+  "title": "Manage Project Resource Allocation",
+  "description": "A project manager sees that a key engineer is overallocated for the next month and must reassign some of their tasks.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Planning & Scheduling",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a resource utilization report for the engineering team.",
+      "expected_outcome": "The report shows one engineer is allocated at 150% for the next month.",
+      "required_tools": [
+        "get_resource_utilization_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the tasks assigned to the overallocated engineer and find another qualified engineer with available capacity.",
+      "expected_outcome": "Agent finds a suitable engineer who is only allocated at 60%.",
+      "required_tools": [
+        "get_tasks_by_resource",
+        "check_resource_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reassign two of the tasks from the overallocated engineer to the available engineer.",
+      "expected_outcome": "Agent successfully updates the task assignments, resolving the overallocation.",
+      "required_tools": [
+        "reassign_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

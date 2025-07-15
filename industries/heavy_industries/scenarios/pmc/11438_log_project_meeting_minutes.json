@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11438",
+  "title": "Log Project Meeting Minutes",
+  "description": "Following the weekly project review meeting, the project administrator needs to log the meeting minutes and track the new action items.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Reporting & Communication",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new meeting record in the project management system.",
+      "expected_outcome": "Agent successfully initiates a new meeting record.",
+      "required_tools": [
+        "create_meeting_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the meeting minutes document and list the attendees.",
+      "expected_outcome": "Agent attaches the minutes and adds the attendees to the record.",
+      "required_tools": [
+        "upload_document",
+        "add_meeting_attendees"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each action item discussed, create a new task in the system and assign it to the responsible person with a due date.",
+      "expected_outcome": "Agent creates three new action items, each assigned to a different team member.",
+      "required_tools": [
+        "create_action_item"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

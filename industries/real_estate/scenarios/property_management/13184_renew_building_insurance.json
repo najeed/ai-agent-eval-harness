@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-13184",
+  "title": "Renew Building's Hazard Insurance Policy",
+  "description": "A property's hazard insurance policy is up for renewal. The PM needs to get quotes and renew the policy.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management & Reporting",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the current insurance policy to review coverage and premium.",
+      "expected_outcome": "Agent has the details of the expiring policy.",
+      "required_tools": [
+        "get_property_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the insurance broker to request renewal quotes from multiple carriers.",
+      "expected_outcome": "A request is sent to the broker to shop for competitive insurance quotes.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the quotes with the property owner and process the payment for the chosen policy.",
+      "expected_outcome": "After owner approval, the premium for the new policy is paid and the new declaration page is saved.",
+      "required_tools": [
+        "process_payment",
+        "log_compliance_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

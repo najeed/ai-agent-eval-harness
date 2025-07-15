@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-pt-14055",
+  "title": "Report a Station Maintenance Issue",
+  "description": "A passenger reports that an escalator at a train station is broken. An agent must create a maintenance ticket.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Real-time Operations & Control",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a passenger report via social media about a broken escalator at a specific station.",
+      "expected_outcome": "The agent captures the location and nature of the issue.",
+      "required_tools": [
+        "monitor_social_media"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new maintenance work order in the system.",
+      "expected_outcome": "A new work order is created.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the work order to the station maintenance team with a high priority.",
+      "expected_outcome": "The correct team is assigned to fix the issue.",
+      "required_tools": [
+        "assign_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Post a reply on social media thanking the passenger for the report and informing them that a crew has been dispatched.",
+      "expected_outcome": "The agent provides good customer service by closing the loop.",
+      "required_tools": [
+        "post_social_media_reply"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

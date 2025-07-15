@@ -1,0 +1,54 @@
+{
+  "scenario_id": "realestate-res-13232",
+  "title": "Update Seller on Market Activity",
+  "description": "A listing has been on the market for 30 days. The agent needs to provide the seller with a market activity update.",
+  "use_case": "Residential Sales",
+  "core_function": "Buyer & Seller Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather statistics for the listing: online views, number of showings, and any feedback received.",
+      "expected_outcome": "Agent compiles all relevant activity data for the property.",
+      "required_tools": [
+        "get_listing_analytics",
+        "get_showing_feedback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Research any new comparable listings or sales in the area since the property was listed.",
+      "expected_outcome": "Agent finds new market data that might affect the listing.",
+      "required_tools": [
+        "search_mls_comps"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report summarizing the activity and new market data, and recommend a strategy, such as a price reduction.",
+      "expected_outcome": "Agent creates a comprehensive report and provides a data-driven recommendation.",
+      "required_tools": [
+        "generate_activity_report",
+        "provide_strategic_advice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

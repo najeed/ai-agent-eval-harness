@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_product-sl-11774",
+  "title": "Handle Renewal with Price Increase",
+  "description": "A customer is up for renewal, but the price for their plan has increased since last year. The Account Manager needs to communicate this and secure the renewal.",
+  "use_case": "Sales & Account Management",
+  "core_function": "Account Renewals & Upselling",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare for the call by documenting the new features and value added to the product over the past year.",
+      "expected_outcome": "Agent builds a justification for the price increase.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the customer, communicate the new price, and explain the value that justifies it.",
+      "expected_outcome": "Agent proactively addresses the price change and reinforces the product's value.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the customer objects, offer a small, one-time discount to ease the transition to the new price.",
+      "expected_outcome": "Agent uses a discretionary discount to overcome the objection and secure the renewal.",
+      "required_tools": [
+        "apply_discount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

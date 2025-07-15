@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-sp-14396",
+  "title": "Handle a Supplier PO Discrepancy",
+  "description": "A shipment arrives from a supplier, but the items received do not match the purchase order.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Purchase Order Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The receiving worker notes the discrepancy during the receiving process.",
+      "expected_outcome": "The system flags a mismatch between the PO and the goods received.",
+      "required_tools": [
+        "verify_shipment_against_po"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Quarantine the incorrect items.",
+      "expected_outcome": "The incorrect items are set aside.",
+      "required_tools": [
+        "quarantine_inventory_item"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the supplier to report the discrepancy and determine a resolution.",
+      "expected_outcome": "Agent contacts the supplier, who agrees to ship the correct items and take back the incorrect ones.",
+      "required_tools": [
+        "contact_supplier_about_discrepancy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

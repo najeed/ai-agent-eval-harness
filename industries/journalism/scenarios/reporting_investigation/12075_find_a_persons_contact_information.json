@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ri-12075",
+  "title": "Find a Person's Contact Information",
+  "description": "A reporter needs to find a phone number or email for a private citizen they want to interview.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Source & Interview Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search public-facing social media profiles for contact information.",
+      "expected_outcome": "Agent checks platforms like LinkedIn, Twitter, etc.",
+      "required_tools": [
+        "search_social_media"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehensiveness_of_search",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a specialized people-search database (e.g., LexisNexis) to look for phone numbers and email addresses associated with the person's name and location.",
+      "expected_outcome": "Agent finds potential contact details from a private database.",
+      "required_tools": [
+        "people_search_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If direct contact information isn't found, search for relatives or known associates who might be able to pass on a message.",
+      "expected_outcome": "Agent identifies an alternative path to make contact.",
+      "required_tools": [
+        "people_search_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_solving_effectiveness",
+          "threshold": 0.8
+        }
+      ]
+    }
+  ]
+}

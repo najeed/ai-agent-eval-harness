@@ -1,0 +1,48 @@
+{
+  "scenario_id": "education-fs-11099",
+  "title": "Get a Class Roster",
+  "description": "A professor needs a printable roster for their class to take attendance on the first day.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "Curriculum Development & Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the faculty member and the specific course section.",
+      "expected_outcome": "Agent confirms the professor and course.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the faculty member to the faculty portal where they can view and print their class rosters.",
+      "expected_outcome": "Agent provides clear instructions for self-service.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain how to generate a version of the roster that includes student photos, if available.",
+      "expected_outcome": "Agent provides additional helpful information about the system's features.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-13285",
+  "title": "Coordinate Home Staging",
+  "description": "To maximize a home's appeal, an agent and seller decide to have it professionally staged. The agent must coordinate the process.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Provide the seller with a list of recommended home staging companies.",
+      "expected_outcome": "Agent sends a list of approved staging vendors.",
+      "required_tools": [
+        "get_vendor_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule a consultation between the chosen stager and the seller.",
+      "expected_outcome": "Agent successfully books the initial consultation.",
+      "required_tools": [
+        "coordinate_schedules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate the staging installation day, ensuring it happens before the photographer is scheduled.",
+      "expected_outcome": "Agent schedules the staging and photography in the correct sequence.",
+      "required_tools": [
+        "update_calendar_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

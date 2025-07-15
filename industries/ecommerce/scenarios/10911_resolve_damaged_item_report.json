@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ecommerce-css-10911",
+  "title": "Resolve Damaged Item Report",
+  "description": "A customer reports that an item in their order arrived broken. The agent must resolve the issue.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Issue Resolution",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's order and identify the damaged item.",
+      "expected_outcome": "Agent correctly identifies the order and the specific product.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apologize for the damage and offer the customer a choice between a full refund or a free replacement.",
+      "expected_outcome": "Agent provides effective customer service options.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The customer chooses a replacement. Process a new, no-charge order for the same item.",
+      "expected_outcome": "Agent successfully creates a replacement order.",
+      "required_tools": [
+        "create_replacement_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

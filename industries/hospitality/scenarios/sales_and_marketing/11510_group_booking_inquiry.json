@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hosp-sm-11510",
+  "title": "Group Booking Inquiry",
+  "description": "A corporate travel manager calls to inquire about booking a block of 20 rooms for a conference.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Group & Event Sales",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the requirements: dates, number of rooms, and any meeting space needs.",
+      "expected_outcome": "Agent collects all necessary details for the group inquiry.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check room and meeting space availability for the requested dates.",
+      "expected_outcome": "Agent confirms availability for the room block and a small conference room.",
+      "required_tools": [
+        "pms_check_availability",
+        "ems_check_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a proposal with a discounted group rate and send it to the travel manager.",
+      "expected_outcome": "Agent creates and sends a professional proposal.",
+      "required_tools": [
+        "ems_generate_proposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

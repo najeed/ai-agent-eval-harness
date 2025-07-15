@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-os-10642",
+  "title": "Coordinate a Critical Crane Lift",
+  "description": "A site manager must coordinate a critical lift of a large HVAC unit onto the roof, which requires temporarily closing a section of the site.",
+  "use_case": "On-Site Operations",
+  "core_function": "Task Execution & Coordination",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a lift plan, specifying the crane position, load weight, and exclusion zone.",
+      "expected_outcome": "A formal lift plan document is created.",
+      "required_tools": [
+        "create_lift_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notify all site personnel of the time and area of the upcoming crane lift and exclusion zone.",
+      "expected_outcome": "A site-wide safety notification is sent out.",
+      "required_tools": [
+        "send_site_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

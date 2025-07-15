@@ -1,0 +1,53 @@
+{
+  "scenario_id": "defense-c2-10851",
+  "title": "Cyber Attack ROE Compliance",
+  "description": "A cyber commander must verify that a proposed cyberattack against an adversary's infrastructure complies with the Law of Armed Conflict and specific ROE.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Rules of Engagement (ROE) Compliance",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Input the details of the proposed cyberattack, including the target (e.g., power grid) and the intended effect (e.g., temporary disruption).",
+      "expected_outcome": "Commander accurately enters the proposed cyber operation parameters.",
+      "required_tools": [
+        "input_cyper_op_parameters"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assess the potential for second-order effects on the civilian population (e.g., impact on hospitals).",
+      "expected_outcome": "Agent correctly identifies potential collateral effects that must be mitigated.",
+      "required_tools": [
+        "assess_collateral_effects_cyber"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_assessment_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Query the ROE database and confirm that the attack is permissible as it is temporary, reversible, and avoids protected civilian infrastructure.",
+      "expected_outcome": "Agent provides a clear 'go/no-go' recommendation based on a correct interpretation of the ROE.",
+      "required_tools": [
+        "query_roe_database",
+        "analyze_roe"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

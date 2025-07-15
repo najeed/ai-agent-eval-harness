@@ -1,0 +1,51 @@
+{
+  "scenario_id": "education-fs-11009",
+  "title": "Faculty Payroll Inquiry",
+  "description": "A new faculty member has a question about a deduction on their first paycheck.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "HR & Onboarding",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the faculty member and retrieve their latest pay stub.",
+      "expected_outcome": "Agent securely identifies the employee and accesses their payroll record.",
+      "required_tools": [
+        "get_employee_record",
+        "get_payroll_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the deduction in question and look up its definition in the HR system.",
+      "expected_outcome": "Agent finds the deduction is for their selected retirement plan contribution.",
+      "required_tools": [
+        "lookup_payroll_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the deduction to the faculty member by referencing the benefits they selected during onboarding.",
+      "expected_outcome": "Agent clearly explains the deduction and resolves the inquiry.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

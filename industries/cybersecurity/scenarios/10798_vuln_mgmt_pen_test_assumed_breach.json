@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-vm-10798",
+  "title": "Assumed Breach Penetration Test",
+  "description": "A penetration tester is given a standard user account and tasked with seeing if they can achieve a specific objective, simulating an attacker who has already stolen credentials.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Penetration Testing",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log in with the provided standard user credentials.",
+      "expected_outcome": "Tester successfully logs into the network.",
+      "required_tools": [
+        "login_with_credentials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "login_success",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enumerate internal network shares and applications accessible to the standard user.",
+      "expected_outcome": "Tester maps out what a standard user can see and access.",
+      "required_tools": [
+        "enumerate_network_shares",
+        "enumerate_applications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Discover a network share that is misconfigured to allow all authenticated users to read sensitive documents, achieving the test's objective of accessing sensitive data.",
+      "expected_outcome": "Tester finds a critical misconfiguration and demonstrates its impact.",
+      "required_tools": [
+        "access_misconfigured_share"
+      ],
+      "success_criteria": [
+        {
+          "metric": "objective_completion",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

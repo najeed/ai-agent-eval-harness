@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sc-12380",
+  "title": "Update a Customer Account",
+  "description": "A customer has a new shipping address and it needs to be updated in their account.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Account & Contract Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's account in the CRM.",
+      "expected_outcome": "Agent retrieves the correct customer account.",
+      "required_tools": [
+        "get_customer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the new address to the customer's list of shipping locations.",
+      "expected_outcome": "Agent accurately enters the new address details.",
+      "required_tools": [
+        "add_customer_address"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set the new address as the default shipping address for future orders.",
+      "expected_outcome": "Agent updates the customer's preferences to use the new address by default.",
+      "required_tools": [
+        "update_customer_defaults"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

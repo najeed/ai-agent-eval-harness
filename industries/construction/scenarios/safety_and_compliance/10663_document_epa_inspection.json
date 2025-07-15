@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-sc-10663",
+  "title": "Document an EPA Inspection",
+  "description": "An inspector from the Environmental Protection Agency (EPA) conducts a site visit. The safety manager must document the visit and any findings.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Documentation & Reporting",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new entry in the regulatory inspection log.",
+      "expected_outcome": "A new log entry is created.",
+      "required_tools": [
+        "create_inspection_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the agency as 'EPA', the inspector's name, and the purpose of the visit.",
+      "expected_outcome": "The basic details of the inspection are recorded.",
+      "required_tools": [
+        "update_inspection_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Record the outcome of the inspection as 'No Violations Found' and attach a scan of the inspector's field report.",
+      "expected_outcome": "The outcome is documented and supporting evidence is attached.",
+      "required_tools": [
+        "update_inspection_log_entry",
+        "attach_document_to_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

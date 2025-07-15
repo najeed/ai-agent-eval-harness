@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-omf-10977",
+  "title": "Proactively Handle a Late Shipment",
+  "description": "A fulfillment delay means an order will not ship on time. The agent must proactively notify the customer.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Order Processing",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify an order that has passed its expected ship date but has not yet been fulfilled.",
+      "expected_outcome": "System flags a late order.",
+      "required_tools": [
+        "get_late_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a proactive email to the customer, apologizing for the delay and providing a new estimated shipping date.",
+      "expected_outcome": "Agent sends a clear and apologetic email.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Offer a small discount on their next purchase as a goodwill gesture.",
+      "expected_outcome": "Agent generates and includes a discount code in the email.",
+      "required_tools": [
+        "generate_discount_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

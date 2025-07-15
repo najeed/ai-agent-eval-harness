@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11490",
+  "title": "Create a Work Package",
+  "description": "A construction manager is breaking down a large part of the project into a smaller, manageable work package to be issued to a field supervisor.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Planning & Scheduling",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the scope of the work package (e.g., 'Installation of underground piping on Area 5').",
+      "expected_outcome": "The manager clearly defines the boundaries of the work.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compile all the necessary documents for the package, including drawings, safety procedures, and quality forms.",
+      "expected_outcome": "Agent gathers all the required documentation.",
+      "required_tools": [
+        "get_drawing",
+        "get_safety_procedure",
+        "get_quality_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the work package in the system and issue it to the field supervisor.",
+      "expected_outcome": "Agent creates the formal work package and assigns it to the supervisor.",
+      "required_tools": [
+        "create_work_package",
+        "issue_work_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

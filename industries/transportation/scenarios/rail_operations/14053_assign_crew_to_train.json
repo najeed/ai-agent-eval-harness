@@ -1,0 +1,65 @@
+{
+  "scenario_id": "tr-ro-14053",
+  "title": "Assign a Crew to a Train",
+  "description": "A train is scheduled to depart. A crew dispatcher needs to assign a qualified and rested crew to operate it.",
+  "use_case": "Rail Operations",
+  "core_function": "Train & Crew Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the train that needs a crew assignment.",
+      "expected_outcome": "Dispatcher identifies the correct train.",
+      "required_tools": [
+        "get_unassigned_trains"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "View the list of available crews, showing their qualifications and rest status.",
+      "expected_outcome": "A list of rested and available crews is displayed.",
+      "required_tools": [
+        "get_available_crews"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select a crew that is qualified for the specific route and has sufficient rest.",
+      "expected_outcome": "Dispatcher makes a compliant crew choice.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Assign the selected crew to the train and notify them of their assignment.",
+      "expected_outcome": "The crew is assigned, and they receive a notification with the report time and location.",
+      "required_tools": [
+        "assign_crew_to_train",
+        "send_crew_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

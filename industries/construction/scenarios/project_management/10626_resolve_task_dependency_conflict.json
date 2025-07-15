@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-pm-10626",
+  "title": "Resolve Task Dependency Conflict",
+  "description": "The project schedule shows that 'painting' is scheduled to start before 'drywall finishing' is complete. This logical conflict must be resolved.",
+  "use_case": "Project Management",
+  "core_function": "Project Planning & Scheduling",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the project schedule for logical dependency errors.",
+      "expected_outcome": "Agent identifies a finish-to-start dependency violation between 'drywall finishing' and 'painting'.",
+      "required_tools": [
+        "analyze_schedule_logic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Adjust the start date of the 'painting' task to be the day after the 'drywall finishing' task is scheduled to complete.",
+      "expected_outcome": "The schedule is corrected to reflect the proper task sequence.",
+      "required_tools": [
+        "update_project_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

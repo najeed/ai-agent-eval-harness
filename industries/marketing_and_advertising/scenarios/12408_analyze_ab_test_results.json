@@ -1,0 +1,62 @@
+{
+  "scenario_id": "marketing-ar-12408",
+  "title": "Analyze A/B Test Results",
+  "description": "An analyst needs to determine the winner of a landing page A/B test based on conversion rate.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Data Analysis & Insights",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the performance data for the two landing page versions (A and B), including visitors and conversions for each.",
+      "expected_outcome": "Agent pulls the data from the A/B testing tool.",
+      "required_tools": [
+        "ab_testing_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the conversion rate for each version.",
+      "expected_outcome": "Agent correctly calculates the conversion rates (e.g., Version A: 3.5%, Version B: 4.2%).",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check for statistical significance to ensure the result is not due to random chance.",
+      "expected_outcome": "Agent confirms the result is statistically significant at a 95% confidence level.",
+      "required_tools": [
+        "statistical_significance_calculator"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Declare the winning version and recommend deploying it to 100% of traffic.",
+      "expected_outcome": "Agent provides a clear recommendation based on the data.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

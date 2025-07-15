@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hr-ta-11673",
+  "title": "Rescind a Job Offer",
+  "description": "A candidate's background check came back with disqualifying information, and HR needs to rescind the contingent job offer.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Interview & Selection",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the failed background check report from the vendor.",
+      "expected_outcome": "Recruiter receives the final report.",
+      "required_tools": [
+        "check_background_check_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Consult with the legal department to ensure the rescission process follows all applicable laws (e.g., FCRA).",
+      "expected_outcome": "Recruiter confirms the correct legal process with the legal team.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the candidate that due to the results of the background check, the offer of employment is being rescinded.",
+      "expected_outcome": "Recruiter professionally and legally communicates the decision to the candidate.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

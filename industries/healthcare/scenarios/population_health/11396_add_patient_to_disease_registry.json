@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-ph-11396",
+  "title": "Add Patient to Disease Registry",
+  "description": "A patient is newly diagnosed with diabetes. The system needs to automatically add them to the diabetes disease registry.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Health Risk Assessment",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A provider adds a new diagnosis of 'Type 2 Diabetes' to a patient's problem list.",
+      "expected_outcome": "The new diagnosis is saved in the EHR.",
+      "required_tools": [
+        "add_diagnosis_to_problem_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "A system rule automatically detects the new diagnosis.",
+      "expected_outcome": "The system's logic is triggered by the new data.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system automatically adds the patient to the 'Diabetes' disease registry for population health management.",
+      "expected_outcome": "The patient is now included in all diabetes-related quality reporting and outreach campaigns.",
+      "required_tools": [
+        "add_patient_to_registry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

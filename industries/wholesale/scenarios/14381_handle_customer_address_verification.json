@@ -1,0 +1,51 @@
+{
+  "scenario_id": "wholesale-cr-14381",
+  "title": "Handle Customer Address Verification",
+  "description": "A new order has a shipping address that cannot be verified by the shipping software. An agent must contact the customer to correct it.",
+  "use_case": "Customer & Retailer Support",
+  "core_function": "Shipment & Delivery Support",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system flags an order with an unverifiable address.",
+      "expected_outcome": "The order is placed on hold.",
+      "required_tools": [
+        "verify_address"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the customer to confirm the correct shipping address.",
+      "expected_outcome": "Agent calls the customer and gets the corrected address.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the address on the order and release it from hold.",
+      "expected_outcome": "Agent corrects the address, and the order proceeds to fulfillment.",
+      "required_tools": [
+        "update_order_address",
+        "release_order_hold"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

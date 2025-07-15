@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-cc-10698",
+  "title": "Assemble Project Closeout Package",
+  "description": "At the end of a project, a project engineer must assemble the final closeout package for the client, including all warranties and O&M manuals.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Contract Administration",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Request all final warranty documents from the major equipment suppliers (e.g., HVAC, roofing).",
+      "expected_outcome": "Warranty documents are requested from all relevant vendors.",
+      "required_tools": [
+        "request_vendor_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request all Operations & Maintenance (O&M) manuals from the subcontractors.",
+      "expected_outcome": "O&M manuals are requested.",
+      "required_tools": [
+        "request_vendor_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile all received warranties, O&M manuals, and as-built drawings into a single, organized closeout package.",
+      "expected_outcome": "A complete and organized closeout package is assembled.",
+      "required_tools": [
+        "compile_document_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

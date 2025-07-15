@@ -1,0 +1,51 @@
+{
+  "scenario_id": "tax-ind-13743",
+  "title": "Handle Rejected E-file (SSN Mismatch)",
+  "description": "A taxpayer's e-filed return was rejected because a dependent's Social Security Number and last name do not match IRS records.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Filing & E-Services",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the rejection code from the e-file system.",
+      "expected_outcome": "Agent finds the specific code indicating a dependent SSN/name mismatch.",
+      "required_tools": [
+        "get_efile_rejection_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the dependent's name and SSN with the taxpayer, checking against the Social Security card.",
+      "expected_outcome": "Agent discovers a typo was made when entering the dependent's last name.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Correct the information in the tax return and re-transmit the e-file.",
+      "expected_outcome": "Agent successfully corrects the error and resubmits the return.",
+      "required_tools": [
+        "correct_dependent_info",
+        "efile_federal_return"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

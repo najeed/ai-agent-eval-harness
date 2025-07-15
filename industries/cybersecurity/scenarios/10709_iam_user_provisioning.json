@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-iam-10709",
+  "title": "New Employee Onboarding",
+  "description": "An IAM analyst must provision a new account and access for a new employee starting in the marketing department.",
+  "use_case": "Identity & Access Management (IAM)",
+  "core_function": "User Provisioning & Deprovisioning",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the new hire request from HR, including the user's name, title, and department.",
+      "expected_outcome": "Analyst correctly processes the new hire ticket.",
+      "required_tools": [
+        "get_hr_new_hire_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_processing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new user account in Active Directory based on the corporate naming convention.",
+      "expected_outcome": "Analyst successfully creates the user account.",
+      "required_tools": [
+        "create_ad_user_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the user to the 'Marketing' security group, which automatically grants them access to the required folders and applications.",
+      "expected_outcome": "Analyst assigns the correct role-based access, following the principle of least privilege.",
+      "required_tools": [
+        "add_user_to_group"
+      ],
+      "success_criteria": [
+        {
+          "metric": "permissioning_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

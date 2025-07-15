@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-po-12309",
+  "title": "Reschedule Production due to Material Shortage",
+  "description": "A planner discovers a critical raw material will be delayed and needs to reschedule all affected work orders.",
+  "use_case": "Production & Operations",
+  "core_function": "Production Scheduling",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all scheduled work orders that require the delayed material.",
+      "expected_outcome": "Agent generates a list of all impacted work orders for the next week.",
+      "required_tools": [
+        "find_orders_by_material"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Place the affected work orders on hold.",
+      "expected_outcome": "Agent changes the status of all identified work orders to 'On Hold - Material'.",
+      "required_tools": [
+        "update_work_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Rerun the scheduling algorithm for the affected work centers to fill the new gaps with other jobs.",
+      "expected_outcome": "Agent successfully regenerates the production schedule to optimize throughput with available jobs.",
+      "required_tools": [
+        "regenerate_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

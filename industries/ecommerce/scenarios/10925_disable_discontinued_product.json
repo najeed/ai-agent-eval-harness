@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-osm-10925",
+  "title": "Disable a Discontinued Product",
+  "description": "A product has been discontinued by the manufacturer and needs to be removed from the storefront.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Product Information Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the product by its SKU.",
+      "expected_outcome": "Agent finds the correct product.",
+      "required_tools": [
+        "get_product_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Change the product's status to 'disabled' or 'archived' so it is no longer visible or searchable on the website.",
+      "expected_outcome": "Agent successfully hides the product from the storefront.",
+      "required_tools": [
+        "update_product_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Optionally, set up a redirect from the old product URL to a relevant category page.",
+      "expected_outcome": "Agent prevents customers from hitting a 404 error page.",
+      "required_tools": [
+        "create_url_redirect"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

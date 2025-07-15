@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-tc-13163",
+  "title": "Request Signature on Repair Addendum",
+  "description": "After negotiations, both parties have agreed on repairs. The TC must get the final repair addendum signed.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft the final repair addendum, listing the agreed-upon repair items.",
+      "expected_outcome": "A new addendum is created listing the specific repairs the seller has agreed to make.",
+      "required_tools": [
+        "draft_legal_addendum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the addendum to the buyer for their signature, then route it to the seller for their signature.",
+      "expected_outcome": "The document is sent through an e-signature platform in the correct signing order.",
+      "required_tools": [
+        "send_document_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once fully executed, upload the signed addendum to the transaction file.",
+      "expected_outcome": "The final, executed document is saved to the system.",
+      "required_tools": [
+        "upload_transaction_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

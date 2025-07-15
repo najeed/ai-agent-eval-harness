@@ -1,0 +1,48 @@
+{
+  "scenario_id": "heavy-industries-ast-11465",
+  "title": "Check Asset Maintenance History",
+  "description": "Before purchasing a used piece of heavy equipment, a manager wants to review its maintenance history.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Reliability Engineering",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the serial number of the equipment.",
+      "expected_outcome": "Agent has the unique identifier for the asset.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the manufacturer's database for all warranty and service work performed on that serial number.",
+      "expected_outcome": "Agent retrieves the full service history from the manufacturer.",
+      "required_tools": [
+        "get_oem_service_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the history for any major failures or recurring problems to inform the purchase decision.",
+      "expected_outcome": "Agent reviews the history and finds a recurring hydraulic issue, which is a key factor in the decision.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-fb-11546",
+  "title": "Handle a Walk-in Guest at a Busy Restaurant",
+  "description": "A party of four arrives at the hotel restaurant without a reservation on a busy night.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Restaurant Reservations",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the reservation system for the current wait time and any potential no-shows.",
+      "expected_outcome": "The host sees a 30-minute wait but also a large reservation that is 15 minutes late.",
+      "required_tools": [
+        "rms_check_waitlist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the walk-in party of the estimated wait time and offer to add them to the waitlist.",
+      "expected_outcome": "The host clearly communicates the wait time.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the party to the digital waitlist, which will send them a text message when their table is ready.",
+      "expected_outcome": "The party is successfully added to the waitlist.",
+      "required_tools": [
+        "rms_add_to_waitlist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

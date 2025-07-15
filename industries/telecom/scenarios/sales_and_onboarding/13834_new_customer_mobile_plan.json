@@ -1,0 +1,51 @@
+{
+  "scenario_id": "telecom-sl-13834",
+  "title": "New Customer Acquisition - Mobile Plan",
+  "description": "A potential new customer wants to sign up for a mobile plan.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "New Customer Acquisition",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check service coverage at the customer's primary address.",
+      "expected_outcome": "Agent confirms strong 5G coverage at the provided address.",
+      "required_tools": [
+        "check_service_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask qualifying questions about data usage and budget to recommend a suitable plan.",
+      "expected_outcome": "Agent gathers customer needs and recommends the 'Unlimited Plus' plan.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new customer account and process the order for the new plan and SIM card.",
+      "expected_outcome": "Agent successfully creates the account and places the order.",
+      "required_tools": [
+        "create_customer_account",
+        "process_new_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

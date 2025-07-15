@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-cf-11209",
+  "title": "Provide Documentation for External Audit",
+  "description": "An external auditor requests all invoices over $50,000 from the previous fiscal year.",
+  "use_case": "Corporate Finance",
+  "core_function": "Audit & Reporting",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query the accounting system for all vendor invoices meeting the specified criteria (>$50k, last fiscal year).",
+      "expected_outcome": "Agent runs the query and gets a list of 25 matching invoices.",
+      "required_tools": [
+        "query_invoices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compile the invoice documents into a single, secure package.",
+      "expected_outcome": "Agent gathers all 25 invoice PDFs into a zip file.",
+      "required_tools": [
+        "compile_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the secure package to the auditor via the approved secure portal.",
+      "expected_outcome": "Agent successfully uploads the document package to the audit portal.",
+      "required_tools": [
+        "upload_to_secure_portal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

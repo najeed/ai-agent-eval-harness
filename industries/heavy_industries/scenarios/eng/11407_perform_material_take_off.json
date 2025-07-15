@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-eng-11407",
+  "title": "Perform Material Take-Off (MTO)",
+  "description": "An engineer needs to perform a material take-off from a set of design drawings to create a bill of materials for procurement.",
+  "use_case": "Engineering & Design",
+  "core_function": "Technical Specification Management",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the approved-for-construction drawings for the structural steel package.",
+      "expected_outcome": "Agent retrieves the correct set of drawings.",
+      "required_tools": [
+        "get_drawings_by_package"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a software tool to scan the drawings and automatically identify and quantify all the steel beams, columns, and plates.",
+      "expected_outcome": "The MTO tool generates a list of all steel components and their quantities.",
+      "required_tools": [
+        "run_material_take_off"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Format the output into a bill of materials (BOM) and send it to the procurement team to source the steel.",
+      "expected_outcome": "Agent generates a formal BOM and transmits it to the procurement system.",
+      "required_tools": [
+        "create_bill_of_materials",
+        "send_bom_to_procurement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

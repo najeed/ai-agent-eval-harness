@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-er-11654",
+  "title": "Manage an Employee Suspension",
+  "description": "An employee is being placed on a 3-day paid suspension pending the outcome of an investigation.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Disciplinary Actions",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Inform the employee of the suspension and its terms.",
+      "expected_outcome": "HRBP and manager deliver the news to the employee.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the employee's status in the HRIS to 'Suspended' for the specified date range.",
+      "expected_outcome": "HRBP correctly updates the employee's status.",
+      "required_tools": [
+        "update_employee_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate with IT to temporarily disable the employee's system access during the suspension.",
+      "expected_outcome": "HRBP creates a ticket for IT to temporarily suspend access.",
+      "required_tools": [
+        "create_it_access_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

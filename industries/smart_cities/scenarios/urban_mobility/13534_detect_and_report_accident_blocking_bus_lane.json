@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-um-13534",
+  "title": "Detect and Report Accident Blocking Bus Lane",
+  "description": "An operator must identify a vehicle accident blocking a dedicated bus lane and alert transit operations.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "Traffic Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an alert from camera analytics identifying a 'stopped vehicle' in the 'Market Street' bus-only lane.",
+      "expected_outcome": "Agent acknowledges the automated traffic anomaly alert.",
+      "required_tools": [
+        "get_camera_analytics_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the incident with the live camera feed, confirming it is a two-car accident.",
+      "expected_outcome": "Agent visually confirms the cause of the blockage.",
+      "required_tools": [
+        "get_live_camera_feed"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the public transit operations center of the blockage so they can begin rerouting buses.",
+      "expected_outcome": "Agent sends a notification to the transit team.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

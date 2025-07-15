@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-sp-12420",
+  "title": "Forecast Campaign Reach",
+  "description": "A media planner needs to forecast the potential reach of a Facebook campaign with a given budget and target audience.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Media Planning",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the target audience and budget in Facebook's planning tool.",
+      "expected_outcome": "Agent inputs the correct targeting and budget parameters.",
+      "required_tools": [
+        "facebook_campaign_planner_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the tool to generate an estimated daily reach and impression forecast.",
+      "expected_outcome": "Agent retrieves the reach and impression estimates provided by the platform.",
+      "required_tools": [
+        "facebook_campaign_planner_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Incorporate this forecast into the overall media plan.",
+      "expected_outcome": "Agent adds the reach forecast to the media planning document.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

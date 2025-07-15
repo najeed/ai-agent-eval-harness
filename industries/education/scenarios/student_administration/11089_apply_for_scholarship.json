@@ -1,0 +1,48 @@
+{
+  "scenario_id": "education-sa-11089",
+  "title": "Apply for a University Scholarship",
+  "description": "A student wants to apply for a scholarship managed by the university's financial aid office.",
+  "use_case": "Student Administration",
+  "core_function": "Financial Aid & Billing",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Guide the student to the university's scholarship portal.",
+      "expected_outcome": "Agent provides the correct URL.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Help the student use the portal's filters to find scholarships for which they might be eligible (e.g., by major, GPA).",
+      "expected_outcome": "Agent assists the student in narrowing down the list of potential scholarships.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the application requirements for a specific scholarship, such as an essay or letters of recommendation.",
+      "expected_outcome": "Agent clearly communicates the application checklist.",
+      "required_tools": [
+        "get_scholarship_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

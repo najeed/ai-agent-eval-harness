@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-up-12787",
+  "title": "Perform Nodal Analysis",
+  "description": "A production engineer performs nodal analysis on a well to identify bottlenecks in the production system (from reservoir to separator) and find opportunities to increase flow.",
+  "use_case": "Upstream",
+  "core_function": "Production Operations",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all the required data for the well system, including reservoir pressure, tubing size, and flowline characteristics.",
+      "expected_outcome": "All input data for the nodal analysis model is collected.",
+      "required_tools": [
+        "get_well_and_reservoir_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Build the nodal analysis model, generating the Inflow Performance Relationship (IPR) curve for the reservoir and the Vertical Lift Performance (VLP) curve for the wellbore.",
+      "expected_outcome": "The IPR and VLP curves are generated.",
+      "required_tools": [
+        "run_nodal_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "model_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the intersection of the curves to find the well's operating point. Identify that the tubing size is the main restriction. Recommend changing to larger tubing.",
+      "expected_outcome": "The analysis identifies a production bottleneck, and a workover to upsize the tubing is recommended.",
+      "required_tools": [
+        "analyze_nodal_analysis_results",
+        "create_workover_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

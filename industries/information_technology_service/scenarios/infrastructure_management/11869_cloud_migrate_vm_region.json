@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_service-im-11869",
+  "title": "Cloud - Migrate VM to Different Region",
+  "description": "For latency reasons, a client wants to move an Azure VM from the 'East US' region to the 'West US' region.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Cloud Resource Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use Azure Site Recovery to replicate the VM from the source region to the destination region.",
+      "expected_outcome": "The VM is successfully replicated.",
+      "required_tools": [
+        "replicate_azure_vm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During a planned maintenance window, perform a failover of the VM to the new region.",
+      "expected_outcome": "The VM is now running in the 'West US' region.",
+      "required_tools": [
+        "execute_azure_vm_failover"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update any DNS records to point to the new IP address of the VM and decommission the old VM.",
+      "expected_outcome": "The migration is complete, and the old resources are cleaned up.",
+      "required_tools": [
+        "update_dns_record",
+        "decommission_azure_vm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

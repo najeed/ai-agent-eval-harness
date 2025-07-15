@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-13124",
+  "title": "Enforce Parking Violation",
+  "description": "A property inspection reveals a tenant is parking an unauthorized vehicle in a designated spot. The PM must enforce the rules.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the vehicle and the tenant associated with the parking spot.",
+      "expected_outcome": "Agent confirms the vehicle is not registered with the office and identifies the tenant leasing the spot.",
+      "required_tools": [
+        "get_tenant_vehicle_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Issue a formal parking violation notice and place it on the vehicle.",
+      "expected_outcome": "A standard violation sticker or notice is generated.",
+      "required_tools": [
+        "generate_violation_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the violation, including a photo, in the tenant's record in the property management software.",
+      "expected_outcome": "The violation is documented with evidence in the tenant's file.",
+      "required_tools": [
+        "log_lease_violation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

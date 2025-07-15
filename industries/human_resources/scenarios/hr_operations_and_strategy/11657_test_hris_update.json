@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-os-11657",
+  "title": "Test an HRIS Update",
+  "description": "The HRIS vendor has released a new patch. An admin needs to test it in the sandbox environment before deploying to production.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "HRIS Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Apply the new patch to the HRIS sandbox environment.",
+      "expected_outcome": "Admin successfully installs the patch in the test system.",
+      "required_tools": [
+        "apply_system_patch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute a standard test script that covers key HR processes (e.g., hire, terminate, promote).",
+      "expected_outcome": "Admin runs through the test cases to ensure core functionality is not broken.",
+      "required_tools": [
+        "run_test_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the test results and, if successful, schedule the patch for deployment to the production environment.",
+      "expected_outcome": "Admin confirms the patch is safe and schedules the production deployment for the next maintenance window.",
+      "required_tools": [
+        "schedule_production_deployment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-as-11358",
+  "title": "Receive Specimen in Lab",
+  "description": "A lab technician receives a blood sample from a patient and needs to log it into the Laboratory Information System (LIS).",
+  "use_case": "Ancillary Services",
+  "core_function": "Laboratory Services",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the barcode on the specimen container.",
+      "expected_outcome": "The LIS identifies the patient and the pending lab orders associated with the specimen.",
+      "required_tools": [
+        "scan_specimen_barcode"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Mark the specimen as 'Received' in the LIS.",
+      "expected_outcome": "The system timestamps the receipt of the sample in the lab.",
+      "required_tools": [
+        "update_specimen_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place the specimen in the appropriate rack for testing.",
+      "expected_outcome": "The technician physically stages the sample for the analyzer, and the LIS tracks its location.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

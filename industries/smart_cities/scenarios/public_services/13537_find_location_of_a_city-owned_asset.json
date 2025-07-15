@@ -1,0 +1,50 @@
+{
+  "scenario_id": "smartcities-pg-13537",
+  "title": "Find Location of a City-Owned Asset",
+  "description": "A public works employee needs to find the exact location of a specific piece of equipment (e.g., a mobile generator) for deployment.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Smart Asset Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a request for the location of 'Generator #12'.",
+      "expected_outcome": "Agent acknowledges the location request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the asset management system for the specified asset ID.",
+      "expected_outcome": "Agent retrieves the asset's details.",
+      "required_tools": [
+        "get_asset_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Retrieve the asset's last reported GPS location from its attached IoT tracker.",
+      "expected_outcome": "The system displays the generator's current location on a map.",
+      "required_tools": [
+        "get_iot_device_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

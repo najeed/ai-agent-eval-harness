@@ -1,0 +1,50 @@
+{
+  "scenario_id": "smartcities-um-13504",
+  "title": "Manage Parking for a Major Event",
+  "description": "A major concert is scheduled. An operator must update dynamic parking signs to guide attendees to available lots.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "Parking Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve real-time occupancy data for all parking garages near the 'City Arena'.",
+      "expected_outcome": "Agent gets a list of garages and their current fill percentages.",
+      "required_tools": [
+        "get_parking_occupancy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify that 'Garage C' is full and 'Garage D' has ample space.",
+      "expected_outcome": "Agent correctly assesses the parking situation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the dynamic message signs on the main approach roads to direct traffic towards 'Garage D'.",
+      "expected_outcome": "Agent successfully updates the text on the digital signs.",
+      "required_tools": [
+        "update_dynamic_message_sign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

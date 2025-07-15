@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-com-13264",
+  "title": "Evaluate Lease vs. Buy Decision",
+  "description": "A business client needs help deciding whether to lease a new warehouse or buy one. The agent must prepare a comparative analysis.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Investment & Sales Analysis",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the financial inputs for both scenarios: lease rates, purchase price, loan terms, operating expenses, tax assumptions.",
+      "expected_outcome": "Agent collects all necessary data for the analysis.",
+      "required_tools": [
+        "get_market_data",
+        "get_loan_terms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a 10-year cash flow projection for both the leasing and buying scenarios.",
+      "expected_outcome": "Agent generates detailed cash flow models for both options.",
+      "required_tools": [
+        "generate_cash_flow_projection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare a summary report comparing the net present value (NPV) and long-term implications of each option to help the client decide.",
+      "expected_outcome": "Agent delivers a clear, data-driven report to facilitate the client's decision.",
+      "required_tools": [
+        "generate_comparative_analysis_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-dev-13360",
+  "title": "Negotiate a Land Purchase Agreement",
+  "description": "A developer is negotiating the purchase of a parcel of land for a future project.",
+  "use_case": "Real Estate Development",
+  "core_function": "Site Acquisition & Feasibility",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft a purchase offer that includes a long due diligence period to allow time for feasibility studies and securing entitlements.",
+      "expected_outcome": "The offer includes favorable terms for the developer.",
+      "required_tools": [
+        "generate_purchase_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Negotiate with the landowner's agent on price and the length of the due diligence/entitlement period.",
+      "expected_outcome": "A purchase price and contingency period are agreed upon.",
+      "required_tools": [
+        "log_negotiation_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "negotiation_success",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Finalize and execute the purchase and sale agreement.",
+      "expected_outcome": "A binding contract to purchase the land is in place.",
+      "required_tools": [
+        "send_document_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

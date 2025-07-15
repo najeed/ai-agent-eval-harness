@@ -1,0 +1,50 @@
+{
+  "scenario_id": "journalism-no-12082",
+  "title": "Archive a Reporter's Notes",
+  "description": "After a major investigation is published, the reporter's notes and source documents must be securely archived for legal and historical purposes.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Archive Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all digital and physical notes, recordings, and documents related to the investigation.",
+      "expected_outcome": "All source material is collected.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "comprehensiveness_of_collection",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan any physical documents to create digital copies.",
+      "expected_outcome": "All materials are in a digital format.",
+      "required_tools": [
+        "scanner"
+      ],
+      "success_criteria": [
+        {
+          "metric": "technical_quality",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload all digital files to a secure, access-controlled archival system.",
+      "expected_outcome": "The sensitive source material is securely stored.",
+      "required_tools": [
+        "secure_archive_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-fb-11507",
+  "title": "Take Poolside Drink Order",
+  "description": "A server is taking a drink order from a guest at the pool.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Order Taking & Service",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Take the guest's order using a handheld POS device.",
+      "expected_outcome": "Agent enters the order for two margaritas into the POS system.",
+      "required_tools": [
+        "pos_create_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask for the guest's room number to charge the order to their folio.",
+      "expected_outcome": "Agent links the order to the guest's room folio.",
+      "required_tools": [
+        "pos_charge_to_room"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The order is automatically sent to the bar's printer for preparation.",
+      "expected_outcome": "The system correctly routes the order to the bar.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

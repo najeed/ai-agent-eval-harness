@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ret-so-13400",
+  "title": "Check Stock in Another Store",
+  "description": "A customer wants an item that is out of stock. An associate needs to check if it's available at a nearby store.",
+  "use_case": "Store Operations",
+  "core_function": "In-Store Customer Assistance",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the product the customer wants by scanning a similar item or looking it up by name.",
+      "expected_outcome": "The associate finds the correct product SKU.",
+      "required_tools": [
+        "lookup_product"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the inventory lookup tool to check stock levels for that item at other stores.",
+      "expected_outcome": "The tool shows that a nearby store has five units in stock.",
+      "required_tools": [
+        "check_multistore_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer of the nearby store's location and offer to call them to hold the item.",
+      "expected_outcome": "The associate provides a solution for the customer to get the out-of-stock item.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "wholesale-im-14407",
+  "title": "Handle an Inventory Recount Request",
+  "description": "After a cycle count reveals a discrepancy, a manager requests a blind recount of the specific item to verify.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Inventory Control",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the item that needs a recount.",
+      "expected_outcome": "Agent knows which item to recount.",
+      "required_tools": [
+        "get_inventory_discrepancy_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign a different warehouse worker to perform a blind recount (without seeing the system quantity).",
+      "expected_outcome": "A new count is initiated.",
+      "required_tools": [
+        "assign_blind_recount_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The second count matches the first physical count, confirming the system quantity is wrong.",
+      "expected_outcome": "The discrepancy is confirmed.",
+      "required_tools": [
+        "enter_physical_count"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Adjust the inventory record based on the confirmed physical count.",
+      "expected_outcome": "The system inventory is corrected.",
+      "required_tools": [
+        "adjust_inventory_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

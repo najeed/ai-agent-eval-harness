@@ -1,0 +1,51 @@
+{
+  "scenario_id": "real_estate-rs-13345",
+  "title": "Handle a Backup Offer",
+  "description": "A property is already under contract, but another buyer wants to submit a backup offer in case the first deal falls through.",
+  "use_case": "Residential Sales",
+  "core_function": "Offers & Negotiation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the concept of a backup offer to the new buyer and their agent.",
+      "expected_outcome": "The buyer understands their offer will only become primary if the current contract is terminated.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Prepare the offer using a backup offer addendum.",
+      "expected_outcome": "A legally sound backup offer is drafted.",
+      "required_tools": [
+        "generate_backup_offer_addendum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "document_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Present the backup offer to the seller for their signature and place it in the transaction file.",
+      "expected_outcome": "The backup offer is executed by the seller and properly filed.",
+      "required_tools": [
+        "send_document_for_signature",
+        "file_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

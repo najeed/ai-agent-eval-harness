@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-vo-13673",
+  "title": "Manage Post-Game Clean-up",
+  "description": "After a game, a venue manager needs to coordinate the cleaning of the entire stadium.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Facility & Turf Management",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a detailed post-game cleaning checklist for all areas of the stadium (seating bowl, concourses, restrooms, suites).",
+      "expected_outcome": "Agent produces a comprehensive checklist.",
+      "required_tools": [
+        "generate_cleaning_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign cleaning crews to different sections of the stadium.",
+      "expected_outcome": "Agent creates and distributes the work assignments.",
+      "required_tools": [
+        "assign_cleaning_crews"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the progress of the cleaning crews and log the completion of each task.",
+      "expected_outcome": "Agent tracks the cleanup progress in real time.",
+      "required_tools": [
+        "monitor_task_completion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

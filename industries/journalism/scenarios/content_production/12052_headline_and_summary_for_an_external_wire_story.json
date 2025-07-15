@@ -1,0 +1,66 @@
+{
+  "scenario_id": "journalism-cp-12052",
+  "title": "Headline and Summary for an External Wire Story",
+  "description": "An editor needs to take a story from a wire service (like AP or Reuters), write a new headline and summary for it, and publish it on their own site.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Copy Editing & Review",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Read the wire story to understand its key points.",
+      "expected_outcome": "Agent comprehends the story.",
+      "required_tools": [
+        "document_viewer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehension_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a new, original headline that fits the publication's tone and style.",
+      "expected_outcome": "A suitable headline is created.",
+      "required_tools": [
+        "draft_headlines"
+      ],
+      "success_criteria": [
+        {
+          "metric": "style_guide_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Write a brief summary to be used as a teaser on the homepage.",
+      "expected_outcome": "A concise and engaging summary is drafted.",
+      "required_tools": [
+        "draft_summaries"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Publish the wire story with the new headline and summary to the CMS.",
+      "expected_outcome": "The story is published on the site.",
+      "required_tools": [
+        "cms_interface"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

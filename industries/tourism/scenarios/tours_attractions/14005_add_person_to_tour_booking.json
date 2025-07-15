@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-ta-14005",
+  "title": "Add a Person to a Tour Booking",
+  "description": "A customer who booked a walking tour for two people wants to add a third person.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Activity Booking & Scheduling",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the original booking.",
+      "expected_outcome": "Agent locates the booking for two people.",
+      "required_tools": [
+        "get_activity_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if there is still availability on the tour to add one more person.",
+      "expected_outcome": "Agent confirms there is space for one more.",
+      "required_tools": [
+        "check_tour_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Modify the booking to include three people and collect payment for the additional person.",
+      "expected_outcome": "Agent successfully updates the booking and processes the payment.",
+      "required_tools": [
+        "modify_activity_booking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

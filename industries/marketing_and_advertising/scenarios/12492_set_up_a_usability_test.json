@@ -1,0 +1,50 @@
+{
+  "scenario_id": "marketing-cc-12492",
+  "title": "Set Up a Usability Test",
+  "description": "A UX researcher wants to run a remote usability test for a new website feature.",
+  "use_case": "Content & Creative Development",
+  "core_function": "User Experience (UX) & Conversion Rate Optimization (CRO)",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the tasks for the user to complete during the test (e.g., 'Find the contact page and send a message').",
+      "expected_outcome": "Agent creates a clear list of tasks.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Recruit 5-7 participants who match the target audience persona.",
+      "expected_outcome": "Agent finds suitable participants for the test.",
+      "required_tools": [
+        "user_testing_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up the test in a remote usability testing platform, including the tasks and any follow-up questions.",
+      "expected_outcome": "Agent successfully configures the test in the software.",
+      "required_tools": [
+        "user_testing_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

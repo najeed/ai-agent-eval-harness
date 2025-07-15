@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-ast-11413",
+  "title": "Order a Critical Spare Part",
+  "description": "A critical, long-lead-time spare part (e.g., a large motor) has been used from inventory. A planner must order a replacement to maintain readiness.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Inventory & Spares Management",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the system alert that the inventory for the critical spare has dropped to zero.",
+      "expected_outcome": "Agent identifies the specific part that needs to be reordered.",
+      "required_tools": [
+        "get_inventory_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the approved vendor and pricing for this specific part.",
+      "expected_outcome": "Agent finds the designated supplier and contract price.",
+      "required_tools": [
+        "get_vendor_info_for_part"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create and issue a purchase order to the vendor for one unit of the motor.",
+      "expected_outcome": "Agent successfully creates and sends the purchase order.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

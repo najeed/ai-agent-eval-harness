@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-12153",
+  "title": "Review and Approve a Vendor Invoice",
+  "description": "A managing partner needs to review and approve an invoice from an expert witness before it can be paid.",
+  "use_case": "Law Practice Management",
+  "core_function": "Billing & Timekeeping",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the expert witness invoice for compliance with the terms of their engagement letter.",
+      "expected_outcome": "Agent verifies that the hourly rates and expenses are correct.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Approve the invoice for payment in the firm's accounting system.",
+      "expected_outcome": "Agent marks the invoice as approved.",
+      "required_tools": [
+        "accounting_software_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Forward the approved invoice to the accounts payable department to process the payment.",
+      "expected_outcome": "The payment process is initiated.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

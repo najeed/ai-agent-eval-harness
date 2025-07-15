@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-cp-12497",
+  "title": "Script Breakdown and Scheduling",
+  "description": "An agent must analyze a film script to identify all necessary elements (props, cast, locations) and create a preliminary shooting schedule.",
+  "use_case": "Content Production & Management",
+  "core_function": "Pre-production & Development",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ingest the script and identify all mentioned characters, props, and locations.",
+      "expected_outcome": "Agent produces a structured list of all required production elements.",
+      "required_tools": [
+        "analyze_script_elements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cross-reference the identified cast and locations with an availability database.",
+      "expected_outcome": "Agent identifies potential scheduling conflicts for a lead actor and a key location.",
+      "required_tools": [
+        "check_cast_availability",
+        "check_location_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an optimized, conflict-free preliminary shooting schedule.",
+      "expected_outcome": "Agent produces a day-by-day schedule that accounts for all known constraints.",
+      "required_tools": [
+        "generate_shooting_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

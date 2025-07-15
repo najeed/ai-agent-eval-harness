@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_product-ps-11788",
+  "title": "Deliver On-site Workshop",
+  "description": "A consultant travels to a customer's office to deliver a two-day, on-site implementation workshop.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Custom Training Delivery",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Coordinate travel logistics and workshop requirements (e.g., meeting room, projector) with the customer.",
+      "expected_outcome": "All logistics are planned and confirmed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Facilitate the two-day workshop, guiding the customer's team through hands-on configuration and setup exercises.",
+      "expected_outcome": "The workshop is successfully delivered, and the customer's team is empowered.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a summary report of the workshop outcomes and next steps for the project.",
+      "expected_outcome": "The consultant provides a clear path forward for the customer.",
+      "required_tools": [
+        "create_project_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

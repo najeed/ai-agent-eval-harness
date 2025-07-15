@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-sd-11857",
+  "title": "Incident - Can't Access Shared Drive",
+  "description": "A user reports they can no longer access a specific shared folder on the network that they could access yesterday.",
+  "use_case": "Service Desk & End-User Support",
+  "core_function": "Incident & Request Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the user's group memberships in Active Directory.",
+      "expected_outcome": "Technician finds the user is a member of the correct security group for that drive.",
+      "required_tools": [
+        "get_ad_user_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the permissions (ACL) on the shared folder itself.",
+      "expected_outcome": "Technician finds that the required security group was accidentally removed from the folder's permissions.",
+      "required_tools": [
+        "get_folder_permissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Re-add the correct security group to the folder's permissions.",
+      "expected_outcome": "The user's access is restored.",
+      "required_tools": [
+        "set_folder_permissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

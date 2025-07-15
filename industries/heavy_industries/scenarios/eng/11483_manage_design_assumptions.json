@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-eng-11483",
+  "title": "Manage Design Assumptions",
+  "description": "During early design, an engineer has to make an assumption (e.g., about soil conditions) that must be documented and tracked for later verification.",
+  "use_case": "Engineering & Design",
+  "core_function": "Quality Engineering",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new entry in the project's design assumption log.",
+      "expected_outcome": "Agent successfully initiates a new log entry.",
+      "required_tools": [
+        "create_assumption_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Document the assumption, the reason for it, and what is required to verify it later (e.g., 'Geotechnical survey').",
+      "expected_outcome": "Agent clearly documents the assumption and its verification plan.",
+      "required_tools": [
+        "update_assumption_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the assumption to a responsible engineer to track and ensure it is verified at the appropriate time.",
+      "expected_outcome": "Agent assigns the assumption to the lead civil engineer.",
+      "required_tools": [
+        "assign_owner_to_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

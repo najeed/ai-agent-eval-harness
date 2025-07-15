@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11684",
+  "title": "Update the Company Org Chart",
+  "description": "Following a promotion, an HR admin needs to update the company's visual org chart.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "HRIS Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the employee whose reporting structure has changed.",
+      "expected_outcome": "Admin identifies the employee and their new manager.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ensure the reporting change has been made in the HRIS.",
+      "expected_outcome": "Admin confirms the 'reports to' field is correct in the HRIS.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Trigger a refresh of the org chart tool, which pulls data from the HRIS.",
+      "expected_outcome": "Admin initiates a data sync, and the visual org chart updates to reflect the new structure.",
+      "required_tools": [
+        "sync_org_chart_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "insurance-pc-11953",
+  "title": "Reinstate a Lapsed Policy",
+  "description": "A customer's auto policy was cancelled for non-payment, and they are calling a few days later to reinstate it.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Policy Administration",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their recently cancelled policy.",
+      "expected_outcome": "Agent finds the cancelled policy.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if the policy is eligible for reinstatement without a lapse in coverage.",
+      "expected_outcome": "Agent confirms the customer is within the reinstatement eligibility window.",
+      "required_tools": [
+        "check_reinstatement_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Take the back-payment for the overdue premium and process the reinstatement.",
+      "expected_outcome": "Agent takes the payment and successfully reinstates the policy with no lapse.",
+      "required_tools": [
+        "process_payment",
+        "reinstate_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

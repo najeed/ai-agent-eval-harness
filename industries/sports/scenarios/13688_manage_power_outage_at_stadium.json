@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-vo-13688",
+  "title": "Manage a Power Outage at the Stadium",
+  "description": "A power outage occurs at the stadium during a game, affecting the lights and scoreboards.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Venue Safety & Security",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The stadium's backup generators automatically kick in to power emergency lighting.",
+      "expected_outcome": "The backup power system activates as expected.",
+      "required_tools": [
+        "monitor_backup_power_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the local utility company to report the outage and get an estimated time for restoration.",
+      "expected_outcome": "Agent gets an ETR from the utility company.",
+      "required_tools": [
+        "contact_utility_company"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the battery-powered PA system to inform fans in the stadium of the situation.",
+      "expected_outcome": "Agent makes an announcement to the crowd.",
+      "required_tools": [
+        "activate_pa_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Coordinate with the league and officials to determine if the game can be safely continued or must be suspended.",
+      "expected_outcome": "A decision is made to suspend the game until power is fully restored.",
+      "required_tools": [
+        "coordinate_with_league_officials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

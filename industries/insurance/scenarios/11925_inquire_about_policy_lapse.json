@@ -1,0 +1,51 @@
+{
+  "scenario_id": "insurance-la-11925",
+  "title": "Inquire About a Lapsed Life Insurance Policy",
+  "description": "A customer calls after receiving a notice that their life insurance policy has lapsed due to non-payment.",
+  "use_case": "Life & Annuities",
+  "core_function": "Policy Servicing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and confirm the lapsed status of their policy.",
+      "expected_outcome": "Agent finds the policy and confirms it lapsed 15 days ago.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the policy's reinstatement provision, including the timeframe and requirements.",
+      "expected_outcome": "Agent explains the customer is within the 30-day grace period and can reinstate by paying the overdue premium.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the back-payment to reinstate the policy.",
+      "expected_outcome": "Agent takes the payment and successfully reinstates the policy.",
+      "required_tools": [
+        "process_payment",
+        "reinstate_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

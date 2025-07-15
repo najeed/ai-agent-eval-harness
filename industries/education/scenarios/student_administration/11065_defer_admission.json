@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-sa-11065",
+  "title": "Defer Admission",
+  "description": "An accepted student wishes to defer their enrollment for one year.",
+  "use_case": "Student Administration",
+  "core_function": "Admissions & Enrollment",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and confirm their accepted status.",
+      "expected_outcome": "Agent confirms the student is eligible to defer.",
+      "required_tools": [
+        "get_applicant_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the university's deferral policy, including any deadlines or deposits required.",
+      "expected_outcome": "Agent clearly communicates the policy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the student's status to 'Deferred' in the SIS for the next academic year.",
+      "expected_outcome": "Agent successfully processes the deferral request.",
+      "required_tools": [
+        "update_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

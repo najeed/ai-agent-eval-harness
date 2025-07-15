@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-13231",
+  "title": "Handle Tenant Move-In",
+  "description": "A new tenant is moving in today. The agent must ensure the unit is ready and the tenant has all necessary information.",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm that the first month's rent and security deposit have been paid in full.",
+      "expected_outcome": "Agent verifies the tenant's ledger is paid up.",
+      "required_tools": [
+        "get_tenant_ledger"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the unit has been cleaned and keys are ready for pickup.",
+      "expected_outcome": "Agent checks the status of the unit turnover.",
+      "required_tools": [
+        "check_unit_turnover_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a welcome email to the tenant with move-in instructions, including how to pick up keys and set up utilities.",
+      "expected_outcome": "Agent sends a comprehensive and helpful welcome email.",
+      "required_tools": [
+        "send_welcome_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-um-13569",
+  "title": "Analyze Bus Schedule Adherence",
+  "description": "The transit manager wants a report on which bus routes most frequently run late.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "Public Transit Operations",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve historical GPS and schedule data for all bus routes over the past month.",
+      "expected_outcome": "Agent successfully queries the transit database.",
+      "required_tools": [
+        "get_historical_transit_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to calculate the on-time performance percentage for each route.",
+      "expected_outcome": "The system calculates the performance metrics for every route.",
+      "required_tools": [
+        "analyze_schedule_adherence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report ranking the routes from worst to best on-time performance, highlighting the three worst-performing routes.",
+      "expected_outcome": "Agent creates a clear, actionable report for the transit manager.",
+      "required_tools": [
+        "generate_performance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

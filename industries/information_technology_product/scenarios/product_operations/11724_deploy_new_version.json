@@ -1,0 +1,66 @@
+{
+  "scenario_id": "information_technology_product-po-11724",
+  "title": "Deploy New Software Version",
+  "description": "A new version of the application has passed all tests and is ready to be deployed to production.",
+  "use_case": "Product Operations & Reliability (SRE)",
+  "core_function": "Deployment & Release Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that the build version in the CI/CD pipeline is the correct one and has a 'green' status.",
+      "expected_outcome": "Agent confirms the correct build is approved for deployment.",
+      "required_tools": [
+        "check_ci_cd_pipeline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate a canary deployment, releasing the new version to 5% of users.",
+      "expected_outcome": "Agent successfully starts the canary release process.",
+      "required_tools": [
+        "start_canary_deployment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor error rates and performance metrics for the canary group for 30 minutes.",
+      "expected_outcome": "Agent monitors dashboards and confirms no increase in errors.",
+      "required_tools": [
+        "view_performance_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Since the canary release is stable, proceed with a full rollout to all users.",
+      "expected_outcome": "Agent successfully promotes the release to 100% of traffic.",
+      "required_tools": [
+        "promote_canary_to_production"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

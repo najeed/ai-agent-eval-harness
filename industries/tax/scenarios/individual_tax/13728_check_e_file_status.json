@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-ind-13728",
+  "title": "Check E-file Status",
+  "description": "A taxpayer wants to know if their e-filed return has been accepted by the IRS.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Filing & E-Services",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the submission ID for the taxpayer's e-filed return.",
+      "expected_outcome": "Agent locates the unique identifier for the tax return submission.",
+      "required_tools": [
+        "get_efile_submission_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of the submission with the IRS e-file system.",
+      "expected_outcome": "Agent's query returns a status of 'Accepted'.",
+      "required_tools": [
+        "check_efile_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the taxpayer that their return has been successfully accepted by the IRS.",
+      "expected_outcome": "Agent clearly communicates the good news to the taxpayer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

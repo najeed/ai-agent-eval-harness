@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_product-sl-11714",
+  "title": "Proactive Renewal Outreach",
+  "description": "An Account Manager reaches out to a customer 90 days before their annual subscription is set to renew.",
+  "use_case": "Sales & Account Management",
+  "core_function": "Account Renewals & Upselling",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify a customer whose contract expires in 90 days.",
+      "expected_outcome": "Agent pulls a report of upcoming renewals and selects a customer.",
+      "required_tools": [
+        "get_upcoming_renewals"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the customer's usage metrics and support ticket history to prepare for the call.",
+      "expected_outcome": "Agent notes the customer has high adoption but has hit their API call limit several times.",
+      "required_tools": [
+        "view_customer_usage_logs",
+        "view_ticket_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the customer to schedule a 'business review' meeting to discuss their renewal and the possibility of upgrading to a higher tier with more API calls.",
+      "expected_outcome": "Agent successfully schedules a meeting to discuss renewal and a potential upsell.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

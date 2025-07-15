@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-ta-11602",
+  "title": "Initiate a Background Check",
+  "description": "After a candidate accepts a contingent offer, HR must initiate a pre-employment background check.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Interview & Selection",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the candidate who has accepted the offer.",
+      "expected_outcome": "Agent confirms the candidate's status is 'Offer Accepted'.",
+      "required_tools": [
+        "get_candidate_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the candidate the consent form and link to the background check vendor's portal.",
+      "expected_outcome": "Agent successfully sends the required forms and links to the candidate.",
+      "required_tools": [
+        "send_background_check_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor the vendor's portal for the completion of the background check.",
+      "expected_outcome": "Agent checks the portal and sees the status is 'In Progress'.",
+      "required_tools": [
+        "check_background_check_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

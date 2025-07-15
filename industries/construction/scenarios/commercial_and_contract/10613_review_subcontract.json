@@ -1,0 +1,39 @@
+{
+  "scenario_id": "construction-cc-10613",
+  "title": "Review a New Subcontract Agreement",
+  "description": "A contract manager needs to review a new subcontract for the HVAC installer to ensure it includes all required clauses.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Contract Administration",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the subcontract document and compare its clauses against the company's standard subcontract template.",
+      "expected_outcome": "The agent scans the document and identifies that the 'Indemnification' clause is missing.",
+      "required_tools": [
+        "scan_document",
+        "compare_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Flag the missing clause and send a revision request to the subcontractor.",
+      "expected_outcome": "A notification is sent to the subcontractor requesting the addition of the missing clause.",
+      "required_tools": [
+        "send_contract_revision_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

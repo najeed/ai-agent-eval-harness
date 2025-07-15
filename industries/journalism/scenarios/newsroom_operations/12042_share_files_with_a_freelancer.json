@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-no-12042",
+  "title": "Share Files with a Freelancer",
+  "description": "An editor needs to securely share background documents and interview transcripts with a freelance reporter who is not on the internal network.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Internal Collaboration",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a secure, password-protected folder on a cloud sharing service.",
+      "expected_outcome": "A secure folder is created.",
+      "required_tools": [
+        "create_secure_folder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the relevant documents to the folder.",
+      "expected_outcome": "The files are uploaded.",
+      "required_tools": [
+        "upload_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Share the link to the folder with the freelancer and send the password in a separate, secure message (e.g., encrypted text).",
+      "expected_outcome": "The freelancer receives secure access to the necessary files.",
+      "required_tools": [
+        "share_secure_link",
+        "send_secure_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

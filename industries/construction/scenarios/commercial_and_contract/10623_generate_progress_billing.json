@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-cc-10623",
+  "title": "Generate Monthly Progress Billing",
+  "description": "The project accountant needs to prepare the monthly progress billing (pay application) to send to the client.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Billing & Invoicing",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the schedule of values and the percentage of completion for each line item as of the end of the month.",
+      "expected_outcome": "Agent retrieves the necessary data for the pay application.",
+      "required_tools": [
+        "get_schedule_of_values",
+        "get_percent_complete"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total amount earned for the period, apply the 10% retainage, and generate the pay application document.",
+      "expected_outcome": "A correctly calculated and formatted pay application is generated.",
+      "required_tools": [
+        "generate_pay_application"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the pay application to the client.",
+      "expected_outcome": "The pay application is sent to the client for review and payment.",
+      "required_tools": [
+        "submit_billing_to_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

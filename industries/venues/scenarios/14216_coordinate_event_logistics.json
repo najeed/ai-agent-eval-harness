@@ -1,0 +1,53 @@
+{
+  "scenario_id": "venues-em-14216",
+  "title": "Coordinate Event Logistics with Client",
+  "description": "An event manager is holding a final planning meeting with a client for their upcoming wedding reception.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Event Planning & Coordination",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Finalize the room layout, including table arrangement and dance floor location.",
+      "expected_outcome": "Agent updates the event's floor plan in the planning software.",
+      "required_tools": [
+        "update_floor_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm the final guest count and update the catering order.",
+      "expected_outcome": "Agent updates the final guest count and sends the revised order to the catering partner.",
+      "required_tools": [
+        "update_guest_count",
+        "send_catering_update"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a detailed event timeline, including vendor arrival times, start time, and end time.",
+      "expected_outcome": "Agent creates and shares a comprehensive timeline with the client and all vendors.",
+      "required_tools": [
+        "create_event_timeline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

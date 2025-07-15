@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-cc-10673",
+  "title": "Send Formal Notice of Delay",
+  "description": "Due to a permitting delay caused by the city, the PM must send a formal notice to the client to protect the company's contractual rights regarding the schedule.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Contract Administration",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the prime contract to review the notification requirements for delays.",
+      "expected_outcome": "Agent finds the contract requires written notice within 10 days of a delay event.",
+      "required_tools": [
+        "get_contract_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a formal 'Notice of Delay' letter to the client, citing the specific cause (city permit) and its impact.",
+      "expected_outcome": "A professional, formal notice is drafted.",
+      "required_tools": [
+        "draft_formal_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the notice to the client and log it in the project's correspondence log.",
+      "expected_outcome": "The notice is sent and a record is kept.",
+      "required_tools": [
+        "send_client_communication",
+        "create_communication_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

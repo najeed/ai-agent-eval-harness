@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-bo-11537",
+  "title": "Investigate Security Camera Footage",
+  "description": "A guest reports that their car was scratched in the hotel parking lot. Security needs to review camera footage.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Security & Emergency Response",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the time frame and location where the guest's car was parked.",
+      "expected_outcome": "The agent determines the car was in Lot B between 2 PM and 5 PM.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the security camera system and retrieve the footage from the camera covering that area for the specified time.",
+      "expected_outcome": "The agent successfully pulls the relevant video footage.",
+      "required_tools": [
+        "sec_get_camera_footage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the footage to see if the incident was captured.",
+      "expected_outcome": "The footage is reviewed, but unfortunately, the incident was not clearly visible. The agent logs the finding.",
+      "required_tools": [
+        "log_security_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

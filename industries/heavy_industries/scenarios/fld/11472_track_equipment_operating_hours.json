@@ -1,0 +1,50 @@
+{
+  "scenario_id": "heavy-industries-fld-11472",
+  "title": "Track Equipment Operating Hours",
+  "description": "A supervisor needs to log the daily operating hours for a piece of heavy equipment (e.g., a bulldozer) for maintenance tracking.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Site Management & Logistics",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the piece of equipment in the asset management system.",
+      "expected_outcome": "Agent finds the correct record for the bulldozer.",
+      "required_tools": [
+        "find_asset_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Read the hour meter on the machine at the end of the day.",
+      "expected_outcome": "The supervisor gets the current operating hours from the machine.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the new hour meter reading into the asset's record.",
+      "expected_outcome": "Agent successfully updates the operating hours, which will be used to trigger preventative maintenance.",
+      "required_tools": [
+        "update_asset_operating_hours"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

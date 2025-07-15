@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-lm-13635",
+  "title": "Investigate Team for Misconduct",
+  "description": "A team is accused of violating league rules by holding unauthorized practice sessions. The league must investigate.",
+  "use_case": "League & Competition Management",
+  "core_function": "Disciplinary Actions",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather any evidence related to the accusation, such as witness statements or social media posts.",
+      "expected_outcome": "Agent compiles all available evidence.",
+      "required_tools": [
+        "gather_investigative_evidence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Formally request a statement from the accused team's management.",
+      "expected_outcome": "Agent sends a formal request for information to the team.",
+      "required_tools": [
+        "send_formal_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the evidence and the team's statement to determine if a violation occurred.",
+      "expected_outcome": "Agent concludes that the team did violate the rules.",
+      "required_tools": [
+        "review_investigative_case_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Issue a penalty, such as a fine or a loss of draft picks, to the team.",
+      "expected_outcome": "Agent issues a fine to the team for the violation.",
+      "required_tools": [
+        "issue_team_penalty"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

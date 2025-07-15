@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-ri-12032",
+  "title": "Live-Tweet a Sporting Event",
+  "description": "A sports reporter is covering a championship game and needs to provide real-time updates and commentary on Twitter.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Field Reporting & Event Coverage",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "During the game, post immediate updates of key plays, scores, and incidents.",
+      "expected_outcome": "The Twitter feed provides a real-time account of the game.",
+      "required_tools": [
+        "social_media_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "timeliness_of_updates",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Intersperse the play-by-play updates with insightful commentary, statistics, and analysis.",
+      "expected_outcome": "The feed offers more than just scores, adding value for the audience.",
+      "required_tools": [
+        "social_media_client",
+        "get_sports_statistics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "quality_of_commentary",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Engage with followers by replying to their questions and retweeting interesting observations.",
+      "expected_outcome": "The reporter builds a community around their live coverage.",
+      "required_tools": [
+        "social_media_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "engagement_rate",
+          "threshold": 0.5
+        }
+      ]
+    }
+  ]
+}

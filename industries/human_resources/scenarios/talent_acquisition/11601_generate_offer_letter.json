@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-ta-11601",
+  "title": "Generate an Offer Letter",
+  "description": "A recruiter needs to generate an official offer letter for a successful candidate.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Interview & Selection",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the approved offer details (salary, start date, title) from the ATS.",
+      "expected_outcome": "Recruiter confirms all final offer terms.",
+      "required_tools": [
+        "get_approved_offer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the offer letter using the company's standard template and the approved details.",
+      "expected_outcome": "Recruiter successfully generates a populated offer letter document.",
+      "required_tools": [
+        "generate_document_from_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the offer letter to the candidate for electronic signature.",
+      "expected_outcome": "Recruiter sends the letter via an e-signature platform.",
+      "required_tools": [
+        "send_for_e_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hr-os-11613",
+  "title": "Generate a Headcount Report",
+  "description": "A department head needs a report of their current headcount, broken down by job title.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Reporting & Analytics",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the reporting module of the HRIS.",
+      "expected_outcome": "Analyst successfully navigates to the reporting tool.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the standard 'Headcount by Department' report, filtering for the specific department.",
+      "expected_outcome": "Analyst successfully generates the report with the correct data.",
+      "required_tools": [
+        "run_hris_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Export the report to Excel and send it to the department head.",
+      "expected_outcome": "Analyst successfully exports and emails the report.",
+      "required_tools": [
+        "export_report",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

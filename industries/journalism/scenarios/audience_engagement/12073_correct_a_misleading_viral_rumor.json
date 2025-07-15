@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-ae-12073",
+  "title": "Correct a Misleading Viral Rumor",
+  "description": "A false rumor about a public figure is spreading rapidly on social media. A journalist must quickly publish a story to debunk it.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Community Interaction",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather evidence that definitively proves the rumor is false (e.g., official statements, documents, primary source confirmation).",
+      "expected_outcome": "Irrefutable evidence is collected.",
+      "required_tools": [
+        "search_web",
+        "check_official_sources"
+      ],
+      "success_criteria": [
+        {
+          "metric": "quality_of_evidence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a clear, concise article with a direct headline like 'No, [Public Figure] Did Not Do [False Claim]'.",
+      "expected_outcome": "A direct and unambiguous debunking article is written.",
+      "required_tools": [
+        "draft_article"
+      ],
+      "success_criteria": [
+        {
+          "metric": "clarity_of_headline",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Share the article widely on all social media platforms, especially in replies to influential accounts that are spreading the misinformation.",
+      "expected_outcome": "The correction is proactively distributed to counter the rumor's spread.",
+      "required_tools": [
+        "social_media_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "distribution_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

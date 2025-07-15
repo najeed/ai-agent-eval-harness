@@ -1,0 +1,50 @@
+{
+  "scenario_id": "lw-om-12213",
+  "title": "Generate a Bill of Lading (BOL)",
+  "description": "A shipment is ready to be picked up by a carrier. The shipping clerk must generate the legal Bill of Lading document.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Reporting & Documentation",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the shipment that is ready for pickup.",
+      "expected_outcome": "Agent correctly identifies the shipment record in the TMS.",
+      "required_tools": [
+        "get_shipment_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify all details, including addresses, piece count, weight, and freight class.",
+      "expected_outcome": "Agent confirms all data required for the BOL is accurate.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_validation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the BOL document in the standard format.",
+      "expected_outcome": "Agent successfully generates a printable, legally compliant BOL document.",
+      "required_tools": [
+        "generate_bill_of_lading"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-pg-13502",
+  "title": "Issue an Air Quality Alert",
+  "description": "Environmental sensors report a spike in airborne pollutants. An operator must issue a public health alert.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Public Information & Alerting",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an alert that PM2.5 levels have exceeded the 'Unhealthy' threshold in the downtown area.",
+      "expected_outcome": "Agent acknowledges the environmental alert.",
+      "required_tools": [
+        "get_environmental_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a public health advisory message based on pre-approved templates.",
+      "expected_outcome": "Agent prepares a clear message advising sensitive groups to remain indoors.",
+      "required_tools": [
+        "get_alert_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Broadcast the alert via the city's mobile app, social media channels, and digital billboards.",
+      "expected_outcome": "Agent successfully disseminates the alert through multiple channels.",
+      "required_tools": [
+        "publish_public_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

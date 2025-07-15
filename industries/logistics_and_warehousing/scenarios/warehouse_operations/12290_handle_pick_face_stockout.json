@@ -1,0 +1,64 @@
+{
+  "scenario_id": "lw-wo-12290",
+  "title": "Handle a Pick Face Stockout",
+  "description": "A picker is directed to a location, but finds it empty. They must report the stockout so it can be resolved.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Outbound & Shipping",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The picker arrives at the location and sees it is empty. They use their scanner to report a 'Stockout'.",
+      "expected_outcome": "The picker successfully reports the issue for their current task.",
+      "required_tools": [
+        "report_picking_exception"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system puts the current picking task on hold.",
+      "expected_outcome": "The order is paused pending resolution.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system automatically creates a high-priority cycle count task for the empty location to verify the stockout.",
+      "expected_outcome": "An inventory controller is dispatched to verify the empty location.",
+      "required_tools": [
+        "create_cycle_count_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Simultaneously, the system finds an alternate location (bulk storage) with the same item and directs the original picker there to complete the pick.",
+      "expected_outcome": "The picker is rerouted to a new location to get the item, allowing the order to be fulfilled.",
+      "required_tools": [
+        "find_alternate_pick_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

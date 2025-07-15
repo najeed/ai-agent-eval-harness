@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-bo-11591",
+  "title": "Create New Employee Profile",
+  "description": "A new front desk agent has been hired and needs to be set up in the HR and property management systems.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Staff Scheduling",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The HR manager creates a new employee profile in the main HRIS system with their personal details.",
+      "expected_outcome": "A new employee record is created.",
+      "required_tools": [
+        "hris_create_employee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "A user account is created for the new employee in the PMS with the appropriate permissions for a front desk agent.",
+      "expected_outcome": "A PMS user account is created with the correct access level.",
+      "required_tools": [
+        "pms_create_user_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The employee is added to the scheduling software so they can be assigned shifts.",
+      "expected_outcome": "The employee is now available to be scheduled for work.",
+      "required_tools": [
+        "ss_add_employee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

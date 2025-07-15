@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-13248",
+  "title": "Manage Vendor Insurance Compliance",
+  "description": "A property management company must ensure all approved vendors have current liability insurance on file.",
+  "use_case": "Property Management",
+  "core_function": "Maintenance & Operations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all vendors whose insurance certificates are set to expire in the next 30 days.",
+      "expected_outcome": "Agent generates a list of vendors with expiring insurance.",
+      "required_tools": [
+        "get_vendor_compliance_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send an automated email request to each vendor for their updated certificate of insurance.",
+      "expected_outcome": "Agent successfully sends out reminder emails.",
+      "required_tools": [
+        "send_vendor_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive the new certificates, update the expiration date in the vendor's file, and flag any non-responsive vendors.",
+      "expected_outcome": "Agent updates compliant vendor files and flags non-compliant ones for follow-up.",
+      "required_tools": [
+        "update_vendor_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

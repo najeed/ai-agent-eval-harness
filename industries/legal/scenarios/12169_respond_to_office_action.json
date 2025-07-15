@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-12169",
+  "title": "Respond to a Trademark Office Action",
+  "description": "The USPTO has issued an Office Action refusing a trademark application. An IP attorney needs to draft a response.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Intellectual Property (IP) Management",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the Office Action to understand the legal basis for the refusal (e.g., 'likelihood of confusion' with a prior mark).",
+      "expected_outcome": "Agent understands the examiner's argument.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Research case law and prepare legal arguments to overcome the refusal.",
+      "expected_outcome": "Agent finds legal support for why the marks are not confusingly similar.",
+      "required_tools": [
+        "legal_research_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft a formal response to the Office Action, presenting the legal arguments and any supporting evidence.",
+      "expected_outcome": "Agent produces a persuasive response to send to the USPTO.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

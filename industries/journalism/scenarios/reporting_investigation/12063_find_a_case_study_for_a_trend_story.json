@@ -1,0 +1,50 @@
+{
+  "scenario_id": "journalism-ri-12063",
+  "title": "Find a Case Study for a Trend Story",
+  "description": "A reporter is writing about a national economic trend (e.g., inflation) and needs to find a local person or family to serve as a case study.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Source & Interview Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Post a call-out on social media and community forums asking for people willing to speak about their experience with the trend.",
+      "expected_outcome": "Agent generates a pool of potential sources.",
+      "required_tools": [
+        "social_media_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "source_generation_effectiveness",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Vet the responses, looking for articulate individuals whose stories are representative of the broader trend.",
+      "expected_outcome": "Agent selects the most suitable candidate for the case study.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the selected person to schedule an in-depth interview.",
+      "expected_outcome": "An interview is scheduled.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ecommerce-mce-10991",
+  "title": "Calculate Customer Lifetime Value (CLV)",
+  "description": "A marketing analyst wants to calculate the lifetime value of a specific customer.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Customer Analytics",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all past orders for a given customer.",
+      "expected_outcome": "Agent gets a complete list of the customer's orders.",
+      "required_tools": [
+        "get_order_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Sum the total value of all their orders.",
+      "expected_outcome": "Agent correctly calculates the total revenue from the customer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Optionally, apply a formula to estimate future value based on purchase frequency and average order value.",
+      "expected_outcome": "Agent provides an estimated Customer Lifetime Value.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

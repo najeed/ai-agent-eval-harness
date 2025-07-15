@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-css-10998",
+  "title": "Handle Customer Data Privacy Request (GDPR/CCPA)",
+  "description": "A customer submits a formal request to see all the personal data the company has stored about them.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Account Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the identity of the person making the request to ensure they are the actual customer.",
+      "expected_outcome": "Agent follows a strict identity verification process.",
+      "required_tools": [
+        "verify_customer_identity_enhanced"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query all relevant databases (CRM, order system, marketing platform) for any data linked to the customer's identity.",
+      "expected_outcome": "Agent gathers all personal data fragments from various systems.",
+      "required_tools": [
+        "query_all_customer_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the data into a human-readable report and send it securely to the customer.",
+      "expected_outcome": "Agent generates and delivers the data portability report.",
+      "required_tools": [
+        "generate_privacy_report",
+        "send_secure_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

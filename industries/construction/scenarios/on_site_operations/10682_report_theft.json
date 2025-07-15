@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-os-10682",
+  "title": "Report Theft of Materials",
+  "description": "A foreman arrives on site in the morning and discovers a pallet of copper wire has been stolen overnight.",
+  "use_case": "On-Site Operations",
+  "core_function": "Daily Operations & Reporting",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the theft in the daily site log, including the type and estimated quantity of stolen material.",
+      "expected_outcome": "The theft is documented in the daily log.",
+      "required_tools": [
+        "create_daily_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "File a police report with the local police department regarding the theft.",
+      "expected_outcome": "A police report is filed and a report number is obtained.",
+      "required_tools": [
+        "file_police_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the project manager and the insurance company of the theft.",
+      "expected_outcome": "All relevant internal and external stakeholders are notified.",
+      "required_tools": [
+        "send_stakeholder_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

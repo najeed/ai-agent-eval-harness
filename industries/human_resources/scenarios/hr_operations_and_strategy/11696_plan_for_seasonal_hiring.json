@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11696",
+  "title": "Plan for Seasonal Hiring",
+  "description": "A retail company needs to plan its seasonal hiring for the upcoming holiday season.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Workforce Planning",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze historical sales and staffing data from previous holiday seasons to forecast hiring needs.",
+      "expected_outcome": "The analyst forecasts a need for 200 seasonal employees.",
+      "required_tools": [
+        "get_historical_staffing_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Develop a hiring plan, including a timeline, sourcing strategy, and budget.",
+      "expected_outcome": "The workforce planning team creates a comprehensive plan for seasonal hiring.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "content_creation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Present the plan to leadership for approval.",
+      "expected_outcome": "The team gets approval from leadership to execute the hiring plan.",
+      "required_tools": [
+        "create_presentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

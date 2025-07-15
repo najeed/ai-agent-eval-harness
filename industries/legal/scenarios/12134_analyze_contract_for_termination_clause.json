@@ -1,0 +1,62 @@
+{
+  "scenario_id": "legal-ct-12134",
+  "title": "Analyze Contract for Termination Clause",
+  "description": "A client wants to terminate a contract, and an attorney needs to analyze the agreement to understand their rights and any penalties.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Contract Lifecycle Management",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate and review the 'Term and Termination' section of the contract.",
+      "expected_outcome": "Agent finds the relevant section.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the conditions under which the client can terminate the contract (e.g., 'termination for convenience', 'termination for cause').",
+      "expected_outcome": "Agent identifies the applicable termination rights.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Determine any notice periods or early termination fees that apply.",
+      "expected_outcome": "Agent finds that a 60-day written notice is required.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Draft a memo to the client summarizing their termination rights and obligations under the contract.",
+      "expected_outcome": "Agent provides clear legal advice to the client.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

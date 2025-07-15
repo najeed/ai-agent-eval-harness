@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-so-10781",
+  "title": "Impossible Travel Alert Triage",
+  "description": "A SOC analyst receives an alert that a user has logged in from India and Brazil within 5 minutes. The analyst must triage this 'impossible travel' alert.",
+  "use_case": "Security Operations (SecOps)",
+  "core_function": "Incident Detection & Triage",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the alert and confirm the user account and the two geographic locations.",
+      "expected_outcome": "Analyst retrieves the core details of the alert.",
+      "required_tools": [
+        "get_iam_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if the user is using a VPN, which could explain the anomalous locations.",
+      "expected_outcome": "Analyst checks VPN logs and finds no active session for the user.",
+      "required_tools": [
+        "query_vpn_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "investigation_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Conclude that this is a likely account compromise and escalate to the incident response team to reset the user's password and terminate sessions.",
+      "expected_outcome": "Analyst makes a correct triage decision and escalates for immediate containment.",
+      "required_tools": [
+        "create_incident_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "triage_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

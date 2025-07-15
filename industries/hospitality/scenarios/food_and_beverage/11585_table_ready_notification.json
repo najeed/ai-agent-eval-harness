@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-fb-11585",
+  "title": "Notify Guest Their Table is Ready",
+  "description": "A table becomes available for a party on the restaurant's waitlist.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Restaurant Reservations",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The host marks the table as 'Ready' in the reservation system.",
+      "expected_outcome": "The table status is updated.",
+      "required_tools": [
+        "rms_update_table_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically sends an SMS notification to the next party on the waitlist.",
+      "expected_outcome": "The guest receives a text message that their table is ready.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The host removes the party from the waitlist and assigns them to the table.",
+      "expected_outcome": "The party is seated, and the system is updated.",
+      "required_tools": [
+        "rms_seat_party"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

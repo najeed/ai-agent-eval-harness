@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-ta-11617",
+  "title": "Source Passive Candidates",
+  "description": "A recruiter is sourcing passive candidates for a hard-to-fill 'Cybersecurity Architect' role using LinkedIn Recruiter.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Sourcing & Screening",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Build a Boolean search string to identify candidates with the required skills and experience.",
+      "expected_outcome": "Recruiter creates an effective search string (e.g., '\"cybersecurity architect\" AND (AWS OR Azure) AND CISSP').",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "content_creation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute the search on a professional networking site and review the profiles of the top results.",
+      "expected_outcome": "Recruiter identifies a list of 20 promising candidates.",
+      "required_tools": [
+        "search_linkedin_recruiter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send personalized outreach messages to the top candidates.",
+      "expected_outcome": "Recruiter sends InMail messages to the candidates, introducing the role and company.",
+      "required_tools": [
+        "send_outreach_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

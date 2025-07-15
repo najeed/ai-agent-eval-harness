@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-vo-12973",
+  "title": "Check Navigational Channel Depth",
+  "description": "A deep-draft vessel is scheduled to arrive. The pilot needs to confirm the current depth of the navigational channel, considering the tide.",
+  "use_case": "Vessel Operations",
+  "core_function": "Vessel Traffic & Navigation",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the vessel's required draft from the nomination.",
+      "expected_outcome": "Pilot confirms the vessel has a draft of 14.5 meters.",
+      "required_tools": [
+        "get_vessel_nomination"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the latest hydrographic survey chart for the channel's official depth.",
+      "expected_outcome": "The chart shows a minimum depth of 12 meters.",
+      "required_tools": [
+        "get_hydrographic_chart_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the tide tables for the vessel's ETA and calculate the total water depth to ensure it is sufficient.",
+      "expected_outcome": "Pilot checks the tide will be +3 meters at ETA, making the total depth 15 meters. This provides enough under-keel clearance, and the pilot approves the transit.",
+      "required_tools": [
+        "get_tide_table_data",
+        "calculate_under_keel_clearance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-ast-11473",
+  "title": "Manage Equipment Calibration",
+  "description": "A critical torque wrench used for bolt tensioning is due for its annual calibration.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Maintenance Planning & Execution",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a system alert that the torque wrench's calibration is expiring.",
+      "expected_outcome": "Agent acknowledges the alert.",
+      "required_tools": [
+        "get_calibration_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Take the wrench out of service and send it to a certified calibration lab.",
+      "expected_outcome": "The planner arranges for the tool to be sent out.",
+      "required_tools": [
+        "update_asset_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "When the wrench is returned with its new calibration certificate, upload the certificate and update its next calibration due date in the system.",
+      "expected_outcome": "Agent uploads the new certificate and updates the system, making the tool available for use again.",
+      "required_tools": [
+        "upload_calibration_certificate",
+        "update_asset_calibration_date"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

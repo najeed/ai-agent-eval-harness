@@ -1,0 +1,53 @@
+{
+  "scenario_id": "finance-rb-11259",
+  "title": "Unblock Card After False Fraud Alert",
+  "description": "A customer's card was blocked due to a suspected fraudulent transaction which the customer confirms was legitimate.",
+  "use_case": "Retail Banking",
+  "core_function": "Fraud & Security",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the customer and identify the transaction that triggered the fraud alert.",
+      "expected_outcome": "Agent verifies the customer and identifies the $500 online purchase.",
+      "required_tools": [
+        "verify_customer_identity",
+        "get_fraud_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm with the customer that the transaction was legitimate.",
+      "expected_outcome": "The customer confirms they made the purchase. Agent marks the alert as a false positive.",
+      "required_tools": [
+        "resolve_fraud_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Remove the block from the customer's card.",
+      "expected_outcome": "Agent successfully unblocks the card, making it available for immediate use.",
+      "required_tools": [
+        "set_card_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-pg-13542",
+  "title": "Handle Request for Bulk Waste Pickup",
+  "description": "A citizen requests a special pickup for large items (e.g., furniture, appliances) via the city's service portal.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Citizen Reporting & Service Requests",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'Bulk Waste Pickup' request, including the citizen's address and a list of items.",
+      "expected_outcome": "Agent retrieves the service request details.",
+      "required_tools": [
+        "get_citizen_service_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule the pickup with the sanitation department's special collections crew.",
+      "expected_outcome": "Agent successfully schedules the pickup for the next available date.",
+      "required_tools": [
+        "schedule_special_collection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the citizen of the confirmed pickup date and instructions on where to place the items.",
+      "expected_outcome": "Agent sends a confirmation and instructions to the citizen.",
+      "required_tools": [
+        "send_citizen_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

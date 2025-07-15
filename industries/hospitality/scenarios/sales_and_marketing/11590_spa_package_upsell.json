@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hosp-sm-11590",
+  "title": "Upsell a Spa Package",
+  "description": "A guest booking a room for a weekend getaway is offered a special rate on a spa package.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Promotions & Upselling",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "While the guest is making their room reservation, the agent identifies it's for a weekend stay.",
+      "expected_outcome": "The agent identifies an upsell opportunity.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The agent presents the 'Relaxation Weekend' spa package, which includes a massage and facial.",
+      "expected_outcome": "The agent clearly explains the package details.",
+      "required_tools": [
+        "get_spa_packages"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The guest agrees, and the agent books the spa appointments and adds the package charge to the reservation.",
+      "expected_outcome": "The spa package is successfully added to the guest's stay.",
+      "required_tools": [
+        "spa_book_appointment",
+        "pms_adjust_folio_charge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

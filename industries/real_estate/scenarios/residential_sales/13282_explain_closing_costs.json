@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-13282",
+  "title": "Explain Closing Costs to a First-Time Buyer",
+  "description": "A first-time homebuyer is confused about the estimated closing costs. The agent needs to explain the different fees.",
+  "use_case": "Residential Sales",
+  "core_function": "Buyer & Seller Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the Loan Estimate document for the buyer's transaction.",
+      "expected_outcome": "Agent gets the document that lists the estimated closing costs.",
+      "required_tools": [
+        "get_transaction_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Break down the major categories of closing costs: lender fees, title/escrow fees, and prepaid items (taxes, insurance).",
+      "expected_outcome": "Agent categorizes the costs for clarity.",
+      "required_tools": [
+        "analyze_financial_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the purpose of each major fee in simple, easy-to-understand language.",
+      "expected_outcome": "Agent provides a clear and patient explanation to the client.",
+      "required_tools": [
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

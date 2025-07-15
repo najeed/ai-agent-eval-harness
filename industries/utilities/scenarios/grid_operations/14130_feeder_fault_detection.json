@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-14130",
+  "title": "Automated Feeder Fault Detection",
+  "description": "A recloser on a distribution feeder operates, indicating a fault. The system must automatically analyze the fault data and locate the issue.",
+  "use_case": "Grid Operations",
+  "core_function": "Fault Location, Isolation, and Service Restoration (FLISR)",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive fault data (current, voltage) from the operated recloser.",
+      "expected_outcome": "System ingests the fault data from the SCADA system.",
+      "required_tools": [
+        "get_scada_fault_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the fault data to calculate the distance to the fault from the substation.",
+      "expected_outcome": "System calculates the fault is approximately 2.5 miles down the feeder.",
+      "required_tools": [
+        "calculate_fault_distance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the specific line segment on the GIS map corresponding to the calculated distance.",
+      "expected_outcome": "System highlights the faulted segment between two specific poles.",
+      "required_tools": [
+        "query_gis_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "location_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

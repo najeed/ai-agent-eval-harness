@@ -1,0 +1,66 @@
+{
+  "scenario_id": "marketing-cc-12456",
+  "title": "Set Up an A/B Test in a Testing Tool",
+  "description": "A CRO specialist needs to set up a new A/B test in a tool like Google Optimize or Optimizely.",
+  "use_case": "Content & Creative Development",
+  "core_function": "User Experience (UX) & Conversion Rate Optimization (CRO)",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new A/B test and define the URL of the page to be tested.",
+      "expected_outcome": "Agent correctly sets up the basic experiment.",
+      "required_tools": [
+        "ab_testing_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the visual editor to create the variant (version B) by changing the text of the main headline.",
+      "expected_outcome": "Agent successfully creates the test variant.",
+      "required_tools": [
+        "ab_testing_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set the primary conversion goal for the test (e.g., tracking clicks on the CTA button).",
+      "expected_outcome": "Agent correctly defines what success looks like for the test.",
+      "required_tools": [
+        "ab_testing_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Launch the experiment to start showing the versions to users.",
+      "expected_outcome": "The A/B test is now live.",
+      "required_tools": [
+        "ab_testing_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-sa-11034",
+  "title": "Petition to Drop Course After Deadline",
+  "description": "A student needs to drop a course after the official drop/add deadline due to a medical emergency.",
+  "use_case": "Student Administration",
+  "core_function": "Registration & Course Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and the course they wish to drop.",
+      "expected_outcome": "Agent confirms the student's enrollment in the course.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the petition process for a late withdrawal, including the need for supporting documentation.",
+      "expected_outcome": "Agent clearly outlines the required steps and forms.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the student with the official petition form and instructions on where to submit it.",
+      "expected_outcome": "Agent emails the correct form and submission link to the student.",
+      "required_tools": [
+        "send_form_to_student"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

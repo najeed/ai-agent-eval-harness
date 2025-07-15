@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-vm-10788",
+  "title": "Dark Web Monitoring",
+  "description": "A threat intelligence analyst is monitoring dark web markets for stolen company credentials.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Threat Intelligence Integration",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Regularly and safely browse known dark web forums and marketplaces where stolen data is sold.",
+      "expected_outcome": "Analyst maintains situational awareness of the dark web landscape.",
+      "required_tools": [
+        "monitor_dark_web_forums"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_diligence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for any mentions of the company's name or employee email domains.",
+      "expected_outcome": "Analyst runs regular searches for company-specific keywords.",
+      "required_tools": [
+        "search_dark_web_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "search_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Discover a newly posted database of credentials from a third-party site breach that includes several company email addresses and passwords, and then trigger an internal incident response.",
+      "expected_outcome": "Analyst proactively discovers a data breach and initiates a response to mitigate the risk.",
+      "required_tools": [
+        "identify_compromised_credentials",
+        "trigger_incident_response"
+      ],
+      "success_criteria": [
+        {
+          "metric": "threat_discovery_rate",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

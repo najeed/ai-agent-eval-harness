@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-hse-12696",
+  "title": "Manage Employee Training Records",
+  "description": "An HSE administrator needs to ensure that all employees have completed their annual safety refresher training.",
+  "use_case": "Health, Safety & Environment (HSE)",
+  "core_function": "Safety Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a report from the learning management system (LMS) to identify any employees whose safety refresher training is expired or due to expire.",
+      "expected_outcome": "A list of non-compliant employees is generated.",
+      "required_tools": [
+        "generate_training_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Automatically send reminder notifications to the employees and their supervisors.",
+      "expected_outcome": "Reminders are sent to all affected employees.",
+      "required_tools": [
+        "send_training_reminder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the non-compliant employees into the next available safety refresher training session.",
+      "expected_outcome": "All employees are scheduled for training, ensuring the site remains 100% compliant.",
+      "required_tools": [
+        "schedule_employee_training"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

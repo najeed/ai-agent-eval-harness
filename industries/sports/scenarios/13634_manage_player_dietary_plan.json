@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-tm-13634",
+  "title": "Manage Player Dietary Plan",
+  "description": "A team nutritionist needs to create a personalized dietary plan for a player looking to gain muscle mass.",
+  "use_case": "Team & Player Management",
+  "core_function": "Player Performance & Health",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the player's current weight, body composition, and any dietary restrictions.",
+      "expected_outcome": "Agent gets all the baseline health data for the player.",
+      "required_tools": [
+        "get_player_medical_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on the player's goals, generate a daily meal plan with specific calorie and macronutrient targets.",
+      "expected_outcome": "Agent creates a detailed meal plan for the player.",
+      "required_tools": [
+        "generate_meal_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the meal plan to the player and the team chef.",
+      "expected_outcome": "Agent successfully distributes the plan.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

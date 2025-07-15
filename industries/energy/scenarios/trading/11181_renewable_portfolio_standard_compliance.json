@@ -1,0 +1,67 @@
+{
+  "scenario_id": "energy-tr-11181",
+  "title": "Renewable Portfolio Standard (RPS) Compliance",
+  "description": "A compliance manager for a load-serving entity needs to file an annual report demonstrating compliance with the state's RPS.",
+  "use_case": "Energy Trading & Portfolio Management",
+  "core_function": "Settlement & Reconciliation",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the total retail electricity sales for the past year to determine the total RPS obligation (e.g., 30% of sales).",
+      "expected_outcome": "Agent calculates the required number of Renewable Energy Certificates (RECs).",
+      "required_tools": [
+        "get_total_retail_sales"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve all RECs owned by the company from the REC tracking registry.",
+      "expected_outcome": "Agent compiles a list of all owned RECs.",
+      "required_tools": [
+        "query_rec_registry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the owned RECs to the obligation and purchase any shortfall on the spot market.",
+      "expected_outcome": "Agent identifies a 5% shortfall and executes a purchase to cover it.",
+      "required_tools": [
+        "execute_rec_purchase"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Retire the required number of RECs and generate the compliance report for the state regulator.",
+      "expected_outcome": "Agent successfully retires the RECs and generates the formal report.",
+      "required_tools": [
+        "retire_recs",
+        "generate_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "scenario_id": "tax-bus-13756",
+  "title": "File Final Return for a Closed Business",
+  "description": "A sole proprietor closed their business mid-year and needs to file a final Schedule C.",
+  "use_case": "Business Tax Services",
+  "core_function": "Corporate & Partnership Tax",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all income and expense information from the beginning of the year until the date the business closed.",
+      "expected_outcome": "Agent collects all final financial data.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Prepare the final Schedule C, calculating the net profit or loss for the partial year.",
+      "expected_outcome": "Agent accurately prepares the final business schedule.",
+      "required_tools": [
+        "enter_schedule_c_income",
+        "enter_schedule_c_expenses"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the 'final return' box on the form.",
+      "expected_outcome": "Agent correctly indicates that this is the last return for the business.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

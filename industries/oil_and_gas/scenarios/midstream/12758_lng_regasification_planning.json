@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-mid-12758",
+  "title": "LNG Regasification Planning",
+  "description": "An operator at an LNG import terminal plans the regasification schedule to meet the daily demand from the downstream gas pipeline.",
+  "use_case": "Midstream",
+  "core_function": "Terminal & Storage Management",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the gas demand nomination from the pipeline operator for the next 24 hours.",
+      "expected_outcome": "The required volume of natural gas to be sent out is identified.",
+      "required_tools": [
+        "get_gas_nomination"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the amount of LNG that needs to be pumped from the storage tanks and vaporized to meet the demand.",
+      "expected_outcome": "The required LNG volume and flow rate are calculated.",
+      "required_tools": [
+        "calculate_regasification_volume"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set the schedule in the terminal's control system to automatically manage the LNG pumps and vaporizers.",
+      "expected_outcome": "The regasification process is scheduled and automated in the DCS.",
+      "required_tools": [
+        "set_terminal_operating_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

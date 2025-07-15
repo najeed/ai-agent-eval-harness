@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11430",
+  "title": "Track Critical Material Delivery",
+  "description": "A project expediter needs to track the status of a shipment of custom-fabricated steel to ensure it arrives on time.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Reporting & Communication",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the purchase order for the custom steel.",
+      "expected_outcome": "Agent retrieves the correct purchase order.",
+      "required_tools": [
+        "get_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the supplier to get the latest status and the shipping/tracking number.",
+      "expected_outcome": "Agent communicates with the supplier and gets the tracking information.",
+      "required_tools": [
+        "contact_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the tracking number to get the latest location from the freight carrier and update the project's material tracking report.",
+      "expected_outcome": "Agent gets the shipment's current location and updates the project records with the new ETA.",
+      "required_tools": [
+        "track_shipment_status",
+        "update_material_tracking_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

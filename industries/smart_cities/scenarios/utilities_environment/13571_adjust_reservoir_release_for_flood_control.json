@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-ue-13571",
+  "title": "Adjust Reservoir Release for Flood Control",
+  "description": "Heavy rain is forecasted, and a reservoir is already near full capacity. An operator must proactively release water to create storage capacity and prevent downstream flooding.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Water & Wastewater Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a weather alert for heavy rainfall and check the current level of the 'Northwood Reservoir'.",
+      "expected_outcome": "Agent confirms the reservoir is at 95% capacity, which is a risk.",
+      "required_tools": [
+        "get_weather_alerts",
+        "get_reservoir_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the required outflow rate to lower the reservoir level by 10% over the next 12 hours without causing flooding downstream.",
+      "expected_outcome": "The system calculates a safe release rate.",
+      "required_tools": [
+        "calculate_safe_outflow_rate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Remotely open the reservoir's sluice gate to the calculated position to begin the controlled release.",
+      "expected_outcome": "Agent successfully operates the dam's gate.",
+      "required_tools": [
+        "control_sluice_gate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

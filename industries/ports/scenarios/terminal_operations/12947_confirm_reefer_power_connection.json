@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ports-to-12947",
+  "title": "Confirm Reefer Power Connection",
+  "description": "A reefer container has been stacked in the yard. A technician must confirm it has been plugged into a power source.",
+  "use_case": "Terminal Operations",
+  "core_function": "Special Cargo Handling",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a work order to plug in a newly arrived reefer container at a specific yard location.",
+      "expected_outcome": "Technician's mobile device receives the job to connect the reefer.",
+      "required_tools": [
+        "get_mobile_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Physically plug the reefer's power cable into the corresponding power socket on the reefer rack.",
+      "expected_outcome": "The technician connects the power cable.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "operational_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the work order as 'complete' in the mobile system, which updates the TOS to show the reefer is now powered on.",
+      "expected_outcome": "The technician marks the job as complete, and the container's status in the TOS changes to 'Powered'.",
+      "required_tools": [
+        "update_mobile_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "scenario_id": "information_technology_product-cs-11764",
+  "title": "Question About Prorated Charges",
+  "description": "A customer who upgraded their plan mid-cycle is asking why their latest bill is higher than expected.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Account & Billing Support",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's latest invoice.",
+      "expected_outcome": "Agent pulls up the correct bill.",
+      "required_tools": [
+        "get_invoice_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the prorated charges for the plan upgrade.",
+      "expected_outcome": "Agent finds the line items corresponding to the proration.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Clearly explain how prorated charges are calculated and that their next bill will be for the normal, expected amount.",
+      "expected_outcome": "Agent successfully educates the customer about prorated billing.",
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

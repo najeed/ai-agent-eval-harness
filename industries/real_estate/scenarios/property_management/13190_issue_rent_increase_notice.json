@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-13190",
+  "title": "Issue a Rent Increase Notice",
+  "description": "A landlord wants to increase the rent for a month-to-month tenant. The PM must issue a legally compliant notice.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the legally required notice period for a rent increase in the property's jurisdiction.",
+      "expected_outcome": "Agent checks local regulations and confirms a 60-day notice is required.",
+      "required_tools": [
+        "search_legal_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a formal rent increase notice with the new rental amount and the date it becomes effective.",
+      "expected_outcome": "A compliant notice is created with all the required information.",
+      "required_tools": [
+        "generate_legal_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deliver the notice to the tenant according to legal requirements (e.g., certified mail or personal service).",
+      "expected_outcome": "The notice is sent via certified mail, and the tracking number is logged.",
+      "required_tools": [
+        "send_certified_mail",
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

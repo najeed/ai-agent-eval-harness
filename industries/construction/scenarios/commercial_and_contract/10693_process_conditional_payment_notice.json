@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-cc-10693",
+  "title": "Process a Conditional Payment Notice",
+  "description": "A general contractor receives a notice from a sub-subcontractor that they have not been paid by the subcontractor. The GC must now take action to ensure payment.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Contract Administration",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the receipt of the conditional payment notice.",
+      "expected_outcome": "The notice is formally logged in the project's legal correspondence file.",
+      "required_tools": [
+        "create_communication_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Place a temporary hold on future payments to the subcontractor in question.",
+      "expected_outcome": "A payment hold is successfully placed in the accounting system.",
+      "required_tools": [
+        "hold_vendor_payments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the subcontractor to demand proof of payment to their sub-subcontractor.",
+      "expected_outcome": "A formal communication is sent to the subcontractor to resolve the issue.",
+      "required_tools": [
+        "send_vendor_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

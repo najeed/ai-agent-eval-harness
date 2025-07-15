@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11668",
+  "title": "Analyze Compensation Equity",
+  "description": "A compensation analyst is conducting a pay equity study to check for gender- or race-based pay gaps.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Reporting & Analytics",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a report from the HRIS containing employee job title, salary, gender, and ethnicity data.",
+      "expected_outcome": "Analyst pulls the necessary raw data.",
+      "required_tools": [
+        "run_hris_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each major job role, calculate the average salary for different demographic groups.",
+      "expected_outcome": "Analyst performs statistical analysis to compare pay across groups.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify any statistically significant pay gaps and prepare a report of the findings for HR leadership.",
+      "expected_outcome": "Analyst identifies potential areas of concern and creates a detailed report with recommendations.",
+      "required_tools": [
+        "create_presentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

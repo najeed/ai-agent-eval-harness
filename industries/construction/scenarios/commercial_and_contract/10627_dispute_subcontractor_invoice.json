@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-cc-10627",
+  "title": "Dispute Subcontractor Invoice for Incomplete Work",
+  "description": "A project manager receives an invoice from a subcontractor for work that is only 50% complete. The invoice must be disputed.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Billing & Invoicing",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Compare the invoiced amount with the percentage of work completed, as verified by the site superintendent.",
+      "expected_outcome": "Agent confirms the work is 50% complete, but the invoice is for 100% of the contract value.",
+      "required_tools": [
+        "get_vendor_invoice",
+        "verify_task_completion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Mark the invoice as 'Disputed' in the accounting system.",
+      "expected_outcome": "The invoice status is updated to 'Disputed'.",
+      "required_tools": [
+        "update_invoice_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a notification to the subcontractor explaining the reason for the dispute and requesting a revised invoice for 50% of the value.",
+      "expected_outcome": "A clear, professional dispute notification is sent to the subcontractor.",
+      "required_tools": [
+        "send_vendor_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

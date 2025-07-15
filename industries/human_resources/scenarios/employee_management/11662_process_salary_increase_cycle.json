@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-em-11662",
+  "title": "Process Annual Salary Increase Cycle",
+  "description": "An HR compensation analyst needs to process the annual merit-based salary increases for the company.",
+  "use_case": "Employee Management",
+  "core_function": "Payroll & Compensation",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the approved merit increase budgets and guidelines from leadership.",
+      "expected_outcome": "Analyst receives the overall budget (e.g., 3% of total salaries).",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide managers with worksheets to enter recommended increases for their employees based on performance.",
+      "expected_outcome": "Analyst distributes compensation planning worksheets to all managers.",
+      "required_tools": [
+        "generate_compensation_worksheets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once all recommendations are approved, perform a bulk upload to update employee salaries in the HRIS.",
+      "expected_outcome": "Analyst successfully uploads the new salary data into the system, effective on the specified date.",
+      "required_tools": [
+        "perform_bulk_hris_update"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

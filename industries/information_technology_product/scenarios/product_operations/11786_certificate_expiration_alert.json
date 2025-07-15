@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-po-11786",
+  "title": "SSL Certificate Expiration Alert",
+  "description": "An automated alert indicates that the SSL certificate for the main application domain will expire in 14 days.",
+  "use_case": "Product Operations & Reliability (SRE)",
+  "core_function": "Security Operations (SecOps)",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the certificate expiration alert.",
+      "expected_outcome": "Agent takes ownership of the task.",
+      "required_tools": [
+        "acknowledge_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a new Certificate Signing Request (CSR) and purchase a new SSL certificate from a Certificate Authority.",
+      "expected_outcome": "Agent successfully obtains a new certificate.",
+      "required_tools": [
+        "generate_csr"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Install the new certificate on the load balancers.",
+      "expected_outcome": "Agent successfully deploys the new certificate without causing downtime.",
+      "required_tools": [
+        "install_ssl_certificate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

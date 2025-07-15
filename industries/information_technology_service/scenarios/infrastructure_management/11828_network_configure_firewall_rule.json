@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-im-11828",
+  "title": "Server & Network - Configure New Firewall Rule",
+  "description": "A client needs to allow a new third-party vendor to access a specific server on a specific port.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Server & Network Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the vendor's public IP address, the internal server's IP address, and the required port number from the client's request.",
+      "expected_outcome": "The technician has all the necessary information to create the firewall rule.",
+      "required_tools": [
+        "get_ticket_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log in to the client's firewall and create a new rule that allows traffic from the source IP to the destination IP on the specified port.",
+      "expected_outcome": "A new, specific, and secure firewall rule is created.",
+      "required_tools": [
+        "add_firewall_rule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify the rule is working and have the client confirm the vendor can now access the server.",
+      "expected_outcome": "The vendor confirms successful access, and the ticket is resolved.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

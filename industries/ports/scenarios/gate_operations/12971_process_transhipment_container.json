@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-go-12971",
+  "title": "Process a Transhipment Container",
+  "description": "A container is discharged from one vessel and will be loaded onto another vessel at the same terminal without leaving the port.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Customs & Documentation",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The TOS identifies a container on a discharge list as 'Transhipment' based on its documentation.",
+      "expected_outcome": "The system automatically flags the container as a transhipment move.",
+      "required_tools": [
+        "import_baplie_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign the container to a specific transhipment block in the yard to keep it separate from local imports.",
+      "expected_outcome": "The yard plan assigns the container to a location in the transhipment zone.",
+      "required_tools": [
+        "assign_yard_positions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the container is not made available for truck pickup and is automatically added to the load list for the connecting vessel.",
+      "expected_outcome": "The system correctly manages the container's status, preventing an erroneous gate move and ensuring it's planned for the next vessel.",
+      "required_tools": [
+        "update_container_status",
+        "add_container_to_load_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

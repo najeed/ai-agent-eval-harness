@@ -1,0 +1,66 @@
+{
+  "scenario_id": "marketing-cm-12489",
+  "title": "Duplicate Campaign for a New Region",
+  "description": "A successful campaign in the US needs to be duplicated and launched in Canada.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Paid Social & Display",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate and duplicate the original US campaign.",
+      "expected_outcome": "Agent successfully creates a copy of the entire campaign structure.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "In the new campaign, change all location targeting from 'United States' to 'Canada'.",
+      "expected_outcome": "Agent updates the geotargeting.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review and adjust ad copy for any regional spelling or cultural differences (e.g., 'color' to 'colour').",
+      "expected_outcome": "Agent localizes the ad copy for the new market.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "copywriting_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Activate the new campaign for Canada.",
+      "expected_outcome": "The localized campaign is now live.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

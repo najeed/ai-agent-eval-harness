@@ -1,0 +1,66 @@
+{
+  "scenario_id": "journalism-cp-12064",
+  "title": "Edit Audio for a Podcast",
+  "description": "A podcast producer needs to edit a recorded interview, removing mistakes, long pauses, and 'ums' and 'ahs'.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Multimedia & Visuals",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Listen through the raw audio recording, making notes of edits that need to be made.",
+      "expected_outcome": "An edit list is created.",
+      "required_tools": [
+        "audio_editing_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehensiveness_of_list",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cut out any mistakes, stumbles, or long pauses to make the conversation flow better.",
+      "expected_outcome": "The audio is tightened up and flows more smoothly.",
+      "required_tools": [
+        "audio_editing_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "editing_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply audio processing like noise reduction and equalization to improve the sound quality.",
+      "expected_outcome": "The final audio is clean and easy to listen to.",
+      "required_tools": [
+        "audio_editing_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "technical_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Add intro/outro music and any other sound effects.",
+      "expected_outcome": "The final podcast episode is mixed and produced.",
+      "required_tools": [
+        "audio_editing_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "production_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

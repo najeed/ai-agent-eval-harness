@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-eng-11467",
+  "title": "Perform Pipe Stress Analysis",
+  "description": "A piping engineer needs to perform a stress analysis on a high-temperature pipeline to ensure it can expand safely without failing.",
+  "use_case": "Engineering & Design",
+  "core_function": "Design & Simulation",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Model the pipeline's geometry in the stress analysis software.",
+      "expected_outcome": "Agent successfully creates the model of the pipeline.",
+      "required_tools": [
+        "create_pipe_stress_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the operating temperature, pressure, and fluid weight to the model.",
+      "expected_outcome": "Agent correctly defines the load cases for the analysis.",
+      "required_tools": [
+        "apply_pipe_stress_parameters"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the analysis and check the calculated stresses and pipe support loads against the allowable limits in the piping code.",
+      "expected_outcome": "Agent runs the analysis and confirms that all stresses and loads are within the code's allowable limits.",
+      "required_tools": [
+        "run_pipe_stress_analysis",
+        "check_results_against_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

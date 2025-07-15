@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-po-11759",
+  "title": "Decommission Old Service",
+  "description": "An old, legacy microservice is being replaced by a new one and needs to be safely decommissioned.",
+  "use_case": "Product Operations & Reliability (SRE)",
+  "core_function": "Deployment & Release Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that all traffic has been migrated from the old service to the new one.",
+      "expected_outcome": "Agent confirms the old service is receiving zero traffic.",
+      "required_tools": [
+        "view_traffic_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Delete the deployment configuration for the old service from the orchestration tool (e.g., Kubernetes).",
+      "expected_outcome": "Agent removes the service from the cluster.",
+      "required_tools": [
+        "delete_k8s_deployment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Remove the old service's code repository and CI/CD pipeline.",
+      "expected_outcome": "Agent cleans up all related assets to prevent accidental redeployment.",
+      "required_tools": [
+        "archive_code_repository"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

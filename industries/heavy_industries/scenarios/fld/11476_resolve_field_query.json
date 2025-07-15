@@ -1,0 +1,50 @@
+{
+  "scenario_id": "heavy-industries-fld-11476",
+  "title": "Resolve a Field Query",
+  "description": "A construction crew has encountered an unforeseen underground obstruction and needs guidance from engineering.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Site Management & Logistics",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log a field query (FQ) in the system, describing the problem and the exact location.",
+      "expected_outcome": "The supervisor creates a new FQ with all the details.",
+      "required_tools": [
+        "create_field_query"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically routes the FQ to the responsible civil engineer.",
+      "expected_outcome": "The engineer receives a notification about the new field query.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The engineer reviews the query, develops a solution (e.g., 'reroute the pipeline around the obstruction'), and sends the response back to the field.",
+      "expected_outcome": "The engineer provides a solution, which is logged in the system and sent back to the supervisor.",
+      "required_tools": [
+        "respond_to_field_query"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

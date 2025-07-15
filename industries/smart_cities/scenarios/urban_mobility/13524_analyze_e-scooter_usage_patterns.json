@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-um-13524",
+  "title": "Analyze E-Scooter Usage Patterns",
+  "description": "A city planner wants to understand where shared e-scooters are most frequently used to plan for new bike lanes.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "EV Charging & Micromobility",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all e-scooter trip data (start and end points) for the last 3 months.",
+      "expected_outcome": "Agent successfully queries the micromobility database.",
+      "required_tools": [
+        "get_micromobility_trip_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a heatmap visualization of the most popular trip routes.",
+      "expected_outcome": "The system generates a map showing the most heavily trafficked corridors.",
+      "required_tools": [
+        "generate_heatmap"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Export the heatmap and underlying data for the transportation planning department.",
+      "expected_outcome": "Agent creates a report for the planners.",
+      "required_tools": [
+        "export_data_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

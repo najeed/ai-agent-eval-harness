@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-fld-11460",
+  "title": "Manage a Large Concrete Pour",
+  "description": "A supervisor is managing a large, continuous concrete pour for a building foundation and must track the trucks and volumes.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Construction & Assembly",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the daily schedule to see how many concrete trucks are expected.",
+      "expected_outcome": "The schedule shows 20 trucks are planned for the day.",
+      "required_tools": [
+        "get_daily_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "As each truck arrives, log its delivery ticket number and the volume of concrete it delivered.",
+      "expected_outcome": "The supervisor logs the arrival and volume for each truck.",
+      "required_tools": [
+        "log_material_delivery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Keep a running total of the volume poured and compare it to the total required for the foundation to ensure the pour is completed.",
+      "expected_outcome": "Agent maintains a running total and confirms when the total required volume has been reached.",
+      "required_tools": [
+        "calculate_running_total"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

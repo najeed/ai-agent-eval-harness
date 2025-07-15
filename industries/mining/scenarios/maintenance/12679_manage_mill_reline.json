@@ -1,0 +1,54 @@
+{
+  "scenario_id": "mining-maint-12679",
+  "title": "Plan and Execute Mill Reline",
+  "description": "A maintenance planner organizes a major shutdown to replace the worn steel liners inside a large SAG mill.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Asset Strategy & Planning",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Based on wear rate forecasts, schedule the next mill reline for a specific date.",
+      "expected_outcome": "The reline is scheduled in the long-term plan.",
+      "required_tools": [
+        "forecast_liner_wear",
+        "schedule_major_shutdown"
+      ],
+      "success_criteria": [
+        {
+          "metric": "prediction_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Order the new set of liners and all necessary bolts and tooling, ensuring they arrive before the shutdown.",
+      "expected_outcome": "All materials for the reline are ordered and their delivery is tracked.",
+      "required_tools": [
+        "create_purchase_order",
+        "track_delivery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute the reline, managing the crews to remove the old liners and install the new ones as safely and quickly as possible to minimize plant downtime.",
+      "expected_outcome": "The reline is completed safely and ahead of schedule.",
+      "required_tools": [
+        "manage_shutdown_execution"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

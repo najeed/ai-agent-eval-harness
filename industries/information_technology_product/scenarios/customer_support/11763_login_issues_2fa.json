@@ -1,0 +1,49 @@
+{
+  "scenario_id": "information_technology_product-cs-11763",
+  "title": "Login Issues with 2FA",
+  "description": "A user who has lost their phone cannot log in because they cannot complete the two-factor authentication (2FA) step.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Technical Troubleshooting",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Go through a rigorous identity verification process with the user, using personal details and account history.",
+      "expected_outcome": "Agent confirms the user's identity with a high degree of certainty.",
+      "required_tools": [
+        "verify_customer_identity_enhanced"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Once identity is confirmed, temporarily disable 2FA on the user's account.",
+      "expected_outcome": "Agent successfully disables 2FA, allowing the user to log in.",
+      "required_tools": [
+        "disable_2fa"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the user to immediately set up 2FA again with their new device.",
+      "expected_outcome": "Agent provides clear instructions to re-secure the account.",
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

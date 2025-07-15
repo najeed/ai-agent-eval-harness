@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-ops-12684",
+  "title": "Manage Underground Personnel Tracking",
+  "description": "In an emergency, a control room operator must use the personnel tracking system to find the location of every person underground.",
+  "use_case": "Mine Operations",
+  "core_function": "Underground Production",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "An emergency alarm is activated. Immediately bring up the personnel tracking system dashboard.",
+      "expected_outcome": "A map showing the last known location of all personnel underground is displayed.",
+      "required_tools": [
+        "get_personnel_location_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "response_time_seconds",
+          "threshold": 20
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a list of all personnel currently underground and their assigned refuge station.",
+      "expected_outcome": "A complete muster list is generated.",
+      "required_tools": [
+        "generate_muster_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "As personnel arrive at the refuge stations, check them off the list to quickly identify anyone who is missing.",
+      "expected_outcome": "The system provides a real-time view of who is safe and who is still unaccounted for, guiding the search and rescue team.",
+      "required_tools": [
+        "update_muster_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

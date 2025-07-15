@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-pg-13532",
+  "title": "Update Public Asset Inventory",
+  "description": "A new public park has been completed. An operator must add the new assets (benches, playground equipment) to the city's asset management system.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Smart Asset Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a list of new assets installed at the 'Willow Creek Park'.",
+      "expected_outcome": "Agent gets the list of new assets and their types.",
+      "required_tools": [
+        "get_new_asset_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each new asset, create a new entry in the asset management database, including its location, type, and installation date.",
+      "expected_outcome": "Agent successfully adds all new assets to the database.",
+      "required_tools": [
+        "add_new_asset"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the first preventive maintenance inspection for the new assets according to their standard maintenance plan.",
+      "expected_outcome": "Agent sets up the future maintenance schedule for the new park assets.",
+      "required_tools": [
+        "schedule_asset_maintenance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

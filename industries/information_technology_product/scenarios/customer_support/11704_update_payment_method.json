@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-cs-11704",
+  "title": "Update Payment Method",
+  "description": "A customer needs to update their credit card on file because the old one has expired.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Account & Billing Support",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the customer.",
+      "expected_outcome": "Agent verifies the customer's identity.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a secure link for the customer to update their payment details directly, without sharing card numbers with the agent.",
+      "expected_outcome": "Agent sends a secure payment update link to the customer.",
+      "required_tools": [
+        "generate_secure_payment_link"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm that the new payment method has been successfully added to the account.",
+      "expected_outcome": "Agent verifies the update in the billing system.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "scenario_id": "information_technology_product-cs-11711",
+  "title": "Report Not Loading",
+  "description": "A user reports that a specific report is timing out and not loading, while other reports work fine.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Technical Troubleshooting",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the user for the parameters of the report they are trying to run (e.g., date range, filters).",
+      "expected_outcome": "Agent finds the user is running a report with a very large date range (3 years).",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Hypothesize that the large query size is causing the timeout.",
+      "expected_outcome": "Agent correctly identifies the likely cause.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the user to run the report in smaller date chunks (e.g., quarterly) to avoid timeouts.",
+      "expected_outcome": "Agent provides a workable solution to the user.",
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

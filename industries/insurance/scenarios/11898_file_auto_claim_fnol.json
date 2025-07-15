@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-pc-11898",
+  "title": "File an Auto Claim (FNOL)",
+  "description": "A policyholder calls to report a minor car accident (fender bender). This is the First Notice of Loss (FNOL).",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Claims Processing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and verify their policy is active.",
+      "expected_outcome": "Agent correctly identifies the customer and their active auto policy.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather details about the accident: date, time, location, description of what happened, and information about the other party.",
+      "expected_outcome": "Agent accurately captures all details of the loss event.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new claim file, provide the customer with a claim number, and explain the next steps.",
+      "expected_outcome": "Agent successfully initiates the claim, provides a claim number, and explains that an adjuster will be in contact.",
+      "required_tools": [
+        "create_new_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

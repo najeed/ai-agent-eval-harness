@@ -1,0 +1,51 @@
+{
+  "scenario_id": "information_technology_service-ps-11896",
+  "title": "Auditing - Review Network Documentation",
+  "description": "As part of a network audit project, an engineer reviews the client's existing documentation for accuracy and completeness.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "IT & Security Auditing",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all existing network diagrams, IP schemas, and device configurations from the client.",
+      "expected_outcome": "The engineer has all the client's current documentation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the documentation against the actual live configuration of the network by logging into devices.",
+      "expected_outcome": "The engineer identifies multiple discrepancies, such as undocumented firewall rules and incorrect VLAN assignments.",
+      "required_tools": [
+        "get_firewall_config",
+        "get_switch_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a report detailing the documentation gaps and inaccuracies as a key finding of the audit.",
+      "expected_outcome": "A formal report is created, recommending a project to update all network documentation.",
+      "required_tools": [
+        "generate_project_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

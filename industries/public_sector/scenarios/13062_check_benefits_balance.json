@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-cs-13062",
+  "title": "Check EBT Card Balance",
+  "description": "A SNAP recipient wants to check the current balance on their EBT card.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Benefits Administration",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify and authenticate the benefits recipient using their card number and PIN or personal information.",
+      "expected_outcome": "Agent securely verifies the caller's identity.",
+      "required_tools": [
+        "verify_citizen_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the current balance from the EBT system.",
+      "expected_outcome": "Agent successfully finds the current balance on the card.",
+      "required_tools": [
+        "get_ebt_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the citizen of their current balance.",
+      "expected_outcome": "Agent clearly communicates the balance amount.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "scenario_id": "ret-so-13405",
+  "title": "View Upcoming Shift Schedule",
+  "description": "An associate wants to check their work schedule for the next week.",
+  "use_case": "Store Operations",
+  "core_function": "Task & Shift Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log into the employee mobile app or store portal.",
+      "expected_outcome": "The associate successfully logs in.",
+      "required_tools": [
+        "enter_employee_credentials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Navigate to the 'My Schedule' section.",
+      "expected_outcome": "The associate opens their personal schedule view.",
+      "required_tools": [
+        "open_my_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "View the schedule for the upcoming week.",
+      "expected_outcome": "The system displays the associate's assigned shifts, including dates, times, and roles.",
+      "required_outcome_success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

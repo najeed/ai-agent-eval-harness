@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-pm-12178",
+  "title": "Write Off an Uncollectible Invoice",
+  "description": "After numerous attempts to collect, a firm decides to write off an old, unpaid invoice. The billing manager needs to process this.",
+  "use_case": "Law Practice Management",
+  "core_function": "Billing & Timekeeping",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the specific unpaid invoice in the billing system.",
+      "expected_outcome": "Agent finds the correct invoice.",
+      "required_tools": [
+        "billing_software_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the responsible partner has approved the write-off.",
+      "expected_outcome": "Agent confirms approval is documented.",
+      "required_tools": [
+        "case_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply a credit to the invoice for the full outstanding amount, using the reason code 'Bad Debt Write-Off'.",
+      "expected_outcome": "The invoice balance is zeroed out in the system.",
+      "required_tools": [
+        "billing_software_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ports-af-12916",
+  "title": "Analyze Terminal Productivity",
+  "description": "A port analyst needs to generate a weekly report on crane productivity.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Reporting & Analytics",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the operational data for all quay cranes from the past week, including moves per hour and downtime.",
+      "expected_outcome": "Analyst successfully queries the TOS database for the required data.",
+      "required_tools": [
+        "get_crane_performance_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the average gross moves per hour (GMPH) for each crane and for the terminal as a whole.",
+      "expected_outcome": "The correct GMPH figures are calculated.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report with charts showing the productivity trends and any cranes that are underperforming.",
+      "expected_outcome": "A weekly performance report is created, highlighting that QC-01 had significant downtime and lower productivity.",
+      "required_tools": [
+        "generate_performance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

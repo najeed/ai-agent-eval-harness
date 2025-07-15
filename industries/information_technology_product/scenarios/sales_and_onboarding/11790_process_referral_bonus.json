@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-sl-11790",
+  "title": "Process a Customer Referral Bonus",
+  "description": "An existing customer referred a new customer who has just signed up. The existing customer is now owed a referral bonus.",
+  "use_case": "Sales & Account Management",
+  "core_function": "New Customer Acquisition",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the new customer signed up using the existing customer's unique referral code.",
+      "expected_outcome": "Agent confirms the referral link was used.",
+      "required_tools": [
+        "check_referral_code"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the new customer has made their first payment.",
+      "expected_outcome": "Agent confirms the condition for the bonus has been met.",
+      "required_tools": [
+        "get_payment_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply the referral bonus (e.g., a one-month service credit) to the existing customer's account.",
+      "expected_outcome": "The referring customer receives their bonus.",
+      "required_tools": [
+        "apply_manual_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

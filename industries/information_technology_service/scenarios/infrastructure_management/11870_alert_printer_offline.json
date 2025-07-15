@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_service-im-11870",
+  "title": "Monitoring - Printer Offline Alert",
+  "description": "An RMM alert indicates that a client's main office printer is offline.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Monitoring & Alerting",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Attempt to ping the printer's IP address.",
+      "expected_outcome": "The ping request times out.",
+      "required_tools": [
+        "ping_device"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the client's office manager to ask them to perform a physical check.",
+      "expected_outcome": "The office manager reports the printer is jammed and has an error on its screen.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Guide the office manager to clear the paper jam and power cycle the printer.",
+      "expected_outcome": "The printer comes back online, and the alert is cleared.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

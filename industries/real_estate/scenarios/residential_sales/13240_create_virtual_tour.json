@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-13240",
+  "title": "Create a Virtual Tour",
+  "description": "To enhance a listing's marketing, an agent wants to create a 3D virtual tour.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule a 3D camera operator (e.g., Matterport provider) to scan the property.",
+      "expected_outcome": "Agent successfully books a vendor to create the tour.",
+      "required_tools": [
+        "contact_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive the completed virtual tour link from the vendor.",
+      "expected_outcome": "Agent gets the URL for the virtual tour.",
+      "required_tools": [
+        "get_vendor_deliverable"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the virtual tour link to the MLS listing and other marketing materials.",
+      "expected_outcome": "Agent successfully updates the listing with the new tour.",
+      "required_tools": [
+        "update_mls_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

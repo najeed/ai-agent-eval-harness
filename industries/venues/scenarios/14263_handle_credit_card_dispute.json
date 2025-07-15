@@ -1,0 +1,66 @@
+{
+  "scenario_id": "venues-fb-14263",
+  "title": "Handle a Credit Card Chargeback",
+  "description": "The venue receives a credit card chargeback from a guest who claims they did not make a $50 purchase at a concession stand.",
+  "use_case": "Food & Beverage (Concessions)",
+  "core_function": "Inventory Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the chargeback notification from the credit card processor.",
+      "expected_outcome": "Agent logs the chargeback case.",
+      "required_tools": [
+        "log_chargeback_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the transaction details using the provided date, time, and amount.",
+      "expected_outcome": "Agent finds the original transaction in the POS system.",
+      "required_tools": [
+        "search_pos_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Gather evidence for the dispute, such as the signed credit card slip or security footage of the transaction if available.",
+      "expected_outcome": "Agent finds the signed slip for the transaction.",
+      "required_tools": [
+        "get_transaction_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Submit the evidence to the credit card processor to fight the chargeback.",
+      "expected_outcome": "Agent submits the required documentation to dispute the chargeback.",
+      "required_tools": [
+        "submit_chargeback_dispute"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

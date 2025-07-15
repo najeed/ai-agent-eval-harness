@@ -1,0 +1,51 @@
+{
+  "scenario_id": "information_technology_product-ps-11755",
+  "title": "Provide Weekly Project Status Report",
+  "description": "A project manager needs to send the weekly status report to an enterprise customer.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Implementation & Configuration",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather updates on completed tasks, upcoming milestones, and any blockers from the project team.",
+      "expected_outcome": "Project manager collects all necessary status updates.",
+      "required_tools": [
+        "get_project_task_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the project's RAG status (Red, Amber, Green) and write a concise executive summary.",
+      "expected_outcome": "Project manager accurately reflects the project's health.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the status report from a template and email it to the customer stakeholders.",
+      "expected_outcome": "Project manager sends a clear and professional status report.",
+      "required_tools": [
+        "generate_status_report",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

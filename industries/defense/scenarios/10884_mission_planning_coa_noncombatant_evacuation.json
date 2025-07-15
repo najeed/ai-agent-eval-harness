@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-mp-10884",
+  "title": "Course of Action Analysis for Noncombatant Evacuation (NEO)",
+  "description": "A planner must compare COAs for evacuating citizens from a country with a deteriorating security situation: using military aircraft vs. chartering civilian aircraft.",
+  "use_case": "Mission Planning & Execution",
+  "core_function": "Course of Action (COA) Analysis",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Develop plans for both the military and civilian air evacuation COAs.",
+      "expected_outcome": "Planner creates two distinct and viable evacuation plans.",
+      "required_tools": [
+        "develop_course_of_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assess the risks for each COA, considering the threat to the aircraft and the political sensitivity of using military assets.",
+      "expected_outcome": "Planner accurately assesses that military aircraft are safer but more provocative.",
+      "required_tools": [
+        "assess_mission_risk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_assessment_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend the civilian charter COA as long as the airport remains secure, as it is less likely to cause a diplomatic incident.",
+      "expected_outcome": "Planner makes a well-reasoned recommendation based on the political context.",
+      "required_tools": [
+        "generate_coa_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_justification_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

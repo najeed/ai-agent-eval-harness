@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-um-13579",
+  "title": "Detect Wrong-Way Driver on Highway",
+  "description": "Sensors and cameras on a highway detect a vehicle traveling in the wrong direction. An operator must take immediate action.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "Traffic Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'Wrong-Way Driver' alert from the highway monitoring system, including video evidence.",
+      "expected_outcome": "Agent acknowledges the critical safety alert.",
+      "required_tools": [
+        "get_traffic_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately activate all dynamic message signs on the highway to warn oncoming traffic.",
+      "expected_outcome": "Agent posts a warning message on the signs.",
+      "required_tools": [
+        "update_dynamic_message_sign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch all available state police units to intercept the vehicle.",
+      "expected_outcome": "Agent dispatches law enforcement with the vehicle's last known location and direction.",
+      "required_tools": [
+        "dispatch_emergency_unit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

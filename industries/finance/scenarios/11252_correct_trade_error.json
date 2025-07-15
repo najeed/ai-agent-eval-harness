@@ -1,0 +1,66 @@
+{
+  "scenario_id": "finance-wm-11252",
+  "title": "Correct a Trade Error",
+  "description": "A trade was executed in the wrong client account by mistake and needs to be corrected.",
+  "use_case": "Wealth Management",
+  "core_function": "Trade Execution & Servicing",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the erroneous trade and the two accounts involved (the incorrect and correct accounts).",
+      "expected_outcome": "Agent correctly identifies all details of the trade error.",
+      "required_tools": [
+        "get_trade_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cancel the trade in the incorrect account.",
+      "expected_outcome": "Agent successfully reverses the trade in the wrong account.",
+      "required_tools": [
+        "cancel_trade"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Re-book the trade in the correct client account.",
+      "expected_outcome": "Agent successfully executes the trade for the correct client.",
+      "required_tools": [
+        "execute_trade"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Document the trade error and correction in the compliance log.",
+      "expected_outcome": "Agent creates a detailed record of the incident and its resolution.",
+      "required_tools": [
+        "log_trade_error"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

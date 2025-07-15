@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ret-cs-13443",
+  "title": "Answer Store Hours Question",
+  "description": "A customer uses the website's chatbot to ask for the store hours of a specific location.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Product Inquiries",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The customer asks the chatbot: 'What are your hours for the downtown store?'",
+      "expected_outcome": "The chatbot understands the user's intent.",
+      "required_tools": [
+        "interpret_customer_intent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "intent_recognition_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The chatbot looks up the requested store in the store information database.",
+      "expected_outcome": "The chatbot finds the correct store record.",
+      "required_tools": [
+        "lookup_store_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The chatbot replies with the store's hours for the current week.",
+      "expected_outcome": "The customer receives an accurate and immediate answer to their question.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

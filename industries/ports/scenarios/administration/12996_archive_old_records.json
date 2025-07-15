@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-af-12996",
+  "title": "Archive Old Operations Records",
+  "description": "As per data retention policy, all operational records older than 7 years must be archived.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Reporting & Analytics",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a query to identify all vessel visit records and container histories older than 7 years.",
+      "expected_outcome": "The admin generates a list of all records due for archiving.",
+      "required_tools": [
+        "query_for_archivable_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Export the identified records from the live production database.",
+      "expected_outcome": "The old data is successfully exported into an archive file format.",
+      "required_tools": [
+        "export_database_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Move the exported files to a long-term, low-cost storage solution and then delete them from the production database.",
+      "expected_outcome": "The data is successfully archived, and the production database is purged of the old records, improving performance.",
+      "required_tools": [
+        "transfer_to_archive_storage",
+        "delete_database_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

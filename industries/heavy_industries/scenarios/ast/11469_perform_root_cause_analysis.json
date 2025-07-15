@@ -1,0 +1,55 @@
+{
+  "scenario_id": "heavy-industries-ast-11469",
+  "title": "Perform Root Cause Analysis (RCA) on Failure",
+  "description": "Following a major equipment failure, a reliability engineer leads an RCA session to prevent recurrence.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Reliability Engineering",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all available data about the failure, including operator logs, maintenance history, and alarm data.",
+      "expected_outcome": "Agent successfully compiles all relevant information.",
+      "required_tools": [
+        "get_operator_logs",
+        "get_maintenance_history",
+        "get_alarm_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a structured RCA method, like a '5 Whys' or 'Fishbone Diagram', to analyze the data and identify potential causes.",
+      "expected_outcome": "The team works through the methodology to brainstorm causes.",
+      "required_tools": [
+        "facilitate_rca_session"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the most likely root cause and create corrective actions to address it.",
+      "expected_outcome": "The team determines the root cause was a design flaw and creates a corrective action to redesign the faulty component.",
+      "required_tools": [
+        "document_root_cause",
+        "create_corrective_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

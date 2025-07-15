@@ -1,0 +1,38 @@
+{
+  "scenario_id": "ecommerce-mce-10971",
+  "title": "Create Customer Segment by Location",
+  "description": "A marketer wants to send a promotion for a local event to all customers within a specific state.",
+  "use_case": "Marketing & Customer Engagement",
+  "core_function": "Customer Analytics",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query the customer database for all customers whose shipping address is in 'California'.",
+      "expected_outcome": "System generates a list of all customers in California.",
+      "required_tools": [
+        "query_customer_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Save the result as a new audience segment named 'California Customers'.",
+      "expected_outcome": "Agent successfully saves the new segment.",
+      "required_tools": [
+        "save_customer_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hosp-sm-11531",
+  "title": "Redeem Loyalty Points for a Free Night",
+  "description": "A loyalty member calls to book a room using their points.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Loyalty Program Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the guest and look up their loyalty account and points balance.",
+      "expected_outcome": "Agent confirms the guest has enough points for a free night.",
+      "required_tools": [
+        "lms_get_member_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for award night availability for the guest's desired dates.",
+      "expected_outcome": "Agent confirms that award nights are available.",
+      "required_tools": [
+        "pms_check_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the reservation using the guest's points and deduct the points from their account.",
+      "expected_outcome": "Agent successfully books the award stay and updates the guest's points balance.",
+      "required_tools": [
+        "pms_create_booking",
+        "lms_redeem_points"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

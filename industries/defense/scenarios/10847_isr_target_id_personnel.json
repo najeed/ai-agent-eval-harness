@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-isr-10847",
+  "title": "High-Value Individual Identification",
+  "description": "An analyst must use facial recognition on drone footage to confirm the identity of a high-value individual (HVI) at a meeting.",
+  "use_case": "Intelligence, Surveillance, & Reconnaissance (ISR)",
+  "core_function": "Target Identification & Tracking",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the drone video feed for individuals matching the general description of the HVI.",
+      "expected_outcome": "Analyst isolates several potential candidates from the video.",
+      "required_tools": [
+        "view_live_fmv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "target_detection_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Extract high-quality still images of the candidates' faces from the video.",
+      "expected_outcome": "Analyst successfully extracts clear facial images.",
+      "required_tools": [
+        "extract_still_image_from_video"
+      ],
+      "success_criteria": [
+        {
+          "metric": "image_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the extracted images through a facial recognition database.",
+      "expected_outcome": "The system returns a high-confidence match, positively identifying the HVI.",
+      "required_tools": [
+        "run_facial_recognition_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "identification_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

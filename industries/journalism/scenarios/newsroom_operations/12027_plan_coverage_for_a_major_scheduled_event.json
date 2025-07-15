@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-no-12027",
+  "title": "Plan Coverage for a Major Scheduled Event",
+  "description": "Editors are planning coverage for the upcoming Olympics. They need to coordinate assignments for multiple reporters and photographers.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Internal Collaboration",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a master planning document or spreadsheet for the event.",
+      "expected_outcome": "A central planning document is created.",
+      "required_tools": [
+        "create_spreadsheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "List all the different events that need to be covered and the deadlines for each.",
+      "expected_outcome": "The document contains a comprehensive list of all coverage requirements.",
+      "required_tools": [
+        "spreadsheet_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehensiveness_of_list",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign specific reporters and photographers to each event based on their expertise and availability.",
+      "expected_outcome": "All events are assigned to a specific team member.",
+      "required_tools": [
+        "spreadsheet_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

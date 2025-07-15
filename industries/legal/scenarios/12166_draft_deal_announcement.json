@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-12166",
+  "title": "Draft an M&A Deal Announcement",
+  "description": "After an M&A deal is signed, an in-house counsel needs to draft an internal announcement to all employees.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Mergers & Acquisitions (M&A)",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the approved press release for the key messaging.",
+      "expected_outcome": "Agent understands the public-facing message.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft an internal email that announces the transaction, expresses excitement for the future, and provides high-level information about the integration process.",
+      "expected_outcome": "Agent writes a clear and positive internal communication.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Route the draft announcement to HR and senior leadership for review and approval before sending.",
+      "expected_outcome": "Agent follows the correct internal review process.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

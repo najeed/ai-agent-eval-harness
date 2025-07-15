@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-as-11021",
+  "title": "LMS Assignment Submission Error",
+  "description": "A student is receiving an error message when trying to upload their assignment to the LMS.",
+  "use_case": "Academic Support",
+  "core_function": "Learning Management System (LMS) Support",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student, course, and specific assignment.",
+      "expected_outcome": "Agent gathers the context of the problem.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask the student for the file type and size of their assignment.",
+      "expected_outcome": "Agent determines the file is a 100MB video file, exceeding the 50MB upload limit for the assignment.",
+      "required_tools": [
+        "check_lms_assignment_settings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the student to compress the file or upload it to a university-approved streaming service and submit the link instead.",
+      "expected_outcome": "Agent provides a viable workaround for the student.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

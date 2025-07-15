@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-no-12011",
+  "title": "Collaborate on a Data-Driven Story",
+  "description": "A reporter and a data journalist are collaborating on a story. They need a shared space to work on the data, analysis, and draft.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Internal Collaboration",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new shared project folder for the story.",
+      "expected_outcome": "A central repository for all story-related files is created.",
+      "required_tools": [
+        "create_shared_folder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the raw dataset and the data analysis script to the shared folder.",
+      "expected_outcome": "Both team members can access the data and the code.",
+      "required_tools": [
+        "upload_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a shared document for the story draft, allowing for simultaneous editing and commenting.",
+      "expected_outcome": "The reporter and data journalist can write and edit the story together in real time.",
+      "required_tools": [
+        "create_collaborative_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

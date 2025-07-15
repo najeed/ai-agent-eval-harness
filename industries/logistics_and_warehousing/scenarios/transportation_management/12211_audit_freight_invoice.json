@@ -1,0 +1,51 @@
+{
+  "scenario_id": "lw-tm-12211",
+  "title": "Audit a Freight Invoice",
+  "description": "An accounts payable clerk needs to audit a carrier's freight invoice against the agreed-upon rate before approving it for payment.",
+  "use_case": "Transportation Management",
+  "core_function": "Proof of Delivery & Settlement",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the freight invoice and the original rate confirmation for the specified shipment.",
+      "expected_outcome": "Agent correctly pulls both the invoice and the rate agreement.",
+      "required_tools": [
+        "get_freight_invoice",
+        "get_rate_confirmation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the invoiced amount, including linehaul and fuel surcharge, against the amounts on the rate confirmation.",
+      "expected_outcome": "Agent identifies that the carrier has overcharged for the fuel surcharge.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Short-pay the invoice with a note explaining the discrepancy and approve the corrected amount for payment.",
+      "expected_outcome": "Agent successfully adjusts the payment amount and adds a clear reason code.",
+      "required_tools": [
+        "approve_invoice_for_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

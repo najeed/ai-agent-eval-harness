@@ -1,0 +1,54 @@
+{
+  "scenario_id": "telecom-sl-13843",
+  "title": "Cross-sell - Add a Line to Family Plan",
+  "description": "An existing customer on a family plan wants to add a new line for their child.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "Upselling and Cross-selling",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and their current family plan details.",
+      "expected_outcome": "Agent confirms the customer has a family plan with one available slot.",
+      "required_tools": [
+        "get_customer_details",
+        "get_plan_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the monthly cost of adding the new line.",
+      "expected_outcome": "Agent clearly states the additional cost.",
+      "required_tools": [
+        "calculate_plan_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the request to add a new line and ship a new SIM card.",
+      "expected_outcome": "Agent successfully updates the plan and orders a new SIM.",
+      "required_tools": [
+        "add_service_line",
+        "process_new_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

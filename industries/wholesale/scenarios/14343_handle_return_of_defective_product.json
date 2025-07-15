@@ -1,0 +1,65 @@
+{
+  "scenario_id": "wholesale-im-14343",
+  "title": "Handle Return of a Defective Product",
+  "description": "A retailer returns a product that they claim is defective.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Returns Management (RMA)",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the returned item and the RMA number.",
+      "expected_outcome": "The warehouse receives the item.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inspect the item to verify the defect.",
+      "expected_outcome": "A technician confirms the product has a manufacturing defect.",
+      "required_tools": [
+        "perform_quality_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a full credit to the retailer.",
+      "expected_outcome": "Agent credits the retailer's account.",
+      "required_tools": [
+        "issue_credit_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Quarantine the defective item and notify the supplier of the quality issue.",
+      "expected_outcome": "The item is set aside, and a quality report is sent to the original supplier.",
+      "required_tools": [
+        "quarantine_inventory_item",
+        "send_quality_report_to_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

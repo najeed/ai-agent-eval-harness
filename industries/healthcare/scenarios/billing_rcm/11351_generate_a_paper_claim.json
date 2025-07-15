@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-brc-11351",
+  "title": "Generate a Paper Claim",
+  "description": "A small insurance company does not accept electronic claims. A biller needs to generate a paper CMS-1500 form for a claim.",
+  "use_case": "Billing & Revenue Cycle Management",
+  "core_function": "Claims Management & Submission",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the claim that needs to be sent on paper.",
+      "expected_outcome": "Biller locates the claim for the non-electronic payer.",
+      "required_tools": [
+        "find_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the 'Print to CMS-1500' option in the billing system.",
+      "expected_outcome": "The system populates the claim data onto a digital image of the CMS-1500 form.",
+      "required_tools": [
+        "generate_paper_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Print the form and mail it to the payer.",
+      "expected_outcome": "The paper claim is successfully printed and prepared for mailing.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

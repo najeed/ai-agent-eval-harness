@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-sp-12443",
+  "title": "Set Up Brand Safety Filters",
+  "description": "A brand manager wants to ensure their display ads do not appear on websites with sensitive or inappropriate content.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Brand Management",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Navigate to the brand safety settings in the display advertising platform.",
+      "expected_outcome": "Agent finds the relevant section.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a placement exclusion list of specific websites to block.",
+      "expected_outcome": "Agent uploads a list of known inappropriate sites.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply content category exclusions to block ads from appearing alongside sensitive topics (e.g., 'Tragedy and Conflict').",
+      "expected_outcome": "Agent selects the appropriate content categories to exclude.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-pmc-11434",
+  "title": "Update Project Work Breakdown Structure (WBS)",
+  "description": "Due to a change in construction strategy, a new work package needs to be added to the project's Work Breakdown Structure (WBS).",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Planning & Scheduling",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the WBS for the project.",
+      "expected_outcome": "Agent successfully retrieves the current WBS.",
+      "required_tools": [
+        "get_project_wbs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add a new Level 3 WBS element for 'Modular Skid Installation'.",
+      "expected_outcome": "Agent successfully adds the new element to the structure.",
+      "required_tools": [
+        "update_project_wbs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign a budget to the new WBS element and link it to the relevant section of the project schedule.",
+      "expected_outcome": "Agent allocates a budget and associates the WBS element with the corresponding project activities.",
+      "required_tools": [
+        "assign_budget_to_wbs",
+        "link_wbs_to_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

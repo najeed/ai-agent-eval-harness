@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-er-11663",
+  "title": "Respond to an Ethics Hotline Report",
+  "description": "An anonymous report has been submitted through the ethics hotline alleging fraudulent expense reporting by a manager.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Disciplinary Actions",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the anonymous report from the ethics hotline system.",
+      "expected_outcome": "The compliance officer receives the case details.",
+      "required_tools": [
+        "get_ethics_hotline_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate a confidential investigation, partnering with internal audit.",
+      "expected_outcome": "Officer creates a new investigation case and engages the internal audit team.",
+      "required_tools": [
+        "create_investigation_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the manager's expense reports for the last year to look for anomalies.",
+      "expected_outcome": "The investigation team analyzes the expense reports for policy violations.",
+      "required_tools": [
+        "get_employee_expense_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

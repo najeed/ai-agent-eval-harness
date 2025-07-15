@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-hse-12620",
+  "title": "Manage Mine Dewatering System",
+  "description": "An environmental engineer manages the mine's dewatering system to prevent flooding in the pit while ensuring discharged water meets quality standards.",
+  "use_case": "Health, Safety & Environment (HSE)",
+  "core_function": "Water Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the water level in the main pit sump.",
+      "expected_outcome": "The system shows the water level is rising after a heavy rainfall event.",
+      "required_tools": [
+        "get_sump_level_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Start an additional dewatering pump to increase the pumping rate from the pit to the water treatment plant.",
+      "expected_outcome": "An extra pump is turned on to handle the increased inflow.",
+      "required_tools": [
+        "start_dewatering_pump"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the water treatment plant is operating correctly and the final discharged water is compliant.",
+      "expected_outcome": "The system confirms the treatment plant is handling the extra flow and water quality remains within limits.",
+      "required_tools": [
+        "get_water_treatment_plant_status",
+        "get_water_quality_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

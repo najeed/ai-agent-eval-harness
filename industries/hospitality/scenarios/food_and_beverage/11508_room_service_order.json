@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-fb-11508",
+  "title": "Take a Room Service Order",
+  "description": "A guest calls to order a club sandwich and a soda from room service.",
+  "use_case": "Food & Beverage (F&B)",
+  "core_function": "Room Service",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the guest's room number and take their order.",
+      "expected_outcome": "Agent correctly records the order details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the order into the POS system and confirm the total price and estimated delivery time with the guest.",
+      "expected_outcome": "Agent enters the order and informs the guest of the total and a 30-minute ETA.",
+      "required_tools": [
+        "pos_create_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Charge the order to the guest's room folio.",
+      "expected_outcome": "The charge is successfully posted to the guest's room bill.",
+      "required_tools": [
+        "pos_charge_to_room"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

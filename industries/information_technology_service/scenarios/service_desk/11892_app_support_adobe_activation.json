@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_service-sd-11892",
+  "title": "Application Support - Adobe Creative Cloud Activation",
+  "description": "A user reports their Adobe Creative Cloud applications are showing as a trial, even though the company has a license.",
+  "use_case": "Service Desk & End-User Support",
+  "core_function": "Application Support",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the Adobe Admin Console to ensure the user has been assigned an Adobe CC license.",
+      "expected_outcome": "The technician confirms a license is assigned to the user's email address.",
+      "required_tools": [
+        "check_adobe_admin_console"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the user is logged into the Creative Cloud app with their personal Adobe ID instead of their corporate one.",
+      "expected_outcome": "The technician correctly identifies the root cause of the issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the user to sign out of the Creative Cloud desktop app and sign back in using the 'Sign in with Company or School Account' option.",
+      "expected_outcome": "The user successfully activates their license.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

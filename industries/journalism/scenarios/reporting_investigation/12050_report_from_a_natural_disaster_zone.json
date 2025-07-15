@@ -1,0 +1,66 @@
+{
+  "scenario_id": "journalism-ri-12050",
+  "title": "Report from a Natural Disaster Zone",
+  "description": "A reporter is sent to cover a hurricane's aftermath. They must report on the damage and the human impact while dealing with difficult conditions.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Field Reporting & Event Coverage",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Travel to the affected area and establish a safe base of operations.",
+      "expected_outcome": "Reporter is safely on location.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "safety_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Interview affected residents, first responders, and officials to gather personal stories and official information.",
+      "expected_outcome": "Agent gathers a mix of anecdotal and official information.",
+      "required_tools": [
+        "note_taking_app",
+        "audio_recorder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "source_diversity",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Capture photos and videos of the damage to provide visual context.",
+      "expected_outcome": "Compelling visual evidence is captured.",
+      "required_tools": [
+        "camera",
+        "video_camera"
+      ],
+      "success_criteria": [
+        {
+          "metric": "visual_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "File stories back to the newsroom using a satellite phone or other backup communication method due to likely power outages.",
+      "expected_outcome": "Stories are successfully filed despite infrastructure challenges.",
+      "required_tools": [
+        "satellite_phone"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

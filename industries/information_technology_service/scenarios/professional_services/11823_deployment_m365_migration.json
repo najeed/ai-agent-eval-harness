@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-ps-11823",
+  "title": "Deployment - Execute M365 Migration",
+  "description": "A technician is performing the cutover migration from a client's on-premise Exchange server to Microsoft 365 over a weekend.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Technology Deployment & Migration",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run the final synchronization of mailboxes from the on-premise server to Microsoft 365.",
+      "expected_outcome": "All mailbox data is successfully synced to the cloud.",
+      "required_tools": [
+        "run_m365_migration_batch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the client's public DNS records (MX, SPF, DKIM) to point to Microsoft 365 instead of the on-premise server.",
+      "expected_outcome": "Mail flow is successfully redirected to the cloud.",
+      "required_tools": [
+        "update_dns_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run post-migration scripts to reconfigure users' Outlook profiles on Monday morning.",
+      "expected_outcome": "End-users can access their email on Monday with minimal disruption.",
+      "required_tools": [
+        "run_script_on_endpoint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

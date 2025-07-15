@@ -1,0 +1,51 @@
+{
+  "scenario_id": "tourism-tr-13928",
+  "title": "Report Lost Luggage",
+  "description": "A passenger has arrived at their destination, but their checked bag did not. They need to file a lost luggage report.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Disruption Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the passenger's booking and baggage claim information using their ticket number.",
+      "expected_outcome": "Agent locates the passenger's details and the tag number for the missing bag.",
+      "required_tools": [
+        "get_booking_details",
+        "get_baggage_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect a description of the bag and the passenger's contact information.",
+      "expected_outcome": "Agent gathers all necessary details for the report.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new lost baggage report in the system and provide the passenger with a file reference number.",
+      "expected_outcome": "Agent successfully files the report and gives the customer a reference for tracking.",
+      "required_tools": [
+        "create_lost_baggage_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

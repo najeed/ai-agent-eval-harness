@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-13247",
+  "title": "Verify Property Tax Information",
+  "description": "When creating a new listing, an agent needs to verify the official property tax amount and check for any special assessments.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the property's Parcel ID Number (APN).",
+      "expected_outcome": "Agent correctly finds the property's APN.",
+      "required_tools": [
+        "get_property_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the county tax assessor's public records database using the APN.",
+      "expected_outcome": "Agent successfully navigates to the property's tax record page.",
+      "required_tools": [
+        "search_public_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Extract the most recent annual tax amount and note any Mello-Roos or other special assessments to include in the listing disclosures.",
+      "expected_outcome": "Agent accurately records all relevant tax information.",
+      "required_tools": [
+        "extract_data_from_webpage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_extraction_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

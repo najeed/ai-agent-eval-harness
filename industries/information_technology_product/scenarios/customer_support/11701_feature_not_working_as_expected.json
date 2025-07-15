@@ -1,0 +1,61 @@
+{
+  "scenario_id": "information_technology_product-cs-11701",
+  "title": "Feature Not Working as Expected",
+  "description": "A user reports that the 'Export to PDF' feature is generating a corrupted file.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Technical Troubleshooting",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather details about the user's browser, operating system, and the specific data being exported.",
+      "expected_outcome": "Agent collects environment details to replicate the issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attempt to replicate the issue using a test account with similar data and environment settings.",
+      "expected_outcome": "Agent successfully reproduces the bug.",
+      "required_tools": [
+        "access_test_environment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log a detailed bug report for the engineering team, including replication steps and user details.",
+      "expected_outcome": "Agent creates a high-quality bug report.",
+      "required_tools": [
+        "create_bug_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Inform the user that the bug has been confirmed and provide an alternative export format (e.g., CSV) as a temporary workaround.",
+      "expected_outcome": "Agent manages customer expectations and provides a temporary solution.",
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

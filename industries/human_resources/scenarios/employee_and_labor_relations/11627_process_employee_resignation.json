@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hr-er-11627",
+  "title": "Process an Employee Resignation",
+  "description": "An employee submits their two-week notice of resignation.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Offboarding",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the resignation letter and acknowledge it in writing.",
+      "expected_outcome": "HR specialist receives the resignation and sends a confirmation email.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the termination date into the HRIS to trigger the offboarding workflow.",
+      "expected_outcome": "Specialist correctly enters the employee's last day in the system.",
+      "required_tools": [
+        "process_employee_termination"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare the final paycheck and benefits paperwork for the employee's last day.",
+      "expected_outcome": "Specialist calculates and prepares all final separation documents and pay.",
+      "required_tools": [
+        "calculate_final_pay",
+        "generate_offboarding_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "scenario_id": "real_estate-rs-13349",
+  "title": "Advise a Buyer Interested in a FSBO",
+  "description": "A buyer represented by an agent wants to make an offer on a home being sold 'For Sale By Owner' (FSBO).",
+  "use_case": "Residential Sales",
+  "core_function": "Offers & Negotiation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Contact the FSBO seller to introduce yourself and confirm they are willing to cooperate with a buyer's agent and pay a commission.",
+      "expected_outcome": "Agent establishes communication and confirms commission agreement.",
+      "required_tools": [
+        "contact_seller",
+        "generate_commission_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "negotiation_success",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Advise the buyer on the risks and nuances of dealing with an unrepresented seller.",
+      "expected_outcome": "The buyer is well-informed about the process.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft and submit the purchase offer directly to the seller, explaining the terms clearly.",
+      "expected_outcome": "The offer is submitted and explained to the unrepresented seller.",
+      "required_tools": [
+        "generate_purchase_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

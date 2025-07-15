@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-sc-10644",
+  "title": "Respond to Neighborhood Noise Complaint",
+  "description": "The project receives a noise complaint from a neighbor. The site manager must verify compliance with local noise ordinances.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Compliance & Permitting",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the local noise ordinance regulations for construction sites.",
+      "expected_outcome": "Agent retrieves the document specifying that work is only allowed between 7 AM and 6 PM.",
+      "required_tools": [
+        "get_local_ordinances"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the daily logs to confirm that all work has been conducted within the allowed hours.",
+      "expected_outcome": "The logs confirm that work has not occurred outside the permitted times.",
+      "required_tools": [
+        "get_daily_logs_by_date"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the complaint and the compliance verification in the project's communication log.",
+      "expected_outcome": "The complaint and the finding of compliance are formally documented.",
+      "required_tools": [
+        "create_communication_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

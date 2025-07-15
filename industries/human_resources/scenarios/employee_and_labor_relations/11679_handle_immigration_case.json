@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hr-er-11679",
+  "title": "Handle an Immigration Case",
+  "description": "HR is sponsoring a work visa (e.g., H-1B) for a new hire and must work with outside counsel to file the petition.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Policy & Compliance",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all required information from the employee (e.g., passport, educational degrees).",
+      "expected_outcome": "The mobility specialist collects all necessary documents from the employee.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the collected documents and job details securely to the external immigration law firm.",
+      "expected_outcome": "Specialist sends the complete packet to the attorneys.",
+      "required_tools": [
+        "send_secure_file_transfer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Track the status of the case with the law firm and provide updates to the employee and their manager.",
+      "expected_outcome": "Specialist checks in with the law firm and communicates the case status internally.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

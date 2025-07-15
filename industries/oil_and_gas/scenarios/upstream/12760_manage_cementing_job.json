@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-up-12760",
+  "title": "Manage Well Cementing Job",
+  "description": "A completions engineer supervises the cementing of a casing string to ensure it provides zonal isolation.",
+  "use_case": "Upstream",
+  "core_function": "Drilling & Completions",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the cement slurry has been mixed to the correct density and volume as per the design.",
+      "expected_outcome": "The engineer confirms the slurry properties are on-spec before pumping.",
+      "required_tools": [
+        "get_cement_slurry_properties"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Monitor the pumping pressure in real-time as the cement is pumped down the casing and up the annulus.",
+      "expected_outcome": "The pressure is monitored to ensure it stays within safe limits and indicates good displacement.",
+      "required_tools": [
+        "get_realtime_pumping_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the job, run a cement bond log (CBL) to evaluate the quality of the cement seal behind the casing.",
+      "expected_outcome": "The CBL is run and analyzed, confirming a good bond across the zone of interest.",
+      "required_tools": [
+        "run_cement_bond_log",
+        "analyze_cbl_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

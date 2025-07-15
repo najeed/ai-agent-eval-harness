@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-14133",
+  "title": "Transformer Overload Alert",
+  "description": "The SCADA system detects that a distribution transformer is operating above its nameplate rating due to high summer demand.",
+  "use_case": "Grid Operations",
+  "core_function": "System Control & Monitoring",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and acknowledge the transformer load alarm from SCADA.",
+      "expected_outcome": "System logs the high-priority alarm.",
+      "required_tools": [
+        "get_scada_alarm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze historical load data for the transformer to determine if this is a recurring issue.",
+      "expected_outcome": "System finds that the transformer has been overloaded during peak summer hours for the past week.",
+      "required_tools": [
+        "get_historical_asset_load"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend a mitigation action, such as temporarily transferring some load to an adjacent transformer or dispatching a demand response event in the area.",
+      "expected_outcome": "System suggests a load transfer as the most viable immediate option.",
+      "required_tools": [
+        "recommend_load_balancing_action"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

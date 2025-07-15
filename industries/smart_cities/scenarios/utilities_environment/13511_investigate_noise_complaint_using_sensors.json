@@ -1,0 +1,66 @@
+{
+  "scenario_id": "smartcities-ue-13511",
+  "title": "Investigate Noise Complaint Using Sensors",
+  "description": "A citizen files a late-night noise complaint. An operator uses noise sensors to verify and identify the source.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Environmental Monitoring",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a noise complaint for the area around '3rd and Elm St'.",
+      "expected_outcome": "Agent acknowledges the citizen report.",
+      "required_tools": [
+        "get_citizen_service_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve historical and real-time decibel level readings from noise sensors in that area.",
+      "expected_outcome": "Agent pulls up a chart showing a spike in noise levels starting at 11 PM.",
+      "required_tools": [
+        "get_noise_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Correlate the noise data with a registered event permit, finding an approved construction project that is operating outside of allowed hours.",
+      "expected_outcome": "Agent identifies the likely source of the noise and the violation.",
+      "required_tools": [
+        "get_event_permits_by_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Dispatch a bylaw officer to the location to address the violation.",
+      "expected_outcome": "Agent successfully dispatches the appropriate enforcement unit.",
+      "required_tools": [
+        "dispatch_bylaw_officer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

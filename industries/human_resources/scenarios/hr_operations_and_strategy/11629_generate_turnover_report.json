@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hr-os-11629",
+  "title": "Generate a Quarterly Turnover Report",
+  "description": "The HR leadership team needs the quarterly turnover report, including voluntary and involuntary separations.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Reporting & Analytics",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the date range for the previous quarter.",
+      "expected_outcome": "Analyst sets the report parameters for the correct date range.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a report from the HRIS on all employee terminations within that date range, categorized by reason.",
+      "expected_outcome": "Analyst successfully generates the raw data.",
+      "required_tools": [
+        "run_hris_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the quarterly turnover rate and create a presentation summarizing the findings.",
+      "expected_outcome": "Analyst calculates the rate and creates charts visualizing the data for leadership.",
+      "required_tools": [
+        "calculate_hr_metrics",
+        "create_presentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

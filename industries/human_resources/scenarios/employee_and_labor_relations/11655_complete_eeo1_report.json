@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-er-11655",
+  "title": "Complete the Annual EEO-1 Report",
+  "description": "A compliance specialist needs to compile and submit the company's annual EEO-1 report to the government.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Policy & Compliance",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a report from the HRIS of all employees and their demographic and job category data as of the required snapshot date.",
+      "expected_outcome": "Specialist generates the raw data needed for the report.",
+      "required_tools": [
+        "run_hris_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Format the data according to the EEO-1 reporting specifications.",
+      "expected_outcome": "Specialist correctly maps company job titles to the standard EEO-1 categories.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the formatted data file through the official EEO-1 online filing portal.",
+      "expected_outcome": "Specialist successfully submits the report before the deadline.",
+      "required_tools": [
+        "submit_eeo1_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

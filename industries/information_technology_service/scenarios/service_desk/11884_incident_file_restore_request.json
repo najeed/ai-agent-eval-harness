@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-sd-11884",
+  "title": "Incident - Request for File Restore",
+  "description": "A user reports they have overwritten an important spreadsheet and need the version from yesterday restored.",
+  "use_case": "Service Desk & End-User Support",
+  "core_function": "Incident & Request Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the full file path and name from the user.",
+      "expected_outcome": "Technician has the exact location of the file.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Right-click the file and use the 'Previous Versions' tab (VSS) to find yesterday's version.",
+      "expected_outcome": "The technician finds a version from the previous day.",
+      "required_tools": [
+        "access_vss_snapshots"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Restore yesterday's version of the file to a different location (e.g., the user's desktop) so they can verify it's the correct one before overwriting the current version.",
+      "expected_outcome": "The user receives the older version of the file and can recover their lost work.",
+      "required_tools": [
+        "restore_from_vss"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

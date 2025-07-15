@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ecommerce-css-10954",
+  "title": "Help Customer View Order History",
+  "description": "A customer is on the phone and wants to know the date and total of their last three orders.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Account Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's account.",
+      "expected_outcome": "Agent finds the customer's profile.",
+      "required_tools": [
+        "get_customer_by_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the customer's complete order history.",
+      "expected_outcome": "Agent gets a list of all past orders.",
+      "required_tools": [
+        "get_order_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Read off the date and total amount for the three most recent orders.",
+      "expected_outcome": "Agent accurately communicates the requested information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

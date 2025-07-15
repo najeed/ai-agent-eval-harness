@@ -1,0 +1,53 @@
+{
+  "scenario_id": "lw-im-12224",
+  "title": "Place a Purchase Order",
+  "description": "An item's inventory has fallen below its reorder point. A buyer needs to place a purchase order with the supplier.",
+  "use_case": "Inventory Management",
+  "core_function": "Replenishment & Ordering",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a system alert that an item is below its reorder point.",
+      "expected_outcome": "Agent is notified of the need to reorder.",
+      "required_tools": [
+        "get_inventory_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the optimal order quantity based on lead time, demand, and economic order quantity (EOQ).",
+      "expected_outcome": "The system suggests an order quantity of 1,000 units.",
+      "required_tools": [
+        "calculate_eoq"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a purchase order for the suggested quantity and send it to the approved supplier.",
+      "expected_outcome": "Agent successfully creates and sends the PO.",
+      "required_tools": [
+        "create_purchase_order",
+        "send_po_to_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

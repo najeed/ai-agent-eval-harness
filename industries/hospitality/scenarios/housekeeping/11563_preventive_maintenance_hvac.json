@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-hk-11563",
+  "title": "Schedule Preventive Maintenance",
+  "description": "An engineer needs to perform scheduled preventive maintenance (e.g., cleaning the filter) on a room's HVAC unit.",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Maintenance Requests",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of rooms where HVAC maintenance is due this month.",
+      "expected_outcome": "The system generates a list of rooms needing service.",
+      "required_tools": [
+        "mms_generate_pm_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each room, block it from being sold on a day when it is vacant to perform the maintenance.",
+      "expected_outcome": "Rooms are put 'Out of Order' in the PMS for the maintenance day.",
+      "required_tools": [
+        "pms_block_room"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create work orders for the technician to perform the maintenance on the scheduled days.",
+      "expected_outcome": "Work orders are created for all required rooms.",
+      "required_tools": [
+        "mms_create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

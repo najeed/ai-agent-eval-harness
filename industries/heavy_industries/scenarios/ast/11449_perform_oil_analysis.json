@@ -1,0 +1,53 @@
+{
+  "scenario_id": "heavy-industries-ast-11449",
+  "title": "Perform Oil Analysis",
+  "description": "As part of a predictive maintenance program, an oil sample has been taken from a large gearbox. The sample needs to be analyzed for wear metals.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Reliability Engineering",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the oil sample in the lab system, linking it to the specific gearbox asset.",
+      "expected_outcome": "Agent successfully creates a new sample record.",
+      "required_tools": [
+        "log_lab_sample"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform the oil analysis using an ICP spectrometer to measure the concentration of various metals (e.g., iron, copper).",
+      "expected_outcome": "The analyst performs the test and gets the results.",
+      "required_tools": [
+        "perform_icp_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the results to the alarm limits for this type of asset. The iron level is high, indicating accelerated wear.",
+      "expected_outcome": "Agent compares the results to limits and identifies a high iron level, triggering an alert for the reliability engineer.",
+      "required_tools": [
+        "compare_results_to_limits",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

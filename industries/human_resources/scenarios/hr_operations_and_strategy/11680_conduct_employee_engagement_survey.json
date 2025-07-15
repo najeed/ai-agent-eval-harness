@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hr-os-11680",
+  "title": "Conduct Annual Employee Engagement Survey",
+  "description": "HR is launching the annual employee engagement survey to measure employee satisfaction.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Workforce Planning",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Launch the survey using a third-party survey tool.",
+      "expected_outcome": "HR team sends a unique survey link to all employees.",
+      "required_tools": [
+        "launch_survey"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Monitor the survey response rate throughout the survey period.",
+      "expected_outcome": "HR team tracks the response rate on the survey platform's dashboard.",
+      "required_tools": [
+        "get_survey_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the survey closes, analyze the results and prepare a presentation for leadership on the key findings.",
+      "expected_outcome": "HR team analyzes the data and creates a report highlighting areas of strength and opportunities for improvement.",
+      "required_tools": [
+        "analyze_survey_results",
+        "create_presentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

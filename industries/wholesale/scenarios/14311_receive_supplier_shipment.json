@@ -1,0 +1,66 @@
+{
+  "scenario_id": "wholesale-im-14311",
+  "title": "Receive Supplier Shipment",
+  "description": "A shipment of goods arrives from a supplier. A warehouse worker must receive the goods and update inventory.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Receiving & Putaway",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the corresponding purchase order for the incoming shipment.",
+      "expected_outcome": "Agent finds the correct PO based on the supplier and packing slip.",
+      "required_tools": [
+        "get_purchase_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan the items and count them to verify the quantities match the purchase order.",
+      "expected_outcome": "Agent confirms that the quantities of all items received match the PO.",
+      "required_tools": [
+        "scan_item_barcode"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the inventory system to reflect the newly received stock.",
+      "expected_outcome": "Agent successfully increases the on-hand inventory count for the received items.",
+      "required_tools": [
+        "update_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate putaway instructions for the warehouse staff to store the items.",
+      "expected_outcome": "Agent generates a list telling staff which warehouse locations to store the new items in.",
+      "required_tools": [
+        "generate_putaway_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

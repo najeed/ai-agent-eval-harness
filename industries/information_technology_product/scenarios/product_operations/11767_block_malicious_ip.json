@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_product-po-11767",
+  "title": "Block Malicious IP",
+  "description": "A threat intelligence feed identifies an IP address that is attempting to brute-force user accounts.",
+  "use_case": "Product Operations & Reliability (SRE)",
+  "core_function": "Security Operations (SecOps)",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the malicious IP address from the threat feed.",
+      "expected_outcome": "Agent correctly identifies the IP to be blocked.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the IP address to the firewall's blocklist.",
+      "expected_outcome": "Agent successfully applies a firewall rule to block the IP.",
+      "required_tools": [
+        "add_ip_to_blocklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify in the logs that traffic from the blocked IP is no longer reaching the application.",
+      "expected_outcome": "Agent confirms the block is effective.",
+      "required_tools": [
+        "check_firewall_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

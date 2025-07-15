@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-mx-11083",
+  "title": "New Faculty Onboarding and Tech Setup",
+  "description": "A new faculty member, as part of their onboarding, needs to get their ID card and have their office computer set up.",
+  "use_case": "Mixed",
+  "core_function": "HR & Onboarding",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "As part of the HR onboarding checklist, direct the new faculty to the campus card office to have their photo taken and ID issued.",
+      "expected_outcome": "HR agent provides clear directions and instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "After the ID is issued, the card office system automatically generates an IT support ticket.",
+      "expected_outcome": "A ticket is created for desktop support to set up the new faculty's computer.",
+      "required_tools": [
+        "create_it_support_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The IT technician uses the ticket to schedule a setup appointment with the new faculty member.",
+      "expected_outcome": "IT schedules and completes the computer setup.",
+      "required_tools": [
+        "schedule_it_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

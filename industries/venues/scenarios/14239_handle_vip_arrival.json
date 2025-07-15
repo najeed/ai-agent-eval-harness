@@ -1,0 +1,50 @@
+{
+  "scenario_id": "venues-sh-14239",
+  "title": "Handle a VIP Arrival",
+  "description": "The CEO of a major sponsor is arriving for a game and needs to be escorted to their suite.",
+  "use_case": "Sales & Hospitality",
+  "core_function": "VIP & Hospitality Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive notification that the VIP has arrived at the VIP entrance.",
+      "expected_outcome": "Agent acknowledges the arrival.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the VIP's details, including their suite number and designated hospitality manager.",
+      "expected_outcome": "Agent finds the VIP's information in the guest list.",
+      "required_tools": [
+        "search_guest_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch the designated hospitality manager to the VIP entrance to greet the guest.",
+      "expected_outcome": "Agent contacts the manager and directs them to the entrance.",
+      "required_tools": [
+        "dispatch_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

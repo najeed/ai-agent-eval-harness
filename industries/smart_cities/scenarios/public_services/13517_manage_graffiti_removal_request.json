@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-pg-13517",
+  "title": "Manage Graffiti Removal Request",
+  "description": "A citizen reports graffiti on a public building. An operator dispatches a cleaning crew.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Citizen Reporting & Service Requests",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge a 'graffiti' service request from the 311 system, including a photo of the graffiti.",
+      "expected_outcome": "Agent retrieves the report details.",
+      "required_tools": [
+        "get_citizen_service_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the asset (e.g., 'Community Center Wall') and create a 'Graffiti Removal' work order.",
+      "expected_outcome": "Agent creates the appropriate work order type.",
+      "required_tools": [
+        "get_asset_by_location",
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the work order to the city's mobile cleaning crew.",
+      "expected_outcome": "Agent dispatches the cleaning crew.",
+      "required_tools": [
+        "assign_work_order_to_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

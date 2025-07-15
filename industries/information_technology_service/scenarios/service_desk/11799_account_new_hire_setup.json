@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_service-sd-11799",
+  "title": "User Account - New Hire Setup",
+  "description": "A client submits a request to set up all necessary accounts and hardware for a new employee starting next week.",
+  "use_case": "Service Desk & End-User Support",
+  "core_function": "User Account & Device Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log a new ticket using the 'New Hire' template.",
+      "expected_outcome": "A new ticket with a checklist of new-hire tasks is created.",
+      "required_tools": [
+        "create_ticket_from_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new user account in the client's Active Directory and Microsoft 365 tenant.",
+      "expected_outcome": "The user account, email, and basic group memberships are created.",
+      "required_tools": [
+        "create_ad_user",
+        "create_m365_user"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Configure a new laptop for the user by deploying the standard client image.",
+      "expected_outcome": "A new laptop is prepared with all standard company software and settings.",
+      "required_tools": [
+        "deploy_os_image"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

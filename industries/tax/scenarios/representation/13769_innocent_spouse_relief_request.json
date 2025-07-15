@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-rep-13769",
+  "title": "Innocent Spouse Relief Request",
+  "description": "A recently divorced individual has discovered their ex-spouse understated income on a previously filed joint return, and the IRS is now seeking payment from them.",
+  "use_case": "Taxpayer Representation & Resolution",
+  "core_function": "Collections & Appeals",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the taxpayer's situation to see if they qualify for innocent spouse relief.",
+      "expected_outcome": "Agent determines the client meets the criteria (e.g., had no knowledge of the understatement).",
+      "required_tools": [
+        "check_innocent_spouse_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather evidence to support the claim.",
+      "expected_outcome": "Agent compiles documentation proving the client's lack of knowledge and involvement.",
+      "required_tools": [
+        "request_client_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare and file Form 8857, Request for Innocent Spouse Relief.",
+      "expected_outcome": "Agent submits a complete and well-supported request to the IRS.",
+      "required_tools": [
+        "prepare_form_8857"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

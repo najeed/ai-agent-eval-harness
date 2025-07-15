@@ -1,0 +1,49 @@
+{
+  "scenario_id": "information_technology_product-cs-11709",
+  "title": "User Permission Issue",
+  "description": "A user reports they cannot access a feature they believe they should have access to.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Technical Troubleshooting",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the user and their assigned user role within the system.",
+      "expected_outcome": "Agent finds the user has a 'Standard User' role.",
+      "required_tools": [
+        "get_user_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the permission settings for the 'Standard User' role.",
+      "expected_outcome": "Agent confirms that the feature the user wants to access is restricted to the 'Admin User' role.",
+      "required_tools": [
+        "get_role_permissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain to the user that they need to contact their account administrator to request a role change.",
+      "expected_outcome": "Agent correctly explains the permission structure and directs the user to the appropriate internal contact.",
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

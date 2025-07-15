@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-ar-12482",
+  "title": "Create a Word Cloud from Customer Reviews",
+  "description": "An analyst wants to create a word cloud from customer reviews to quickly visualize the most frequently mentioned terms.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Dashboarding & Visualization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all customer review text from the last quarter.",
+      "expected_outcome": "Agent has a single body of text containing all reviews.",
+      "required_tools": [
+        "get_customer_reviews"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Input the text into a word cloud generation tool.",
+      "expected_outcome": "Agent uses the tool to process the text.",
+      "required_tools": [
+        "word_cloud_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the word cloud visualization.",
+      "expected_outcome": "The tool produces a visual where more frequent words like 'easy', 'fast', and 'support' appear larger.",
+      "required_tools": [
+        "word_cloud_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "visualization_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-as-11376",
+  "title": "Compound an IV Medication",
+  "description": "A pharmacy technician in a clean room needs to compound an intravenous (IV) medication.",
+  "use_case": "Ancillary Services",
+  "core_function": "Pharmacy Operations",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the recipe for the IV compound in the pharmacy system.",
+      "expected_outcome": "Technician sees the list of ingredients and amounts needed.",
+      "required_tools": [
+        "get_iv_compound_recipe"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan the barcodes of the base solution and all additives to ensure the correct components are used.",
+      "expected_outcome": "The system verifies each ingredient as it is scanned.",
+      "required_tools": [
+        "scan_medication_barcode"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare the IV bag, print a label, and have a pharmacist perform the final check.",
+      "expected_outcome": "The IV medication is prepared safely and accurately.",
+      "required_tools": [
+        "prepare_iv_dose"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-wm-11275",
+  "title": "Provide Proof of Funds Letter",
+  "description": "A client is buying a house and needs an official letter from the firm confirming they have sufficient funds for the purchase.",
+  "use_case": "Wealth Management",
+  "core_function": "Trade Execution & Servicing",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the client's identity and the amount of funds they need to verify.",
+      "expected_outcome": "Agent authenticates the client and confirms the required amount.",
+      "required_tools": [
+        "verify_client_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the client's account balances to ensure they have sufficient liquid assets.",
+      "expected_outcome": "Agent confirms the client's account balance exceeds the required amount.",
+      "required_tools": [
+        "get_account_balance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate and provide an official, signed Proof of Funds letter to the client.",
+      "expected_outcome": "Agent generates the letter on company letterhead and sends it to the client.",
+      "required_tools": [
+        "generate_proof_of_funds_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

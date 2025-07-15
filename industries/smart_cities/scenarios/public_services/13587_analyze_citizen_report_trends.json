@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-pg-13587",
+  "title": "Analyze Citizen Report Trends",
+  "description": "A city manager wants to know what the most common citizen complaints have been over the last year.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Citizen Reporting & Service Requests",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all citizen service requests from the last 12 months.",
+      "expected_outcome": "Agent successfully queries the 311 database.",
+      "required_tools": [
+        "get_citizen_service_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Categorize and count the requests by type (e.g., 'pothole', 'graffiti', 'noise complaint').",
+      "expected_outcome": "The system aggregates the data by category.",
+      "required_tools": [
+        "categorize_service_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a report showing the top 10 most frequent complaint types.",
+      "expected_outcome": "Agent creates a summary report identifying 'potholes' and 'missed trash collection' as the top two issues.",
+      "required_tools": [
+        "generate_summary_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

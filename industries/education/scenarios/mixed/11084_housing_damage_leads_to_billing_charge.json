@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-mx-11084",
+  "title": "Housing Damage Leads to Billing Charge",
+  "description": "After a student moves out of a dorm, the housing staff finds damage to the room, which results in a charge being placed on the student's account.",
+  "use_case": "Mixed",
+  "core_function": "Housing & Residential Life",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The RA completes a room condition report upon move-out and documents damages.",
+      "expected_outcome": "RA logs a broken window in the housing system.",
+      "required_tools": [
+        "log_room_condition_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The housing office assesses a repair fee based on the documented damage.",
+      "expected_outcome": "Housing office determines a $150 repair fee.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The housing office posts the damage charge to the student's account in the university's main billing system.",
+      "expected_outcome": "A $150 charge is successfully added to the student's tuition bill.",
+      "required_tools": [
+        "post_student_account_charge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

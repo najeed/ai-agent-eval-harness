@@ -1,0 +1,49 @@
+{
+  "scenario_id": "journalism-ri-12029",
+  "title": "Verify an Anonymous Tip",
+  "description": "A reporter receives an anonymous tip about corruption at a government agency. They must try to verify the information before proceeding.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Story Research & Development",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the tip for specific, verifiable details (names, dates, project numbers).",
+      "expected_outcome": "Agent extracts a list of concrete details from the tip.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attempt to corroborate the details through public records or by finding a second, independent source who can confirm the information.",
+      "expected_outcome": "Agent finds a public document that supports one of the tip's claims.",
+      "required_tools": [
+        "search_public_records_database",
+        "search_contact_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the verification, decide whether the tip is credible enough to warrant a full investigation.",
+      "expected_outcome": "Agent makes an informed decision to either pursue or drop the story.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

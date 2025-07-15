@@ -1,0 +1,52 @@
+{
+  "scenario_id": "construction-os-10695",
+  "title": "Manage Site Dewatering Operations",
+  "description": "After heavy rain, an excavation is filled with water. The superintendent must manage dewatering operations in compliance with environmental permits.",
+  "use_case": "On-Site Operations",
+  "core_function": "Task Execution & Coordination",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Deploy a pump and filter bag to the excavation to begin dewatering.",
+      "expected_outcome": "Equipment is set up to remove the water.",
+      "required_tools": [
+        "dispatch_equipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the discharged water is being directed to the correct storm drain inlet as specified in the SWPPP.",
+      "expected_outcome": "Agent confirms the discharge location is compliant.",
+      "required_tools": [
+        "get_compliance_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the dewatering activity, including start and end times, in the daily log.",
+      "expected_outcome": "The activity is documented for compliance records.",
+      "required_tools": [
+        "create_daily_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

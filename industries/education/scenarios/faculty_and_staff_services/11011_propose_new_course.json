@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-fs-11011",
+  "title": "Propose a New Course",
+  "description": "A department head wants to submit a proposal for a new undergraduate course to be offered next year.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "Curriculum Development & Management",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the faculty member and their department.",
+      "expected_outcome": "Agent confirms the user's identity and role.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the user to the online curriculum management portal and explain the required proposal form fields.",
+      "expected_outcome": "Agent provides the correct link and instructions for the course proposal process.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the submitted proposal for completeness before it is routed for committee review.",
+      "expected_outcome": "Agent confirms all required fields and attachments (e.g., syllabus) are present.",
+      "required_tools": [
+        "review_new_course_proposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

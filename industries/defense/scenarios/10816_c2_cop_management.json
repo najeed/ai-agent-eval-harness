@@ -1,0 +1,52 @@
+{
+  "scenario_id": "defense-c2-10816",
+  "title": "Common Operating Picture Management",
+  "description": "An operator must manage the Common Operating Picture (COP) during a multi-domain operation, ensuring all friendly and enemy tracks are accurately displayed.",
+  "use_case": "Command & Control (C2)",
+  "core_function": "Common Operating Picture (COP) Management",
+  "industry": "Defense",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor incoming data feeds from air, sea, land, and space sensors.",
+      "expected_outcome": "Operator maintains constant situational awareness of all data feeds.",
+      "required_tools": [
+        "monitor_data_feeds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "vigilance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify and resolve conflicting track information (e.g., two sensors reporting the same target in different locations).",
+      "expected_outcome": "Operator correctly identifies and merges duplicate tracks into a single, accurate track.",
+      "required_tools": [
+        "resolve_track_conflicts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_curation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the classification of tracks based on new intelligence or behavior.",
+      "expected_outcome": "Operator changes an 'unidentified' track to 'hostile' based on a new report, ensuring all users of the COP see the update.",
+      "required_tools": [
+        "update_track_classification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_propagation_speed",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

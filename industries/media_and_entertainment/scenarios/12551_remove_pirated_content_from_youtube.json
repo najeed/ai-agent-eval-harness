@@ -1,0 +1,50 @@
+{
+  "scenario_id": "media-bo-12551",
+  "title": "Issue DMCA Takedown for Pirated Content",
+  "description": "A movie studio discovers a full-length copy of their new film has been illegally uploaded to YouTube. An agent must issue a DMCA takedown notice.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Ad Insertion & Management",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the URL of the pirated video on YouTube.",
+      "expected_outcome": "Agent has the exact URL of the infringing content.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the uploader is not a legitimate licensee.",
+      "expected_outcome": "Agent confirms the uploader has no rights to the content.",
+      "required_tools": [
+        "check_licensee_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit a formal DMCA takedown request through YouTube's content protection portal.",
+      "expected_outcome": "Agent successfully fills out and submits the DMCA form.",
+      "required_tools": [
+        "submit_dmca_takedown"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

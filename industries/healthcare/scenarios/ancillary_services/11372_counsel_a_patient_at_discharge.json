@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-as-11372",
+  "title": "Counsel a Patient at Discharge",
+  "description": "A discharge pharmacist is counseling a patient on their new medications before they go home from the hospital.",
+  "use_case": "Ancillary Services",
+  "core_function": "Pharmacy Operations",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the patient's discharge medication list.",
+      "expected_outcome": "Pharmacist knows which medications to discuss with the patient.",
+      "required_tools": [
+        "get_discharge_med_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the purpose, dose, and major side effects of each new medication to the patient.",
+      "expected_outcome": "Pharmacist clearly communicates the important information for each drug.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document in the EHR that discharge counseling was provided.",
+      "expected_outcome": "The counseling session is documented, which is a key part of the discharge process.",
+      "required_tools": [
+        "document_patient_education"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "scenario_id": "hr-er-11637",
+  "title": "Handle an Employment Verification Request",
+  "description": "A mortgage lender calls HR to verify the employment and salary of a current employee.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Employee Inquiries & Grievances",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the company's policy is to only provide verification through a third-party service (e.g., The Work Number).",
+      "expected_outcome": "Agent clearly communicates the company policy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the third-party service's contact information and the company's employer code to the lender.",
+      "expected_outcome": "Agent gives the lender the necessary information to complete the verification.",
+      "required_tools": [
+        "get_employment_verification_vendor_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "scenario_id": "construction-os-10660",
+  "title": "Assign Task to a Crew",
+  "description": "A foreman needs to formally assign the 'Install 1st Floor Windows' task to their crew in the task management system.",
+  "use_case": "On-Site Operations",
+  "core_function": "Task Execution & Coordination",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the 'Install 1st Floor Windows' task from the work breakdown structure.",
+      "expected_outcome": "The correct task is identified.",
+      "required_tools": [
+        "get_task_from_wbs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Assign the task to 'Crew B' and set the status to 'In Progress'.",
+      "expected_outcome": "The task is successfully assigned and its status updated.",
+      "required_tools": [
+        "assign_task_to_crew",
+        "update_task_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

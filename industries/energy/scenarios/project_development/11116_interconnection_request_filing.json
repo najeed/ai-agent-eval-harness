@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-pd-11116",
+  "title": "Grid Interconnection Request Filing",
+  "description": "A project developer needs to file a formal grid interconnection request with the ISO/RTO for a new solar project.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Permitting & Compliance",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the correct interconnection request form and required technical studies for the project's size and location.",
+      "expected_outcome": "Agent provides links to the correct forms and a list of required studies (e.g., Feasibility, System Impact).",
+      "required_tools": [
+        "get_iso_interconnection_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compile all necessary project data, including single-line diagrams, inverter specifications, and site layout.",
+      "expected_outcome": "Agent gathers all required technical documentation.",
+      "required_tools": [
+        "get_project_technical_specifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Complete the interconnection request application and attach all required documents for submission.",
+      "expected_outcome": "Agent generates a completed application package ready for filing.",
+      "required_tools": [
+        "draft_interconnection_application"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

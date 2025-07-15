@@ -1,0 +1,51 @@
+{
+  "scenario_id": "heavy-industries-fld-11488",
+  "title": "Confirm Rebar Placement",
+  "description": "Before a concrete pour, an inspector must verify that the reinforcing steel (rebar) has been placed correctly according to the drawings.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Field Inspections & Testing",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the structural drawing showing the rebar layout.",
+      "expected_outcome": "The inspector gets the correct drawing.",
+      "required_tools": [
+        "get_drawing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Visually inspect the placed rebar, checking for correct size, spacing, and clearance.",
+      "expected_outcome": "The inspector performs the physical check.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the successful inspection in the quality system, which releases the hold on the concrete pour.",
+      "expected_outcome": "Agent logs the passing inspection, and the supervisor is notified they can proceed with the pour.",
+      "required_tools": [
+        "log_inspection_result",
+        "release_hold_point"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

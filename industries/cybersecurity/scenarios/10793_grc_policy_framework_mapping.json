@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-grc-10793",
+  "title": "Control Framework Mapping",
+  "description": "A GRC analyst must map the company's internal security controls to a new compliance framework (e.g., ISO 27001).",
+  "use_case": "Governance, Risk & Compliance (GRC)",
+  "core_function": "Security Policy Management",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the new ISO 27001 control framework into the GRC tool.",
+      "expected_outcome": "The new framework is successfully loaded into the tool.",
+      "required_tools": [
+        "import_compliance_framework"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_execution_success",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each ISO 27001 control, identify and map the corresponding internal company control that satisfies it.",
+      "expected_outcome": "Analyst successfully creates a comprehensive mapping between the external framework and internal controls.",
+      "required_tools": [
+        "map_controls"
+      ],
+      "success_criteria": [
+        {
+          "metric": "mapping_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify any gaps where an ISO 27001 control is not covered by an existing internal control and create a plan to remediate the gap.",
+      "expected_outcome": "Analyst uses the mapping exercise to identify and plan the remediation of compliance gaps.",
+      "required_tools": [
+        "identify_compliance_gaps",
+        "create_remediation_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "gap_analysis_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

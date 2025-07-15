@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-im-11889",
+  "title": "Monitoring - High Latency on WAN Link",
+  "description": "An RMM alert indicates high latency on the primary WAN link for a client's office.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Monitoring & Alerting",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the alert.",
+      "expected_outcome": "A technician takes ownership.",
+      "required_tools": [
+        "acknowledge_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the firewall's traffic graphs to see if the link is saturated.",
+      "expected_outcome": "The technician finds that a user is downloading a very large file, consuming all available bandwidth.",
+      "required_tools": [
+        "get_firewall_traffic_graphs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply a temporary Quality of Service (QoS) policy to limit the bandwidth for that user's workstation, allowing critical traffic to function normally.",
+      "expected_outcome": "The high latency issue is resolved by traffic shaping, and the alert clears.",
+      "required_tools": [
+        "apply_qos_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

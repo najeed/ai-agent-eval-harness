@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-ar-12450",
+  "title": "Analyze Customer Feedback from Surveys",
+  "description": "An analyst needs to analyze open-ended responses from a recent customer satisfaction survey to identify common themes.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Data Analysis & Insights",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Export the survey responses, focusing on the open-ended feedback question.",
+      "expected_outcome": "Agent has a list of all the text responses.",
+      "required_tools": [
+        "survey_tool_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use natural language processing (NLP) to perform sentiment analysis and topic modeling on the responses.",
+      "expected_outcome": "The tool categorizes responses as positive/negative/neutral and identifies key topics like 'price', 'customer service', and 'shipping speed'.",
+      "required_tools": [
+        "nlp_analysis_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Summarize the findings in a report, highlighting the most common points of praise and complaint.",
+      "expected_outcome": "Agent produces a report that clearly summarizes the qualitative feedback.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "insight_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

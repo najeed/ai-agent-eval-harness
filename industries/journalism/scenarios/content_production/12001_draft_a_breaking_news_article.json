@@ -1,0 +1,55 @@
+{
+  "scenario_id": "journalism-cp-12001",
+  "title": "Draft a Breaking News Article",
+  "description": "A major, unexpected event has occurred. A reporter must quickly write a short, accurate article for immediate publication online.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Writing & Drafting",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the essential, confirmed facts of the event (who, what, when, where, why).",
+      "expected_outcome": "Agent compiles a bulleted list of the core, verified facts.",
+      "required_tools": [
+        "monitor_news_wires",
+        "check_official_sources"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a 300-word article using the inverted pyramid structure, starting with the most critical information.",
+      "expected_outcome": "Agent produces a concise and clearly written news brief.",
+      "required_tools": [
+        "draft_article"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_clarity",
+          "threshold": 1.0
+        },
+        {
+          "metric": "structural_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Include a line stating 'This is a developing story and will be updated.'",
+      "expected_outcome": "Agent includes the appropriate disclaimer for a breaking news situation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

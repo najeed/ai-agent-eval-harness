@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-bo-11557",
+  "title": "Guest Stuck in Elevator",
+  "description": "A guest uses the emergency phone in an elevator to report they are stuck.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Security & Emergency Response",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Answer the emergency call, reassure the guest, and confirm which elevator they are in.",
+      "expected_outcome": "The agent calmly communicates with the guest and identifies their location.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately contact the hotel's on-call elevator maintenance company.",
+      "expected_outcome": "The agent successfully contacts the maintenance vendor and reports the issue.",
+      "required_tools": [
+        "contact_external_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a hotel engineer to the elevator to maintain communication with the guest until help arrives.",
+      "expected_outcome": "A staff member is sent to the scene to provide support.",
+      "required_tools": [
+        "dispatch_engineer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

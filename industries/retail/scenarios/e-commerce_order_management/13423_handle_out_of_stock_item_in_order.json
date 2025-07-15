@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ret-ecom-13423",
+  "title": "Handle Out-of-Stock Item in an Order",
+  "description": "During picking, a warehouse associate discovers that the last unit of an item in an order is damaged and cannot be shipped.",
+  "use_case": "E-commerce & Order Management",
+  "core_function": "Order Fulfillment & Status",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "In the fulfillment application, mark the item as 'Out of Stock' or 'Damaged'.",
+      "expected_outcome": "The associate indicates that the item cannot be fulfilled.",
+      "required_tools": [
+        "update_item_fulfillment_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically notifies customer service of the issue.",
+      "expected_outcome": "A task is created for a customer service agent to contact the customer.",
+      "required_tools": [
+        "create_customer_service_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Pack and ship the rest of the order. The system adjusts the customer's invoice to remove the charge for the unfulfilled item.",
+      "expected_outcome": "The remainder of the order is shipped, and the customer is not charged for the missing item.",
+      "required_tools": [
+        "pack_order",
+        "adjust_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-tc-13100",
+  "title": "New Purchase Agreement Intake",
+  "description": "An agent submits a fully executed purchase agreement. The transaction coordinator must review it and create a new transaction file.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the purchase agreement for completeness and key dates (acceptance, inspection, closing).",
+      "expected_outcome": "Agent correctly extracts all critical dates, parties, and the property address from the contract.",
+      "required_tools": [
+        "extract_data_from_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new transaction in the transaction management system.",
+      "expected_outcome": "A new transaction file is created for the property address with all parties added.",
+      "required_tools": [
+        "create_new_transaction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a transaction timeline/checklist based on the key dates.",
+      "expected_outcome": "A checklist with all contractual deadlines is created and associated with the transaction.",
+      "required_tools": [
+        "generate_transaction_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

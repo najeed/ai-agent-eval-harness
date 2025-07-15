@@ -1,0 +1,38 @@
+{
+  "scenario_id": "information_technology_product-sl-11738",
+  "title": "Handle Expired Trial Follow-up",
+  "description": "An automated email is sent to a user whose trial has expired, asking for feedback.",
+  "use_case": "Sales & Account Management",
+  "core_function": "Trial & Proof of Concept (PoC) Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify a trial account that expired yesterday and had high engagement.",
+      "expected_outcome": "System automatically identifies a suitable candidate for follow-up.",
+      "required_tools": [
+        "get_expired_trials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a templated follow-up email asking about their experience and if they have any questions.",
+      "expected_outcome": "System sends a polite, automated follow-up email.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

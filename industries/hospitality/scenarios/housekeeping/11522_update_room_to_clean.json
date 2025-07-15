@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hosp-hk-11522",
+  "title": "Update Room Status to Clean",
+  "description": "A housekeeper has finished cleaning a room and needs to update its status so it can be assigned to a new guest.",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Room Status & Cleaning",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The housekeeper selects the room number on their handheld device.",
+      "expected_outcome": "The correct room is selected.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The housekeeper updates the room status from 'Dirty' to 'Clean'.",
+      "expected_outcome": "The status is updated in the system.",
+      "required_tools": [
+        "hms_update_room_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system may automatically trigger a notification for a supervisor to inspect the room before marking it as 'Ready'.",
+      "expected_outcome": "A supervisor inspection task is automatically generated.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

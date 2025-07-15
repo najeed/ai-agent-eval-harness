@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-13260",
+  "title": "Check Zoning Regulations",
+  "description": "A buyer wants to know if they can build an Accessory Dwelling Unit (ADU) on a property they are considering.",
+  "use_case": "Residential Sales",
+  "core_function": "Buyer & Seller Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the property's address.",
+      "expected_outcome": "Agent correctly identifies the subject property.",
+      "required_tools": [
+        "get_property_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the city or county planning department's website to find the zoning map and regulations for that address.",
+      "expected_outcome": "Agent successfully finds the property's zoning designation (e.g., R1).",
+      "required_tools": [
+        "search_public_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the ADU regulations for that zoning designation and provide a summary to the buyer, advising them to verify with the city.",
+      "expected_outcome": "Agent provides an accurate summary of the rules while including a disclaimer.",
+      "required_tools": [
+        "summarize_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "summary_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

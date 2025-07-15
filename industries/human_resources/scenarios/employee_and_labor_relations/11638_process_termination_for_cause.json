@@ -1,0 +1,54 @@
+{
+  "scenario_id": "hr-er-11638",
+  "title": "Process Termination for Cause",
+  "description": "Following an investigation, a decision has been made to terminate an employee for gross misconduct.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Disciplinary Actions",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare the termination paperwork, including the separation agreement and final paycheck.",
+      "expected_outcome": "HRBP prepares all necessary offboarding documents.",
+      "required_tools": [
+        "generate_separation_documents",
+        "calculate_final_pay"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule and conduct the termination meeting with the employee and their manager.",
+      "expected_outcome": "HRBP and manager deliver the termination notice to the employee.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the termination in the HRIS and coordinate with IT to deactivate all system access immediately.",
+      "expected_outcome": "HRBP updates the employee's status to 'Terminated' and triggers IT de-provisioning.",
+      "required_tools": [
+        "process_employee_termination",
+        "create_it_deprovisioning_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

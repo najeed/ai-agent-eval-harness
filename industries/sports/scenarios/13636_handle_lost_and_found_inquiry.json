@@ -1,0 +1,50 @@
+{
+  "scenario_id": "sports-fe-13636",
+  "title": "Handle Lost and Found Inquiry",
+  "description": "A fan reports they lost their wallet at yesterday's game and wants to know if it has been turned in.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Fan Communications & Support",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the fan for a description of the wallet and where they think they lost it.",
+      "expected_outcome": "Agent gets the details of the lost item.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the venue's lost and found database for a matching item.",
+      "expected_outcome": "Agent finds a wallet matching the description that was turned in from the fan's seating section.",
+      "required_tools": [
+        "search_lost_and_found"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the fan that their wallet has been found and explain the process for retrieving it.",
+      "expected_outcome": "Agent provides the fan with instructions on how to pick up their wallet.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

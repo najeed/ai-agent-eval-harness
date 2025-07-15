@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-cm-11845",
+  "title": "Account Management - Client Offboarding",
+  "description": "A client has given notice to terminate their managed services agreement. The account manager must oversee the offboarding process.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Account & Relationship Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the termination request and schedule an offboarding planning meeting with the client.",
+      "expected_outcome": "A formal offboarding plan is established.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the client with a full export of their documentation, including all passwords and configurations.",
+      "expected_outcome": "The client receives a complete handover of their data.",
+      "required_tools": [
+        "export_client_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "On the final day of service, remove all RMM agents and other management software from the client's environment.",
+      "expected_outcome": "The managed service provider's access is fully removed from the client's systems.",
+      "required_tools": [
+        "remove_all_agents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

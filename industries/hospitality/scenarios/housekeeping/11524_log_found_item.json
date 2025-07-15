@@ -1,0 +1,48 @@
+{
+  "scenario_id": "hosp-hk-11524",
+  "title": "Log a Found Item",
+  "description": "A housekeeper finds a pair of glasses in a room after a guest has checked out.",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Lost & Found",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The housekeeper brings the item to the housekeeping office.",
+      "expected_outcome": "The item is secured.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The supervisor logs the item in the lost and found system, noting the item description, room number, and date found.",
+      "expected_outcome": "A new entry is accurately created in the lost and found log.",
+      "required_tools": [
+        "laf_log_item"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The physical item is tagged with the log number and placed in secure storage.",
+      "expected_outcome": "The item is properly tagged and stored according to policy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

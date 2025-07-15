@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-ps-11855",
+  "title": "Project Scoping - Network Audit",
+  "description": "A client requests a project to perform a comprehensive audit of their network infrastructure and provide recommendations.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Scoping & Quoting",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Hold a discovery call to understand the size of the network (number of sites, switches, firewalls) and the specific goals of the audit.",
+      "expected_outcome": "The consultant understands the scope and objectives.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a detailed Statement of Work (SOW) that outlines the audit methodology, the specific areas to be reviewed, and the format of the final deliverable report.",
+      "expected_outcome": "A clear and comprehensive SOW is created.",
+      "required_tools": [
+        "create_sow"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a fixed-fee quote for the audit project.",
+      "expected_outcome": "The client receives a quote for the work.",
+      "required_tools": [
+        "create_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

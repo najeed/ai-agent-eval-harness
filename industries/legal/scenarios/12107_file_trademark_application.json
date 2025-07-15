@@ -1,0 +1,50 @@
+{
+  "scenario_id": "legal-ct-12107",
+  "title": "File a Trademark Application",
+  "description": "An IP paralegal needs to file a new trademark application with the USPTO for a client's new product name.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Intellectual Property (IP) Management",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Conduct a knockout search of the USPTO database to ensure the proposed trademark is not already in use.",
+      "expected_outcome": "Agent confirms the mark appears to be available.",
+      "required_tools": [
+        "uspto_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather all necessary information for the application, including the owner's name, the mark itself, the goods/services it applies to, and a specimen showing the mark in use.",
+      "expected_outcome": "Agent collects all required data and files.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Complete and file the application through the USPTO's online portal.",
+      "expected_outcome": "Agent successfully submits the trademark application.",
+      "required_tools": [
+        "uspto_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

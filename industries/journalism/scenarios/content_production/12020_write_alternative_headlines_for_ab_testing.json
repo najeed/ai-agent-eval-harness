@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-cp-12020",
+  "title": "Write Alternative Headlines for A/B Testing",
+  "description": "An editor wants to test which headline drives more traffic to an article and needs to write several different options.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Publishing & CMS Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Read the article to fully understand its content and main angle.",
+      "expected_outcome": "Agent has a deep understanding of the story.",
+      "required_tools": [
+        "document_viewer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehension_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write five different headlines for the article, varying the tone and focus (e.g., a straightforward headline, a question-based headline, a controversial headline).",
+      "expected_outcome": "Agent produces five distinct and viable headline options.",
+      "required_tools": [
+        "draft_headlines"
+      ],
+      "success_criteria": [
+        {
+          "metric": "creativity_and_variety",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the headlines into the CMS's A/B testing tool to begin the test.",
+      "expected_outcome": "The A/B test is configured and running.",
+      "required_tools": [
+        "cms_ab_testing_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

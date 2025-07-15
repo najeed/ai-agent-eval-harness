@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hosp-bo-11597",
+  "title": "Respond to a Guest Medical Emergency",
+  "description": "A guest calls the front desk reporting a medical emergency (e.g., chest pains).",
+  "use_case": "Back Office & Administration",
+  "core_function": "Security & Emergency Response",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Immediately call emergency medical services (911/ambulance) and provide the hotel address and guest's room number.",
+      "expected_outcome": "Paramedics are dispatched.",
+      "required_tools": [
+        "contact_emergency_services"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Keep the guest on the line to offer reassurance until help arrives, if possible.",
+      "expected_outcome": "The agent provides a calming presence.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch hotel security to the guest's room to provide immediate assistance and to guide the paramedics when they arrive.",
+      "expected_outcome": "Security is sent to the room and the hotel entrance.",
+      "required_tools": [
+        "dispatch_security"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

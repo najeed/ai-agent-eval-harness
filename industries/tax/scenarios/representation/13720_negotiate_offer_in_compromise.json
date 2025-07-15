@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-rep-13720",
+  "title": "Negotiate an Offer in Compromise (OIC)",
+  "description": "A taxpayer with significant tax debt and limited ability to pay wants to negotiate a settlement with the IRS for less than the full amount owed.",
+  "use_case": "Taxpayer Representation & Resolution",
+  "core_function": "Collections & Appeals",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather detailed financial information from the taxpayer using Form 433-A.",
+      "expected_outcome": "Agent collects all data on the taxpayer's income, expenses, assets, and liabilities.",
+      "required_tools": [
+        "prepare_form_433a"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the taxpayer's reasonable collection potential (RCP) to determine a viable offer amount.",
+      "expected_outcome": "Agent accurately calculates the minimum amount the IRS would likely accept.",
+      "required_tools": [
+        "calculate_reasonable_collection_potential"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare and submit Form 656, Offer in Compromise, with all supporting documentation.",
+      "expected_outcome": "Agent files a complete and compelling OIC package on behalf of the taxpayer.",
+      "required_tools": [
+        "prepare_form_656"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

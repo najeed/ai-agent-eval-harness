@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-rs-14108",
+  "title": "Handle In-App Feedback",
+  "description": "A rider leaves feedback through the app suggesting a new feature. This feedback needs to be categorized and routed to the product team.",
+  "use_case": "Ride-Sharing & On-Demand Mobility",
+  "core_function": "Customer & Driver Support",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system receives a new piece of feedback from a rider.",
+      "expected_outcome": "The feedback is logged.",
+      "required_tools": [
+        "get_app_feedback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "An AI tool automatically categorizes the feedback as a 'Feature Request'.",
+      "expected_outcome": "The feedback is correctly tagged.",
+      "required_tools": [
+        "categorize_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "classification_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system creates a ticket for the feedback.",
+      "expected_outcome": "A new ticket is created.",
+      "required_tools": [
+        "create_feedback_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The ticket is automatically assigned to the 'Product Feedback' queue for the product team to review.",
+      "expected_outcome": "The feedback is routed to the correct team.",
+      "required_tools": [
+        "route_ticket_by_category"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

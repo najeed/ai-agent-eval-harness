@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-ms-12813",
+  "title": "Investigate Out-of-Specification Lab Result",
+  "description": "A QC analyst gets an out-of-specification (OOS) result during product release testing and must initiate an investigation.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Quality Control & Assurance",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm the OOS result by re-testing the sample.",
+      "expected_outcome": "Agent documents the OOS result (e.g., purity of 98.0% vs. specification of >=99.0%) and the confirmatory result.",
+      "required_tools": [
+        "log_lab_test_result"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate a Phase 1 lab investigation in the quality management system.",
+      "expected_outcome": "Agent creates a new lab investigation record and documents the initial findings.",
+      "required_tools": [
+        "initiate_lab_investigation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review instrument calibration records and analyst training files to rule out obvious lab error.",
+      "expected_outcome": "Agent verifies that the instrument was calibrated and the analyst was properly trained, finding no evidence of lab error.",
+      "required_tools": [
+        "get_calibration_records",
+        "get_training_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Escalate the investigation to a full Phase 2 investigation involving the manufacturing department.",
+      "expected_outcome": "Agent escalates the OOS record and assigns tasks to the manufacturing team to review the batch record.",
+      "required_tools": [
+        "escalate_investigation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

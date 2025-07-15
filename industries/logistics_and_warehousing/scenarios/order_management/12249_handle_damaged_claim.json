@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-om-12249",
+  "title": "Handle a Damaged Shipment Claim",
+  "description": "A customer reports that their order arrived damaged. The agent must process the claim and send a replacement.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Claims Management",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's order and ask for photos of the damaged items and packaging.",
+      "expected_outcome": "Agent receives photographic evidence from the customer.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "File a damage claim with the shipping carrier, uploading the photos as evidence.",
+      "expected_outcome": "Agent successfully submits the claim to the carrier.",
+      "required_tools": [
+        "submit_carrier_claim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Immediately create and ship a no-charge replacement order to the customer.",
+      "expected_outcome": "Agent resolves the customer's problem without waiting for the claim outcome.",
+      "required_tools": [
+        "create_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

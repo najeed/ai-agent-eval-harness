@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-cp-12529",
+  "title": "Manage Prop Inventory for a TV Series",
+  "description": "A prop master needs to check the availability of a specific prop (a vintage telephone) for an upcoming shoot.",
+  "use_case": "Content Production & Management",
+  "core_function": "Asset Management & Logistics",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search the prop inventory system for 'vintage telephone'.",
+      "expected_outcome": "Agent finds three different vintage telephones in the inventory.",
+      "required_tools": [
+        "search_prop_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status and location of each telephone.",
+      "expected_outcome": "Agent finds that two are in the warehouse, and one is currently checked out to another production.",
+      "required_tools": [
+        "get_prop_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reserve one of the available telephones for the specified shoot dates.",
+      "expected_outcome": "Agent successfully reserves the prop for the required dates.",
+      "required_tools": [
+        "reserve_prop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

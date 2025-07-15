@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-ta-11685",
+  "title": "Create a Recruiting Dashboard",
+  "description": "The VP of HR wants a dashboard to track key recruiting metrics like time-to-fill, cost-per-hire, and open requisitions.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Requisition Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the key metrics to be included in the dashboard.",
+      "expected_outcome": "The HR analyst confirms the list of required metrics.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Connect a data visualization tool (e.g., Tableau, Power BI) to the ATS and HRIS databases.",
+      "expected_outcome": "Analyst establishes the data connections needed for the dashboard.",
+      "required_tools": [
+        "connect_to_data_source"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Build the dashboard with visualizations for each key metric.",
+      "expected_outcome": "Analyst creates a dashboard with several charts and graphs that automatically update.",
+      "required_tools": [
+        "create_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_creation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

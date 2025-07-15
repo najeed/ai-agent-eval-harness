@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-as-11006",
+  "title": "Schedule a Tutoring Session",
+  "description": "A student needs help in their 'Calculus I' course and wants to schedule a session at the tutoring center.",
+  "use_case": "Academic Support",
+  "core_function": "Tutoring & Academic Advising",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and the course they need help with.",
+      "expected_outcome": "Agent confirms the student's identity and the course is 'MATH150 - Calculus I'.",
+      "required_tools": [
+        "get_student_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the tutoring center's schedule for available 'Calculus I' tutors.",
+      "expected_outcome": "Agent finds available time slots with a qualified math tutor.",
+      "required_tools": [
+        "get_tutor_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book a 1-hour tutoring session for the student and send them a confirmation email.",
+      "expected_outcome": "Agent successfully schedules the appointment and confirms with the student.",
+      "required_tools": [
+        "schedule_tutoring_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

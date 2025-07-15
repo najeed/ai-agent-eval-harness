@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-ph-11384",
+  "title": "Assess Social Determinants of Health (SDoH)",
+  "description": "A social worker is screening a patient for social determinants of health, such as food insecurity and transportation issues.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Health Risk Assessment",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the SDoH screening questionnaire in the EHR for the patient.",
+      "expected_outcome": "The social worker accesses the standardized screening tool.",
+      "required_tools": [
+        "open_screening_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask the patient the screening questions and document their responses.",
+      "expected_outcome": "The patient's answers are accurately recorded in the questionnaire.",
+      "required_tools": [
+        "document_screening_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the patient's answers indicating a lack of transportation, generate a referral to a community-based transportation service.",
+      "expected_outcome": "A social need is identified, and a referral is made to address it, improving the patient's ability to attend appointments.",
+      "required_tools": [
+        "create_community_referral"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

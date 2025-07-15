@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-rs-13352",
+  "title": "Request Showing Feedback",
+  "description": "After a buyer's agent shows a property, the listing agent follows up to request feedback.",
+  "use_case": "Residential Sales",
+  "core_function": "Showings & Open Houses",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify that a showing was completed the previous day.",
+      "expected_outcome": "Agent's system flags a completed showing.",
+      "required_tools": [
+        "get_showing_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send an automated email or text to the buyer's agent with a link to a feedback form.",
+      "expected_outcome": "A feedback request is sent.",
+      "required_tools": [
+        "send_automated_feedback_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile any feedback received and share it with the seller.",
+      "expected_outcome": "The seller receives a summary of feedback from recent showings.",
+      "required_tools": [
+        "compile_feedback_summary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

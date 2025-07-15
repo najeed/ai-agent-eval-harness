@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-cc-11334",
+  "title": "Document in Anesthesia Record",
+  "description": "An anesthesiologist is monitoring a patient during surgery and needs to document events in the electronic anesthesia record.",
+  "use_case": "Clinical Care",
+  "core_function": "Clinical Documentation & Charting",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that real-time data from the patient monitor (e.g., heart rate, SpO2) is flowing correctly into the anesthesia record.",
+      "expected_outcome": "Anesthesiologist confirms the interface is working and data is populating automatically.",
+      "required_tools": [
+        "verify_monitor_interface"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Manually document the administration of an anesthetic gas and a bolus of medication.",
+      "expected_outcome": "Anesthesiologist accurately records the manually administered drugs.",
+      "required_tools": [
+        "document_anesthesia_med"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document a key surgical event, such as 'Incision'.",
+      "expected_outcome": "Anesthesiologist timestamps a critical event in the case, which provides context for any physiological changes.",
+      "required_tools": [
+        "timestamp_surgical_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

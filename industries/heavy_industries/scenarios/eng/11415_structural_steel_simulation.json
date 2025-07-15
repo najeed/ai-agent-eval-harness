@@ -1,0 +1,54 @@
+{
+  "scenario_id": "heavy-industries-eng-11415",
+  "title": "Perform Structural Steel Simulation",
+  "description": "A structural engineer needs to perform a finite element analysis (FEA) on a complex steel connection to verify it can handle the design loads.",
+  "use_case": "Engineering & Design",
+  "core_function": "Design & Simulation",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the geometry of the steel connection from the CAD model into the FEA software.",
+      "expected_outcome": "Agent successfully imports the model.",
+      "required_tools": [
+        "import_model_to_fea_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply the material properties for steel and the design loads (e.g., tension, shear) as specified in the design basis.",
+      "expected_outcome": "Agent correctly sets up the simulation parameters.",
+      "required_tools": [
+        "get_design_basis",
+        "apply_simulation_parameters"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the simulation and analyze the stress results to ensure they are below the material's allowable limits.",
+      "expected_outcome": "Agent runs the analysis and the results show that the maximum stress is within acceptable safety factors.",
+      "required_tools": [
+        "run_fea_simulation",
+        "analyze_simulation_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

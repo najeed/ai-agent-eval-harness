@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-rep-13735",
+  "title": "File an Appeal on an Audit Decision",
+  "description": "A client disagrees with the final decision of an IRS audit and wants to appeal.",
+  "use_case": "Taxpayer Representation & Resolution",
+  "core_function": "Collections & Appeals",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the final audit report (Revenue Agent Report) and the client's objections.",
+      "expected_outcome": "Agent understands the points of disagreement.",
+      "required_tools": [
+        "analyze_audit_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Prepare a formal protest letter outlining the client's position and the laws that support it.",
+      "expected_outcome": "Agent drafts a detailed legal and factual argument.",
+      "required_tools": [
+        "draft_protest_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "File the protest letter with the IRS Appeals Office within the specified time limit.",
+      "expected_outcome": "Agent successfully submits the appeal.",
+      "required_tools": [
+        "file_appeal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

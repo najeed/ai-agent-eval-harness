@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-sb-13508",
+  "title": "Investigate Bridge Structural Health Alert",
+  "description": "Sensors on a major bridge have detected abnormal stress levels after a minor earthquake.",
+  "use_case": "Smart Buildings & Infrastructure",
+  "core_function": "Structural Health Monitoring",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge a 'High Stress' alert from the 'Central Bridge' monitoring system.",
+      "expected_outcome": "Agent identifies the critical alert for the bridge.",
+      "required_tools": [
+        "get_structural_health_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the sensor data to pinpoint which part of the structure is showing the highest stress.",
+      "expected_outcome": "Agent determines the stress is on a specific support pillar.",
+      "required_tools": [
+        "analyze_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a structural engineering team to perform an emergency inspection and temporarily reduce the bridge's speed limit.",
+      "expected_outcome": "Agent creates a work order for inspection and updates the traffic management system.",
+      "required_tools": [
+        "dispatch_engineering_team",
+        "update_speed_limit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

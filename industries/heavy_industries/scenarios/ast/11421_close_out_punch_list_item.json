@@ -1,0 +1,50 @@
+{
+  "scenario_id": "heavy-industries-ast-11421",
+  "title": "Close Out a Punch List Item",
+  "description": "A contractor reports they have fixed a punch list item (e.g., a leaking valve). A commissioning engineer must verify the fix and close the item.",
+  "use_case": "Asset & Maintenance Management",
+  "core_function": "Asset Commissioning",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the specific punch list item in the commissioning system.",
+      "expected_outcome": "Agent retrieves the punch list item for the leaking valve.",
+      "required_tools": [
+        "get_punch_list_item"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Go to the field and visually inspect the valve to confirm it is no longer leaking.",
+      "expected_outcome": "The engineer physically verifies that the repair was successful.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Change the status of the punch list item to 'Closed'.",
+      "expected_outcome": "Agent successfully closes the item, reducing the number of open items on the project.",
+      "required_tools": [
+        "update_punch_list_item_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

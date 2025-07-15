@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-ps-11729",
+  "title": "Develop Custom Integration Script",
+  "description": "A customer needs a custom script to sync data between the product and their homegrown CRM system.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Custom Integration & Development",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the API documentation for both products to understand the required endpoints and data formats.",
+      "expected_outcome": "Consultant fully understands the technical requirements for the integration.",
+      "required_tools": [
+        "read_api_docs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a Python script that calls the APIs to pull data from the CRM and push it to the product.",
+      "expected_outcome": "Consultant develops a functional script that meets the requirements.",
+      "required_tools": [
+        "code_editor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Test the script in a staging environment and then deploy it for the customer.",
+      "expected_outcome": "The script is successfully deployed and data begins to sync correctly.",
+      "required_tools": [
+        "deploy_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

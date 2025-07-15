@@ -1,0 +1,66 @@
+{
+  "scenario_id": "tr-rs-14092",
+  "title": "Process a Toll Reimbursement",
+  "description": "A driver paid for a toll during a trip. The cost of the toll must be reimbursed to the driver and charged to the rider.",
+  "use_case": "Ride-Sharing & On-Demand Mobility",
+  "core_function": "Customer & Driver Support",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system detects from the trip's GPS data that the driver passed through a known toll location.",
+      "expected_outcome": "The system automatically identifies that a toll was likely paid.",
+      "required_tools": [
+        "detect_tolls_on_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system looks up the correct toll amount for that location and time of day.",
+      "expected_outcome": "The correct toll cost is retrieved.",
+      "required_tools": [
+        "get_toll_cost"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system automatically adds the toll amount to the rider's final fare.",
+      "expected_outcome": "The rider's charge is updated.",
+      "required_tools": [
+        "add_fee_to_trip"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The system adds the toll amount to the driver's earnings for that trip.",
+      "expected_outcome": "The driver is correctly reimbursed for the toll.",
+      "required_tools": [
+        "add_reimbursement_to_payout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

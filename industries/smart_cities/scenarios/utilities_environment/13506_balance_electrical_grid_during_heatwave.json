@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ue-13506",
+  "title": "Balance Electrical Grid During Heatwave",
+  "description": "A heatwave is causing record electricity demand. An operator must prevent a blackout by balancing the grid.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Smart Grid & Energy Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge a 'Grid Strain' alert as demand approaches maximum capacity.",
+      "expected_outcome": "Agent identifies the critical grid condition.",
+      "required_tools": [
+        "get_grid_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Activate a demand response program, sending requests to large commercial buildings to reduce their consumption.",
+      "expected_outcome": "Agent successfully triggers the demand response event.",
+      "required_tools": [
+        "activate_demand_response_program"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Increase power generation from the city's battery storage facility to meet the remaining demand.",
+      "expected_outcome": "Agent successfully brings the battery storage system online.",
+      "required_tools": [
+        "set_battery_storage_dispatch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

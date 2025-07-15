@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-12175",
+  "title": "Review Corporate Bylaws",
+  "description": "A client is unsure about the process for electing a new director. In-house counsel needs to review the corporate bylaws to provide an answer.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Corporate Governance & Compliance",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate and open the company's official corporate bylaws.",
+      "expected_outcome": "Agent retrieves the correct governing document.",
+      "required_tools": [
+        "document_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the document for sections related to the 'Board of Directors', 'Elections', and 'Vacancies'.",
+      "expected_outcome": "Agent finds the relevant provisions.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Summarize the required procedure for electing a new director as outlined in the bylaws.",
+      "expected_outcome": "Agent provides a clear, step-by-step answer to the client's question.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "scenario_id": "education-fs-11058",
+  "title": "Connect to Secure Wi-Fi Network",
+  "description": "A new staff member needs help connecting their laptop to the university's secure Wi-Fi network (e.g., Eduroam).",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "IT & Classroom Tech Support",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the difference between the guest and secure Wi-Fi networks.",
+      "expected_outcome": "Agent clarifies why the secure network should be used.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the user on how to select the secure network and enter their university credentials.",
+      "expected_outcome": "Agent provides step-by-step instructions for the user's operating system.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If needed, guide the user to install a security certificate required for the network.",
+      "expected_outcome": "Agent helps the user download and trust the required certificate, leading to a successful connection.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

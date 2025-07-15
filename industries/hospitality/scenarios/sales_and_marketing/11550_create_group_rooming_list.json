@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-sm-11550",
+  "title": "Create a Group Rooming List",
+  "description": "A corporate client has signed a contract for a block of rooms and has sent the list of guest names to be assigned to those rooms.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Group & Event Sales",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the group block reservation in the PMS.",
+      "expected_outcome": "The agent finds the master group block.",
+      "required_tools": [
+        "pms_lookup_group_block"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter the names from the client's list into the individual reservations within the block.",
+      "expected_outcome": "All guest names are accurately entered against the reserved rooms.",
+      "required_tools": [
+        "pms_update_rooming_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a confirmation of the completed rooming list back to the client.",
+      "expected_outcome": "The client receives a confirmation that all their guests are registered.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

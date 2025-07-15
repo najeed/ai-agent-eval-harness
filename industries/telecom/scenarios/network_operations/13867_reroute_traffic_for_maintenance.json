@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-13867",
+  "title": "Reroute Traffic for Scheduled Maintenance",
+  "description": "Before scheduled maintenance on a core router, an agent must proactively reroute traffic to a backup path.",
+  "use_case": "Network Operations",
+  "core_function": "Performance Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the primary and backup paths for the traffic that traverses the router under maintenance.",
+      "expected_outcome": "Agent correctly identifies the network paths.",
+      "required_tools": [
+        "get_network_topology"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute a command to shift traffic to the backup path.",
+      "expected_outcome": "Agent successfully reroutes the traffic.",
+      "required_tools": [
+        "set_traffic_path"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that no traffic is flowing through the primary router anymore, making it safe for maintenance.",
+      "expected_outcome": "Agent confirms the primary path has zero traffic.",
+      "required_tools": [
+        "get_path_traffic_volume"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

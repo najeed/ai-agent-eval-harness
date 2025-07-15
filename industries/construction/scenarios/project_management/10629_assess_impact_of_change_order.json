@@ -1,0 +1,39 @@
+{
+  "scenario_id": "construction-pm-10629",
+  "title": "Assess Schedule Impact of a Change Order",
+  "description": "A client-approved change order to add a new room will add 10 days of work. A PM must assess the impact on the project's completion date.",
+  "use_case": "Project Management",
+  "core_function": "Risk & Issue Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the details of the approved change order, noting the 10-day duration for the added scope.",
+      "expected_outcome": "Agent correctly identifies the duration of the new work.",
+      "required_tools": [
+        "get_change_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Incorporate the new tasks into the project schedule and analyze the impact on the critical path.",
+      "expected_outcome": "Agent updates the schedule and finds that the project completion date is delayed by 10 days.",
+      "required_tools": [
+        "update_project_schedule",
+        "get_critical_path"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

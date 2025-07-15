@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-cs-13440",
+  "title": "Resolve Incorrect Item Shipped",
+  "description": "A customer received the wrong item in their online order and contacts customer service via chat.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Issue Resolution",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the customer's order.",
+      "expected_outcome": "The agent finds the order details.",
+      "required_tools": [
+        "find_online_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apologize and create a no-charge replacement order for the correct item.",
+      "expected_outcome": "A new order is placed to send the correct item.",
+      "required_tools": [
+        "create_replacement_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Email the customer a pre-paid return shipping label to send back the incorrect item.",
+      "expected_outcome": "The customer is provided with an easy way to return the wrong item at no cost.",
+      "required_tools": [
+        "generate_return_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

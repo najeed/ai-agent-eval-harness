@@ -1,0 +1,50 @@
+{
+  "scenario_id": "construction-sc-10688",
+  "title": "Manage Site Dust Control",
+  "description": "On a windy day, the site is generating a lot of dust. The superintendent must implement dust control measures to comply with environmental regulations.",
+  "use_case": "Safety & Compliance",
+  "core_function": "Compliance & Permitting",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the need for dust control due to high winds.",
+      "expected_outcome": "The superintendent recognizes the compliance risk.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch the water truck to spray down all haul roads and exposed soil areas on the site.",
+      "expected_outcome": "The water truck is deployed to mitigate the dust.",
+      "required_tools": [
+        "dispatch_equipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the dust control measures taken in the daily site log.",
+      "expected_outcome": "The proactive compliance measure is documented.",
+      "required_tools": [
+        "create_daily_log_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ecommerce-osm-10913",
+  "title": "Add a New Product to the Store",
+  "description": "A merchandiser needs to add a brand new product to the e-commerce platform.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Product Information Management",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new product entry with its SKU, name, description, price, and specifications.",
+      "expected_outcome": "Agent successfully populates all required fields for the new product.",
+      "required_tools": [
+        "create_new_product"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload product images and assign them to the new product entry.",
+      "expected_outcome": "Agent uploads and correctly links images to the product.",
+      "required_tools": [
+        "upload_product_images"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the product to the appropriate categories and set its initial inventory level.",
+      "expected_outcome": "Agent correctly categorizes the product and sets its stock.",
+      "required_tools": [
+        "assign_product_to_category",
+        "update_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

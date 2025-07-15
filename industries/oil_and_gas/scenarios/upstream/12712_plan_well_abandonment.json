@@ -1,0 +1,54 @@
+{
+  "scenario_id": "og-up-12712",
+  "title": "Plan Well Abandonment",
+  "description": "An engineer prepares a plug and abandonment (P&A) plan for an old, non-producing well to ensure it is sealed safely and permanently.",
+  "use_case": "Upstream",
+  "core_function": "Drilling & Completions",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the wellbore diagram and historical records for the target well.",
+      "expected_outcome": "A complete history and schematic of the well are available.",
+      "required_tools": [
+        "get_wellbore_diagram",
+        "get_well_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify all zones that require isolation and design the cement plugs needed to create permanent barriers.",
+      "expected_outcome": "A P&A plan with correctly placed cement plugs is designed.",
+      "required_tools": [
+        "design_abandonment_plugs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "engineering_design_compliance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Estimate the total cost and duration of the P&A operation and submit the plan for regulatory approval.",
+      "expected_outcome": "A cost estimate and a regulatory submission package are generated.",
+      "required_tools": [
+        "estimate_pna_cost",
+        "generate_regulatory_filing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

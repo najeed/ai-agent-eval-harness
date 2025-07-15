@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-iam-10727",
+  "title": "Privileged Session Monitoring",
+  "description": "A security analyst must review a recorded session of a contractor who used a privileged account to access a critical server.",
+  "use_case": "Identity & Access Management (IAM)",
+  "core_function": "Privileged Access Management (PAM)",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the video recording and command log of the contractor's privileged session from the PAM tool.",
+      "expected_outcome": "Analyst successfully retrieves the session evidence.",
+      "required_tools": [
+        "get_pam_session_recording"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the recording to ensure the contractor only performed the actions they were authorized to do in the change ticket.",
+      "expected_outcome": "Analyst compares the performed actions against the authorized actions.",
+      "required_tools": [
+        "review_recorded_session"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_diligence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify that the contractor attempted to run a command that was outside the scope of the approved work and flag the session for a security review.",
+      "expected_outcome": "Analyst correctly identifies a policy violation and escalates it.",
+      "required_tools": [
+        "flag_session_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "violation_detection_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

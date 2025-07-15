@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_product-sl-11713",
+  "title": "Trial Extension Request",
+  "description": "A user on a 14-day trial requests an extension because they didn't have enough time to evaluate the product.",
+  "use_case": "Sales & Account Management",
+  "core_function": "Trial & Proof of Concept (PoC) Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the user's trial account and its expiration date.",
+      "expected_outcome": "Agent finds the account and sees the trial expires tomorrow.",
+      "required_tools": [
+        "get_trial_account_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask the user why they need an extension to gauge their level of interest and engagement.",
+      "expected_outcome": "Agent learns the user was on vacation but is very interested in the product.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Grant a 7-day extension to the trial period.",
+      "expected_outcome": "Agent successfully updates the trial expiration date.",
+      "required_tools": [
+        "extend_trial"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "cyber-vm-10706",
+  "title": "Internal Network Penetration Test",
+  "description": "A penetration tester, having gained initial access to a workstation, must attempt to escalate privileges to Domain Admin.",
+  "use_case": "Vulnerability Management",
+  "core_function": "Penetration Testing",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Enumerate the local host and network to find potential paths for privilege escalation.",
+      "expected_outcome": "Tester identifies a service running with weak permissions and a list of active domain users.",
+      "required_tools": [
+        "run_local_enumeration_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attempt to exploit a known vulnerability in the weakly configured service to gain system-level privileges on the local host.",
+      "expected_outcome": "Tester successfully exploits the service and gains SYSTEM-level access.",
+      "required_tools": [
+        "exploit_service_vulnerability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "exploit_success_rate",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the elevated privileges to dump credentials from memory and use them to access a Domain Controller, successfully escalating to Domain Admin.",
+      "expected_outcome": "Tester successfully compromises the domain, achieving the test's objective.",
+      "required_tools": [
+        "dump_credentials",
+        "access_domain_controller"
+      ],
+      "success_criteria": [
+        {
+          "metric": "objective_completion",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

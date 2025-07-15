@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-cs-11111",
+  "title": "Commercial Building Energy Efficiency Audit",
+  "description": "An energy consultant is preparing a preliminary energy efficiency report for a commercial office building.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "Energy Efficiency & Audits",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the building's hourly electricity consumption data for the past 12 months.",
+      "expected_outcome": "Agent identifies peak usage times and baseline energy consumption.",
+      "required_tools": [
+        "get_historical_consumption_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Benchmark the building's Energy Use Intensity (EUI) against similar buildings in the same climate zone.",
+      "expected_outcome": "Agent determines if the building is more or less efficient than average.",
+      "required_tools": [
+        "benchmark_energy_use_intensity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend three high-impact energy conservation measures (e.g., LED lighting retrofit, HVAC optimization, solar installation) with estimated costs and payback periods.",
+      "expected_outcome": "Agent provides a prioritized list of actionable recommendations.",
+      "required_tools": [
+        "recommend_conservation_measures"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

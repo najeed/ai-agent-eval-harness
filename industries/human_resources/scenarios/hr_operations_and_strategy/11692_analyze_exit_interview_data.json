@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11692",
+  "title": "Analyze Exit Interview Data",
+  "description": "An HR analyst needs to analyze the exit interview data from the last quarter to identify trends in why employees are leaving.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Reporting & Analytics",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a report of all exit interview feedback from the last quarter.",
+      "expected_outcome": "Analyst pulls the raw data from the HRIS.",
+      "required_tools": [
+        "get_exit_interview_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Categorize and tally the reasons for leaving (e.g., compensation, management, career growth).",
+      "expected_outcome": "Analyst quantifies the qualitative feedback.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a report for leadership summarizing the top reasons for turnover.",
+      "expected_outcome": "Analyst creates a presentation showing that 'lack of career growth' was the top reason for voluntary turnover.",
+      "required_tools": [
+        "create_presentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_creation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

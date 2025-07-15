@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-gs-11581",
+  "title": "Correct a Folio Posting Error",
+  "description": "A front desk agent accidentally posts a restaurant charge to the wrong room.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Billing & Folio Management",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The agent identifies the error after the guest from the wrong room calls to dispute the charge.",
+      "expected_outcome": "The error is identified.",
+      "required_tools": [
+        "pms_get_guest_folio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The agent reverses the incorrect charge from the first guest's folio.",
+      "expected_outcome": "The incorrect charge is removed.",
+      "required_tools": [
+        "pms_adjust_folio_charge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The agent posts the charge to the correct guest's folio and adds a note explaining the correction.",
+      "expected_outcome": "The charge is moved to the correct room, and the action is documented.",
+      "required_tools": [
+        "pms_adjust_folio_charge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

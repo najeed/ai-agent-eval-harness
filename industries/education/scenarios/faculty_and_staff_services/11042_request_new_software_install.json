@@ -1,0 +1,52 @@
+{
+  "scenario_id": "education-fs-11042",
+  "title": "Request New Software Installation",
+  "description": "A faculty member needs specialized statistical software installed on their university-owned computer.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "IT & Classroom Tech Support",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the faculty member and the software they are requesting (e.g., 'SPSS').",
+      "expected_outcome": "Agent gathers the necessary information.",
+      "required_tools": [
+        "get_employee_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check if the university has a site license for the requested software.",
+      "expected_outcome": "Agent confirms that the university has a license for SPSS.",
+      "required_tools": [
+        "check_software_license_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a software installation ticket for the desktop support team.",
+      "expected_outcome": "Agent creates a ticket to have a technician remotely install the software.",
+      "required_tools": [
+        "create_it_support_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

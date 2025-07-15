@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-bus-13699",
+  "title": "Prepare Simple Schedule C",
+  "description": "A freelance graphic designer needs to file a Schedule C for their sole proprietorship business.",
+  "use_case": "Business Tax Services",
+  "core_function": "Corporate & Partnership Tax",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Input the gross receipts from the freelance business.",
+      "expected_outcome": "Agent correctly enters the total income earned.",
+      "required_tools": [
+        "enter_schedule_c_income"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Categorize and input business expenses such as software subscriptions and office supplies.",
+      "expected_outcome": "Agent correctly enters and categorizes all business expenses.",
+      "required_tools": [
+        "enter_schedule_c_expenses"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the net profit or loss for the business.",
+      "expected_outcome": "Agent correctly calculates the final net profit, which will be subject to self-employment tax.",
+      "required_tools": [
+        "calculate_net_profit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

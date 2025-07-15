@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-os-11672",
+  "title": "Manage LMS Content",
+  "description": "An L&D specialist needs to upload a new version of a compliance training video to the LMS.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "Learning & Development",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the existing training course in the LMS.",
+      "expected_outcome": "Specialist locates the correct course.",
+      "required_tools": [
+        "search_lms_catalog"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the new video file to the course.",
+      "expected_outcome": "Specialist successfully uploads the new video.",
+      "required_tools": [
+        "upload_lms_content"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deactivate the old video and publish the changes to the course.",
+      "expected_outcome": "Specialist updates the course content, ensuring only the new video is visible.",
+      "required_tools": [
+        "publish_lms_course"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

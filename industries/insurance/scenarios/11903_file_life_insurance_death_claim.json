@@ -1,0 +1,56 @@
+{
+  "scenario_id": "insurance-la-11903",
+  "title": "File a Life Insurance Death Claim",
+  "description": "The beneficiary of a life insurance policy calls to report the death of the insured and start the claims process.",
+  "use_case": "Life & Annuities",
+  "core_function": "Claims & Payouts",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Express sympathy and gather the insured's information (name, policy number) and the date of death.",
+      "expected_outcome": "Agent handles the call with empathy and collects the necessary initial information.",
+      "required_tools": [
+        "get_policy_by_insured"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        },
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the caller is a listed beneficiary on the policy.",
+      "expected_outcome": "Agent confirms the caller is the primary beneficiary.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the claims process and send the required claim forms and a list of needed documents (e.g., certified death certificate) to the beneficiary.",
+      "expected_outcome": "Agent clearly explains the process and successfully sends the claims packet.",
+      "required_tools": [
+        "send_claim_packet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

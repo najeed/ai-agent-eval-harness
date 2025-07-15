@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-os-11664",
+  "title": "Configure a New Leave Policy in HRIS",
+  "description": "The company is introducing a new 'Volunteer Time Off' policy, and it needs to be configured in the HRIS.",
+  "use_case": "HR Operations & Strategy",
+  "core_function": "HRIS Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the specifications for the new leave policy (e.g., accrual rate, annual limit).",
+      "expected_outcome": "Admin receives the policy details: 8 hours granted annually.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Configure the new leave type and its accrual rules in the time and attendance module.",
+      "expected_outcome": "Admin successfully sets up the new leave plan in the system.",
+      "required_tools": [
+        "configure_leave_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the new leave plan to all eligible employees.",
+      "expected_outcome": "Admin successfully grants the new leave benefit to all employees.",
+      "required_tools": [
+        "assign_leave_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

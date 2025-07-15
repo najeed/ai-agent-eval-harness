@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-cm-11871",
+  "title": "Client Onboarding - Setup in PSA",
+  "description": "A new client needs to be set up in the Professional Services Automation (PSA) tool.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Client Onboarding",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new company record for the client in the PSA.",
+      "expected_outcome": "The client company is created.",
+      "required_tools": [
+        "create_psa_company"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add all of the client's users as contacts under the company record.",
+      "expected_outcome": "All client contacts are created.",
+      "required_tools": [
+        "create_psa_contact"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the recurring service contract in the PSA, specifying the services provided and the monthly fee.",
+      "expected_outcome": "The client's contract is set up correctly for future billing and SLA tracking.",
+      "required_tools": [
+        "create_psa_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "mfg-mr-12368",
+  "title": "Access an Electrical Schematic",
+  "description": "A technician is troubleshooting a control panel and needs the electrical schematic for the machine.",
+  "use_case": "Maintenance & Repair",
+  "core_function": "Technical Documentation & Support",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the machine's model number.",
+      "expected_outcome": "Agent correctly identifies the equipment they are working on.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the technical document library for schematic diagrams related to that model.",
+      "expected_outcome": "Agent finds a list of documents, including the electrical schematic.",
+      "required_tools": [
+        "search_document_library"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Open the schematic and zoom in on the specific circuit for the control panel.",
+      "expected_outcome": "Agent successfully views the detailed wiring diagram needed for the repair.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

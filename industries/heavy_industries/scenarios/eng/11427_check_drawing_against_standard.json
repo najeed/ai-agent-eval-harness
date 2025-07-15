@@ -1,0 +1,51 @@
+{
+  "scenario_id": "heavy-industries-eng-11427",
+  "title": "Check Drawing Against Company Standard",
+  "description": "A junior designer has completed a new drawing. A senior designer must check it to ensure it complies with the company's drafting standards.",
+  "use_case": "Engineering & Design",
+  "core_function": "Document Control",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the new drawing and the company's official drafting standard document.",
+      "expected_outcome": "Agent pulls up both documents for comparison.",
+      "required_tools": [
+        "get_drawing",
+        "get_company_standard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the drawing for compliance with standards for layering, text styles, and dimensioning.",
+      "expected_outcome": "The senior designer finds that the layering is incorrect.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Return the drawing to the junior designer with comments on what needs to be corrected.",
+      "expected_outcome": "Agent rejects the drawing in the workflow, providing specific feedback for correction.",
+      "required_tools": [
+        "reject_document_with_comments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

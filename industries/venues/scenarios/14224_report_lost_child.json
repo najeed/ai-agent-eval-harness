@@ -1,0 +1,63 @@
+{
+  "scenario_id": "venues-gs-14224",
+  "title": "Handle a Lost Child Report",
+  "description": "A frantic parent reports to a guest services booth that they cannot find their young child.",
+  "use_case": "Guest & Patron Services",
+  "core_function": "Issue Resolution & Complaints",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Immediately get a description of the child (age, clothing, name) and the last known location.",
+      "expected_outcome": "Agent calmly gathers all critical information from the parent.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate the venue's 'Code Adam' (or similar lost child) protocol.",
+      "expected_outcome": "Agent activates the protocol, which alerts all staff via radio.",
+      "required_tools": [
+        "initiate_lost_child_protocol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch security and staff to the last known location and to monitor all exits.",
+      "expected_outcome": "Agent directs all available personnel to begin a coordinated search.",
+      "required_tools": [
+        "dispatch_staff",
+        "dispatch_security_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Stay with the parent and provide reassurance while maintaining communication with the search team.",
+      "expected_outcome": "Agent provides support to the parent while monitoring radio traffic for updates.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

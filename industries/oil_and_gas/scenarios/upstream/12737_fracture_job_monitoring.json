@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-12737",
+  "title": "Monitor Hydraulic Fracturing Job",
+  "description": "A completions engineer at a remote center monitors a hydraulic fracturing (fracking) job in real-time to ensure it is executed as designed.",
+  "use_case": "Upstream",
+  "core_function": "Drilling & Completions",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Display the real-time frac van data, including treating pressure, slurry rate, and proppant concentration.",
+      "expected_outcome": "A live dashboard of the fracturing job parameters is active.",
+      "required_tools": [
+        "get_realtime_frac_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the live treating pressure with the modeled pressure response to detect any deviations.",
+      "expected_outcome": "The analysis shows the pressure is higher than modeled, indicating a potential screen-out.",
+      "required_tools": [
+        "analyze_frac_pressure_response"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the field crew to reduce proppant concentration immediately to avoid a screen-out and complete the stage.",
+      "expected_outcome": "A command is sent and acknowledged, and the crew adjusts the job parameters.",
+      "required_tools": [
+        "send_operational_recommendation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "response_time_minutes",
+          "threshold": 2
+        }
+      ]
+    }
+  ]
+}

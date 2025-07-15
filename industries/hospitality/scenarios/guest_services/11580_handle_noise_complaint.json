@@ -1,0 +1,64 @@
+{
+  "scenario_id": "hosp-gs-11580",
+  "title": "Handle a Guest Noise Complaint",
+  "description": "A guest calls the front desk late at night to complain about a noisy party in the room next door.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Guest Inquiries & Concierge",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Apologize to the complaining guest and assure them the issue will be handled.",
+      "expected_outcome": "The agent de-escalates the situation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch a security officer to the noisy room to issue a warning.",
+      "expected_outcome": "Security is sent to address the complaint.",
+      "required_tools": [
+        "dispatch_security"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the complaint in the system, tied to both guest rooms.",
+      "expected_outcome": "The incident is documented.",
+      "required_tools": [
+        "log_security_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Follow up with the complaining guest 15 minutes later to ensure the noise has subsided.",
+      "expected_outcome": "The agent follows up to confirm resolution.",
+      "required_tools": [
+        "contact_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

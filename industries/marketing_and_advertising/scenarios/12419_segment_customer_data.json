@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-ar-12419",
+  "title": "Segment Customer Data in a CDP",
+  "description": "An analyst needs to create a new audience segment in a Customer Data Platform (CDP) for customers who have viewed a specific product but not purchased.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Customer Data Management",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the first condition: users who triggered a 'product_view' event for a specific SKU.",
+      "expected_outcome": "Agent sets up the first rule in the CDP's segmentation tool.",
+      "required_tools": [
+        "cdp_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define the second condition: users who have NOT triggered a 'purchase' event for that same SKU.",
+      "expected_outcome": "Agent adds an exclusion rule to the segment definition.",
+      "required_tools": [
+        "cdp_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the segment as 'Product Viewers - No Purchase' for use in retargeting campaigns.",
+      "expected_outcome": "Agent successfully creates and saves the new audience segment.",
+      "required_tools": [
+        "cdp_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ps-cs-13079",
+  "title": "Find Local Government Representative",
+  "description": "A citizen wants to find out who their city council representative is.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Information & Inquiry Resolution",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the citizen's full street address.",
+      "expected_outcome": "Agent accurately captures the citizen's address.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a GIS lookup tool to determine which council district the address falls into.",
+      "expected_outcome": "Agent successfully finds the correct council district for the address.",
+      "required_tools": [
+        "gis_district_lookup"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the name and contact information for the corresponding city council member.",
+      "expected_outcome": "Agent provides the correct representative's information to the citizen.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

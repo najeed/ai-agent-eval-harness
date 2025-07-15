@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-er-11611",
+  "title": "Conduct an Exit Interview",
+  "description": "An employee has resigned, and HR needs to conduct an exit interview to gather feedback.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Offboarding",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule a voluntary exit interview with the departing employee.",
+      "expected_outcome": "HR successfully schedules the meeting.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Conduct the interview using a standardized set of questions regarding their experience and reason for leaving.",
+      "expected_outcome": "HR representative asks all standard questions and documents the employee's feedback.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Enter the feedback into the HR system to be used for aggregate turnover analysis.",
+      "expected_outcome": "The feedback is logged in the system under the appropriate categories.",
+      "required_tools": [
+        "log_exit_interview_feedback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

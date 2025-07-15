@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-to-12898",
+  "title": "Plan Container Yard Stacking",
+  "description": "A vessel is due to discharge 500 containers. The yard planner must pre-plan the optimal stacking locations for them.",
+  "use_case": "Terminal Operations",
+  "core_function": "Yard & Stowage Planning",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the discharge list (BAPLIE file) for the incoming vessel.",
+      "expected_outcome": "Planner successfully imports the file and identifies container types (standard, reefer, OOG) and weights.",
+      "required_tools": [
+        "import_baplie_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the yard inventory and identify empty slots in appropriate zones (e.g., reefer racks, export block).",
+      "expected_outcome": "Planner identifies sufficient space in the appropriate yard blocks for all container types.",
+      "required_tools": [
+        "get_yard_inventory_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign a specific yard location (block, bay, row, tier) to each container on the discharge list.",
+      "expected_outcome": "Every container is assigned a yard position in the Terminal Operating System (TOS) to optimize future movements.",
+      "required_tools": [
+        "assign_yard_positions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

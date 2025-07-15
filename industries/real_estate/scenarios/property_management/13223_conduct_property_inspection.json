@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-13223",
+  "title": "Conduct a Routine Property Inspection",
+  "description": "A property manager needs to perform a semi-annual inspection of a rental property.",
+  "use_case": "Property Management",
+  "core_function": "Maintenance & Operations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Notify the tenant of the upcoming inspection, providing at least 24 hours' notice as required by law.",
+      "expected_outcome": "Agent sends a compliant and professional notice to the tenant.",
+      "required_tools": [
+        "send_tenant_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a mobile app to conduct the inspection, following a standardized checklist (e.g., check smoke detectors, look for leaks).",
+      "expected_outcome": "Agent completes the inspection checklist, taking photos of any issues.",
+      "required_tools": [
+        "complete_inspection_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an inspection report and create work orders for any identified maintenance issues.",
+      "expected_outcome": "Agent produces a report and creates necessary work orders.",
+      "required_tools": [
+        "generate_inspection_report",
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

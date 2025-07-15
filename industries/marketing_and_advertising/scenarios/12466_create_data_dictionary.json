@@ -1,0 +1,60 @@
+{
+  "scenario_id": "marketing-ar-12466",
+  "title": "Create a Data Dictionary",
+  "description": "To ensure consistent reporting, an analyst needs to create a data dictionary that defines each key metric the team uses.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Customer Data Management",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "List all the primary metrics used in team reporting (e.g., CTR, CPC, CPL, ROAS).",
+      "expected_outcome": "Agent creates a comprehensive list of metrics.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each metric, write a clear, unambiguous definition.",
+      "expected_outcome": "Agent defines each metric (e.g., 'CTR = Clicks / Impressions').",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "copywriting_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each metric, specify the source of truth (e.g., 'Data from Google Ads platform').",
+      "expected_outcome": "Agent clarifies where the data for each metric comes from.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Create a shared document with this information to serve as the team's data dictionary.",
+      "expected_outcome": "Agent produces a central reference document for the team.",
+      "required_tools": [
+        "document_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hosp-hk-11582",
+  "title": "Schedule a Room for Deep Cleaning",
+  "description": "A room is due for its quarterly deep cleaning.",
+  "use_case": "Housekeeping & Maintenance",
+  "core_function": "Room Status & Cleaning",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify rooms that are due for deep cleaning.",
+      "expected_outcome": "A list of rooms is generated.",
+      "required_tools": [
+        "hms_get_deep_clean_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find a vacant day for one of the rooms and place it 'Out of Order' in the PMS to block it from being sold.",
+      "expected_outcome": "The room is blocked for maintenance.",
+      "required_tools": [
+        "pms_block_room"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a detailed work order for the deep cleaning task, which includes services like carpet shampooing and curtain washing.",
+      "expected_outcome": "A work order with a detailed checklist is created for the housekeeping team.",
+      "required_tools": [
+        "hms_create_cleaning_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "cyber-so-10733",
+  "title": "Network IDS Alert Triage",
+  "description": "A SOC analyst receives an alert from a network Intrusion Detection System (IDS) for a potential SQL injection attempt against a web server.",
+  "use_case": "Security Operations (SecOps)",
+  "core_function": "Incident Detection & Triage",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the full packet capture (PCAP) associated with the IDS alert.",
+      "expected_outcome": "Analyst successfully gets the network traffic evidence for the alert.",
+      "required_tools": [
+        "get_pcap_for_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the PCAP to confirm that the traffic contains a malicious SQL injection payload.",
+      "expected_outcome": "Analyst confirms the presence of 'OR 1=1' in the HTTP request, validating the alert.",
+      "required_tools": [
+        "analyze_pcap_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the web server's logs to see if the attack was successful or if it was blocked by the Web Application Firewall (WAF).",
+      "expected_outcome": "Analyst confirms the WAF blocked the request, making the alert a 'blocked attempt' with lower priority.",
+      "required_tools": [
+        "query_web_server_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "triage_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

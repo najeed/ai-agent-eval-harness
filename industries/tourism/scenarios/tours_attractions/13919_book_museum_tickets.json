@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-ta-13919",
+  "title": "Book Museum Tickets",
+  "description": "A family of four wants to book tickets for the Metropolitan Museum of Art for a specific date.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Activity Booking & Scheduling",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check ticket availability for two adults and two children for the specified date.",
+      "expected_outcome": "Agent confirms that tickets are available.",
+      "required_tools": [
+        "check_ticket_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total cost for the tickets.",
+      "expected_outcome": "Agent provides the correct total price for the family.",
+      "required_tools": [
+        "calculate_ticket_price"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the tickets and send the e-tickets to the customer's email.",
+      "expected_outcome": "Agent successfully books the tickets and provides a confirmation.",
+      "required_tools": [
+        "book_activity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

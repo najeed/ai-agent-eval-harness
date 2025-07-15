@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-ta-11616",
+  "title": "Post Job to Career Site and Job Boards",
+  "description": "A new job requisition has been approved and needs to be posted externally.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Requisition Management",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the approved job requisition in the ATS.",
+      "expected_outcome": "Recruiter finds the approved requisition.",
+      "required_tools": [
+        "get_job_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Post the job to the company's external career site.",
+      "expected_outcome": "Recruiter successfully posts the job to the career site.",
+      "required_tools": [
+        "post_to_career_site"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the job to external job boards like LinkedIn and Indeed.",
+      "expected_outcome": "Recruiter uses the ATS integration to post the job to multiple external boards.",
+      "required_tools": [
+        "post_to_job_boards"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

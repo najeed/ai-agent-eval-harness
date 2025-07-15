@@ -1,0 +1,52 @@
+{
+  "scenario_id": "finance-rb-11248",
+  "title": "Cancel a Scheduled Bill Payment",
+  "description": "A customer scheduled a bill payment but now needs to cancel it before it is sent.",
+  "use_case": "Retail Banking",
+  "core_function": "Payments & Transfers",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and locate the scheduled bill payment.",
+      "expected_outcome": "Agent finds the upcoming payment to the utility company.",
+      "required_tools": [
+        "get_scheduled_payments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the payment has not yet been processed.",
+      "expected_outcome": "Agent confirms the payment is still in 'Scheduled' status.",
+      "required_tools": [
+        "get_payment_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Cancel the scheduled payment and confirm the cancellation.",
+      "expected_outcome": "Agent successfully cancels the payment and informs the customer.",
+      "required_tools": [
+        "cancel_scheduled_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

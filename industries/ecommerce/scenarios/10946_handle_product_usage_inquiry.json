@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-css-10946",
+  "title": "Handle Product Usage Inquiry",
+  "description": "A customer bought a complex piece of equipment and is asking for help with the initial setup.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Product Inquiries",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the product the customer is asking about.",
+      "expected_outcome": "Agent finds the product in the system.",
+      "required_tools": [
+        "get_product_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find the product's user manual or setup guide in the knowledge base.",
+      "expected_outcome": "Agent retrieves the correct documentation.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Walk the customer through the first few steps of the setup process or email them the guide.",
+      "expected_outcome": "Agent provides clear, actionable instructions to the customer.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

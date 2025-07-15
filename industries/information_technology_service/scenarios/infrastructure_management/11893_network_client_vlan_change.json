@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-im-11893",
+  "title": "Server & Network - Change Device VLAN",
+  "description": "A client has moved a printer to a new location in the office and it can no longer be reached, likely because it needs to be on a different VLAN.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Server & Network Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the new wall port the printer is plugged into and its corresponding switch port.",
+      "expected_outcome": "Technician knows which switch port to reconfigure.",
+      "required_tools": [
+        "get_client_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the configuration of the switch port and find it's on the default 'Data' VLAN.",
+      "expected_outcome": "Technician confirms the current VLAN assignment is incorrect for a printer.",
+      "required_tools": [
+        "get_switch_port_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Change the VLAN on the switch port to the 'Printers' VLAN.",
+      "expected_outcome": "The printer gets a correct IP address and is now accessible on the network.",
+      "required_tools": [
+        "update_switch_port_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

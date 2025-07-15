@@ -1,0 +1,66 @@
+{
+  "scenario_id": "lw-wo-12262",
+  "title": "Move Inventory with a Forklift",
+  "description": "A forklift operator is assigned a task to move a full pallet of goods from a receiving lane to a bulk storage location.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Storage & Slotting",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The operator accepts a 'Put-Away' task on their vehicle-mounted terminal.",
+      "expected_outcome": "The task details (item, quantity, from/to locations) are displayed.",
+      "required_tools": [
+        "get_assigned_forklift_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The operator drives to the 'from' location (receiving lane) and scans the pallet's license plate to confirm they have the right pallet.",
+      "expected_outcome": "The system verifies the correct pallet is being moved.",
+      "required_tools": [
+        "verify_pallet_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The operator drives to the 'to' location (bulk storage) and scans the location's barcode.",
+      "expected_outcome": "The system verifies the destination location.",
+      "required_tools": [
+        "verify_location_scan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The operator deposits the pallet and confirms the task completion on their terminal.",
+      "expected_outcome": "The task is marked as complete, and the system inventory now shows the pallet in the new location.",
+      "required_tools": [
+        "confirm_task_completion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

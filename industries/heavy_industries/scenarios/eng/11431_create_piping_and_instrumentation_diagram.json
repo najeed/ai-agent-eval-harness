@@ -1,0 +1,54 @@
+{
+  "scenario_id": "heavy-industries-eng-11431",
+  "title": "Create a Piping and Instrumentation Diagram (P&ID)",
+  "description": "A process engineer needs to create a new P&ID for a simple chemical dosing system.",
+  "use_case": "Engineering & Design",
+  "core_function": "Design & Simulation",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the CAD software and start a new P&ID drawing using the company's standard template.",
+      "expected_outcome": "Agent successfully opens the correct template.",
+      "required_tools": [
+        "open_cad_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the required equipment symbols to the diagram (e.g., tank, pump, valves).",
+      "expected_outcome": "Agent places the correct symbols from the standard library onto the drawing.",
+      "required_tools": [
+        "add_pid_symbols"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draw the pipelines connecting the equipment and add instrument bubbles (e.g., for pressure and level transmitters), then submit for review.",
+      "expected_outcome": "Agent completes the diagram according to standard P&ID conventions and submits it.",
+      "required_tools": [
+        "draw_pipelines",
+        "add_instrumentation",
+        "submit_drawing_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

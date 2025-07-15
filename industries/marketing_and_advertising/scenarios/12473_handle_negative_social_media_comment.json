@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cm-12473",
+  "title": "Handle a Negative Social Media Comment",
+  "description": "A customer has left an angry comment on a brand's Facebook post about a negative experience. A social media manager needs to respond.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Paid Social & Display",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the negative comment and the user who posted it.",
+      "expected_outcome": "Agent sees the comment.",
+      "required_tools": [
+        "social_media_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Post a public reply that acknowledges the issue, apologizes, and asks the user to send a private message with more details.",
+      "expected_outcome": "Agent responds publicly in a professional and empathetic manner, moving the conversation to a private channel.",
+      "required_tools": [
+        "social_media_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once the user sends a private message, work to resolve their specific issue.",
+      "expected_outcome": "Agent resolves the customer's problem through private messaging.",
+      "required_tools": [
+        "social_media_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

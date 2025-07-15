@@ -1,0 +1,50 @@
+{
+  "scenario_id": "education-as-11008",
+  "title": "Request Exam Accommodation",
+  "description": "A student registered with Disability Services needs to schedule an exam with their approved accommodation of 50% extra time.",
+  "use_case": "Academic Support",
+  "core_function": "Disability & Accessibility Services",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the student and verify their approved accommodations.",
+      "expected_outcome": "Agent confirms the student is registered with Disability Services and has an accommodation for 'extended time - 50%'.",
+      "required_tools": [
+        "get_student_disability_services_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the exam details (course, professor, standard date/time).",
+      "expected_outcome": "Agent gathers all necessary information about the specific exam.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the exam in the Disability Services testing center with the appropriate time adjustment and notify the professor.",
+      "expected_outcome": "Agent books the testing room and sends automated notifications to the student and faculty.",
+      "required_tools": [
+        "schedule_accommodated_exam"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

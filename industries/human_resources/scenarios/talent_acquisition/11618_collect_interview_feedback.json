@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hr-ta-11618",
+  "title": "Collect Interview Feedback",
+  "description": "Following an interview panel, the recruiting coordinator needs to collect feedback from all interviewers.",
+  "use_case": "Talent Acquisition",
+  "core_function": "Interview & Selection",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the candidate and the interviewers who participated in the panel.",
+      "expected_outcome": "Coordinator identifies the correct candidate and interviewers.",
+      "required_tools": [
+        "get_candidate_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the ATS to see which interviewers have not yet submitted their feedback scorecard.",
+      "expected_outcome": "Coordinator finds that one of the three interviewers has not submitted feedback.",
+      "required_tools": [
+        "check_interview_feedback_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a reminder notification to the interviewer who has not submitted their feedback.",
+      "expected_outcome": "Coordinator sends a polite reminder email or system notification.",
+      "required_tools": [
+        "send_reminder_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

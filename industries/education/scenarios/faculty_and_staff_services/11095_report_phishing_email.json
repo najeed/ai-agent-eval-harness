@@ -1,0 +1,51 @@
+{
+  "scenario_id": "education-fs-11095",
+  "title": "Report Phishing Email",
+  "description": "A staff member receives a suspicious email asking for their password and reports it to IT.",
+  "use_case": "Faculty & Staff Services",
+  "core_function": "IT & Classroom Tech Support",
+  "industry": "Education",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Instruct the user not to click any links and to forward the email as an attachment to the security office.",
+      "expected_outcome": "Agent provides immediate, clear security instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The security team analyzes the email and confirms it is a phishing attempt.",
+      "expected_outcome": "Security team identifies the malicious nature of the email.",
+      "required_tools": [
+        "analyze_email_headers"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The security team implements a block for the sender's domain and sends a campus-wide warning if the campaign is widespread.",
+      "expected_outcome": "Security team takes preventative measures to protect the campus.",
+      "required_tools": [
+        "block_email_domain",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

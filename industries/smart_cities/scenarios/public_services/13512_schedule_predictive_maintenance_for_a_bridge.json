@@ -1,0 +1,54 @@
+{
+  "scenario_id": "smartcities-pg-13512",
+  "title": "Schedule Predictive Maintenance for a Bridge",
+  "description": "The asset management system, based on sensor data and age, predicts that a bridge's expansion joints will need service soon.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Smart Asset Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'Preventive Maintenance Recommended' alert for the 'Riverfront Bridge'.",
+      "expected_outcome": "Agent acknowledges the predictive maintenance alert.",
+      "required_tools": [
+        "get_asset_maintenance_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the asset's maintenance history and the data leading to the recommendation.",
+      "expected_outcome": "Agent confirms the recommendation is valid based on wear-and-tear analytics.",
+      "required_tools": [
+        "get_asset_history",
+        "analyze_asset_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for the bridge maintenance crew and schedule it for a low-traffic period.",
+      "expected_outcome": "Agent successfully schedules the preventive maintenance work.",
+      "required_tools": [
+        "create_work_order",
+        "schedule_maintenance_window"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

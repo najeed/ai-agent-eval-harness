@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-hse-12681",
+  "title": "Manage Post-Blast Fume Clearance",
+  "description": "After a blast in an underground mine, a ventilation officer must ensure that toxic fumes (like NOx) are cleared before allowing personnel to re-enter the area.",
+  "use_case": "Health, Safety & Environment (HSE)",
+  "core_function": "Safety Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "After the blast is fired, monitor the gas sensors in the affected area.",
+      "expected_outcome": "Real-time gas concentration data is displayed.",
+      "required_tools": [
+        "get_gas_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Wait for the gas concentrations to fall below the mandated re-entry limits.",
+      "expected_outcome": "The system confirms when all gas levels are safe.",
+      "required_tools": [
+        "check_against_reentry_limits"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Once clear, give the 'all clear' signal, allowing personnel and equipment to re-enter the blast area.",
+      "expected_outcome": "The all-clear is given, and normal operations resume.",
+      "required_tools": [
+        "send_all_clear_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

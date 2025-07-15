@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-fld-11484",
+  "title": "Request Surveying Services",
+  "description": "A crew is ready to lay out the foundations for a new structure and needs a survey team to stake out the building corners.",
+  "use_case": "Field Operations & Execution",
+  "core_function": "Site Management & Logistics",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new survey request in the system.",
+      "expected_outcome": "The supervisor initiates a new request.",
+      "required_tools": [
+        "create_survey_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Specify the coordinates that need to be staked out, referencing the official site plan drawing.",
+      "expected_outcome": "The supervisor provides the required coordinates from the drawing.",
+      "required_tools": [
+        "update_survey_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the request to the project's survey team.",
+      "expected_outcome": "The survey team receives the request and schedules the work.",
+      "required_tools": [
+        "submit_survey_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_product-cs-11702",
+  "title": "Cancel Subscription",
+  "description": "A customer wants to cancel their monthly subscription at the end of the current billing period.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Account & Billing Support",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the user's identity and authority to cancel the account.",
+      "expected_outcome": "Agent confirms they are speaking to the account owner.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask for the reason for cancellation and attempt a retention offer if applicable (e.g., a discount).",
+      "expected_outcome": "Agent logs the cancellation reason and makes a retention offer, which the customer declines.",
+      "required_tools": [
+        "get_retention_offers",
+        "log_cancellation_reason"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the subscription cancellation to be effective at the end of the billing cycle.",
+      "expected_outcome": "Agent successfully schedules the cancellation.",
+      "required_tools": [
+        "cancel_subscription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

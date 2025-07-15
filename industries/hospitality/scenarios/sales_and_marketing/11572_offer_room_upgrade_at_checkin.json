@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hosp-sm-11572",
+  "title": "Offer a Paid Room Upgrade at Check-in",
+  "description": "A front desk agent sees that a higher room category is available and offers a paid upgrade to a checking-in guest.",
+  "use_case": "Sales & Marketing",
+  "core_function": "Promotions & Upselling",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "While checking in a guest, notice that higher-tier rooms are available.",
+      "expected_outcome": "The agent identifies an upsell opportunity.",
+      "required_tools": [
+        "pms_check_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Describe the benefits of the upgraded room (e.g., better view, more space) and offer it for a special discounted upgrade fee.",
+      "expected_outcome": "The agent makes an attractive offer to the guest.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the guest accepts, update their reservation to the new room type and add the upgrade charge to their folio.",
+      "expected_outcome": "The guest accepts, and the booking is successfully modified.",
+      "required_tools": [
+        "pms_update_booking",
+        "pms_adjust_folio_charge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

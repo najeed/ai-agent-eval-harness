@@ -1,0 +1,54 @@
+{
+  "scenario_id": "journalism-ri-11999",
+  "title": "File a Freedom of Information Act (FOIA) Request",
+  "description": "A journalist needs to obtain government records about a public contract and must file a formal FOIA request.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Data Journalism & Fact-Checking",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the correct government agency and specific office responsible for handling the requested records.",
+      "expected_outcome": "Agent correctly identifies the target agency for the FOIA request.",
+      "required_tools": [
+        "search_government_directory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "accuracy_of_identification",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a FOIA request letter that clearly and specifically describes the records being sought, citing the relevant contract numbers.",
+      "expected_outcome": "Agent drafts a legally sound and specific request to prevent rejection.",
+      "required_tools": [
+        "get_foia_template",
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "legal_compliance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the request through the agency's official portal and set a calendar reminder to follow up if no response is received within the statutory time limit.",
+      "expected_outcome": "Agent successfully submits the request and creates a follow-up task.",
+      "required_tools": [
+        "submit_web_form",
+        "create_calendar_reminder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

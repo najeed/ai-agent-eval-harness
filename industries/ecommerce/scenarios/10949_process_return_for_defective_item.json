@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-omf-10949",
+  "title": "Process Return for a Defective Item",
+  "description": "A customer reports that a product stopped working within the warranty period and wants a replacement.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Returns & Exchanges",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's original order to verify the purchase date and warranty eligibility.",
+      "expected_outcome": "Agent confirms the item is still within its 1-year warranty period.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a return authorization for the defective item and a new order for a replacement.",
+      "expected_outcome": "Agent processes the warranty replacement.",
+      "required_tools": [
+        "create_replacement_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the defect reason to track product quality issues.",
+      "expected_outcome": "Agent logs 'Power Failure' as the defect reason for the product.",
+      "required_tools": [
+        "log_product_defect"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

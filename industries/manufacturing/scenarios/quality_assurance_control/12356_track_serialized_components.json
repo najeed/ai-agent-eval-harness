@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-qc-12356",
+  "title": "Track Serialized Components",
+  "description": "An assembly requires several critical, serialized components. An operator needs to scan and associate each component's serial number with the main assembly's serial number.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Traceability & Genealogy",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the serial number of the main assembly unit.",
+      "expected_outcome": "Agent initiates the 'as-built' record for the main unit.",
+      "required_tools": [
+        "start_assembly_genealogy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan the serial number of each critical component as it is installed.",
+      "expected_outcome": "Agent scans three different component serial numbers.",
+      "required_tools": [
+        "associate_component_serial_number"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Finalize the genealogy record, confirming that all required serialized components have been associated.",
+      "expected_outcome": "Agent saves the completed record, creating a full traceability link between the main unit and its components.",
+      "required_tools": [
+        "finalize_genealogy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

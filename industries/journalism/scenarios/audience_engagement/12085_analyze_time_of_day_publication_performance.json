@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ae-12085",
+  "title": "Analyze 'Time of Day' Publication Performance",
+  "description": "An editor wants to know if articles published in the morning perform better than those published in the evening.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Performance Analysis",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the publication time and total page views for all articles from the last 3 months.",
+      "expected_outcome": "Agent gets the necessary raw data.",
+      "required_tools": [
+        "get_analytics_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Group the articles into two categories: 'Morning' (published 6 AM - 12 PM) and 'Evening' (published 6 PM - 12 AM).",
+      "expected_outcome": "The data is segmented by publication time.",
+      "required_tools": [
+        "data_analysis_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the average number of page views for each category.",
+      "expected_outcome": "Agent determines which time slot has a higher average readership.",
+      "required_tools": [
+        "data_analysis_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

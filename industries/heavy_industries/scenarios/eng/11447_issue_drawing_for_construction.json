@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-eng-11447",
+  "title": "Issue Drawing for Construction",
+  "description": "A design drawing has passed its final review and needs to be formally issued for construction.",
+  "use_case": "Engineering & Design",
+  "core_function": "Document Control",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the drawing in the document management system and verify its status is 'Approved'.",
+      "expected_outcome": "Agent confirms the drawing is ready to be issued.",
+      "required_tools": [
+        "get_drawing_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Change the drawing's status to 'Issued for Construction'.",
+      "expected_outcome": "Agent successfully updates the status.",
+      "required_tools": [
+        "update_drawing_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Transmit the drawing to the construction contractor's document portal.",
+      "expected_outcome": "Agent formally transmits the drawing so the field team can begin work.",
+      "required_tools": [
+        "transmit_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-go-12540",
+  "title": "Moderate Toxic Behavior in Voice Chat",
+  "description": "A player is reported for using abusive and toxic language in the in-game voice chat.",
+  "use_case": "Gaming Operations",
+  "core_function": "Anti-Cheat & Moderation",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the player report and the associated voice chat log.",
+      "expected_outcome": "Agent accesses the report and a transcript of the voice chat.",
+      "required_tools": [
+        "get_player_report",
+        "get_voice_chat_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the transcript for violations of the community code of conduct.",
+      "expected_outcome": "Agent confirms the player used language that violates the code of conduct.",
+      "required_tools": [
+        "review_against_guidelines"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a 7-day voice chat suspension to the offending player.",
+      "expected_outcome": "Agent successfully applies the communication ban to the player's account.",
+      "required_tools": [
+        "issue_communication_ban"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

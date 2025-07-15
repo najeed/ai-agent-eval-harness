@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-la-11973",
+  "title": "Inquire About Policy Riders",
+  "description": "A policyholder wants to know what optional riders they have on their life insurance policy.",
+  "use_case": "Life & Annuities",
+  "core_function": "Policy Servicing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and retrieve their policy details.",
+      "expected_outcome": "Agent locates the customer's policy.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the policy contract to identify any active riders.",
+      "expected_outcome": "Agent finds the policy has an Accidental Death Benefit rider and a Waiver of Premium rider.",
+      "required_tools": [
+        "review_policy_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain each rider and what it covers to the policyholder.",
+      "expected_outcome": "Agent clearly explains the function of both riders in simple terms.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hr-er-11687",
+  "title": "Conduct a Workplace Safety Audit",
+  "description": "The EHS (Environment, Health, and Safety) manager is conducting a safety audit of a manufacturing plant.",
+  "use_case": "Employee & Labor Relations",
+  "core_function": "Policy & Compliance",
+  "industry": "Human Resources",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the plant's safety records and past incidents.",
+      "expected_outcome": "EHS manager reviews the safety logs for the past year.",
+      "required_tools": [
+        "get_safety_incident_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Conduct a physical walkthrough of the plant using a safety checklist.",
+      "expected_outcome": "Manager inspects the facility and documents any potential hazards (e.g., blocked fire exits, unlabeled chemicals).",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a corrective action plan based on the audit findings and assign owners for each item.",
+      "expected_outcome": "Manager creates a report with required actions and assigns them to the plant manager.",
+      "required_tools": [
+        "create_corrective_action_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

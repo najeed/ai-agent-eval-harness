@@ -1,0 +1,52 @@
+{
+  "scenario_id": "heavy-industries-pmc-11494",
+  "title": "Compare Actual vs. Planned Schedule",
+  "description": "A project planner is analyzing schedule performance by comparing the actual progress against the original baseline.",
+  "use_case": "Project Management & Controls",
+  "core_function": "Project Reporting & Communication",
+  "industry": "Heavy Industries",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the project schedule.",
+      "expected_outcome": "Agent has the schedule open.",
+      "required_tools": [
+        "get_project_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Apply a view that shows the current schedule bars alongside the baseline bars.",
+      "expected_outcome": "The planner can now visually compare the actual progress to the original plan.",
+      "required_tools": [
+        "apply_schedule_view"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify the activities that have the largest negative variance (i.e., are the most delayed) and flag them for investigation.",
+      "expected_outcome": "Agent identifies the top 3 delayed activities to be discussed in the next project meeting.",
+      "required_tools": [
+        "analyze_schedule_variance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

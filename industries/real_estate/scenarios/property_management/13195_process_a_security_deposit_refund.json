@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-13195",
+  "title": "Process a Security Deposit Refund",
+  "description": "A former tenant moved out, an inspection was completed with no damages found, and their security deposit is due to be refunded.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management & Reporting",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the move-out inspection report shows no damages.",
+      "expected_outcome": "Agent confirms the report is clean.",
+      "required_tools": [
+        "get_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm the tenant's forwarding address.",
+      "expected_outcome": "Agent has the correct forwarding address for the former tenant.",
+      "required_tools": [
+        "get_tenant_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a check for the full security deposit amount and mail it to the tenant's forwarding address within the legally required timeframe.",
+      "expected_outcome": "A check is cut from the trust account and mailed, and the action is logged in the system.",
+      "required_tools": [
+        "issue_check_from_trust",
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_verification",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

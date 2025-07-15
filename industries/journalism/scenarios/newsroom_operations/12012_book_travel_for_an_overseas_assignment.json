@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-no-12012",
+  "title": "Book Travel for an Overseas Assignment",
+  "description": "A reporter is being sent overseas to cover a conflict and needs flights, a hotel, and a local fixer booked.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Resource Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search for and book a round-trip flight to the destination country.",
+      "expected_outcome": "A flight is successfully booked.",
+      "required_tools": [
+        "book_flight"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Book a room at a hotel that is pre-vetted for security by the news organization.",
+      "expected_outcome": "A secure hotel is booked for the duration of the assignment.",
+      "required_tools": [
+        "book_hotel"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact a pre-approved local fixer/translator from the organization's contact list and arrange their services.",
+      "expected_outcome": "A local fixer is hired for the assignment.",
+      "required_tools": [
+        "search_contact_database",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

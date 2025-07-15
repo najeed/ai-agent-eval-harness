@@ -1,0 +1,64 @@
+{
+  "scenario_id": "hosp-gs-11521",
+  "title": "Guest Check-out and Payment",
+  "description": "A guest is at the front desk to check out and settle their bill.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Check-in & Check-out",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the guest's folio.",
+      "expected_outcome": "Agent pulls up the correct guest bill.",
+      "required_tools": [
+        "pms_get_guest_folio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the charges with the guest and confirm they are correct.",
+      "expected_outcome": "The guest agrees to all charges on the folio.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the final payment using the credit card on file.",
+      "expected_outcome": "Agent successfully processes the payment and provides the guest with a final receipt.",
+      "required_tools": [
+        "pms_process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the room status to 'Vacant/Dirty' in the PMS.",
+      "expected_outcome": "The room status is updated, notifying housekeeping.",
+      "required_tools": [
+        "pms_update_room_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

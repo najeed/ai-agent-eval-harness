@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hosp-bo-11592",
+  "title": "Provide Security Footage to Police",
+  "description": "The police have arrived with a warrant to obtain security camera footage related to an investigation.",
+  "use_case": "Back Office & Administration",
+  "core_function": "Security & Emergency Response",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The security manager verifies the identity of the police officers and the validity of the warrant.",
+      "expected_outcome": "The warrant is confirmed to be valid.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the specific footage requested (e.g., lobby camera from 10 PM to 11 PM on a specific date).",
+      "expected_outcome": "The correct video file is located.",
+      "required_tools": [
+        "sec_get_camera_footage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Export the video file to an evidence-grade format and provide it to the police, documenting the transfer.",
+      "expected_outcome": "The footage is securely exported and provided to law enforcement, and the action is logged.",
+      "required_tools": [
+        "sec_export_footage",
+        "log_security_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

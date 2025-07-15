@@ -1,0 +1,39 @@
+{
+  "scenario_id": "construction-pm-10636",
+  "title": "Create a High-Level Milestone Schedule",
+  "description": "For a client presentation, a project manager needs to create a high-level schedule showing only major project milestones.",
+  "use_case": "Project Management",
+  "core_function": "Project Planning & Scheduling",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Filter the main project schedule to display only tasks marked as 'milestones'.",
+      "expected_outcome": "A filtered list of milestones like 'Foundation Complete', 'Structure Topped Out', and 'Substantial Completion' is generated.",
+      "required_tools": [
+        "get_project_schedule",
+        "filter_tasks_by_type"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a summary timeline view based on the filtered milestones.",
+      "expected_outcome": "A simplified, high-level timeline is created suitable for a client presentation.",
+      "required_tools": [
+        "generate_summary_timeline"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

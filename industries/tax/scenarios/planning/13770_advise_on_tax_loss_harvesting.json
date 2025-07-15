@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-plan-13770",
+  "title": "Advise on Tax-Loss Harvesting",
+  "description": "An investor has significant capital gains for the year and wants to sell some losing investments to offset those gains.",
+  "use_case": "Tax Planning & Advisory",
+  "core_function": "Individual & Family Planning",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the investor's total realized capital gains for the year to date.",
+      "expected_outcome": "Agent determines the amount of gains that need to be offset.",
+      "required_tools": [
+        "calculate_realized_gains"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify investments in the portfolio with unrealized losses.",
+      "expected_outcome": "Agent finds suitable stocks to sell at a loss.",
+      "required_tools": [
+        "analyze_investment_portfolio"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the client on which investments to sell to generate losses, while also explaining the 'wash sale' rule.",
+      "expected_outcome": "Agent provides a specific strategy to offset gains while complying with all rules.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

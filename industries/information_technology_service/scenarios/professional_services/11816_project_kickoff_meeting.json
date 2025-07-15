@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_service-ps-11816",
+  "title": "Project Management - Kickoff Meeting",
+  "description": "A project manager leads the official kickoff meeting for a new firewall deployment project.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Execution & Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare and distribute a kickoff meeting agenda, including project goals, scope, timeline, roles, and responsibilities.",
+      "expected_outcome": "All attendees receive a clear agenda before the meeting.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Lead the meeting, present the project plan, and establish communication protocols and meeting cadences.",
+      "expected_outcome": "The project manager successfully aligns all stakeholders and sets clear expectations.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Follow up the meeting with documented minutes and action items assigned to both the client and internal team.",
+      "expected_outcome": "The meeting outcomes and next steps are clearly documented and distributed.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

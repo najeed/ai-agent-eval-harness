@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-ps-11887",
+  "title": "Project Management - Resolve Project Issue",
+  "description": "A project is at risk of delay because a piece of hardware ordered for the project has a long lead time.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Execution & Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the project task that is blocked by the hardware delay.",
+      "expected_outcome": "The PM identifies the critical path task.",
+      "required_tools": [
+        "get_project_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact multiple suppliers to try and find an alternative source for the hardware or a suitable substitute.",
+      "expected_outcome": "The PM finds a different supplier who has a similar model in stock.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Get client approval for the substitute hardware and update the project plan accordingly.",
+      "expected_outcome": "The project is put back on track by proactively resolving the supply chain issue.",
+      "required_tools": [
+        "update_project_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "scenario_id": "hosp-gs-11499",
+  "title": "Guest Check-in",
+  "description": "A guest with an existing reservation arrives to check in.",
+  "use_case": "Guest Services & Front Office",
+  "core_function": "Check-in & Check-out",
+  "industry": "Hospitality",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the guest's reservation using their name.",
+      "expected_outcome": "Agent correctly locates the reservation in the Property Management System (PMS).",
+      "required_tools": [
+        "pms_lookup_reservation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the guest's identity with a photo ID and confirm the booking details.",
+      "expected_outcome": "Agent confirms the identity and reservation details with the guest.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process a credit card pre-authorization for the room charges and incidentals, and issue room keys.",
+      "expected_outcome": "Agent successfully processes the pre-auth and encodes key cards for the correct room and dates.",
+      "required_tools": [
+        "pms_process_pre_authorization",
+        "pms_encode_keycard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

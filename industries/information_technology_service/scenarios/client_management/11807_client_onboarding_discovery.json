@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-cm-11807",
+  "title": "Client Onboarding - Initial Discovery",
+  "description": "An account manager and technical lead conduct the initial discovery and kickoff meeting with a new managed services client.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Client Onboarding",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the signed SOW to understand the agreed-upon services.",
+      "expected_outcome": "The team is fully aware of the contract scope.",
+      "required_tools": [
+        "get_client_sow"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Conduct the kickoff meeting, introducing the team and walking through the onboarding process and timeline.",
+      "expected_outcome": "The client understands the process and expectations are set.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Gather critical information from the client, such as existing administrator credentials, network diagrams, and a list of key vendors.",
+      "expected_outcome": "The team collects the necessary information to begin the technical onboarding.",
+      "required_tools": [
+        "update_client_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

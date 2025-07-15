@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ecommerce-osm-10921",
+  "title": "Curate a 'Back to School' Collection",
+  "description": "A merchandiser wants to create a new curated collection page for a 'Back to School' campaign.",
+  "use_case": "Online Storefront & Merchandising",
+  "core_function": "Search & Navigation",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new collection page titled 'Back to School'.",
+      "expected_outcome": "Agent successfully creates a new, empty collection page.",
+      "required_tools": [
+        "create_collection_page"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add a list of specified products (SKUs for backpacks, notebooks, pens) to the collection.",
+      "expected_outcome": "Agent successfully populates the collection with the correct items.",
+      "required_tools": [
+        "add_product_to_collection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Make the collection visible on the main navigation menu.",
+      "expected_outcome": "Agent updates the site's navigation to include a link to the new collection.",
+      "required_tools": [
+        "update_navigation_menu"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

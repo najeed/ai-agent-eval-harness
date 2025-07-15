@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-ri-12031",
+  "title": "Analyze Campaign Finance Data",
+  "description": "A political reporter has a large dataset of campaign contributions and needs to find patterns, such as which industries are donating the most to a candidate.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Data Journalism & Fact-Checking",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the campaign finance data into a data analysis tool like a spreadsheet or a Python script.",
+      "expected_outcome": "The data is successfully loaded and cleaned.",
+      "required_tools": [
+        "spreadsheet_software",
+        "python_data_analysis_library"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_import_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Group the donations by the donor's listed industry.",
+      "expected_outcome": "The data is categorized by industry.",
+      "required_tools": [
+        "data_analysis_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total donation amount from each industry and identify the top 5.",
+      "expected_outcome": "Agent produces a ranked list of top donor industries, revealing a significant finding.",
+      "required_tools": [
+        "data_analysis_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

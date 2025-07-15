@@ -1,0 +1,47 @@
+{
+  "scenario_id": "information_technology_product-sl-11740",
+  "title": "Partner Asks Pre-Sales Technical Question",
+  "description": "A reseller partner contacts the channel manager with a technical question from a potential customer about API rate limits.",
+  "use_case": "Sales & Account Management",
+  "core_function": "Partner & Channel Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the question from the partner.",
+      "expected_outcome": "Agent understands the partner's technical question.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the API rate limits for different subscription tiers in the product documentation.",
+      "expected_outcome": "Agent finds the exact rate limits for each plan.",
+      "required_tools": [
+        "search_product_docs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a clear and accurate answer back to the partner so they can respond to their lead.",
+      "expected_outcome": "Agent empowers the partner to continue their sales process.",
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

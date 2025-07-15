@@ -1,0 +1,38 @@
+{
+  "scenario_id": "construction-pm-10659",
+  "title": "Level Resources to Smooth Workload",
+  "description": "A PM uses resource leveling to resolve over-allocations by delaying non-critical tasks to smooth out the workload for the carpentry crew.",
+  "use_case": "Project Management",
+  "core_function": "Resource Management",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run the resource leveling tool on the project schedule, focusing on the 'Carpentry Crew'.",
+      "expected_outcome": "The tool identifies over-allocations and suggests delaying several non-critical tasks.",
+      "required_tools": [
+        "run_resource_leveling"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Accept the suggested changes to delay non-critical tasks and resolve the over-allocations.",
+      "expected_outcome": "The project schedule is updated, and the resource graph for the crew is now level.",
+      "required_tools": [
+        "update_project_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

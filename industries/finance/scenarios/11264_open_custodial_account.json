@@ -1,0 +1,48 @@
+{
+  "scenario_id": "finance-wm-11264",
+  "title": "Open a Custodial Account (UTMA/UGMA)",
+  "description": "A client wants to open an investment account for their minor child.",
+  "use_case": "Wealth Management",
+  "core_function": "Client Onboarding & KYC",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the features and rules of a custodial account to the client.",
+      "expected_outcome": "Agent clearly explains that the gift is irrevocable and the child gets control at the age of majority.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the required information for both the custodian (the client) and the minor.",
+      "expected_outcome": "Agent accurately captures all personal details for both individuals.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the new custodial account in the system.",
+      "expected_outcome": "Agent successfully opens the new UTMA account.",
+      "required_tools": [
+        "create_custodial_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

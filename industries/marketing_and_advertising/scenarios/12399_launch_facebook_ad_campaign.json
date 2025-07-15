@@ -1,0 +1,66 @@
+{
+  "scenario_id": "marketing-cm-12399",
+  "title": "Launch Facebook Ad Campaign",
+  "description": "A media buyer needs to set up and launch a new ad campaign on Facebook targeting a specific audience.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Paid Social & Display",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new campaign in the ad platform with the objective of 'Lead Generation'.",
+      "expected_outcome": "Agent correctly sets up the campaign shell with the right objective.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define the target audience based on demographics (age, location) and interests (e.g., 'hiking').",
+      "expected_outcome": "Agent creates a correctly targeted audience for the ad set.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upload the ad creative (image and copy) and set the daily budget.",
+      "expected_outcome": "Agent successfully uploads the assets and sets the budget.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Activate the campaign.",
+      "expected_outcome": "The campaign is set to 'Active' and begins delivery.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

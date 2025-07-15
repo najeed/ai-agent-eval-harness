@@ -1,0 +1,50 @@
+{
+  "scenario_id": "cyber-so-10766",
+  "title": "Threat Hunting with Command Line Auditing",
+  "description": "A threat hunter is searching for suspicious command line arguments that might indicate malicious activity.",
+  "use_case": "Security Operations (SecOps)",
+  "core_function": "Threat Hunting",
+  "industry": "Cybersecurity",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Formulate a hypothesis: 'An attacker is using built-in Windows tools like net.exe and tasklist.exe for reconnaissance'.",
+      "expected_outcome": "Analyst defines a clear, testable hypothesis.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "hypothesis_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query endpoint logs for suspicious sequences of command line activity, such as 'whoami' followed by 'net user' and 'net group'.",
+      "expected_outcome": "Analyst writes a query to find behavioral patterns, not just single indicators.",
+      "required_tools": [
+        "query_endpoint_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "query_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Discover a host where a user account ran a series of reconnaissance commands, then created a new local admin account, and flag it for investigation.",
+      "expected_outcome": "Analyst discovers an active intrusion by piecing together a sequence of suspicious behaviors.",
+      "required_tools": [
+        "flag_host_for_investigation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "threat_discovery_rate",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

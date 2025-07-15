@@ -1,0 +1,53 @@
+{
+  "scenario_id": "construction-cc-10631",
+  "title": "Architect Responds to RFI",
+  "description": "An architect needs to respond to an RFI about a wall dimension discrepancy.",
+  "use_case": "Commercial & Contract Management",
+  "core_function": "Submittals & RFIs",
+  "industry": "Construction",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the pending RFI regarding the wall dimension in Room 101.",
+      "expected_outcome": "The correct RFI is opened.",
+      "required_tools": [
+        "get_rfi_by_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the official answer: 'The correct dimension for the west wall of Room 101 is 12.5 feet as shown on the structural drawings (S-5). Please disregard the dimension on A-2.'",
+      "expected_outcome": "A clear and definitive answer is provided for the RFI.",
+      "required_tools": [
+        "respond_to_rfi"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the RFI status to 'Closed' and notify the project team.",
+      "expected_outcome": "The RFI is closed and the project team is notified of the clarification.",
+      "required_tools": [
+        "update_rfi_status",
+        "send_stakeholder_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}
