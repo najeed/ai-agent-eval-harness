@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sc-10396",
+  "title": "Provide Proof of Delivery (POD)",
+  "description": "A customer's finance department requires a signed Proof of Delivery (POD) for a shipment before they can pay the invoice.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Order Status & Fulfillment Tracking",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the shipment record associated with the customer's order.",
+      "expected_outcome": "Agent locates the specific shipment in the logistics system.",
+      "required_tools": [
+        "get_shipment_details_by_so"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the signed POD document from the carrier's system.",
+      "expected_outcome": "Agent downloads the scanned POD, which includes the recipient's signature.",
+      "required_tools": [
+        "get_pod_from_carrier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Email the POD to the customer.",
+      "expected_outcome": "Agent sends the signed POD to the customer's finance contact.",
+      "required_tools": [
+        "send_email_to_customer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

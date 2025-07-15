@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hc-as-10143",
+  "title": "Verify Medication Order in Pharmacy",
+  "description": "A pharmacist needs to verify a new medication order for an inpatient before it can be dispensed.",
+  "use_case": "Ancillary Services",
+  "core_function": "Pharmacy Operations",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the pharmacy queue and select a pending medication order for verification.",
+      "expected_outcome": "Pharmacist selects an order to review.",
+      "required_tools": [
+        "get_pharmacy_queue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the order for appropriateness, checking the patient's allergies, other medications for interactions, and lab values.",
+      "expected_outcome": "Pharmacist performs a clinical check and determines the order is safe and appropriate.",
+      "required_tools": [
+        "review_patient_chart",
+        "check_drug_interactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Electronically verify the order, which releases it to be filled by a pharmacy technician.",
+      "expected_outcome": "The order is successfully verified and moves to the next step in the pharmacy workflow.",
+      "required_tools": [
+        "verify_pharmacy_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

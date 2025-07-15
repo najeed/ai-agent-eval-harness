@@ -1,0 +1,51 @@
+{
+  "scenario_id": "ps-cs-10401",
+  "title": "Request a Copy of a Birth Certificate",
+  "description": "A citizen needs to order a certified copy of their birth certificate.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Licensing & Permitting",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the citizen's identifying information (full name, date of birth, parents' names).",
+      "expected_outcome": "Agent collects the necessary data to locate the vital record.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the citizen's identity and eligibility to receive the document.",
+      "expected_outcome": "Agent successfully verifies the citizen's identity against provided documentation.",
+      "required_tools": [
+        "verify_citizen_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the request and payment, and inform the citizen of the processing and mailing time.",
+      "expected_outcome": "Agent takes payment and submits the order for the certificate.",
+      "required_tools": [
+        "process_payment",
+        "order_vital_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

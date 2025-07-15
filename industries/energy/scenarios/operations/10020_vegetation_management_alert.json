@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-op-10020",
+  "title": "Vegetation Management Alert near Transmission Line",
+  "description": "An agent analyzes satellite imagery and identifies fast-growing vegetation that could endanger a key transmission line corridor owned by the energy company.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Maintenance & Outage Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the latest satellite imagery of the transmission corridor for vegetation encroachment.",
+      "expected_outcome": "Agent identifies several points where vegetation is within the minimum clearance distance.",
+      "required_tools": [
+        "analyze_satellite_imagery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "image_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cross-reference the locations with the maintenance schedule to see when the area was last cleared.",
+      "expected_outcome": "Agent finds the area is overdue for its biannual clearing.",
+      "required_tools": [
+        "get_maintenance_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a high-priority work order for a vegetation management crew, including GPS coordinates and images of the encroachment.",
+      "expected_outcome": "Agent dispatches a work order with all necessary details.",
+      "required_tools": [
+        "create_vegetation_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

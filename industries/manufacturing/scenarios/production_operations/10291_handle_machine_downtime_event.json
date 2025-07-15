@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-po-10291",
+  "title": "Handle a Machine Downtime Event",
+  "description": "A production line has stopped due to a machine fault. The supervisor needs to log the downtime event.",
+  "use_case": "Production & Operations",
+  "core_function": "Real-time Monitoring & Control",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the machine that is down.",
+      "expected_outcome": "Agent selects the correct machine from a plant layout map or list.",
+      "required_tools": [
+        "get_machine_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log the start time of the downtime event and select a reason code (e.g., 'Mechanical Failure').",
+      "expected_outcome": "Agent successfully logs the downtime event with the correct reason.",
+      "required_tools": [
+        "log_downtime_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a high-priority maintenance request for the downed machine.",
+      "expected_outcome": "Agent creates and dispatches a maintenance ticket to the on-call technician.",
+      "required_tools": [
+        "create_maintenance_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

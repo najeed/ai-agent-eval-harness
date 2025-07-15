@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-10947",
+  "title": "Grid Frequency Stability Monitoring",
+  "description": "A system operator is monitoring grid frequency in real-time to ensure the balance between generation and load.",
+  "use_case": "Grid Operations",
+  "core_function": "System Control & Monitoring",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Continuously monitor the system frequency from synchrophasor data.",
+      "expected_outcome": "System displays a live chart of the grid frequency.",
+      "required_tools": [
+        "get_phasor_measurement_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system detects a sudden drop in frequency following the unexpected trip of a large power plant.",
+      "expected_outcome": "System generates a critical frequency deviation alarm.",
+      "required_tools": [
+        "monitor_frequency_deviation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Automatically deploy fast-acting frequency response services from batteries and other resources to arrest the frequency decline.",
+      "expected_outcome": "System dispatches ancillary services to stabilize the grid.",
+      "required_tools": [
+        "dispatch_ancillary_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

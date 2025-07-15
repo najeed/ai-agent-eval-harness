@@ -1,0 +1,54 @@
+{
+  "scenario_id": "ret-ecom-10638",
+  "title": "Update Subscription Payment Method",
+  "description": "A customer's credit card on file for their subscription has expired. They need to update it.",
+  "use_case": "E-commerce & Order Management",
+  "core_function": "Subscription Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system sends an automated email to the customer warning them their payment method is about to expire.",
+      "expected_outcome": "The customer is proactively notified of the issue.",
+      "required_tools": [
+        "send_automated_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The customer logs into their account and navigates to the payment methods section for their subscription.",
+      "expected_outcome": "The customer accesses the correct page to update their card.",
+      "required_tools": [
+        "login_to_account",
+        "view_subscription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The customer adds their new credit card information and sets it as the default for the subscription.",
+      "expected_outcome": "The payment method is successfully updated, ensuring no interruption in their subscription service.",
+      "required_tools": [
+        "add_payment_method",
+        "update_subscription_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

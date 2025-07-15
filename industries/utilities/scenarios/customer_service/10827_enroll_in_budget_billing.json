@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-cs-10827",
+  "title": "Enroll in Budget Billing",
+  "description": "A customer wants to enroll in the budget billing program to have predictable monthly payments.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's usage history for the past 12 months.",
+      "expected_outcome": "Agent successfully fetches the required historical data.",
+      "required_tools": [
+        "get_usage_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the estimated monthly budget billing amount by averaging the past year's bills.",
+      "expected_outcome": "Agent provides the customer with their calculated monthly payment amount.",
+      "required_tools": [
+        "calculate_budget_billing_amount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain how the program works, including the periodic settlement process, and enroll the customer.",
+      "expected_outcome": "Agent clearly explains the terms and successfully enrolls the customer in the program.",
+      "required_tools": [
+        "enroll_in_billing_program"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

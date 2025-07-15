@@ -1,0 +1,50 @@
+{
+  "scenario_id": "telecom-sl-10793",
+  "title": "Process a Device Trade-in",
+  "description": "A customer upgrading their phone wants to trade in their old device for credit.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "Upselling and Cross-selling",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the model and condition of the customer's old device to determine its trade-in value.",
+      "expected_outcome": "Agent uses the trade-in tool to provide a quote for the old device.",
+      "required_tools": [
+        "get_device_trade_in_value"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the trade-in process: how the credit will be applied and how to ship the old device.",
+      "expected_outcome": "Agent clearly communicates the full process.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the trade-in and generate a shipping label for the customer.",
+      "expected_outcome": "Agent successfully processes the trade-in and sends the shipping label.",
+      "required_tools": [
+        "process_device_trade_in"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-10774",
+  "title": "Gas Nomination and Scheduling",
+  "description": "A gas scheduler needs to nominate (request) the amount of natural gas needed from an interstate pipeline for the next day to serve its customers.",
+  "use_case": "Gas Operations",
+  "core_function": "Pipeline & Pressure Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Forecast the total gas demand for all customers for the next day based on weather and historical data.",
+      "expected_outcome": "System generates an hourly gas demand forecast.",
+      "required_tools": [
+        "get_gas_demand_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "forecast_accuracy_mape",
+          "threshold": 0.05
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Submit a nomination to the pipeline operator's electronic bulletin board for the forecasted volume.",
+      "expected_outcome": "System successfully submits the gas nomination.",
+      "required_tools": [
+        "submit_gas_nomination"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive confirmation from the pipeline that the nomination has been scheduled.",
+      "expected_outcome": "System receives and logs the confirmation.",
+      "required_tools": [
+        "get_nomination_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

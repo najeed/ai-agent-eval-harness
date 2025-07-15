@@ -1,0 +1,39 @@
+{
+  "scenario_id": "telecom-sl-10855",
+  "title": "New Customer Acquisition - Win-Back",
+  "description": "A former customer is targeted with a special 'win-back' offer to rejoin.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "New Customer Acquisition",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the former customer in the marketing database and verify the win-back offer details.",
+      "expected_outcome": "Agent confirms the customer is eligible for '50% off for 6 months'.",
+      "required_tools": [
+        "get_marketing_offer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new account for the customer, applying the special win-back promotion.",
+      "expected_outcome": "Agent successfully creates a new account with the promotional code applied.",
+      "required_tools": [
+        "create_customer_account",
+        "apply_promotion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

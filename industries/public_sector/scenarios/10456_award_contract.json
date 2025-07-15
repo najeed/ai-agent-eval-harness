@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ps-pa-10456",
+  "title": "Award a Contract",
+  "description": "The procurement department is ready to officially award a contract to the winning bidder.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Procurement & Contracts",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the contract and the selected winning vendor.",
+      "expected_outcome": "The procurement officer has the details of the winning bid.",
+      "required_tools": [
+        "get_contract_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the official contract documents for signature.",
+      "expected_outcome": "The officer successfully generates the legal contract.",
+      "required_tools": [
+        "generate_contract_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the contract to the vendor for signature and notify the unsuccessful bidders of the outcome.",
+      "expected_outcome": "The officer sends the contract for execution and sends notifications to all other bidders.",
+      "required_tools": [
+        "send_document_for_signature",
+        "notify_unsuccessful_bidders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

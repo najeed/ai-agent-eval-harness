@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-im-10776",
+  "title": "Update Product Location in System",
+  "description": "A product's primary location has been moved to a different aisle. The system needs to be updated.",
+  "use_case": "Inventory & Merchandising",
+  "core_function": "Merchandising & Planograms",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the product in the inventory management system.",
+      "expected_outcome": "The associate finds the item's record.",
+      "required_tools": [
+        "lookup_product"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Navigate to the location management section for the item.",
+      "expected_outcome": "The associate accesses the field for the item's primary location.",
+      "required_tools": [
+        "open_location_management"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the aisle and bay number to the new location and save the change.",
+      "expected_outcome": "The system now has the correct location, ensuring other associates and online stock checkers can find the product.",
+      "required_tools": [
+        "update_product_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

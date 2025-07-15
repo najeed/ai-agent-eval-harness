@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-cs-10901",
+  "title": "Report Damaged Electric Meter Box",
+  "description": "A customer reports that the electric meter box on the side of their house is damaged.",
+  "use_case": "Customer Service",
+  "core_function": "Service Orders",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's account and address.",
+      "expected_outcome": "Agent correctly identifies the customer.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain that while the meter itself belongs to the utility, the meter box (enclosure) is typically the homeowner's responsibility to repair.",
+      "expected_outcome": "Agent clearly communicates the ownership and responsibility policy.",
+      "required_tools": [
+        "get_demarcation_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the customer to hire a qualified electrician to make the repairs and provide instructions for scheduling a temporary disconnection for safety during the repair.",
+      "expected_outcome": "Agent provides helpful advice and creates a disconnect/reconnect service order.",
+      "required_tools": [
+        "schedule_service_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

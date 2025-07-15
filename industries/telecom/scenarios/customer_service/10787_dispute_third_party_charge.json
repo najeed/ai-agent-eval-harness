@@ -1,0 +1,64 @@
+{
+  "scenario_id": "telecom-cs-10787",
+  "title": "Billing Dispute - 3rd Party Charge",
+  "description": "A customer has a charge on their bill from a 3rd party service (e.g., a mobile game subscription) they claim they did not authorize.",
+  "use_case": "Customer Service",
+  "core_function": "Billing and Payments",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the 3rd party charge on the customer's bill.",
+      "expected_outcome": "Agent locates the specific charge.",
+      "required_tools": [
+        "get_billing_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the nature of 3rd party billing and how the charge originated.",
+      "expected_outcome": "Agent clearly explains the direct carrier billing process.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the contact information for the 3rd party company for the customer to dispute the charge directly.",
+      "expected_outcome": "Agent gives the customer the correct contact info.",
+      "required_tools": [
+        "get_third_party_vendor_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Apply a block on the account to prevent future 3rd party charges.",
+      "expected_outcome": "Agent successfully adds the 3rd party billing block.",
+      "required_tools": [
+        "update_service_features"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

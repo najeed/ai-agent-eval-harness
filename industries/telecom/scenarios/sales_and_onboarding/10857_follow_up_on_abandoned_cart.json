@@ -1,0 +1,51 @@
+{
+  "scenario_id": "telecom-sl-10857",
+  "title": "Onboarding - Follow up on Abandoned Cart",
+  "description": "An agent is tasked with calling a potential customer who started an online order but did not complete it.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "Onboarding and Activation",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the abandoned cart details from the web sales system.",
+      "expected_outcome": "Agent retrieves the items the customer had in their cart (e.g., iPhone, Unlimited Plan).",
+      "required_tools": [
+        "get_abandoned_cart_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Call the customer, reference their saved cart, and ask if they have any questions.",
+      "expected_outcome": "Agent initiates a helpful, non-pushy follow-up call.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Answer the customer's questions and complete the order over the phone.",
+      "expected_outcome": "Agent successfully converts the abandoned cart into a sale.",
+      "required_tools": [
+        "create_customer_account",
+        "process_new_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

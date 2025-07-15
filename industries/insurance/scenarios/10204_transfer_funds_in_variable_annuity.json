@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-la-10204",
+  "title": "Transfer Funds in a Variable Annuity",
+  "description": "A variable annuity holder wants to move money from a bond subaccount to an equity subaccount.",
+  "use_case": "Life & Annuities",
+  "core_function": "Annuity Management",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the contract holder and their investment subaccounts.",
+      "expected_outcome": "Agent correctly identifies the customer and their current fund allocation.",
+      "required_tools": [
+        "get_annuity_contract_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Take the client's instructions for the fund transfer (amount, from/to subaccounts).",
+      "expected_outcome": "Agent accurately records the transfer request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the subaccount transfer.",
+      "expected_outcome": "Agent successfully executes the transfer between the internal funds.",
+      "required_tools": [
+        "process_subaccount_transfer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

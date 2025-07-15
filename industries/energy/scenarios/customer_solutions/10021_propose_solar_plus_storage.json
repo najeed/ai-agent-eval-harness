@@ -1,0 +1,66 @@
+{
+  "scenario_id": "energy-cs-10021",
+  "title": "Propose Solar Plus Storage Solution",
+  "description": "A sales agent is creating a proposal for a commercial customer for a rooftop solar and battery storage system.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "Energy Efficiency & Audits",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the customer's interval meter data to understand their load profile and identify peak demand charges.",
+      "expected_outcome": "Agent determines the customer has high demand charges in the afternoon.",
+      "required_tools": [
+        "get_historical_consumption_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Size an optimal solar and storage system to maximize self-consumption and perform peak shaving.",
+      "expected_outcome": "Agent recommends a 250 kW solar array and a 100 kW/200 kWh battery system.",
+      "required_tools": [
+        "optimize_der_system_size"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the estimated annual bill savings, project IRR, and payback period for the proposed system.",
+      "expected_outcome": "Agent provides a clear financial summary for the customer.",
+      "required_tools": [
+        "calculate_project_financials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a formal proposal document including the technical and financial details.",
+      "expected_outcome": "Agent produces a professional, customer-facing proposal.",
+      "required_tools": [
+        "generate_sales_proposal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

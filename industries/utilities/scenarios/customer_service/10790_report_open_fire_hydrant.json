@@ -1,0 +1,48 @@
+{
+  "scenario_id": "utils-cs-10790",
+  "title": "Report Open Fire Hydrant",
+  "description": "A citizen calls to report that a fire hydrant is open and gushing water.",
+  "use_case": "Customer Service",
+  "core_function": "Service Orders",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the precise location of the open hydrant.",
+      "expected_outcome": "Agent accurately records the location.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask if there is any fire department activity nearby to determine if the use is authorized.",
+      "expected_outcome": "Caller reports no fire department activity.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a high-priority service order for a water crew to go and shut off the hydrant.",
+      "expected_outcome": "Agent dispatches a crew to address the water waste.",
+      "required_tools": [
+        "schedule_service_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

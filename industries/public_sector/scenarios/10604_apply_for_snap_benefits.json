@@ -1,0 +1,51 @@
+{
+  "scenario_id": "ps-cs-10604",
+  "title": "Apply for SNAP Benefits",
+  "description": "A low-income individual wants to apply for the Supplemental Nutrition Assistance Program (SNAP).",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Benefits Administration",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather applicant's household information, income, and expenses.",
+      "expected_outcome": "Agent accurately collects all data needed for eligibility determination.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine initial eligibility based on the provided information.",
+      "expected_outcome": "The system provides a preliminary determination that the applicant is likely eligible.",
+      "required_tools": [
+        "check_snap_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the application and schedule a follow-up interview with a caseworker.",
+      "expected_outcome": "Agent submits the application and schedules the required interview.",
+      "required_tools": [
+        "submit_benefits_application",
+        "schedule_caseworker_interview"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

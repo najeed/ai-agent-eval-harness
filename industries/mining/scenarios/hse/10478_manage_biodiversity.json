@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-hse-10478",
+  "title": "Manage Biodiversity and Land Clearing",
+  "description": "Before clearing land for a new waste dump, an environmental officer surveys the area for protected species.",
+  "use_case": "Health, Safety & Environment (HSE)",
+  "core_function": "Water Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the planned land clearing area on a map.",
+      "expected_outcome": "The area to be cleared is identified.",
+      "required_tools": [
+        "get_land_clearing_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Conduct a field survey of the area to identify any protected flora or fauna.",
+      "expected_outcome": "The survey identifies a population of a protected orchid species within the clearing footprint.",
+      "required_tools": [
+        "conduct_biodiversity_survey"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Develop a plan to translocate the protected orchids to a suitable, safe habitat before clearing begins.",
+      "expected_outcome": "A species management plan is created and approved, allowing the project to proceed while protecting biodiversity.",
+      "required_tools": [
+        "create_species_management_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_management_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

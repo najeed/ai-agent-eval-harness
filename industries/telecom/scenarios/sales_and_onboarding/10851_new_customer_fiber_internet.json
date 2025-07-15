@@ -1,0 +1,54 @@
+{
+  "scenario_id": "telecom-sl-10851",
+  "title": "New Customer Acquisition - Fiber Internet",
+  "description": "A potential customer in a new housing development wants to sign up for the fastest available fiber internet.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "New Customer Acquisition",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that the new address is serviceable for fiber.",
+      "expected_outcome": "Agent confirms the address has fiber coverage.",
+      "required_tools": [
+        "check_service_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Present the different fiber speed tiers (e.g., 300 Mbps, 1 Gbps) and their prices.",
+      "expected_outcome": "Agent clearly explains the available fiber plans.",
+      "required_tools": [
+        "get_internet_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the order for the 1 Gbps plan and schedule a professional installation.",
+      "expected_outcome": "Agent successfully creates the order and books a technician.",
+      "required_tools": [
+        "create_customer_account",
+        "process_new_order",
+        "schedule_technician_visit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

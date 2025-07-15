@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ps-pa-10435",
+  "title": "Track Department Spending Against Budget",
+  "description": "A department head wants to see a report of their department's spending year-to-date compared to their budget.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Budget & Financial Reporting",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the department head and their department.",
+      "expected_outcome": "Agent correctly identifies the user and their associated department.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a budget vs. actuals report for the department.",
+      "expected_outcome": "Agent successfully generates the financial report.",
+      "required_tools": [
+        "generate_budget_vs_actual_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the report to the department head, highlighting any areas of over- or under-spending.",
+      "expected_outcome": "Agent delivers the report with a summary of key variances.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

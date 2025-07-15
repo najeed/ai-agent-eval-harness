@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-proc-10428",
+  "title": "Troubleshoot Crusher Blockage",
+  "description": "A primary gyratory crusher suddenly stops, and a control room operator must diagnose the problem.",
+  "use_case": "Processing & Metallurgy",
+  "core_function": "Crushing & Grinding",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the 'Crusher Stopped' high-priority alarm.",
+      "expected_outcome": "The alarm is acknowledged in the control system.",
+      "required_tools": [
+        "acknowledge_alarm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "response_time_seconds",
+          "threshold": 30
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the sequence of events in the alarm log leading up to the stoppage.",
+      "expected_outcome": "The log shows a 'motor overload' alarm occurred just before the shutdown, suggesting a blockage.",
+      "required_tools": [
+        "get_alarm_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a field operator to visually inspect the crusher chamber for a blockage (e.g., a large rock or piece of metal).",
+      "expected_outcome": "A field operator is dispatched to safely inspect the crusher.",
+      "required_tools": [
+        "dispatch_field_operator"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

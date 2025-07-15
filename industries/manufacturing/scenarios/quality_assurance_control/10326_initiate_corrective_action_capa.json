@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mfg-qc-10326",
+  "title": "Initiate a Corrective Action (CAPA)",
+  "description": "An internal audit has found a recurring process failure. A quality manager needs to initiate a formal Corrective and Preventive Action (CAPA) request.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Non-Conformance & CAPA",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new CAPA record, referencing the internal audit finding.",
+      "expected_outcome": "Agent creates a new CAPA and links it to the specific audit report.",
+      "required_tools": [
+        "create_capa"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Define the problem statement and assign a cross-functional team to investigate the root cause.",
+      "expected_outcome": "Agent writes a clear problem statement and assigns the investigation to the appropriate personnel.",
+      "required_tools": [
+        "update_capa_details",
+        "assign_capa_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set a due date for the root cause analysis phase of the CAPA.",
+      "expected_outcome": "Agent sets a deadline for the investigation team to report its findings.",
+      "required_tools": [
+        "set_capa_due_date"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

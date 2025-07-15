@@ -1,0 +1,49 @@
+{
+  "scenario_id": "telecom-sl-10627",
+  "title": "Onboarding - Explain First Bill",
+  "description": "A new customer calls, confused about their first bill which includes prorated charges.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "Onboarding and Activation",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and retrieve their first billing statement.",
+      "expected_outcome": "Agent pulls up the correct customer and bill.",
+      "required_tools": [
+        "get_customer_details",
+        "get_billing_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Clearly explain the different parts of the bill: the prorated charge for the partial first month and the charge for the next full month in advance.",
+      "expected_outcome": "Agent provides a simple and clear explanation of prorated billing.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the customer understands and is satisfied with the explanation.",
+      "expected_outcome": "Agent ensures customer satisfaction before ending the call.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

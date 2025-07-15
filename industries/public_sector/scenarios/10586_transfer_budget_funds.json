@@ -1,0 +1,51 @@
+{
+  "scenario_id": "ps-pa-10586",
+  "title": "Transfer Budget Funds",
+  "description": "A department head needs to transfer funds from one budget line item (e.g., travel) to another (e.g., office supplies) within their department's budget.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Budget & Financial Reporting",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the source and destination budget line items and the amount to be transferred.",
+      "expected_outcome": "The manager specifies the details of the transfer.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the department head is authorized to make such a transfer and that sufficient funds are available.",
+      "expected_outcome": "The system confirms the user's permissions and the available balance.",
+      "required_tools": [
+        "check_user_permissions",
+        "check_department_budget"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the budget transfer in the financial system.",
+      "expected_outcome": "The system successfully moves the funds between the two budget lines.",
+      "required_tools": [
+        "process_budget_transfer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-down-10518",
+  "title": "Create B2B Lubricant Sales Order",
+  "description": "A sales representative for a major oil company places a bulk order for industrial lubricants for a large manufacturing client.",
+  "use_case": "Downstream",
+  "core_function": "Distribution & Retail",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the client's account and their contract pricing for 'Turbo Oil 560'.",
+      "expected_outcome": "The client's specific pricing for the requested product is retrieved.",
+      "required_tools": [
+        "get_customer_details",
+        "get_contract_pricing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check inventory for the required quantity at the nearest distribution center.",
+      "expected_outcome": "The system confirms sufficient stock is available.",
+      "required_tools": [
+        "check_product_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new sales order in the ERP system for the specified quantity and schedule the delivery.",
+      "expected_outcome": "The sales order is created and a delivery date is confirmed.",
+      "required_tools": [
+        "create_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

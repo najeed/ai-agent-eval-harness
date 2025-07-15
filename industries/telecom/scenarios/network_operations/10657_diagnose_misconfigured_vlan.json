@@ -1,0 +1,50 @@
+{
+  "scenario_id": "telecom-no-10657",
+  "title": "Diagnose Misconfigured VLAN",
+  "description": "A new device on the network cannot get an IP address. The agent suspects it was placed in the wrong VLAN.",
+  "use_case": "Network Operations",
+  "core_function": "Fault Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the MAC address of the new device and the switch port it is connected to.",
+      "expected_outcome": "Agent gathers the required identifiers.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the configuration of the switch port.",
+      "expected_outcome": "Agent finds the port is configured for the 'guest' VLAN instead of the 'corporate' VLAN.",
+      "required_tools": [
+        "get_switch_port_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Change the VLAN configuration on the port to the correct 'corporate' VLAN.",
+      "expected_outcome": "Agent successfully updates the port configuration.",
+      "required_tools": [
+        "set_switch_port_vlan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

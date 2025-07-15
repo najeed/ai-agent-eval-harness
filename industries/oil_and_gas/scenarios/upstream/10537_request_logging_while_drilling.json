@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-10537",
+  "title": "Request LWD Services",
+  "description": "A geologist decides to run a Logging-While-Drilling (LWD) tool to get real-time formation data in the next section of a well.",
+  "use_case": "Upstream",
+  "core_function": "Geoscience & Exploration",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the drilling plan to identify the target interval for LWD.",
+      "expected_outcome": "The geologist confirms the depth interval for the logging run.",
+      "required_tools": [
+        "get_drilling_program_specs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the appropriate LWD tool suite (e.g., Gamma Ray, Resistivity, Neutron-Density) for the geological objectives.",
+      "expected_outcome": "A suitable combination of LWD tools is selected.",
+      "required_tools": [
+        "get_available_lwd_tools"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a formal request to the drilling contractor and LWD service company to add the tool to the next bottom hole assembly (BHA).",
+      "expected_outcome": "A service request is sent and acknowledged by the relevant parties.",
+      "required_tools": [
+        "create_service_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

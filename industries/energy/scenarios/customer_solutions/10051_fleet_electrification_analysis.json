@@ -1,0 +1,64 @@
+{
+  "scenario_id": "energy-cs-10051",
+  "title": "Fleet Electrification Total Cost of Ownership (TCO) Analysis",
+  "description": "A corporate client wants to know the TCO of replacing their fleet of 100 diesel delivery vans with electric equivalents.",
+  "use_case": "Customer Energy Solutions",
+  "core_function": "EV Charging Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the 10-year TCO for the existing diesel fleet, including fuel, maintenance, and insurance costs.",
+      "expected_outcome": "Agent provides the total cost for the diesel fleet.",
+      "required_tools": [
+        "calculate_tco"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the 10-year TCO for an equivalent EV fleet, including vehicle purchase price, electricity costs, charger installation, and reduced maintenance.",
+      "expected_outcome": "Agent provides the total cost for the EV fleet.",
+      "required_tools": [
+        "calculate_tco"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify and quantify any available government incentives for EV fleet purchase and charger installation.",
+      "expected_outcome": "Agent finds incentives that reduce the upfront cost of the EV fleet.",
+      "required_tools": [
+        "get_ev_incentives"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Compare the two TCOs and advise the client on the financial viability of electrification.",
+      "expected_outcome": "Agent reports that electrification would save the company an estimated $1.5 million over 10 years.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

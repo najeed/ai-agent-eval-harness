@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-10999",
+  "title": "DERMS Dispatch of a Virtual Power Plant (VPP)",
+  "description": "A Distributed Energy Resource Management System (DERMS) needs to dispatch a VPP of residential batteries to help reduce evening peak load on a constrained feeder.",
+  "use_case": "Grid Operations",
+  "core_function": "Distribution Automation",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The DERMS forecasts a load-on-feeder that will exceed its thermal limit during the evening peak.",
+      "expected_outcome": "System identifies a need for load reduction.",
+      "required_tools": [
+        "generate_feeder_load_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "forecast_accuracy_mape",
+          "threshold": 0.05
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the available capacity from the VPP of residential batteries located on that feeder.",
+      "expected_outcome": "System confirms 500 kW of dispatchable capacity is available from the VPP.",
+      "required_tools": [
+        "get_vpp_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a dispatch signal to the VPP, instructing the batteries to discharge for a two-hour period to reduce the peak load.",
+      "expected_outcome": "System successfully dispatches the VPP.",
+      "required_tools": [
+        "dispatch_vpp_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

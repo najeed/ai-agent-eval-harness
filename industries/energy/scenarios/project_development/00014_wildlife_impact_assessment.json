@@ -1,0 +1,53 @@
+{
+  "scenario_id": "energy-pd-14",
+  "title": "Wildlife Impact Assessment",
+  "description": "An environmental consultant needs to assess the potential impact of a new solar project on local wildlife, particularly protected bird species.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Permitting & Compliance",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Query federal and state databases to identify all protected or endangered species known to inhabit the project area.",
+      "expected_outcome": "Agent produces a list of 3 protected bird species.",
+      "required_tools": [
+        "query_wildlife_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the project layout to determine its proximity to critical habitats or migratory routes identified for these species.",
+      "expected_outcome": "Agent finds the project site is adjacent to a known migratory flyway.",
+      "required_tools": [
+        "get_habitat_maps",
+        "analyze_project_layout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recommend mitigation measures, such as adjusting the project boundary, using bird-friendly materials, and post-construction monitoring.",
+      "expected_outcome": "Agent provides a list of actionable mitigation strategies.",
+      "required_tools": [
+        "recommend_mitigation_measures"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

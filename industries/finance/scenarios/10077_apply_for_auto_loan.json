@@ -1,0 +1,50 @@
+{
+  "scenario_id": "finance-rb-10077",
+  "title": "Apply for an Auto Loan",
+  "description": "A customer wants to apply for a pre-approval for a $30,000 auto loan.",
+  "use_case": "Retail Banking",
+  "core_function": "Loan & Mortgage Services",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the customer's application details, including income, employment, and requested loan amount.",
+      "expected_outcome": "Agent accurately captures all required information for the loan application.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a credit check with the customer's consent.",
+      "expected_outcome": "Agent successfully retrieves the customer's credit score after getting consent.",
+      "required_tools": [
+        "run_credit_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the credit score and income, provide a pre-approval decision with the approved amount, interest rate, and term.",
+      "expected_outcome": "Agent provides a clear pre-approval decision to the customer.",
+      "required_tools": [
+        "get_loan_decision"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

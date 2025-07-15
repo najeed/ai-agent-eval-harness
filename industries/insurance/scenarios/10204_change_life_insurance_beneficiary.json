@@ -1,0 +1,51 @@
+{
+  "scenario_id": "insurance-la-10204",
+  "title": "Change Life Insurance Beneficiary",
+  "description": "A policyholder recently got married and wants to change the beneficiary on their life insurance policy from their parent to their new spouse.",
+  "use_case": "Life & Annuities",
+  "core_function": "Policy Servicing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the policyholder and retrieve their policy details.",
+      "expected_outcome": "Agent securely identifies the policyholder and their active policy.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the new beneficiary's full name, date of birth, and relationship to the insured.",
+      "expected_outcome": "Agent accurately captures the new beneficiary's information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the beneficiary change request and send a confirmation letter to the policyholder.",
+      "expected_outcome": "Agent successfully updates the beneficiary in the system and queues a confirmation letter.",
+      "required_tools": [
+        "update_beneficiary",
+        "send_confirmation_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

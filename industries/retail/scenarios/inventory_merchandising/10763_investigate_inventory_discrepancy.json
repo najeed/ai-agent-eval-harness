@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-im-10763",
+  "title": "Investigate an Inventory Discrepancy",
+  "description": "A cycle count has revealed a significant discrepancy for a high-value item. A manager needs to investigate the cause.",
+  "use_case": "Inventory & Merchandising",
+  "core_function": "Stock Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the cycle count results that show the discrepancy.",
+      "expected_outcome": "The manager confirms the difference between the system quantity and the physical count.",
+      "required_tools": [
+        "review_cycle_count_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the full transaction history for the item over the last month (sales, receipts, transfers).",
+      "expected_outcome": "The manager analyzes the item's movement history to look for errors.",
+      "required_tools": [
+        "get_item_transaction_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After finding no errors, conclude the discrepancy is likely due to theft and make an inventory adjustment to correct the on-hand quantity, noting 'Shrinkage' as the reason.",
+      "expected_outcome": "The system's inventory is corrected, and the loss is properly categorized.",
+      "required_tools": [
+        "adjust_inventory_quantity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

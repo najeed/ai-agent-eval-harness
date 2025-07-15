@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-cs-10875",
+  "title": "High Gas Bill Inquiry",
+  "description": "A customer calls because their gas bill doubled in the winter and they want to understand why.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's gas usage history and compare it with the heating degree days (HDD) for the billing period.",
+      "expected_outcome": "Agent confirms that usage increased, and it correlates with a much colder than average month.",
+      "required_tools": [
+        "get_usage_history",
+        "get_historical_weather_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the relationship between colder weather and higher heating usage.",
+      "expected_outcome": "Agent clearly communicates why the bill was higher.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Offer the customer information on energy conservation tips and the budget billing program to help manage seasonal bill swings.",
+      "expected_outcome": "Agent provides helpful information on savings and bill management programs.",
+      "required_tools": [
+        "get_conservation_tips",
+        "explain_billing_programs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

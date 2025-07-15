@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-pc-10232",
+  "title": "Handle a Subrogation Demand",
+  "description": "An adjuster has determined the other party was at fault in an accident and is initiating subrogation to recover claim payments.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Claims Processing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the claim file and confirm the at-fault party and their insurance carrier.",
+      "expected_outcome": "The adjuster confirms liability rests with the other driver and identifies their insurance company.",
+      "required_tools": [
+        "get_claim_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total amount paid out on the claim (for repairs, rental, etc.).",
+      "expected_outcome": "The adjuster calculates the total claim cost to be recovered.",
+      "required_tools": [
+        "calculate_claim_payout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a formal subrogation demand letter to the at-fault party's insurance carrier.",
+      "expected_outcome": "The adjuster successfully sends the demand packet to the other insurer.",
+      "required_tools": [
+        "send_subrogation_demand"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

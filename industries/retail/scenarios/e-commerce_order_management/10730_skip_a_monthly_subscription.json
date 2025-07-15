@@ -1,0 +1,51 @@
+{
+  "scenario_id": "ret-ecom-10730",
+  "title": "Skip a Monthly Subscription",
+  "description": "A customer wants to skip their next monthly subscription delivery but not cancel the subscription entirely.",
+  "use_case": "E-commerce & Order Management",
+  "core_function": "Subscription Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log into their account and navigate to the 'Manage Subscription' page.",
+      "expected_outcome": "The customer accesses their subscription details.",
+      "required_tools": [
+        "login_to_account",
+        "view_subscription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the 'Skip Next Shipment' option.",
+      "expected_outcome": "The customer chooses to skip the upcoming delivery.",
+      "required_tools": [
+        "skip_subscription_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system confirms the next shipment has been skipped and shows the date of the following shipment.",
+      "expected_outcome": "The customer's subscription is paused for one cycle and will resume automatically.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

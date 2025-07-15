@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ret-so-10617",
+  "title": "Handle a Spill Cleanup",
+  "description": "A customer has spilled a drink. An associate needs to clean it up and document the action.",
+  "use_case": "Store Operations",
+  "core_function": "In-Store Customer Assistance",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Fetch the spill cleanup station and block off the area.",
+      "expected_outcome": "The associate follows safety procedures.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Clean the spill according to store policy.",
+      "expected_outcome": "The hazard is removed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the incident and the cleanup action in the store's daily log or task management system.",
+      "expected_outcome": "The incident is documented for safety and compliance records.",
+      "required_tools": [
+        "log_store_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

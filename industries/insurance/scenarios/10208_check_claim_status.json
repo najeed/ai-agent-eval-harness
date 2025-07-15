@@ -1,0 +1,51 @@
+{
+  "scenario_id": "insurance-pc-10208",
+  "title": "Check on an Existing Claim Status",
+  "description": "A customer who filed a home insurance claim for water damage a week ago is calling for an update.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Claims Processing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and locate their open claim.",
+      "expected_outcome": "Agent finds the open water damage claim.",
+      "required_tools": [
+        "get_policyholder_details",
+        "get_claim_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the claim notes to find the latest update.",
+      "expected_outcome": "Agent reads the notes and finds that the adjuster has visited and is waiting for the repair estimate.",
+      "required_tools": [
+        "get_claim_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a clear update to the customer and set the expectation for the next communication.",
+      "expected_outcome": "Agent informs the customer about the pending estimate and that the adjuster will call them within 2 business days.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

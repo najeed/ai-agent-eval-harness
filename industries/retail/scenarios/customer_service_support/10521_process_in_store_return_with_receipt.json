@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-cs-10521",
+  "title": "Process In-Store Return with Receipt",
+  "description": "A customer wants to return an item they bought last week and has the original receipt.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Returns & Exchanges",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the barcode on the customer's receipt.",
+      "expected_outcome": "The POS system retrieves the original transaction details.",
+      "required_tools": [
+        "scan_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan the item being returned and visually inspect it to ensure it is in returnable condition.",
+      "expected_outcome": "The system confirms the item was on the original transaction, and the associate verifies its condition.",
+      "required_tools": [
+        "scan_item_barcode"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the return, issuing a refund to the customer's original form of payment (e.g., credit card).",
+      "expected_outcome": "The return is completed, and the refund is successfully processed.",
+      "required_tools": [
+        "process_return"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "energy-op-10056",
+  "title": "Severe Weather Alert Response",
+  "description": "A severe thunderstorm with high winds and potential for hail is forecast to hit a solar farm. The O&M manager must take preemptive action.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Maintenance & Outage Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the detailed weather alert, including the storm's projected path, timing, and specific threats (wind speed, hail size).",
+      "expected_outcome": "Agent gets the specific weather forecast details.",
+      "required_tools": [
+        "get_weather_alert_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate the severe weather protocol, which includes sending a command to the solar trackers to move to a safe 'stow' position to minimize wind and hail damage.",
+      "expected_outcome": "Agent successfully sends the stow command to the farm's control system.",
+      "required_tools": [
+        "initiate_severe_weather_protocol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify on-site personnel to take shelter and secure any loose equipment.",
+      "expected_outcome": "Agent sends an alert to all on-site staff.",
+      "required_tools": [
+        "send_personnel_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

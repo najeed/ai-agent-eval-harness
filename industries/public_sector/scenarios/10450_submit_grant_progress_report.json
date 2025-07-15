@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-pa-10450",
+  "title": "Submit a Grant Progress Report",
+  "description": "A non-profit needs to submit its semi-annual progress report for a federal grant.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Grants & Funding Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the non-profit and the specific grant.",
+      "expected_outcome": "Agent locates the correct grant file.",
+      "required_tools": [
+        "get_grant_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the user in completing the progress report form, including financial and performance metrics.",
+      "expected_outcome": "Agent helps the user fill out all required sections of the report.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Accept the submission of the progress report.",
+      "expected_outcome": "Agent successfully logs the report as submitted on time.",
+      "required_tools": [
+        "submit_grant_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

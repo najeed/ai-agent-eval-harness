@@ -3,6 +3,30 @@
 # Guide: Core Functions for Evaluation
 To provide a more granular level of analysis, each scenario in this harness is tagged with a "core function" within its broader use case. This guide serves as a central reference for the defined functions across all industries.
 
+# Accounting Core Functions
+
+
+# Aerospace Core Functions
+
+
+# Agriculture Core Functions
+
+
+# Airline Core Functions
+
+
+# Audit Core Functions
+
+
+# Automotive Core Functions
+
+
+# Chemicals Core Functions
+
+
+# Construction Core Functions
+
+
 # Consulting Core Functions
 ## Use Case: Management Consulting
 Project Scoping & Proposal: Scenarios related to understanding client needs, defining the scope of work, creating project proposals, and drafting statements of work (SOWs).
@@ -14,6 +38,55 @@ Analysis & Modeling: Scenarios that involve quantitative and qualitative analysi
 Strategy & Recommendation: Scenarios where the agent develops strategic frameworks (e.g., SWOT, Porter's Five Forces), brainstorms solutions, and creates actionable implementation roadmaps.
 
 Presentation & Reporting: Scenarios focused on communicating findings, including creating slide decks, writing executive summaries, and drafting final reports for clients.
+
+# Cybersecurity Core Functions
+
+
+# Defense Core Functions
+
+
+# Ecommerce Core Functions
+
+
+# Education Core Functions
+
+
+# Energy Core Functions
+## Use Case: Renewable Project Development
+Site Assessment & Feasibility: Scenarios related to evaluating potential locations for new renewable energy projects (solar, wind, hydro). This includes analyzing geological, meteorological, and grid interconnection data to determine site viability.
+
+Permitting & Compliance: Scenarios covering the management of applications, environmental impact assessments, and regulatory approvals needed to build and operate energy projects. This also includes managing land lease agreements and community relations.
+
+Financial Modeling & Investment Analysis: Scenarios focused on creating financial models, assessing project profitability, calculating LCOE (Levelized Cost of Energy) and IRR, analyzing tax incentives, and preparing investment memorandums.
+
+Supply Chain & Procurement: Scenarios involving the sourcing, ordering, and tracking of major components like solar panels, wind turbines, and battery systems. This includes managing logistics, construction schedules, and workforce planning.
+
+## Use Case: Energy Trading & Portfolio Management
+Market Analysis & Forecasting: Scenarios focused on analyzing energy market data (supply, demand, price, congestion), forecasting future trends, and identifying trading opportunities. This includes forecasting demand, prices, and the impact of major events.
+
+Trade Execution & Hedging: Scenarios covering the execution of energy trades (e.g., Power Purchase Agreements - PPAs), purchasing derivatives (e.g., FTRs, weather derivatives), and implementing hedging strategies to manage price and volume risk.
+
+Portfolio Optimization: Scenarios related to managing a portfolio of energy assets (generation, storage) to maximize revenue and minimize risk. This includes valuation, identifying M&A targets, and bidding assets into various markets (energy, ancillary services).
+
+Settlement & Reconciliation: Scenarios involving the verification of trade details, managing financial settlements, handling credit checks, purchasing and retiring RECs, and generating compliance reports for regulatory bodies like FERC.
+
+## Use Case: Grid & Asset Operations
+Generation Forecasting: Scenarios focused on accurately predicting energy generation from variable sources like wind and solar to inform grid operators and traders.
+
+Asset Performance Monitoring: Scenarios involving the real-time monitoring of renewable energy assets (e.g., solar farms, wind turbines, substations) to detect faults, performance degradation, soiling, and calculate asset health.
+
+Dispatch & Optimization: Scenarios related to the scheduling and dispatching of energy generation and storage assets to meet grid demand, maximize revenue (e.g., arbitrage), or fulfill contractual obligations.
+
+Maintenance & Outage Management: Scenarios covering the scheduling of preventive maintenance, responding to unplanned outages and alerts (e.g., equipment failure, weather, cybersecurity), managing spare parts inventory, and ensuring worker safety.
+
+## Use Case: Customer Energy Solutions
+Distributed Energy Resource (DER) Onboarding: Scenarios covering the process of enrolling customer-sited assets like rooftop solar, smart thermostats, and home batteries into a Virtual Power Plant (VPP) or other demand response programs.
+
+EV Charging Management: Scenarios focused on managing electric vehicle charging infrastructure, optimizing charging schedules for fleets or individuals, processing billing, analyzing TCO for electrification, and selecting new charger sites.
+
+Energy Efficiency & Audits: Scenarios related to analyzing customer energy consumption, recommending efficiency upgrades (e.g., solar, storage, microgrids), performing resilience analysis, and quantifying potential savings.
+
+Billing & Program Management: Scenarios involving billing for complex energy products (e.g., community solar, demand response payments), managing customer subscriptions, and generating reports on carbon accounting or energy usage.
 
 # Finance Core Functions
 ## Use Case: Retail Banking
@@ -89,6 +162,12 @@ Health Risk Assessment: Scenarios that involve identifying at-risk patient popul
 
 Reporting & Analytics: Scenarios covering the generation of reports on clinical quality measures, financial performance, and population health metrics to support administrative and clinical decision-making.
 
+# Hospitality Core Functions
+
+
+# Human Resources Core Functions
+
+
 # Insurance Core Functions
 ## Use Case: Property & Casualty (P&C) Insurance
 Policy Administration: Scenarios involving the management of active policies, such as making amendments (e.g., adding a driver, changing coverage), processing renewals, handling cancellations, and issuing policy documents like insurance ID cards or certificates of insurance.
@@ -107,6 +186,15 @@ Policy Servicing: Scenarios involving the maintenance of in-force life insurance
 Claims & Payouts: Scenarios focused on processing life insurance death claims or annuity payouts. This includes verifying the death certificate, confirming beneficiary information, and distributing the proceeds according to the policy or contract terms.
 
 Annuity Management: Scenarios specific to annuities, such as processing withdrawals, managing income payout schedules (annuitization), handling fund transfers between investment options in a variable annuity, and explaining tax implications.
+
+# Journalism Core Functions
+
+
+# Legal Core Functions
+
+
+# Logistics and Warehousing Core Functions
+
 
 # Manufacturing Core Functions
 ## Use Case: Production & Operations
@@ -154,6 +242,108 @@ Customer Support & Issue Resolution: Scenarios that involve handling customer in
 
 Account & Contract Management: Scenarios covering the management of customer accounts, contract renewals, and customer-specific pricing and terms.
 
+# Marketing and Advertising Core Functions
+
+
+# Media and Entertainment Core Functions
+
+
+# Mining Core Functions
+## Use Case: Geology & Exploration
+Resource Modeling: Scenarios focused on creating and updating geological block models based on drillhole data. This includes resource estimation, ore body interpretation, and grade control modeling.
+Exploration & Targeting: Scenarios related to analyzing geological, geophysical, and geochemical data to identify new exploration targets and plan drilling programs.
+Geotechnical Analysis: Scenarios involving the assessment of rock mass stability for mine design. This includes analyzing structural data, designing ground support, and monitoring for potential failures in pit walls or underground tunnels.
+
+## Use Case: Mine Planning & Engineering
+Long-Term Planning & Feasibility: Scenarios covering the development of life-of-mine plans, conducting feasibility studies for new projects or expansions, and performing economic evaluations (e.g., NPV).
+Short-Term Scheduling: Scenarios focused on creating detailed short-term (e.g., weekly, monthly) mine production schedules, sequencing extraction activities, and allocating equipment.
+Drill & Blast Design: Scenarios involving the design of blast patterns to achieve optimal rock fragmentation, including specifying hole locations, charge amounts, and timing sequences.
+Ventilation & Services Design: Scenarios specific to underground mining, focused on designing ventilation circuits to ensure air quality and designing services like dewatering and power distribution.
+
+## Use Case: Mine Operations
+Drilling & Blasting: Scenarios covering the operational execution of drilling blast patterns and the charging and firing of explosives.
+Load & Haul: Scenarios related to the real-time management of loading equipment (e.g., shovels, loaders) and haul trucks, including dispatching, payload monitoring, and cycle time optimization.
+Underground Production: Scenarios specific to underground methods, such as longwall operations, stope production cycles, and backfilling.
+Stockpile & Waste Management: Scenarios focused on managing the blending of ore on stockpiles to meet plant feed requirements and the placement of waste rock in dumps according to design.
+
+## Use Case: Processing & Metallurgy
+Crushing & Grinding: Scenarios related to the operation and optimization of crushing and grinding circuits to achieve the target particle size for mineral liberation.
+Mineral Separation: Scenarios covering the operation of separation processes like flotation, leaching, or gravity separation to concentrate the valuable minerals.
+Dewatering & Tailings: Scenarios focused on thickening and filtering the final concentrate and managing the disposal of tailings in a safe and environmentally sound manner.
+Metallurgical Accounting: Scenarios involving the tracking and reconciliation of metal quantities throughout the processing plant to calculate recovery and identify losses.
+
+## Use Case: Maintenance & Asset Management
+Work Management: Scenarios covering the entire maintenance workflow, from creating work requests and planning jobs to scheduling technicians and closing out work orders in a CMMS.
+Reliability & Condition Monitoring: Scenarios focused on monitoring the health of critical equipment using techniques like vibration analysis or oil analysis to predict failures and plan proactive maintenance.
+Asset Strategy & Planning: Scenarios related to developing long-term maintenance strategies for major assets, planning major shutdowns, and managing spare parts inventory.
+
+## Use Case: Health, Safety & Environment (HSE)
+Safety Management: Scenarios involving safety procedures like incident reporting, workplace inspections, issuing permits to work, and managing emergency response drills.
+Environmental Compliance: Scenarios focused on monitoring and reporting environmental data, such as water quality, dust levels, and noise, to ensure compliance with regulations.
+Water Management: Scenarios related to managing the mine's water balance, including dewatering operations, water treatment, and managing water storage facilities.
+
+# Oil and Gas Core Functions
+## Use Case: Upstream (Exploration & Production)
+Geoscience & Exploration: Scenarios related to the analysis of seismic and geological data, identification of potential drilling targets, reservoir characterization, and prospect evaluation.
+Drilling & Completions: Scenarios covering the planning, execution, and monitoring of drilling operations, well design, completions, and rig management.
+Production Operations: Scenarios focused on monitoring and optimizing well performance, managing artificial lift systems, handling production chemicals, and real-time production surveillance.
+Asset & Maintenance Management: Scenarios involving the scheduling of maintenance for surface and subsurface equipment (e.g., pumps, rigs), managing asset integrity, tracking equipment health, and planning work orders.
+
+## Use Case: Midstream (Transportation & Storage)
+Pipeline Operations & Control: Scenarios related to the real-time monitoring of pipeline flow, pressure, and temperature, leak detection, pigging operations, and managing compressor/pump stations.
+Terminal & Storage Management: Scenarios focused on managing hydrocarbon inventory levels in storage tanks, scheduling receipts and deliveries, and overseeing blending operations.
+Logistics & Scheduling: Scenarios covering the nomination and scheduling of pipeline capacity, coordinating truck, rail, or marine transport, and managing commodity movements.
+Compliance & Safety: Scenarios involving adherence to transportation regulations, managing safety protocols, incident reporting, and right-of-way management.
+
+## Use Case: Downstream (Refining & Marketing)
+Refinery Operations & Optimization: Scenarios related to monitoring refinery unit performance, optimizing product yields and quality, managing energy consumption, and process control adjustments.
+Supply & Trading: Scenarios focused on analyzing market data, executing trades for crude oil and refined products, managing price risk through hedging, and optimizing supply chain logistics.
+Distribution & Retail: Scenarios covering the management of fuel inventory at retail stations, dispatching fuel delivery trucks, and handling B2B fuel sales and contracts.
+Health, Safety & Environment (HSE): Scenarios involving the management of environmental compliance, tracking emissions, responding to safety incidents, managing permits to work, and ensuring personnel safety.
+
+# Pharmaceuticals and Life Sciences Core Functions
+
+
+# Public Sector Core Functions
+## Use Case: Citizen Services & Case Management
+Benefits Administration: Scenarios related to applying for, managing, and renewing public assistance benefits such as unemployment, food assistance (SNAP), or housing aid. This includes eligibility determination, processing applications, and handling status inquiries.
+
+Licensing & Permitting: Scenarios covering the lifecycle of licenses and permits issued by government agencies. This includes applications for driver's licenses, business permits, building permits, and professional licenses, as well as renewals and status checks.
+
+Information & Inquiry Resolution: Scenarios focused on handling general citizen inquiries and service requests, often through a 311-style system. This includes providing information about public services, logging complaints, and routing requests to the correct department.
+
+Case Management: Scenarios involving the ongoing management of individual or family cases by social service agencies. This includes intake, needs assessment, creating service plans, documenting interactions, and coordinating with multiple service providers.
+
+## Use Case: Public Administration & Finance
+Taxation & Revenue: Scenarios related to the collection of taxes and fees. This includes assisting citizens with filing income or property taxes, setting up payment plans for overdue taxes, and answering questions about tax assessments and bills.
+
+Grants & Funding Management: Scenarios covering the management of government grants. This includes the application process for organizations seeking funding, reporting requirements for grant recipients, and oversight of fund distribution.
+
+Procurement & Contracts: Scenarios focused on the government procurement process. This includes vendor registration, submitting bids for government contracts, managing contract awards, and processing vendor payments.
+
+Budget & Financial Reporting: Scenarios related to the internal financial operations of a government agency, such as developing an annual budget, tracking departmental spending against appropriations, and generating public-facing financial reports.
+
+## Use Case: Regulatory & Compliance
+Inspections & Enforcement: Scenarios involving regulatory inspections and the enforcement of laws and codes. This includes scheduling and conducting health inspections for restaurants, building code inspections for construction projects, and issuing citations for violations.
+
+Compliance Reporting: Scenarios where individuals or businesses are required to submit compliance reports to a government agency, such as environmental compliance reports or campaign finance disclosures.
+
+Public Records & FOIA: Scenarios focused on managing and responding to public records requests under the Freedom of Information Act (FOIA) or similar state laws. This includes receiving requests, searching for documents, redacting sensitive information, and delivering the records.
+
+Audit & Oversight: Scenarios covering the internal or external audit of government programs to ensure they are operating efficiently and in compliance with laws and regulations. This includes providing documentation to auditors and responding to audit findings.
+
+## Use Case: Public Works & Infrastructure
+Service Request Management: Scenarios related to citizens reporting issues with public infrastructure. This includes reporting potholes, broken streetlights, water main breaks, or missed trash collection, and tracking the status of the repair.
+
+Asset Management: Scenarios focused on the management and maintenance of public assets, such as tracking the condition of roads, bridges, and public buildings, and scheduling preventive maintenance.
+
+Project Management: Scenarios covering the management of public infrastructure projects, such as the construction of a new park or the renovation of a community center, including tracking timelines, budgets, and milestones.
+
+Utility Billing: Scenarios related to billing for municipal utilities like water, sewer, and sanitation services. This includes setting up new service, processing payments, handling billing disputes, and answering questions about rates.
+
+# Real Estate Core Functions
+
+
 # Retail Core Functions
 ## Use Case: Store Operations
 Point of Sale (POS) Transactions: Scenarios involving customer checkout, processing various payment types, applying discounts, and handling tax exemptions.
@@ -200,6 +390,15 @@ Campaign Management: Scenarios covering the execution and tracking of marketing 
 
 Customer Feedback & Reviews: Scenarios focused on soliciting and managing customer feedback, including sending post-purchase surveys and responding to online product reviews.
 
+# Smart Cities Core Functions
+
+
+# Sports Core Functions
+
+
+# Tax Core Functions
+
+
 # Telecom Core Functions
 ## Use Case: Customer Service
 Billing and Payments: Scenarios involving the explanation of charges, handling payment disputes, processing payments, and managing billing cycles.
@@ -236,3 +435,47 @@ Performance Management: Scenarios focused on proactively monitoring and optimizi
 Network Provisioning: Scenarios related to the configuration and deployment of new network elements, such as activating a new cell site or router.
 
 Security Operations: Scenarios that involve responding to network security threats, such as DDoS attacks, identifying fraudulent activity, or investigating security alerts.
+
+# Tourism Core Functions
+
+
+# Transportation Core Functions
+
+
+# Utilities Core Functions
+## Use Case: Customer Service (Electric, Water, Gas)
+Billing & Account Management: Scenarios related to starting, stopping, or transferring service, handling billing inquiries and disputes, setting up payment arrangements, and updating customer account information.
+
+Outage Management: Scenarios focused on customers reporting service outages (power, water), receiving Estimated Times of Restoration (ETRs), and getting updates on repair status.
+
+Service Orders: Scenarios covering field service requests, such as investigating low water pressure, trimming trees near power lines, responding to gas odor calls, or scheduling meter checks and repairs.
+
+Conservation & Efficiency: Scenarios involving customer engagement with utility programs, such as applying for energy efficiency rebates, enrolling in Time-of-Use (TOU) rates, or inquiring about conservation tips.
+
+## Use Case: Grid Operations (Electric)
+System Control & Monitoring: Scenarios related to the real-time operation of the electric grid, including balancing load and generation, managing voltage and frequency, and performing economic dispatch of power plants.
+
+Fault Location, Isolation, and Service Restoration (FLISR): Scenarios focused on the automated detection of faults on the distribution network, isolating the faulted section, and rerouting power to restore service to unaffected customers.
+
+Distribution Automation: Scenarios involving the operation of smart grid devices like automated switches, capacitors, and reclosers to optimize grid performance, manage power quality, and support distributed energy resources (DERs).
+
+Asset Management: Scenarios covering the lifecycle management of grid assets, including monitoring the health of transformers, poles, and lines, analyzing inspection data (from drones, LiDAR), and planning for replacement or refurbishment.
+
+## Use Case: Water & Wastewater Operations
+Treatment & Quality: Scenarios related to managing water and wastewater treatment plants, monitoring water quality in real-time, adjusting chemical dosages, and ensuring compliance with environmental regulations.
+
+Network Management: Scenarios focused on the operation of the water distribution and wastewater collection systems, including managing pump stations, controlling pressure, monitoring storage tank levels, and detecting leaks.
+
+Asset Management: Scenarios involving the maintenance and inspection of water and sewer infrastructure, such as dam safety inspections, pipeline condition assessments, and planning for water main replacements or flushing programs.
+
+## Use Case: Gas Operations
+Pipeline & Pressure Management: Scenarios related to the safe and reliable operation of the natural gas pipeline system, including monitoring and controlling pressure, managing compressor stations, and scheduling gas nominations.
+
+Leak Detection & Repair: Scenarios covering the response to suspected gas leaks, including emergency dispatch, public safety communication (e.g., 'Call Before You Dig'), and investigating excavation damages.
+
+Asset Management: Scenarios focused on maintaining the integrity of the gas system, such as performing internal pipeline inspections with PIGs, monitoring for corrosion, testing safety valves, and managing meter replacement programs.
+
+# Venues Core Functions
+
+
+# Wholesale Core Functions

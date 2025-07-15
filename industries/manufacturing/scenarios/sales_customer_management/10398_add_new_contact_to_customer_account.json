@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sc-10398",
+  "title": "Add a New Contact to a Customer Account",
+  "description": "A new engineer at a customer company needs to be added as a technical contact on their account.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Account & Contract Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's account in the CRM.",
+      "expected_outcome": "Agent retrieves the correct customer account.",
+      "required_tools": [
+        "get_customer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the new contact's name, title, email, and phone number.",
+      "expected_outcome": "Agent enters the new contact's details accurately.",
+      "required_tools": [
+        "add_customer_contact"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the 'Technical Contact' role to the new person.",
+      "expected_outcome": "Agent successfully sets the role for the new contact, ensuring they receive technical bulletins.",
+      "required_tools": [
+        "update_customer_contact_role"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-down-10532",
+  "title": "Manage Gasoline Blending",
+  "description": "A refinery operator needs to blend several components to produce a batch of on-spec unleaded gasoline.",
+  "use_case": "Downstream",
+  "core_function": "Refinery Operations & Optimization",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the recipe for '87 Octane Gasoline' from the blending system.",
+      "expected_outcome": "The blend recipe with component percentages is retrieved.",
+      "required_tools": [
+        "get_blend_recipe"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate the blend operation, controlling the flow rates of the different components (e.g., reformate, alkylate, ethanol) into the blending tank.",
+      "expected_outcome": "The blending process is started and monitored in real-time.",
+      "required_tools": [
+        "start_blend_operation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After blending, take a sample and send it to the lab to certify that the final product meets all quality specifications (e.g., octane, RVP).",
+      "expected_outcome": "The final product is tested and certified as on-spec.",
+      "required_tools": [
+        "create_lab_test_request",
+        "certify_product_batch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

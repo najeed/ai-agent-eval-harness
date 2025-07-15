@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-10844",
+  "title": "Analyze Pole Inspection Imagery",
+  "description": "An asset manager uses an AI model to analyze drone imagery of thousands of utility poles to identify defects.",
+  "use_case": "Grid Operations",
+  "core_function": "Asset Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Process and categorize a large batch of pole inspection images.",
+      "expected_outcome": "System ingests and organizes the imagery.",
+      "required_tools": [
+        "process_drone_imagery"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a computer vision model on the images to detect and classify defects like rot, woodpecker damage, and cracked crossarms.",
+      "expected_outcome": "AI model flags 50 poles with potential defects requiring review.",
+      "required_tools": [
+        "run_defect_detection_ai"
+      ],
+      "success_criteria": [
+        {
+          "metric": "image_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prioritize the flagged poles for follow-up physical inspection based on the severity of the detected defects.",
+      "expected_outcome": "System creates a prioritized list of poles for field crews to inspect.",
+      "required_tools": [
+        "prioritize_work_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

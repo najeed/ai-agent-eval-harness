@@ -1,0 +1,50 @@
+{
+  "scenario_id": "utils-go-10979",
+  "title": "Gas Pipeline Right-of-Way Patrol",
+  "description": "A technician is patrolling a gas pipeline right-of-way and observes unauthorized construction activity near the pipeline.",
+  "use_case": "Gas Operations",
+  "core_function": "Leak Detection & Repair",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The technician immediately approaches the construction crew to inform them of the pipeline's presence and order them to stop work.",
+      "expected_outcome": "Technician follows safety protocol to prevent a potential line strike.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The technician logs the incident, including the location, name of the construction company, and photos of the activity.",
+      "expected_outcome": "Technician documents the incident in the compliance system.",
+      "required_tools": [
+        "log_field_observation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system automatically generates a formal notification to the construction company regarding the encroachment.",
+      "expected_outcome": "System sends a formal warning and stop-work notice.",
+      "required_tools": [
+        "send_compliance_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "scenario_id": "energy-op-10047",
+  "title": "Maintenance Work Order Prioritization",
+  "description": "An O&M supervisor has a backlog of 50 open work orders across a wind portfolio and needs the agent to prioritize them based on urgency and economic impact.",
+  "use_case": "Grid & Asset Operations",
+  "core_function": "Maintenance & Outage Management",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For each work order, identify the affected asset and the nature of the fault.",
+      "expected_outcome": "Agent compiles a list of all open work orders and their associated issues.",
+      "required_tools": [
+        "get_open_work_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Estimate the daily revenue loss associated with each fault (e.g., a full turbine outage vs. a minor sensor error).",
+      "expected_outcome": "Agent assigns a daily financial impact to each work order.",
+      "required_tools": [
+        "calculate_lost_revenue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign a safety and compliance risk score to each work order.",
+      "expected_outcome": "Agent scores each task based on potential risks.",
+      "required_tools": [
+        "assess_safety_risk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a prioritized list of work orders, ranking them by a combined score of financial impact and risk.",
+      "expected_outcome": "Agent produces a ranked list to guide the supervisor's daily planning.",
+      "required_tools": [
+        "prioritize_work_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

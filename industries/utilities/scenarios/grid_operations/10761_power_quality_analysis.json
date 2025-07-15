@@ -1,0 +1,66 @@
+{
+  "scenario_id": "utils-go-10761",
+  "title": "Power Quality Analysis",
+  "description": "A large industrial customer is complaining that sensitive equipment is failing, and they suspect power quality issues. An engineer needs to analyze data to diagnose the problem.",
+  "use_case": "Grid Operations",
+  "core_function": "System Control & Monitoring",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve high-resolution waveform data from the power quality meter at the customer's service entrance.",
+      "expected_outcome": "Engineer obtains detailed voltage and current waveform data.",
+      "required_tools": [
+        "get_power_quality_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data for anomalies such as voltage sags, swells, transients, or harmonic distortion.",
+      "expected_outcome": "Analysis reveals multiple voltage sags and high levels of harmonic distortion.",
+      "required_tools": [
+        "analyze_waveform_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Correlate the power quality events with operations on the utility grid or within the customer's facility.",
+      "expected_outcome": "Engineer determines the harmonics are caused by the customer's own variable frequency drives.",
+      "required_tools": [
+        "correlate_power_quality_events"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a report for the customer explaining the findings and recommending solutions, such as installing harmonic filters.",
+      "expected_outcome": "Engineer provides a detailed report and actionable recommendations.",
+      "required_tools": [
+        "generate_technical_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hc-pa-10090",
+  "title": "Reschedule an Appointment",
+  "description": "A clinic needs to call a patient and reschedule their appointment because the provider will be out of the office.",
+  "use_case": "Patient Administration",
+  "core_function": "Patient Registration & Scheduling",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the patient's appointment that needs to be rescheduled.",
+      "expected_outcome": "Agent locates the correct appointment on the provider's schedule.",
+      "required_tools": [
+        "get_patient_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cancel the existing appointment, noting 'Provider unavailable' as the reason.",
+      "expected_outcome": "Agent cancels the original appointment.",
+      "required_tools": [
+        "cancel_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the patient, explain the situation, and find a new appointment time that works for them.",
+      "expected_outcome": "Agent successfully communicates with the patient and books a new appointment.",
+      "required_tools": [
+        "view_provider_schedule",
+        "schedule_appointment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

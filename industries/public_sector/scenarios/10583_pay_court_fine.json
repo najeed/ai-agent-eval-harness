@@ -1,0 +1,51 @@
+{
+  "scenario_id": "ps-pa-10583",
+  "title": "Pay a Court Fine Online",
+  "description": "A citizen needs to pay a fine for a traffic violation online.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Taxation & Revenue",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the fine using the citation number or the citizen's name.",
+      "expected_outcome": "Agent successfully locates the outstanding fine in the court system.",
+      "required_tools": [
+        "get_court_case_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Confirm the amount of the fine.",
+      "expected_outcome": "Agent states the correct amount due.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the payment via credit card.",
+      "expected_outcome": "Agent successfully takes payment and marks the fine as paid.",
+      "required_tools": [
+        "process_payment",
+        "update_case_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

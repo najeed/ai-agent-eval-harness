@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-10517",
+  "title": "Manage Offshore Rig Personnel",
+  "description": "An offshore installation manager needs to generate a POB (Personnel on Board) list for an emergency muster drill.",
+  "use_case": "Upstream",
+  "core_function": "Asset & Maintenance Management",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the personnel logistics system to get a real-time list of everyone currently on the offshore platform.",
+      "expected_outcome": "A complete list of all personnel currently on board is generated.",
+      "required_tools": [
+        "get_personnel_on_board_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the list to show each person's assigned muster station.",
+      "expected_outcome": "The POB list is updated to include the correct muster station for each individual.",
+      "required_tools": [
+        "get_muster_station_assignments"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_processing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Transmit the list to the emergency response leader's tablet for the drill.",
+      "expected_outcome": "The list is successfully sent and received for use in the muster drill.",
+      "required_tools": [
+        "send_data_to_device"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

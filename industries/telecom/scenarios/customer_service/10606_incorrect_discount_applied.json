@@ -1,0 +1,54 @@
+{
+  "scenario_id": "telecom-cs-10606",
+  "title": "Billing Dispute - Incorrect Discount",
+  "description": "A customer claims their promotional 'loyalty' discount was not applied to their latest bill.",
+  "use_case": "Customer Service",
+  "core_function": "Billing and Payments",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve customer account and the bill in question.",
+      "expected_outcome": "Agent correctly identifies the customer and the bill.",
+      "required_tools": [
+        "get_customer_details",
+        "get_billing_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the account's active promotions and their terms.",
+      "expected_outcome": "Agent confirms a 12-month loyalty discount should be active.",
+      "required_tools": [
+        "get_account_promotions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply a manual credit for the missing discount amount and ensure the promotion is fixed for future bills.",
+      "expected_outcome": "Agent credits the current bill and re-applies the promotion code to the account.",
+      "required_tools": [
+        "apply_manual_credit",
+        "reapply_promotion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

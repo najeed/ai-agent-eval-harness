@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-wo-11000",
+  "title": "Wastewater Lift Station Monitoring",
+  "description": "A SCADA system is monitoring a wastewater lift station for potential failures.",
+  "use_case": "Water & Wastewater Operations",
+  "core_function": "Network Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the wet well level and the run times of the pumps.",
+      "expected_outcome": "System is continuously collecting operational data.",
+      "required_tools": [
+        "get_lift_station_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system detects that the wet well level is high, but the pumps are not running.",
+      "expected_outcome": "System generates a critical alarm for a potential lift station failure.",
+      "required_tools": [
+        "analyze_lift_station_performance"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a maintenance crew immediately to troubleshoot the issue (e.g., power failure, clogged pump) before a sewer overflow occurs.",
+      "expected_outcome": "System creates a Priority 1 emergency work order.",
+      "required_tools": [
+        "dispatch_emergency_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

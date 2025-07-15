@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hc-cc-10127",
+  "title": "Update Patient Allergy List",
+  "description": "During an intake, a patient reports a new allergy to penicillin. A nurse needs to update the patient's allergy list.",
+  "use_case": "Clinical Care",
+  "core_function": "Clinical Documentation & Charting",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient's chart and navigate to the allergies section.",
+      "expected_outcome": "Nurse accesses the correct module for managing allergies.",
+      "required_tools": [
+        "get_patient_record",
+        "open_allergies_module"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add 'Penicillin' to the allergy list.",
+      "expected_outcome": "Nurse searches for and selects the correct substance.",
+      "required_tools": [
+        "add_allergy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the nature of the reaction (e.g., 'Hives') and save the changes.",
+      "expected_outcome": "Nurse adds the specific reaction details, and the new allergy is now prominently displayed in the patient's chart banner.",
+      "required_tools": [
+        "update_allergy_reaction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

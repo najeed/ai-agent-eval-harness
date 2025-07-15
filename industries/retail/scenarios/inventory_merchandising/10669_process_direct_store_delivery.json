@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ret-im-10669",
+  "title": "Process a Direct Store Delivery (DSD)",
+  "description": "A vendor (e.g., a soda bottler) arrives to deliver products directly to the store, bypassing the warehouse.",
+  "use_case": "Inventory & Merchandising",
+  "core_function": "Receiving & Restocking",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The vendor provides an invoice for the products they are delivering.",
+      "expected_outcome": "The store associate receives the delivery paperwork.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The associate counts the items being delivered and verifies that the quantities match the invoice.",
+      "expected_outcome": "The delivery is confirmed to be accurate.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The associate signs the invoice and uses the DSD function in the inventory system to add the items directly into the store's inventory.",
+      "expected_outcome": "The inventory is updated accurately for the items that did not come from the main warehouse.",
+      "required_tools": [
+        "process_dsd_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

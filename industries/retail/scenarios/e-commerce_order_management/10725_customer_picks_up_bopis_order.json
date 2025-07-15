@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ret-ecom-10725",
+  "title": "Customer Picks Up BOPIS Order",
+  "description": "A customer arrives in-store to pick up their 'Buy Online, Pick up In Store' order.",
+  "use_case": "E-commerce & Order Management",
+  "core_function": "Click & Collect / BOPIS",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The customer provides their name or order number to the store associate.",
+      "expected_outcome": "The associate has the information needed to find the order.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The associate looks up the order in the POS or handheld device to find its staging location.",
+      "expected_outcome": "The system shows the order is in 'Staging Bin C'.",
+      "required_tools": [
+        "lookup_bopis_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The associate retrieves the order, has the customer sign for it, and marks the order as 'Completed' in the system.",
+      "expected_outcome": "The customer receives their order, and the transaction is finalized.",
+      "required_tools": [
+        "complete_bopis_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

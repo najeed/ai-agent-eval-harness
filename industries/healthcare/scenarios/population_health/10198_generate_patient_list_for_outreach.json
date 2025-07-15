@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-ph-10198",
+  "title": "Generate Patient List for Outreach",
+  "description": "A care manager needs a list of all high-risk asthma patients who have had an ED visit in the last 6 months.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Reporting & Analytics",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient list builder tool in the analytics platform.",
+      "expected_outcome": "The manager accesses the reporting tool.",
+      "required_tools": [
+        "open_analytics_platform"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Build a query with the following criteria: (Diagnosis = Asthma) AND (Risk Score = High) AND (ED Visit within last 180 days).",
+      "expected_outcome": "The manager correctly defines the criteria for the patient list.",
+      "required_tools": [
+        "build_patient_list_query"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the query and generate the list of patients.",
+      "expected_outcome": "A targeted list of patients is created, allowing the care manager to focus their outreach efforts on the most vulnerable patients.",
+      "required_tools": [
+        "run_patient_list_query"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

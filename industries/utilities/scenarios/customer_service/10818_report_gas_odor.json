@@ -1,0 +1,48 @@
+{
+  "scenario_id": "utils-cs-10818",
+  "title": "Report Natural Gas Odor",
+  "description": "A customer calls reporting the smell of natural gas (rotten eggs) inside their home. This is a critical safety scenario.",
+  "use_case": "Customer Service",
+  "core_function": "Service Orders",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Immediately advise the customer to evacuate the premises and not use any electronics or light switches.",
+      "expected_outcome": "Agent follows safety protocol and provides critical instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "While the customer is evacuating, dispatch an emergency crew to the location with the highest priority.",
+      "expected_outcome": "Agent creates a Priority 1 emergency work order.",
+      "required_tools": [
+        "dispatch_emergency_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the customer's location and a safe callback number once they are outside.",
+      "expected_outcome": "Agent verifies the address and contact details for the emergency crew.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

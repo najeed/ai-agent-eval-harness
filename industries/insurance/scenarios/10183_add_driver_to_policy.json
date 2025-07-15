@@ -1,0 +1,51 @@
+{
+  "scenario_id": "insurance-pc-10183",
+  "title": "Add a Driver to an Auto Policy",
+  "description": "A policyholder wants to add their newly licensed teenage son to their auto insurance policy.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Policy Administration",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and retrieve their current policy.",
+      "expected_outcome": "Agent correctly identifies the customer's account.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the new driver's information (name, date of birth, driver's license number).",
+      "expected_outcome": "Agent accurately captures the new driver's details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the new driver to the policy and calculate the change in premium.",
+      "expected_outcome": "Agent successfully adds the driver and informs the policyholder of the new, higher premium.",
+      "required_tools": [
+        "add_driver",
+        "recalculate_premium"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

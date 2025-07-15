@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-mx-10879",
+  "title": "Outage Leads to Credit and Upsell",
+  "description": "A customer calls about a service outage. After resolving, the agent identifies they are a good candidate for a higher-tier plan with better reliability.",
+  "use_case": "Mixed",
+  "core_function": "Service Lifecycle",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Handle the initial outage report by checking the network status and providing an ETR.",
+      "expected_outcome": "Agent successfully handles the service outage part of the call.",
+      "required_tools": [
+        "check_network_outage_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Proactively apply a service credit for the downtime.",
+      "expected_outcome": "Agent applies a credit without the customer having to ask.",
+      "required_tools": [
+        "apply_service_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the customer's account and propose an upgrade to a business-tier plan with an SLA.",
+      "expected_outcome": "Agent successfully pivots to a sales conversation and explains the benefits of a business plan.",
+      "required_tools": [
+        "get_business_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

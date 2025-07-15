@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-rc-10698",
+  "title": "Report a Potential Data Breach",
+  "description": "An agency employee reports that they may have accidentally exposed citizen data, triggering a data breach response.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Audit & Oversight",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the initial report of the potential breach from the employee.",
+      "expected_outcome": "The IT security officer documents the initial report.",
+      "required_tools": [
+        "log_security_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately launch an investigation to determine the scope of the breach: what data was exposed and how many citizens are affected.",
+      "expected_outcome": "The security team begins a forensic investigation.",
+      "required_tools": [
+        "initiate_breach_investigation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the agency's leadership and legal counsel of the incident.",
+      "expected_outcome": "The security officer escalates the incident to the appropriate leadership.",
+      "required_tools": [
+        "notify_stakeholders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

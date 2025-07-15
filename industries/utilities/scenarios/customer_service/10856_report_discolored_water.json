@@ -1,0 +1,50 @@
+{
+  "scenario_id": "utils-cs-10856",
+  "title": "Report Discolored Water",
+  "description": "A customer calls to report that their tap water is brown.",
+  "use_case": "Customer Service",
+  "core_function": "Service Orders",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer's location and ask if their neighbors are experiencing the same issue.",
+      "expected_outcome": "Agent gathers location and scope information.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for any recent operational activities in the area, such as water main flushing or repairs, that could stir up sediment.",
+      "expected_outcome": "Agent finds that a nearby water main was flushed earlier in the day.",
+      "required_tools": [
+        "get_operational_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the customer that the discoloration is temporary due to the flushing and to run their cold water taps for a few minutes until it clears.",
+      "expected_outcome": "Agent provides a clear explanation and instructions to resolve the issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

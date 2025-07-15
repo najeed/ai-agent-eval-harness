@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-maint-10476",
+  "title": "Manage Mobile Equipment Fluid Levels",
+  "description": "A technician at a fuel bay is responsible for checking and topping up the fluids (fuel, oil, coolant) of every haul truck at the end of its shift.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Work Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A haul truck (HT-34) pulls into the fuel bay. Scan the equipment ID to bring up its record.",
+      "expected_outcome": "The truck's record is displayed on a mobile device.",
+      "required_tools": [
+        "scan_equipment_id"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Refuel the truck and check the levels for engine oil, coolant, and hydraulic fluid.",
+      "expected_outcome": "The truck is refueled, and the fluid levels are checked.",
+      "required_tools": [
+        "check_fluid_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Top up the engine oil and record the amount added in the system. Log the service as complete.",
+      "expected_outcome": "The oil is topped up, and the consumption is logged in the CMMS, which helps track engine health.",
+      "required_tools": [
+        "record_fluid_addition",
+        "update_task_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-maint-10437",
+  "title": "Plan Corrective Maintenance Job",
+  "description": "A maintenance planner receives a work order to replace a leaking pump and must plan the job.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Work Management",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the work order and retrieve the technical specifications for the pump.",
+      "expected_outcome": "The planner understands the scope of work and the equipment involved.",
+      "required_tools": [
+        "get_work_order_details",
+        "get_equipment_specifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Develop a step-by-step job plan, including safety procedures (like isolation and lockout/tagout), required spare parts, tools, and estimated labor hours.",
+      "expected_outcome": "A detailed and safe job plan is created.",
+      "required_tools": [
+        "create_job_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Order the required spare parts from the warehouse and reserve them for the job.",
+      "expected_outcome": "All necessary parts are confirmed to be available and are reserved for this work order.",
+      "required_tools": [
+        "order_spare_parts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "telecom-cs-10714",
+  "title": "Customer Plan Change Request - Upgrade",
+  "description": "A customer frequently exceeds their data limit and wants to upgrade to a plan with more data.",
+  "use_case": "Customer Service",
+  "core_function": "Plan Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and review their recent data usage, confirming overages.",
+      "expected_outcome": "Agent confirms the customer has had data overage charges for the last 3 months.",
+      "required_tools": [
+        "get_customer_details",
+        "get_usage_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Recommend a specific higher-tier plan that would be more cost-effective than paying overage fees.",
+      "expected_outcome": "Agent recommends the 'Unlimited Plus' plan, showing it would have saved the customer money.",
+      "required_tools": [
+        "get_available_plans"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the plan upgrade and confirm the new monthly cost and features.",
+      "expected_outcome": "Agent successfully upgrades the plan and clearly communicates the new terms.",
+      "required_tools": [
+        "update_customer_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

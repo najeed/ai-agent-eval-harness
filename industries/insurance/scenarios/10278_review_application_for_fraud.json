@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-10278",
+  "title": "Review Application for Potential Fraud",
+  "description": "An underwriter's automated system flags a new life insurance application for potential fraud.",
+  "use_case": "Life & Annuities",
+  "core_function": "New Business & Underwriting",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the fraud alert details.",
+      "expected_outcome": "The underwriter sees the system flagged a mismatch between the stated income and third-party data sources.",
+      "required_tools": [
+        "review_fraud_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Request additional financial documentation from the applicant to verify their income.",
+      "expected_outcome": "The underwriter sends a request back to the agent for the applicant's tax returns.",
+      "required_tools": [
+        "request_additional_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place the application on hold pending receipt and review of the documentation.",
+      "expected_outcome": "The underwriter updates the application status to 'Pending-Additional Information'.",
+      "required_tools": [
+        "update_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

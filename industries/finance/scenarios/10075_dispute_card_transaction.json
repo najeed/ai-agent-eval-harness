@@ -1,0 +1,54 @@
+{
+  "scenario_id": "finance-rb-10075",
+  "title": "Dispute Unauthorized Card Transaction",
+  "description": "A customer reports an unrecognized charge on their debit card statement and wants to dispute it.",
+  "use_case": "Retail Banking",
+  "core_function": "Fraud & Security",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and locate the specific transaction in their history.",
+      "expected_outcome": "Agent correctly identifies the customer and the $75.00 charge from 'ShopMart Online'.",
+      "required_tools": [
+        "get_customer_details",
+        "get_transaction_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Temporarily block the customer's debit card to prevent further fraudulent charges.",
+      "expected_outcome": "Agent successfully places a temporary lock on the debit card.",
+      "required_tools": [
+        "set_card_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Initiate a chargeback for the disputed transaction and order a new card for the customer.",
+      "expected_outcome": "Agent files the dispute and successfully orders a replacement card.",
+      "required_tools": [
+        "initiate_chargeback",
+        "order_replacement_card"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

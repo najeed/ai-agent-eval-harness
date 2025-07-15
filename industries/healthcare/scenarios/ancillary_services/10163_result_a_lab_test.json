@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-as-10163",
+  "title": "Result a Lab Test",
+  "description": "A lab analyzer has finished processing a batch of samples. A technician needs to review and release the results into the LIS.",
+  "use_case": "Ancillary Services",
+  "core_function": "Laboratory Services",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the results from the analyzer interface, which have been transmitted to the LIS.",
+      "expected_outcome": "Technician views the batch of results pending verification.",
+      "required_tools": [
+        "review_analyzer_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the quality control results for the batch to ensure they are within acceptable limits.",
+      "expected_outcome": "Technician confirms the QC was successful, validating the patient results.",
+      "required_tools": [
+        "review_qc_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify and release the patient results. Any critical values are automatically flagged.",
+      "expected_outcome": "The results are finalized in the LIS and transmitted to the main EHR for the provider to review.",
+      "required_tools": [
+        "verify_lab_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

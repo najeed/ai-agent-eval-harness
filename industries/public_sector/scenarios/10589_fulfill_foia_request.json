@@ -1,0 +1,51 @@
+{
+  "scenario_id": "ps-rc-10589",
+  "title": "Fulfill a FOIA Request",
+  "description": "A records officer has the final, redacted documents and is ready to deliver them to the FOIA requestor.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Public Records & FOIA",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the FOIA request and the associated responsive documents.",
+      "expected_outcome": "The officer has the correct request and the final set of documents.",
+      "required_tools": [
+        "get_foia_request_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a response letter to the requestor, explaining what is being provided and citing the legal exemptions used for any redactions.",
+      "expected_outcome": "The officer writes a clear, legally compliant response letter.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "content_generation_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deliver the letter and the documents to the requestor and close the request in the system.",
+      "expected_outcome": "The officer sends the materials and updates the request status to 'Fulfilled'.",
+      "required_tools": [
+        "send_secure_documents",
+        "update_foia_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

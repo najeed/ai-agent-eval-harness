@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-10433",
+  "title": "Respond to Drilling Kick",
+  "description": "A driller observes a sudden increase in flow from the well, indicating a 'kick' (an influx of formation fluid). They must initiate well control procedures immediately.",
+  "use_case": "Upstream",
+  "core_function": "Drilling & Completions",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Detect the kick and activate the emergency shutdown (ESD) to stop the rig floor equipment.",
+      "expected_outcome": "The rig is secured, and ESD is activated.",
+      "required_tools": [
+        "activate_esd"
+      ],
+      "success_criteria": [
+        {
+          "metric": "response_time_seconds",
+          "threshold": 30
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Shut in the well by closing the Blowout Preventer (BOP) to contain the pressure.",
+      "expected_outcome": "The BOP is closed, and the well is successfully shut in.",
+      "required_tools": [
+        "close_bop"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Read and record the shut-in drill pipe pressure and shut-in casing pressure to prepare for circulating the kick out of the well.",
+      "expected_outcome": "The critical pressures are recorded to plan the well kill procedure.",
+      "required_tools": [
+        "record_well_pressures"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

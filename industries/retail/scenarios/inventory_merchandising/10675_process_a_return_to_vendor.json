@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-im-10675",
+  "title": "Process a Return to Vendor (RTV)",
+  "description": "A shipment of items arrived damaged from the manufacturer and needs to be returned for credit.",
+  "use_case": "Inventory & Merchandising",
+  "core_function": "Stock Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new 'Return to Vendor' transaction in the inventory system.",
+      "expected_outcome": "The RTV process is initiated.",
+      "required_tools": [
+        "create_rtv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan the damaged items and enter the reason for the return ('Damaged in Transit').",
+      "expected_outcome": "All items to be returned are accurately recorded on the RTV.",
+      "required_tools": [
+        "scan_item_for_rtv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Finalize the RTV, which generates shipping documentation and adjusts the store's inventory.",
+      "expected_outcome": "The items are removed from inventory and prepared for shipment back to the vendor.",
+      "required_tools": [
+        "finalize_rtv"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

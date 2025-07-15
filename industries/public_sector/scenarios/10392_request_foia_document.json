@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-rc-10392",
+  "title": "Request a Document via FOIA",
+  "description": "A journalist is filing a Freedom of Information Act (FOIA) request for emails from the mayor's office.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Public Records & FOIA",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and log the FOIA request, noting the date and the specific records requested.",
+      "expected_outcome": "Agent successfully logs the incoming request and assigns it a tracking number.",
+      "required_tools": [
+        "log_foia_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Acknowledge receipt of the request to the journalist and provide the legally mandated response timeline.",
+      "expected_outcome": "Agent sends a formal acknowledgement to the requestor.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Forward the request to the appropriate department (mayor's office) and the legal team to begin the document search and review.",
+      "expected_outcome": "Agent correctly routes the request to the responsible parties.",
+      "required_tools": [
+        "route_foia_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

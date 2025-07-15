@@ -1,0 +1,50 @@
+{
+  "scenario_id": "hc-ph-10175",
+  "title": "Flag Patient for Intervention",
+  "description": "A risk model identifies a patient whose risk score has significantly increased. The system needs to flag them for intervention.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Health Risk Assessment",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A nightly batch job runs the risk stratification model on all patients.",
+      "expected_outcome": "The system recalculates risk scores.",
+      "required_tools": [
+        "run_risk_model_batch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system detects a patient whose risk score has crossed the 'high-risk' threshold.",
+      "expected_outcome": "The system's logic correctly identifies a change in patient status.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Automatically create a task in a care manager's work queue to review the patient's chart.",
+      "expected_outcome": "A human is prompted to review the high-risk patient, ensuring timely intervention.",
+      "required_tools": [
+        "create_task_for_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

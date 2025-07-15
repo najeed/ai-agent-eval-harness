@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ret-cs-10654",
+  "title": "Update Email Preferences",
+  "description": "A customer wants to unsubscribe from marketing emails but continue receiving order notifications.",
+  "use_case": "Customer Service & Support",
+  "core_function": "Account Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The customer clicks the 'Unsubscribe' link at the bottom of a marketing email.",
+      "expected_outcome": "The customer is taken to the email preference center page.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "On the preference page, the customer unchecks the box for 'Marketing & Promotions'.",
+      "expected_outcome": "The customer indicates their preference to opt out of marketing.",
+      "required_tools": [
+        "update_email_preferences"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system saves the preferences, removing the customer from marketing lists but keeping them on transactional email lists.",
+      "expected_outcome": "The customer's preferences are honored, maintaining a positive relationship.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

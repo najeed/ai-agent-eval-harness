@@ -1,0 +1,49 @@
+{
+  "scenario_id": "insurance-la-10185",
+  "title": "Apply for Term Life Insurance",
+  "description": "A 35-year-old non-smoker wants to apply for a 20-year, $500,000 term life insurance policy.",
+  "use_case": "Life & Annuities",
+  "core_function": "New Business & Underwriting",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the applicant's personal and contact information.",
+      "expected_outcome": "Agent accurately collects the applicant's basic details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask a series of health and lifestyle questions (e.g., smoking status, major health conditions).",
+      "expected_outcome": "Agent captures all required underwriting questions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the application to underwriting and schedule a required paramedical exam.",
+      "expected_outcome": "Agent successfully submits the application and schedules the exam for the applicant.",
+      "required_tools": [
+        "submit_life_application",
+        "schedule_paramedical_exam"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

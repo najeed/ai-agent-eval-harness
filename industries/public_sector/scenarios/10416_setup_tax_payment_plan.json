@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-pa-10416",
+  "title": "Set Up a Tax Payment Plan",
+  "description": "A citizen owes back taxes and wants to set up a monthly payment plan.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Taxation & Revenue",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the citizen and the total amount of taxes owed.",
+      "expected_outcome": "Agent retrieves the citizen's tax record and the outstanding balance.",
+      "required_tools": [
+        "get_tax_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine eligibility for a payment plan based on agency criteria.",
+      "expected_outcome": "Agent confirms the citizen is eligible to set up a payment plan.",
+      "required_tools": [
+        "check_payment_plan_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Establish the monthly payment amount and schedule, and get the citizen's agreement.",
+      "expected_outcome": "Agent successfully sets up the installment agreement in the system.",
+      "required_tools": [
+        "setup_installment_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-cs-10397",
+  "title": "Inquire About Becoming a Foster Parent",
+  "description": "A citizen is interested in becoming a foster parent and is calling for information.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Information & Inquiry Resolution",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Provide information on the basic requirements to become a foster parent.",
+      "expected_outcome": "Agent clearly explains the eligibility criteria (e.g., age, background check).",
+      "required_tools": [
+        "get_program_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the application and training process.",
+      "expected_outcome": "Agent outlines the steps involved, from application to certification.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Sign the caller up for an upcoming information session.",
+      "expected_outcome": "Agent successfully registers the caller for an info session.",
+      "required_tools": [
+        "register_for_event"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

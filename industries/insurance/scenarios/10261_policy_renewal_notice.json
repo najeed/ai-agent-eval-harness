@@ -1,0 +1,53 @@
+{
+  "scenario_id": "insurance-pc-10261",
+  "title": "Process Policy Renewal Notice",
+  "description": "An auto policy is coming up for renewal, and the system needs to generate and send the renewal offer.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Policy Administration",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify policies that are within the renewal window (e.g., 45 days before expiration).",
+      "expected_outcome": "The system generates a list of policies due for renewal.",
+      "required_tools": [
+        "get_policies_for_renewal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each policy, calculate the renewal premium based on any new rating factors.",
+      "expected_outcome": "The system recalculates the premium for the upcoming term.",
+      "required_tools": [
+        "calculate_renewal_premium"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate and send the renewal offer documents to the policyholder.",
+      "expected_outcome": "The system mails the complete renewal packet to the customer.",
+      "required_tools": [
+        "generate_renewal_documents",
+        "send_mail"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

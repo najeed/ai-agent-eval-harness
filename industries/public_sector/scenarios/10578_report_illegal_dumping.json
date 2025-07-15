@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-pw-10578",
+  "title": "Report Illegal Dumping",
+  "description": "A citizen reports that someone has illegally dumped a large amount of trash on a vacant public lot.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Service Request Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the location and a description of the dumped materials.",
+      "expected_outcome": "Agent accurately documents the citizen's report.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a service request for the sanitation department to investigate and clean up.",
+      "expected_outcome": "Agent creates a new service ticket for the issue.",
+      "required_tools": [
+        "create_service_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the citizen has information about who dumped the trash, route a report to code enforcement or police.",
+      "expected_outcome": "Agent also routes the information to the proper enforcement agency.",
+      "required_tools": [
+        "route_to_department"
+      ],
+      "success_criteria": [
+        {
+          "metric": "routing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

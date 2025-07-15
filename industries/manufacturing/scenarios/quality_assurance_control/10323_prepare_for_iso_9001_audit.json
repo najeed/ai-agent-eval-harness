@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-qc-10323",
+  "title": "Prepare for an ISO 9001 Audit",
+  "description": "A quality manager needs to pull training records for all operators on a specific production line to prepare for an external audit.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Compliance & Auditing",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all employees assigned to the specified production line.",
+      "expected_outcome": "Agent generates a list of all operators for that line.",
+      "required_tools": [
+        "get_employee_list_by_workcenter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each employee, retrieve their training records from the learning management system (LMS).",
+      "expected_outcome": "Agent pulls the training history for each person on the list.",
+      "required_tools": [
+        "get_employee_training_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a summary report showing the status of all required training for the audit.",
+      "expected_outcome": "Agent creates a report that can be presented to the auditor, highlighting any gaps.",
+      "required_tools": [
+        "generate_training_compliance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "energy-pd-25",
+  "title": "Battery Storage Augmentation Analysis",
+  "description": "The owner of a 5-year-old solar farm is considering adding a battery storage system to the site.",
+  "use_case": "Renewable Project Development",
+  "core_function": "Financial Modeling & Investment Analysis",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the solar farm's historical generation profile and the amount of energy that is curtailed or sold at low prices.",
+      "expected_outcome": "Agent quantifies the volume of energy that could be stored and sold later.",
+      "required_tools": [
+        "get_historical_generation",
+        "get_historical_market_prices"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Size an economically optimal battery system to capture this energy and participate in ancillary service markets.",
+      "expected_outcome": "Agent recommends a 4-hour duration battery with a specific MW rating.",
+      "required_tools": [
+        "optimize_der_system_size"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform a financial analysis of the battery addition, calculating its IRR and NPV.",
+      "expected_outcome": "Agent provides a complete financial case for the project.",
+      "required_tools": [
+        "calculate_project_financials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "scenario_id": "ps-pw-10671",
+  "title": "Report a Water Main Break",
+  "description": "A citizen reports water gushing from the street, indicating a likely water main break.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Service Request Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the exact location of the break.",
+      "expected_outcome": "Agent gets the address and cross-street of the break.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Recognize the urgency of the situation and escalate it immediately.",
+      "expected_outcome": "Agent flags the service request as an emergency.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "routing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create an emergency work order and dispatch the on-call crew.",
+      "expected_outcome": "Agent creates a work order and immediately dispatches a crew to the location.",
+      "required_tools": [
+        "create_emergency_work_order",
+        "dispatch_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

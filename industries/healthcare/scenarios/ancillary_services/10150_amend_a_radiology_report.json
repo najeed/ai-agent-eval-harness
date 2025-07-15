@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hc-as-10150",
+  "title": "Amend a Radiology Report",
+  "description": "A radiologist needs to add an addendum to a report they signed earlier in the day to include an additional finding.",
+  "use_case": "Ancillary Services",
+  "core_function": "Radiology & Imaging Services",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the original, signed report in the RIS.",
+      "expected_outcome": "Radiologist finds the correct report.",
+      "required_tools": [
+        "find_radiology_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create an addendum to the report.",
+      "expected_outcome": "Radiologist opens a new section of the report specifically for addendums.",
+      "required_tools": [
+        "create_report_addendum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dictate the additional finding and sign the addendum.",
+      "expected_outcome": "The addendum is added to the original report, and an alert is sent to the ordering provider about the updated result.",
+      "required_tools": [
+        "use_voice_recognition",
+        "sign_report_addendum"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

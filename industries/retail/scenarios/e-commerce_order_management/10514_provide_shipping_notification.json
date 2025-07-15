@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ecom-10514",
+  "title": "Provide Shipping Notification",
+  "description": "An online order is picked up by the shipping carrier. The system needs to notify the customer.",
+  "use_case": "E-commerce & Order Management",
+  "core_function": "Order Fulfillment & Status",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The shipping carrier scans the package, and the data is sent to the retailer's order management system.",
+      "expected_outcome": "The system receives a status update that the order is now in transit.",
+      "required_tools": [
+        "receive_carrier_update"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically updates the order status to 'Shipped'.",
+      "expected_outcome": "The order's status is changed.",
+      "required_tools": [
+        "update_order_status_shipped"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system automatically sends a 'Your order has shipped!' email to the customer, including the tracking number.",
+      "expected_outcome": "The customer is proactively notified and can track their package.",
+      "required_tools": [
+        "send_shipping_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

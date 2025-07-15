@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-pa-10685",
+  "title": "Amend a Government Contract",
+  "description": "A vendor and a government agency need to amend an existing contract to extend its duration.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Procurement & Contracts",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the existing contract in the contract management system.",
+      "expected_outcome": "The contract manager finds the correct contract.",
+      "required_tools": [
+        "get_contract_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a contract amendment document outlining the new end date.",
+      "expected_outcome": "The manager creates a formal amendment.",
+      "required_tools": [
+        "draft_contract_amendment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_generation_quality",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Route the amendment for signature by both the vendor and the authorized government official.",
+      "expected_outcome": "The manager sends the amendment for electronic signature.",
+      "required_tools": [
+        "send_document_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

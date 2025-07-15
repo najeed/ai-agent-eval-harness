@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-down-10548",
+  "title": "Respond to Gas Station Drive-Off",
+  "description": "A gas station manager needs to report a 'drive-off' incident where a customer filled their tank and left without paying.",
+  "use_case": "Downstream",
+  "core_function": "Distribution & Retail",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the transaction in the point-of-sale (POS) system that corresponds to the drive-off.",
+      "expected_outcome": "The specific unpaid transaction is located.",
+      "required_tools": [
+        "search_pos_transactions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the CCTV footage from the corresponding pump and time to capture the vehicle's license plate.",
+      "expected_outcome": "A clear image of the license plate is retrieved from the security system.",
+      "required_tools": [
+        "get_cctv_footage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the incident in the company's loss prevention system and generate a report to be filed with local police.",
+      "expected_outcome": "The incident is officially logged, and a police report is drafted.",
+      "required_tools": [
+        "log_loss_prevention_incident",
+        "generate_police_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-10943",
+  "title": "Schedule Emergency Shutdown Valve Test",
+  "description": "A compliance manager needs to schedule the annual test of an emergency shutdown (ESD) valve at a city gate station.",
+  "use_case": "Gas Operations",
+  "core_function": "Asset Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify all ESD valves that are due for their annual test in the next quarter.",
+      "expected_outcome": "System produces a list of valves requiring testing.",
+      "required_tools": [
+        "get_maintenance_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate with gas control operators to schedule the test during a low-demand period to minimize disruption.",
+      "expected_outcome": "System finds an optimal time slot for the test.",
+      "required_tools": [
+        "get_gas_demand_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for the maintenance crew, including the detailed testing procedure and safety protocols.",
+      "expected_outcome": "System generates and dispatches the work order.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "utils-go-10964",
+  "title": "Issue Generation Curtailment Order",
+  "description": "Due to low demand and high solar generation, a system operator needs to curtail a large solar farm to prevent over-generation.",
+  "use_case": "Grid Operations",
+  "core_function": "System Control & Monitoring",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system forecasts an over-generation condition in the next hour.",
+      "expected_outcome": "System generates an alert for impending over-supply.",
+      "required_tools": [
+        "generate_load_forecast",
+        "generate_solar_generation_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "forecast_accuracy_mae",
+          "threshold": 5.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify the most economical resource to curtail based on market bids and contracts.",
+      "expected_outcome": "System determines a specific solar farm is the least-cost resource to curtail.",
+      "required_tools": [
+        "analyze_economic_dispatch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analysis_correctness",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a dispatch signal to the solar farm, instructing it to reduce its output to a specific MW setpoint.",
+      "expected_outcome": "System successfully sends the curtailment order.",
+      "required_tools": [
+        "send_dispatch_instruction"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

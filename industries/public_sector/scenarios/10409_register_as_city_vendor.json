@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ps-pa-10409",
+  "title": "Register as a City Vendor",
+  "description": "A small business wants to register with the city so they can bid on government contracts.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Procurement & Contracts",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the business's information, including legal name, tax ID number, and contact details.",
+      "expected_outcome": "Agent accurately collects all required vendor information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect required documents, such as a W-9 form and any necessary certifications (e.g., minority-owned business).",
+      "expected_outcome": "Agent guides the user in uploading the necessary forms.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a vendor profile in the procurement system.",
+      "expected_outcome": "Agent successfully creates the new vendor record, making the business eligible to bid on contracts.",
+      "required_tools": [
+        "create_vendor_profile"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

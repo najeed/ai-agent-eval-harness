@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sc-10380",
+  "title": "Check Order Status",
+  "description": "A customer calls to ask for the latest status of their open order.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Order Status & Fulfillment Tracking",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and find their sales order using the PO number they provided.",
+      "expected_outcome": "Agent successfully retrieves the correct sales order.",
+      "required_tools": [
+        "find_sales_order_by_po"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the current status of the linked production work order.",
+      "expected_outcome": "Agent sees the work order is currently in the 'Final Assembly' stage.",
+      "required_tools": [
+        "get_work_order_status_by_so"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer that their order is in final assembly and provide an estimated completion date.",
+      "expected_outcome": "Agent clearly communicates the status and the ETA to the customer.",
+      "required_tools": [
+        "estimate_completion_time"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

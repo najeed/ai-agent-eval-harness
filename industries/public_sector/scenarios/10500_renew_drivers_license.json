@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ps-cs-10500",
+  "title": "Renew a Driver's License Online",
+  "description": "A citizen needs to renew their driver's license and wants to complete the process online.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Licensing & Permitting",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the citizen using their existing license number and date of birth.",
+      "expected_outcome": "Agent successfully retrieves the citizen's DMV record.",
+      "required_tools": [
+        "get_dmv_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the citizen is eligible for online renewal (e.g., no outstanding violations, vision test not required).",
+      "expected_outcome": "Agent confirms the citizen's eligibility for online renewal.",
+      "required_tools": [
+        "check_renewal_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the renewal payment and provide a temporary digital license.",
+      "expected_outcome": "Agent successfully takes payment and issues a temporary license pending mailing of the physical card.",
+      "required_tools": [
+        "process_payment",
+        "issue_temporary_license"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

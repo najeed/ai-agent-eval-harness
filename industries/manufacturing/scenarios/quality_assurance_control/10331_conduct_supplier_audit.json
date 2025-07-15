@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-qc-10331",
+  "title": "Conduct a Supplier Audit",
+  "description": "A supplier quality engineer is conducting an on-site audit at a supplier's facility and needs to log their findings.",
+  "use_case": "Quality Assurance & Control",
+  "core_function": "Compliance & Auditing",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the supplier audit checklist for the specific supplier.",
+      "expected_outcome": "Agent opens the pre-defined audit checklist in the system.",
+      "required_tools": [
+        "get_supplier_audit_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each item on the checklist, record the finding as 'Conforming', 'Needs Improvement', or 'Non-Conforming'.",
+      "expected_outcome": "Agent goes through the checklist, recording findings for each point.",
+      "required_tools": [
+        "record_audit_finding"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For any non-conforming findings, create a Supplier Corrective Action Request (SCAR) and assign it to the supplier.",
+      "expected_outcome": "Agent generates a SCAR for two non-conforming items found during the audit.",
+      "required_tools": [
+        "create_scar"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

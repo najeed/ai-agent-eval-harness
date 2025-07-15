@@ -1,0 +1,51 @@
+{
+  "scenario_id": "telecom-sl-10797",
+  "title": "New Customer - FirstNet for First Responder",
+  "description": "A first responder (e.g., paramedic, firefighter) wants to sign up for a specialized FirstNet plan.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "New Customer Acquisition",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Explain the benefits of the FirstNet plan, including network priority and preemption.",
+      "expected_outcome": "Agent clearly explains the unique features.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the customer's status as a first responder using a verification portal.",
+      "expected_outcome": "Agent guides the customer through the verification process.",
+      "required_tools": [
+        "verify_first_responder_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the new account and process the order for the FirstNet plan.",
+      "expected_outcome": "Agent successfully creates the specialized account.",
+      "required_tools": [
+        "create_customer_account",
+        "process_new_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

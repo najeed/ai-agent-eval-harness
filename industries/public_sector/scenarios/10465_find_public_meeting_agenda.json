@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ps-cs-10465",
+  "title": "Find a Public Meeting Agenda",
+  "description": "A citizen wants to find the agenda for the upcoming city council meeting.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Information & Inquiry Resolution",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the specific meeting the citizen is asking about.",
+      "expected_outcome": "Agent understands the request is for the next city council meeting.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the city's public website or records portal for the meeting agenda.",
+      "expected_outcome": "Agent locates the posted agenda for the meeting.",
+      "required_tools": [
+        "search_public_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a link to the agenda or summarize the key items for the citizen.",
+      "expected_outcome": "Agent provides the citizen with the information they requested.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

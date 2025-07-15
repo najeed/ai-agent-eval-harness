@@ -1,0 +1,53 @@
+{
+  "scenario_id": "finance-rb-10098",
+  "title": "Close Savings Account",
+  "description": "A customer wants to close their savings account and transfer the balance to their checking account.",
+  "use_case": "Retail Banking",
+  "core_function": "Account Management",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the customer and verify their request.",
+      "expected_outcome": "Agent securely identifies the customer.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the savings account balance and transfer the full amount to the customer's checking account.",
+      "expected_outcome": "Agent successfully transfers the remaining balance.",
+      "required_tools": [
+        "get_account_balance",
+        "execute_internal_transfer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Close the savings account and provide confirmation to the customer.",
+      "expected_outcome": "Agent successfully closes the account and confirms the action.",
+      "required_tools": [
+        "close_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

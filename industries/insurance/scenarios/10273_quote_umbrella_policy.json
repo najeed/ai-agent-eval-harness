@@ -1,0 +1,50 @@
+{
+  "scenario_id": "insurance-pc-10273",
+  "title": "Quote a Personal Umbrella Policy",
+  "description": "A high-net-worth customer wants a quote for a personal umbrella policy for extra liability protection.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Underwriting & Quoting",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the customer has the required underlying liability limits on their auto and home policies.",
+      "expected_outcome": "Agent confirms the customer's underlying policies meet the minimum requirements for an umbrella.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather information about any additional risks (e.g., rental properties, watercraft).",
+      "expected_outcome": "Agent collects all necessary underwriting information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a quote for a $1 million umbrella policy.",
+      "expected_outcome": "Agent successfully generates and presents the quote.",
+      "required_tools": [
+        "generate_umbrella_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

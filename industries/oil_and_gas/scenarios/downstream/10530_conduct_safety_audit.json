@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-down-10530",
+  "title": "Conduct Field Safety Audit",
+  "description": "An HSE officer conducts a planned safety audit of a work crew performing maintenance, using a digital checklist.",
+  "use_case": "Downstream",
+  "core_function": "Health, Safety & Environment (HSE)",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the 'Field Maintenance Safety Audit' checklist on a tablet.",
+      "expected_outcome": "The correct digital audit form is loaded.",
+      "required_tools": [
+        "load_audit_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Observe the work crew and complete the checklist items, such as verifying PPE usage, correct tool usage, and valid work permits.",
+      "expected_outcome": "The audit is conducted, and several items are marked as compliant, but one non-compliance (improperly stored ladder) is noted.",
+      "required_tools": [
+        "complete_digital_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Log the non-compliance finding, assign a corrective action to the crew supervisor, and submit the completed audit report.",
+      "expected_outcome": "The audit is submitted, and a corrective action is automatically tracked in the safety system.",
+      "required_tools": [
+        "log_corrective_action",
+        "submit_audit_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

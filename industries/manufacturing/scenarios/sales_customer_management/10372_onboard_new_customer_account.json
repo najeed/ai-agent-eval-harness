@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sc-10372",
+  "title": "Onboard a New Customer Account",
+  "description": "A new customer has placed their first order. An account manager needs to set up their full account profile.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Account & Contract Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new customer account record in the CRM.",
+      "expected_outcome": "Agent creates the main account record.",
+      "required_tools": [
+        "create_customer_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Enter all required information, including billing address, shipping addresses, and primary contact details.",
+      "expected_outcome": "Agent populates all the necessary fields in the CRM.",
+      "required_tools": [
+        "update_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set the customer's payment terms and credit limit as approved by finance.",
+      "expected_outcome": "Agent enters the financial details for the new account.",
+      "required_tools": [
+        "set_customer_payment_terms"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

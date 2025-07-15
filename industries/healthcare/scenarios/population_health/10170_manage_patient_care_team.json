@@ -1,0 +1,53 @@
+{
+  "scenario_id": "hc-ph-10170",
+  "title": "Manage a Patient's Care Team",
+  "description": "A care manager needs to add a new home health nurse to a patient's official care team.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Care Coordination & Planning",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the patient's record and navigate to the care team section.",
+      "expected_outcome": "Care manager finds the list of current care team members.",
+      "required_tools": [
+        "get_patient_record",
+        "open_care_team_module"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for the home health nurse in the provider directory.",
+      "expected_outcome": "The nurse's provider record is found.",
+      "required_tools": [
+        "search_provider_directory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the nurse to the care team with the role of 'Home Health Nurse'.",
+      "expected_outcome": "The care team is updated, ensuring all members have access to the shared care plan and can communicate securely.",
+      "required_tools": [
+        "add_member_to_care_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

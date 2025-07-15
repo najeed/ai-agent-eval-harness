@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-up-10457",
+  "title": "Forecast Reservoir Production",
+  "description": "A reservoir engineer uses a simulation model to forecast the future oil production of a field under different development scenarios.",
+  "use_case": "Upstream",
+  "core_function": "Production Operations",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the reservoir simulation model that has been history-matched to past production data.",
+      "expected_outcome": "The calibrated reservoir model is loaded.",
+      "required_tools": [
+        "load_reservoir_simulation_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new forecast case by adding five new infill drilling wells to the model.",
+      "expected_outcome": "A new simulation case with the proposed new wells is set up.",
+      "required_tools": [
+        "modify_simulation_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the forecast simulation and generate a production profile (oil rate vs. time) for the next 20 years.",
+      "expected_outcome": "A production forecast chart is generated, showing the incremental production from the new wells.",
+      "required_tools": [
+        "run_reservoir_simulation",
+        "generate_production_forecast_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_correctness",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

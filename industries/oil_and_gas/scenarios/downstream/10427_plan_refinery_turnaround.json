@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-down-10427",
+  "title": "Plan Refinery Unit Turnaround",
+  "description": "A maintenance planner develops a high-level plan for a major turnaround (shutdown for maintenance) of the Fluid Catalytic Cracker (FCC) unit.",
+  "use_case": "Downstream",
+  "core_function": "Refinery Operations & Optimization",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the scope of the turnaround by compiling a list of all planned maintenance, inspection, and capital project jobs.",
+      "expected_outcome": "A comprehensive work scope list for the turnaround is created.",
+      "required_tools": [
+        "compile_turnaround_work_scope"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Develop a high-level schedule for the turnaround, including shutdown, execution, and startup phases.",
+      "expected_outcome": "A master schedule with key milestones is generated.",
+      "required_tools": [
+        "create_gantt_chart"
+      ],
+      "success_criteria": [
+        {
+          "metric": "scheduling_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Estimate the total budget for the turnaround, including labor, materials, and contractor costs.",
+      "expected_outcome": "A preliminary budget for the turnaround is calculated and submitted for approval.",
+      "required_tools": [
+        "estimate_turnaround_budget"
+      ],
+      "success_criteria": [
+        {
+          "metric": "estimation_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    }
+  ]
+}

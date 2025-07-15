@@ -1,0 +1,50 @@
+{
+  "scenario_id": "utils-cs-10807",
+  "title": "Donate to Bill Assistance Program",
+  "description": "A customer wants to make a one-time donation to the utility's charitable fund that helps low-income customers pay their bills.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Provide the customer with information about the assistance program.",
+      "expected_outcome": "Agent clearly explains the purpose of the program.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the customer's requested donation amount via their preferred payment method.",
+      "expected_outcome": "Agent successfully processes the donation.",
+      "required_tools": [
+        "process_donation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the customer with a receipt for their tax-deductible donation.",
+      "expected_outcome": "Agent sends a receipt to the customer's email.",
+      "required_tools": [
+        "send_donation_receipt"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

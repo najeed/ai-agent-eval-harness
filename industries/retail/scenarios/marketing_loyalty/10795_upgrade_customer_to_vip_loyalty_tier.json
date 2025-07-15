@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ret-ml-10795",
+  "title": "Upgrade Customer to VIP Loyalty Tier",
+  "description": "A customer's spending has reached the threshold to be upgraded to the VIP tier of the loyalty program.",
+  "use_case": "Marketing & Loyalty",
+  "core_function": "Loyalty Program Management",
+  "industry": "Retail",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A system process identifies customers whose annual spending has exceeded the VIP threshold.",
+      "expected_outcome": "The system flags the customer for a tier upgrade.",
+      "required_tools": [
+        "run_loyalty_tier_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically updates the customer's loyalty status from 'Standard' to 'VIP'.",
+      "expected_outcome": "The customer's account is upgraded.",
+      "required_tools": [
+        "update_loyalty_tier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system sends an email to the customer congratulating them on reaching the VIP tier and explaining their new benefits (e.g., free shipping).",
+      "expected_outcome": "The customer is notified of their new status and benefits, increasing engagement.",
+      "required_tools": [
+        "send_automated_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

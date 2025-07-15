@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-pw-10420",
+  "title": "Schedule a Bulk Item Pickup",
+  "description": "A resident needs to schedule a special pickup for a large item, like an old mattress.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Service Request Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the resident's address and the type of bulk item to be collected.",
+      "expected_outcome": "Agent gathers the necessary details for the pickup.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the schedule for bulk item collection and find the next available date.",
+      "expected_outcome": "Agent finds the next available pickup date for the resident's area.",
+      "required_tools": [
+        "get_bulk_pickup_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the pickup and provide the resident with instructions on where and when to place the item.",
+      "expected_outcome": "Agent books the pickup and gives clear instructions to the resident.",
+      "required_tools": [
+        "schedule_bulk_pickup"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

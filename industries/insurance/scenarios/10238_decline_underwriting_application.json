@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-10238",
+  "title": "Decline a Life Insurance Application",
+  "description": "An underwriter has reviewed an application and must decline it due to significant health risks.",
+  "use_case": "Life & Annuities",
+  "core_function": "New Business & Underwriting",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review all application details, medical records, and exam results.",
+      "expected_outcome": "The underwriter confirms that the applicant's health history presents a risk outside of the company's guidelines.",
+      "required_tools": [
+        "review_application"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Document the specific reason for the declination in the underwriting file.",
+      "expected_outcome": "The underwriter clearly and accurately documents the reasons for the adverse decision.",
+      "required_tools": [
+        "log_underwriting_decision"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a formal declination letter to the applicant that complies with all regulations.",
+      "expected_outcome": "A legally compliant letter is sent to the applicant informing them of the decision.",
+      "required_tools": [
+        "send_adverse_action_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

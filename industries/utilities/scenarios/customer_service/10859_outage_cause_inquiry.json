@@ -1,0 +1,51 @@
+{
+  "scenario_id": "utils-cs-10859",
+  "title": "Inquiry About Outage Cause",
+  "description": "After a power outage has been restored, a customer calls to ask what caused it.",
+  "use_case": "Customer Service",
+  "core_function": "Outage Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the customer and the recent outage event that affected them.",
+      "expected_outcome": "Agent finds the record of the outage that occurred yesterday.",
+      "required_tools": [
+        "get_customer_details",
+        "get_outage_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the cause code and notes from the closed work order in the outage management system.",
+      "expected_outcome": "Agent finds the cause was 'Animal Contact' and the crew notes mention a squirrel on a transformer.",
+      "required_tools": [
+        "get_work_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Communicate the cause of the outage to the customer in clear, non-technical language.",
+      "expected_outcome": "Agent explains that the outage was caused by an animal interfering with the equipment.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

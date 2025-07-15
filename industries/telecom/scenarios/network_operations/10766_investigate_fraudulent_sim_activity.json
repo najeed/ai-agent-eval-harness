@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-10766",
+  "title": "Investigate Fraudulent SIM Activity",
+  "description": "The system flags a SIM card for making an unusually high volume of international calls, indicating potential fraud.",
+  "use_case": "Network Operations",
+  "core_function": "Security Operations",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the fraud alert and retrieve the call history for the flagged SIM.",
+      "expected_outcome": "Agent retrieves logs showing thousands of calls to a premium-rate number.",
+      "required_tools": [
+        "get_sim_call_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately suspend the SIM card to prevent further fraudulent activity.",
+      "expected_outcome": "Agent successfully suspends the SIM.",
+      "required_tools": [
+        "suspend_sim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a report for the fraud analysis team, including the call logs and total potential financial loss.",
+      "expected_outcome": "Agent creates a detailed and accurate fraud report.",
+      "required_tools": [
+        "create_fraud_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

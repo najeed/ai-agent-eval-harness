@@ -1,0 +1,48 @@
+{
+  "scenario_id": "ps-cs-10620",
+  "title": "Report Suspected Child Abuse or Neglect",
+  "description": "A citizen is calling a hotline to make a report of suspected child abuse.",
+  "use_case": "Citizen Services & Case Management",
+  "core_function": "Case Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Handle the call with empathy and professionalism, assuring the caller of confidentiality if requested.",
+      "expected_outcome": "The agent creates a safe environment for the caller to make a report.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather all pertinent information about the child, the alleged perpetrator, and the nature of the suspected abuse or neglect.",
+      "expected_outcome": "The agent carefully documents all details provided by the caller.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a formal report in the child protective services system for immediate review and assignment to an investigator.",
+      "expected_outcome": "The agent successfully logs the report, triggering an urgent response.",
+      "required_tools": [
+        "create_cps_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

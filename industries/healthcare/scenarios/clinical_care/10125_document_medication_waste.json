@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-cc-10125",
+  "title": "Document Medication Waste",
+  "description": "A nurse administered only part of a controlled substance and needs another nurse to witness and co-sign the documentation of the wasted portion.",
+  "use_case": "Clinical Care",
+  "core_function": "Medication Administration",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Document the administered portion of the medication in the MAR.",
+      "expected_outcome": "Nurse correctly documents the dose that was given to the patient.",
+      "required_tools": [
+        "sign_mar"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Initiate the 'waste' workflow for the remaining portion of the medication.",
+      "expected_outcome": "Nurse accesses the controlled substance waste documentation module.",
+      "required_tools": [
+        "initiate_medication_waste"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Have a second nurse log in, verify the amount of waste, and electronically co-sign the waste documentation.",
+      "expected_outcome": "The waste is successfully documented and co-signed, meeting legal and safety requirements.",
+      "required_tools": [
+        "cosign_medication_waste"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

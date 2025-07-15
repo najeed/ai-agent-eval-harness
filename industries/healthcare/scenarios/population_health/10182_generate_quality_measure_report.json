@@ -1,0 +1,52 @@
+{
+  "scenario_id": "hc-ph-10182",
+  "title": "Generate a Quality Measure Report",
+  "description": "A practice manager needs to generate a report on their performance for the 'Controlling High Blood Pressure' quality measure for a specific payer program.",
+  "use_case": "Population Health & Care Management",
+  "core_function": "Reporting & Analytics",
+  "industry": "Healthcare",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Navigate to the quality reporting section of the analytics tool.",
+      "expected_outcome": "Manager finds the quality measure dashboard.",
+      "required_tools": [
+        "open_quality_reporting_module"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the 'Controlling High Blood Pressure (HBP)' measure and the desired payer program.",
+      "expected_outcome": "Manager configures the report for the correct measure and population.",
+      "required_tools": [
+        "select_quality_measure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the report, which shows the numerator, denominator, and performance rate for the measure.",
+      "expected_outcome": "The report is generated, showing the practice's performance and a list of patients who are not meeting the measure's goal.",
+      "required_tools": [
+        "run_quality_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

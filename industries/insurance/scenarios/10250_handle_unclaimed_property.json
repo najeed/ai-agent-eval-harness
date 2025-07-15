@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-10250",
+  "title": "Handle Unclaimed Property (Escheatment)",
+  "description": "A life insurance policy's death benefit was never claimed, and the funds must be turned over to the state as unclaimed property.",
+  "use_case": "Life & Annuities",
+  "core_function": "Claims & Payouts",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify policies where the insured is deceased but no claim has been filed after a significant period.",
+      "expected_outcome": "The system identifies a policy where the death benefit remains unpaid for over 5 years.",
+      "required_tools": [
+        "identify_unclaimed_policies"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Perform a final due diligence search for any beneficiaries.",
+      "expected_outcome": "Agent performs a search but is unable to locate any living beneficiaries.",
+      "required_tools": [
+        "search_for_beneficiaries"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the escheatment of the funds to the appropriate state's unclaimed property division.",
+      "expected_outcome": "Agent successfully transfers the funds to the state and closes the file.",
+      "required_tools": [
+        "process_escheatment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

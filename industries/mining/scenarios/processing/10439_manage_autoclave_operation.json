@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-proc-10439",
+  "title": "Manage High-Pressure Autoclave",
+  "description": "An operator at a gold processing plant manages a high-pressure, high-temperature autoclave used for pressure oxidation (POX) of refractory ores.",
+  "use_case": "Processing & Metallurgy",
+  "core_function": "Mineral Separation",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the key operating parameters of the autoclave: temperature, pressure, and oxygen level.",
+      "expected_outcome": "Operator confirms that the autoclave is running stably within its safe operating envelope.",
+      "required_tools": [
+        "get_autoclave_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the lab results for the autoclave discharge to check the sulfide oxidation rate.",
+      "expected_outcome": "Lab results show that the oxidation rate is 98%, meeting the target for good gold recovery downstream.",
+      "required_tools": [
+        "get_lab_assay_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Make a small adjustment to the oxygen injection rate to optimize performance and reduce operating costs.",
+      "expected_outcome": "The oxygen flow is slightly trimmed without affecting oxidation performance.",
+      "required_tools": [
+        "set_oxygen_flow_rate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "resource_allocation_efficiency",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

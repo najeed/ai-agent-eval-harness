@@ -1,0 +1,50 @@
+{
+  "scenario_id": "utils-cs-10768",
+  "title": "Set up Third-Party Notification",
+  "description": "An elderly customer wants to designate their daughter to receive a copy of any disconnection notices.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the primary account holder.",
+      "expected_outcome": "Agent successfully verifies the customer's identity.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the name and contact information for the third party (the daughter).",
+      "expected_outcome": "Agent accurately records the third party's details.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the third party's information to the account with the specific 'disconnection notice' flag.",
+      "expected_outcome": "Agent successfully updates the account in the CIS.",
+      "required_tools": [
+        "add_third_party_contact"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "scenario_id": "insurance-pc-10249",
+  "title": "Add an Endorsement to a Home Policy",
+  "description": "A customer bought an expensive piece of jewelry and wants to add a scheduled personal property endorsement to their home policy to cover it.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Underwriting & Quoting",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and explain how a scheduled property endorsement works.",
+      "expected_outcome": "Agent finds the customer's policy and clearly explains the benefit of the endorsement.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the details of the jewelry, including a recent appraisal.",
+      "expected_outcome": "Agent collects the required documentation for the high-value item.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add the endorsement to the policy and calculate the additional premium.",
+      "expected_outcome": "Agent successfully adds the endorsement and informs the customer of the cost.",
+      "required_tools": [
+        "add_endorsement",
+        "recalculate_premium"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

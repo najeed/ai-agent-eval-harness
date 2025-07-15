@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-pa-10669",
+  "title": "Inquire About Bid Status",
+  "description": "A vendor wants to know if their submitted bid for a contract is still under consideration.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Procurement & Contracts",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the vendor and the contract in question.",
+      "expected_outcome": "Agent finds the vendor's bid for the specified contract.",
+      "required_tools": [
+        "get_bid_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the current status of the procurement process.",
+      "expected_outcome": "Agent sees that the contract is still in the 'Under Review' stage.",
+      "required_tools": [
+        "get_contract_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the vendor that a decision has not yet been made.",
+      "expected_outcome": "Agent provides a clear status update.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

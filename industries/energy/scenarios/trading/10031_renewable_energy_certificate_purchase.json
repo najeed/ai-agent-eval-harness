@@ -1,0 +1,66 @@
+{
+  "scenario_id": "energy-tr-10031",
+  "title": "Renewable Energy Certificate (REC) Purchase",
+  "description": "A corporate sustainability officer needs to purchase RECs to cover their company's annual electricity consumption and meet their 100% renewable goal.",
+  "use_case": "Energy Trading & Portfolio Management",
+  "core_function": "Settlement & Reconciliation",
+  "industry": "Energy",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Calculate the total MWh of electricity the company consumed in the last calendar year.",
+      "expected_outcome": "Agent determines the company needs to purchase 50,000 RECs.",
+      "required_tools": [
+        "get_historical_consumption_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query REC trading platforms for available Green-e certified wind and solar RECs and their prices.",
+      "expected_outcome": "Agent provides a list of available REC bundles and their current market prices.",
+      "required_tools": [
+        "query_rec_marketplaces"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute a purchase for 50,000 solar RECs from a specific vintage year.",
+      "expected_outcome": "Agent successfully completes the transaction.",
+      "required_tools": [
+        "execute_rec_purchase"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Ensure the purchased RECs are formally 'retired' on behalf of the company in the appropriate registry.",
+      "expected_outcome": "Agent confirms the retirement of the RECs and obtains a certificate.",
+      "required_tools": [
+        "retire_recs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

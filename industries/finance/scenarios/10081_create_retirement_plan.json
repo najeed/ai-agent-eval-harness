@@ -1,0 +1,48 @@
+{
+  "scenario_id": "finance-wm-10081",
+  "title": "Create a Retirement Financial Plan",
+  "description": "A client wants to create a financial plan to see if they are on track for retirement at age 65.",
+  "use_case": "Wealth Management",
+  "core_function": "Financial Planning",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather client's financial data: age, income, current savings, monthly contributions, and retirement spending goals.",
+      "expected_outcome": "Agent accurately collects all necessary data points for the financial plan.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a financial planning tool to project the client's portfolio growth and retirement readiness.",
+      "expected_outcome": "Agent runs the projection and finds a potential shortfall.",
+      "required_tools": [
+        "run_financial_plan_projection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Present the results to the client and suggest increasing monthly contributions to meet their goal.",
+      "expected_outcome": "Agent clearly explains the projection and provides an actionable recommendation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}
