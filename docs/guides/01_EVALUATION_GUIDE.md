@@ -13,6 +13,7 @@ Each evaluation is defined by a `.json` file in an industry's `scenarios` direct
 -   `description`: A brief explanation of the overall goal of the scenario.
 -   `use_case`: The specific business function being tested (e.g., `Customer Service`).
 -   `industry`: The industry this scenario belongs to.
+-   `core_function`: The category within the use case this scenario belongs to (e.g., `Billing and Payments`).
 -   `tasks`: An array of task objects that represent the steps an agent must take to complete the scenario.
 
 ## Task Structure
