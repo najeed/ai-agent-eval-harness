@@ -33,6 +33,11 @@ You can run an evaluation from the command line by specifying the industry and t
     cd /path/to/ai-agent-eval-harness
     ```
 
+2.  (Optional) Build the eval_runner module:
+    ```bash
+    pip install -e .
+    ```
+
 2.  Run the main script:
     ```bash
     python -m eval_runner --industry manufacturing --scenario maintenance_repair
