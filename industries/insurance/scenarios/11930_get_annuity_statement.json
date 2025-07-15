@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-11930",
+  "title": "Get a Copy of an Annuity Statement",
+  "description": "An annuity holder needs a copy of their most recent annual statement for their financial records.",
+  "use_case": "Life & Annuities",
+  "core_function": "Annuity Management",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the contract holder.",
+      "expected_outcome": "Agent correctly identifies the customer.",
+      "required_tools": [
+        "get_annuity_contract_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a copy of the most recent annual statement.",
+      "expected_outcome": "Agent successfully generates the statement PDF.",
+      "required_tools": [
+        "generate_annuity_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the statement to the customer's secure online message center.",
+      "expected_outcome": "Agent successfully delivers the document to the customer.",
+      "required_tools": [
+        "send_secure_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

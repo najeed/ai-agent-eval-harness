@@ -1,0 +1,62 @@
+{
+  "scenario_id": "information_technology_service-ps-11835",
+  "title": "Deployment - New Wi-Fi Installation",
+  "description": "A project requires the installation of a new Wi-Fi system across a client's office.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Technology Deployment & Migration",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Perform a wireless site survey to determine the optimal placement for new Wi-Fi access points (APs).",
+      "expected_outcome": "A site survey map is created, showing ideal AP locations.",
+      "required_tools": [
+        "perform_wifi_site_survey"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Install the new APs and connect them to the network switches.",
+      "expected_outcome": "All APs are physically installed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Configure the wireless controller with the appropriate SSIDs, VLANs, and security settings.",
+      "expected_outcome": "The new Wi-Fi network is configured and broadcasting.",
+      "required_tools": [
+        "configure_wifi_controller"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Test the coverage and performance of the new Wi-Fi network to ensure it meets requirements.",
+      "expected_outcome": "The new network is confirmed to be providing strong and fast coverage throughout the office.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-13863",
+  "title": "Provision Software Upgrade on Core Router",
+  "description": "A core network router needs a scheduled software upgrade during a maintenance window.",
+  "use_case": "Network Operations",
+  "core_function": "Network Provisioning",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the current software version of the target router.",
+      "expected_outcome": "Agent confirms the router is running an outdated version.",
+      "required_tools": [
+        "get_router_software_version"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Push the new software image to the router's storage.",
+      "expected_outcome": "Agent successfully transfers the new software file to the router.",
+      "required_tools": [
+        "transfer_software_image"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a reboot for the router during the approved maintenance window to apply the upgrade.",
+      "expected_outcome": "Agent successfully schedules the reboot for 2 AM.",
+      "required_tools": [
+        "schedule_reboot"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

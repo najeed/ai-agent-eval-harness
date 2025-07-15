@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-sc-12395",
+  "title": "Update a Customer's Pricing Agreement",
+  "description": "A customer has negotiated a new, lower price for a high-volume product. This needs to be updated in their contract.",
+  "use_case": "Sales & Customer Management",
+  "core_function": "Account & Contract Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the customer's pricing agreement or contract in the system.",
+      "expected_outcome": "Agent retrieves the customer's current contract.",
+      "required_tools": [
+        "get_customer_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create an amendment to the contract, updating the price for the specific product.",
+      "expected_outcome": "Agent drafts an amendment with the new pricing.",
+      "required_tools": [
+        "amend_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the contract amendment to the customer for their signature to formalize the new pricing.",
+      "expected_outcome": "Agent sends the document for signature.",
+      "required_tools": [
+        "send_document_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-hs-12955",
+  "title": "Handle an Unauthorized Person in a Restricted Area",
+  "description": "A CCTV operator spots a person without proper PPE walking in a restricted terminal area. They must respond.",
+  "use_case": "Health, Safety, Security & Environment (HSSE)",
+  "core_function": "Port Security & Access Control",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the unauthorized individual on the CCTV monitor.",
+      "expected_outcome": "Operator spots the person on camera near the quay area.",
+      "required_tools": [
+        "monitor_cctv_feeds"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch the nearest security patrol to intercept the individual.",
+      "expected_outcome": "A security vehicle is sent to the location.",
+      "required_tools": [
+        "dispatch_security_patrol"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The patrol safely escorts the individual out of the restricted area and to the security office to determine how they gained access.",
+      "expected_outcome": "The individual is removed from the dangerous area, and an investigation into the security breach begins.",
+      "required_tools": [
+        "log_security_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

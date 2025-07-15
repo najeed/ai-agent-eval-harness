@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-13207",
+  "title": "Create a Property Listing Description",
+  "description": "An agent needs to write compelling marketing copy for a new property listing.",
+  "use_case": "Residential Sales",
+  "core_function": "Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the property's key features, such as number of bedrooms, bathrooms, square footage, and recent upgrades.",
+      "expected_outcome": "Agent gathers all relevant details about the property.",
+      "required_tools": [
+        "get_property_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a captivating and descriptive property description highlighting its best features and location.",
+      "expected_outcome": "Agent writes an engaging, grammatically correct description suitable for the MLS.",
+      "required_tools": [
+        "generate_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Format the description for the MLS, ensuring it meets character limits and compliance standards.",
+      "expected_outcome": "Agent correctly formats the text for the specific MLS platform.",
+      "required_tools": [
+        "format_for_mls"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

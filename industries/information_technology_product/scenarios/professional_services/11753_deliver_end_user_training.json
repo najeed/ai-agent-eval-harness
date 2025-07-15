@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_product-ps-11753",
+  "title": "Deliver End-User Training",
+  "description": "A consultant needs to train a department of 50 end-users on the core features of the product.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Custom Training Delivery",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Customize the standard end-user training deck to include screenshots and examples from the customer's own configured environment.",
+      "expected_outcome": "Consultant tailors the training to be highly relevant to the audience.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Deliver the training session in a 'train-the-trainer' format to a group of the customer's team leads.",
+      "expected_outcome": "Consultant effectively enables the customer's champions to train their own teams.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide a Q&A document and a recording of the session for future reference.",
+      "expected_outcome": "Consultant provides lasting training assets to the customer.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

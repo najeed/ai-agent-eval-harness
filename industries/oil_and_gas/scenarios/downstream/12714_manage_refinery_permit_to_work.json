@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-down-12714",
+  "title": "Issue Permit for Hot Work",
+  "description": "An operations supervisor needs to issue a permit to work for a maintenance crew performing welding (hot work) inside a process unit.",
+  "use_case": "Downstream",
+  "core_function": "Health, Safety & Environment (HSE)",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new permit to work request, specifying the location, work type (hot work), and duration.",
+      "expected_outcome": "A draft permit is created in the system.",
+      "required_tools": [
+        "create_permit_to_work"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that all safety prerequisites are met, such as gas testing, fire watch assignment, and equipment isolation.",
+      "expected_outcome": "The system confirms all safety checks on the checklist are complete.",
+      "required_tools": [
+        "verify_safety_prerequisites"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve and issue the electronic permit, making it active for the specified shift.",
+      "expected_outcome": "The permit is officially issued and visible to the work crew and control room.",
+      "required_tools": [
+        "issue_permit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

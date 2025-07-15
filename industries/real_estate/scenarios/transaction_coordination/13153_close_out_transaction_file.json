@@ -1,0 +1,51 @@
+{
+  "scenario_id": "realestate-tc-13153",
+  "title": "Close Out a Transaction File",
+  "description": "A property has successfully closed. The TC needs to perform the final steps to close the file.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Obtain the final closing statement and deed from the title company.",
+      "expected_outcome": "Agent receives and verifies the final documents.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload all final documents to the transaction system and ensure the file is complete for compliance.",
+      "expected_outcome": "All closing documents are added to the file, and the file passes a compliance check.",
+      "required_tools": [
+        "upload_transaction_document",
+        "run_compliance_check"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Change the status of the listing to 'Sold' in the MLS.",
+      "expected_outcome": "The MLS listing is updated with the final sale price and status.",
+      "required_tools": [
+        "update_mls_listing_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-ct-12861",
+  "title": "Manage Investigator Site Payments",
+  "description": "A clinical finance specialist needs to process a payment to a clinical trial site based on completed patient visits.",
+  "use_case": "Clinical Trials",
+  "core_function": "Trial Operations & Monitoring",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve data from the EDC system on the number of completed patient visits for a specific site.",
+      "expected_outcome": "Agent finds the site has completed 10 'Visit 3' procedures in the last month.",
+      "required_tools": [
+        "get_edc_visit_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Cross-reference the site's clinical trial agreement (CTA) to find the payment amount per visit.",
+      "expected_outcome": "Agent finds the CTA specifies a payment of $500 per 'Visit 3'.",
+      "required_tools": [
+        "get_contract_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total payment due to the site.",
+      "expected_outcome": "Agent calculates the total payment as 10 * $500 = $5,000.",
+      "required_tools": [
+        "calculate_payment_amount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate an invoice and submit it to the accounts payable system for processing.",
+      "expected_outcome": "Agent successfully creates the invoice and initiates the payment process.",
+      "required_tools": [
+        "generate_invoice",
+        "submit_to_ap_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

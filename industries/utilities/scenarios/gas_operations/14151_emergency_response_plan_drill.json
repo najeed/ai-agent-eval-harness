@@ -1,0 +1,66 @@
+{
+  "scenario_id": "utils-go-14151",
+  "title": "Gas Emergency Response Plan Drill",
+  "description": "A compliance officer is simulating a pipeline rupture to drill the company's emergency response plan.",
+  "use_case": "Gas Operations",
+  "core_function": "Leak Detection & Repair",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Initiate the drill by simulating a pressure drop alarm on a major pipeline.",
+      "expected_outcome": "The system logs the simulated alarm and notifies the on-call operator.",
+      "required_tools": [
+        "simulate_pipeline_alarm"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Track the response time for the operator to acknowledge the alarm and initiate the shutdown procedure.",
+      "expected_outcome": "System logs the time taken for each step of the response.",
+      "required_tools": [
+        "log_response_times"
+      ],
+      "success_criteria": [
+        {
+          "metric": "monitoring_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the operator correctly identifies which valves to close to isolate the simulated rupture.",
+      "expected_outcome": "System confirms the operator selected the correct valves according to the plan.",
+      "required_tools": [
+        "verify_isolation_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_check_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a drill performance report highlighting successes and areas for improvement.",
+      "expected_outcome": "System produces a formal report on the drill.",
+      "required_tools": [
+        "generate_drill_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

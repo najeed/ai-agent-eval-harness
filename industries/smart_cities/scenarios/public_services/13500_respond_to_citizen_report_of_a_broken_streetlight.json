@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-pg-13500",
+  "title": "Respond to Citizen Report of a Broken Streetlight",
+  "description": "A citizen reports a broken streetlight via the city's mobile app. An operator must create a work order for the repair.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Citizen Reporting & Service Requests",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge a new 'broken streetlight' service request from the citizen reporting system.",
+      "expected_outcome": "Agent retrieves the details of the report, including location and citizen photo.",
+      "required_tools": [
+        "get_citizen_service_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the location and identify the specific streetlight asset ID from the city's asset database.",
+      "expected_outcome": "Agent confirms the location and links the report to a specific asset.",
+      "required_tools": [
+        "get_asset_by_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a maintenance work order for the public works department, including all report details.",
+      "expected_outcome": "Agent successfully creates and assigns the work order.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

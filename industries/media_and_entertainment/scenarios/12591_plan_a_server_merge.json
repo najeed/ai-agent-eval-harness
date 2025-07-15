@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-go-12591",
+  "title": "Plan a Game Server Merge",
+  "description": "Two game servers with low player populations need to be merged to improve the matchmaking experience.",
+  "use_case": "Gaming Operations",
+  "core_function": "Server Operations & Matchmaking",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the player population trends for all servers to identify the best candidates for merging.",
+      "expected_outcome": "Agent identifies two specific servers with consistently low populations.",
+      "required_tools": [
+        "get_server_population_trends"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for any potential conflicts, such as players with the same name on both servers.",
+      "expected_outcome": "Agent generates a list of name conflicts that will need to be resolved.",
+      "required_tools": [
+        "check_for_merge_conflicts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Develop a detailed project plan for the server merge, including communication to players, downtime, and the conflict resolution process.",
+      "expected_outcome": "Agent creates a comprehensive plan for the merge.",
+      "required_tools": [
+        "create_project_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

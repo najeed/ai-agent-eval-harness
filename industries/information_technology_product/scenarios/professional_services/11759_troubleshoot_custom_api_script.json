@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_product-ps-11759",
+  "title": "Troubleshoot Failing Custom API Script",
+  "description": "A customer reports that a custom API script provided by Professional Services has stopped working.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Custom Integration & Development",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the error logs from the customer's execution of the script.",
+      "expected_outcome": "Consultant obtains the stack trace, which shows a 'field not found' error.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the product's recent release notes.",
+      "expected_outcome": "Consultant finds that a recent product update renamed the API field the script was using.",
+      "required_tools": [
+        "review_release_notes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the script with the new field name and provide the corrected version to the customer.",
+      "expected_outcome": "Consultant provides a timely fix for the breaking change.",
+      "required_tools": [
+        "code_editor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

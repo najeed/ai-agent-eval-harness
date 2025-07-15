@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ps-pa-13056",
+  "title": "Process a Property Tax Abatement",
+  "description": "A senior citizen is applying for a property tax abatement (reduction) based on their age and income.",
+  "use_case": "Public Administration & Finance",
+  "core_function": "Taxation & Revenue",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the abatement application and supporting documents (proof of age and income).",
+      "expected_outcome": "Agent receives the complete application package.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify that the applicant meets the eligibility requirements for the abatement program.",
+      "expected_outcome": "Agent confirms the applicant's age and income are within the program limits.",
+      "required_tools": [
+        "check_abatement_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the abatement and apply the reduction to the citizen's property tax bill.",
+      "expected_outcome": "Agent approves the application and the system recalculates the tax bill at the lower amount.",
+      "required_tools": [
+        "apply_tax_abatement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

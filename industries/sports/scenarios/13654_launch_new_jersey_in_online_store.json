@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-fe-13654",
+  "title": "Launch New Jersey in Online Store",
+  "description": "A team is launching a new alternate jersey and needs to make it available for sale in the online store at a specific time.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Merchandise & Concessions",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new product page for the jersey in the e-commerce system.",
+      "expected_outcome": "Agent sets up the product page with images, description, and pricing.",
+      "required_tools": [
+        "create_product_page"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Upload the inventory levels for each size.",
+      "expected_outcome": "Agent inputs the stock levels for the new jersey.",
+      "required_tools": [
+        "update_inventory_levels"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule the product page to go live at the designated launch time.",
+      "expected_outcome": "Agent schedules the page to become visible to the public at the correct time.",
+      "required_tools": [
+        "schedule_product_launch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

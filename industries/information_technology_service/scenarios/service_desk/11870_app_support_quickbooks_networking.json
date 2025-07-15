@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-sd-11870",
+  "title": "Application Support - QuickBooks Network Error",
+  "description": "A user reports they are unable to open their QuickBooks company file, which is hosted on a server.",
+  "use_case": "Service Desk & End-User Support",
+  "core_function": "Application Support",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the user can ping the QuickBooks server.",
+      "expected_outcome": "The server is reachable on the network.",
+      "required_tools": [
+        "ping_device"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the QuickBooks Database Server Manager service on the server.",
+      "expected_outcome": "Technician finds the service has stopped.",
+      "required_tools": [
+        "get_service_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Restart the QuickBooks Database Server Manager service.",
+      "expected_outcome": "The user is now able to open the company file successfully.",
+      "required_tools": [
+        "start_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

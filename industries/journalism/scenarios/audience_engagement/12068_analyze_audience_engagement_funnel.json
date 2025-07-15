@@ -1,0 +1,50 @@
+{
+  "scenario_id": "journalism-ae-12068",
+  "title": "Analyze Audience Engagement Funnel",
+  "description": "An analyst wants to see how many people who see a story on social media actually click the link, and then how long they stay on the page.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Performance Analysis",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the 'impressions' and 'clicks' data for a specific story from the social media platform's analytics.",
+      "expected_outcome": "Agent gets the top-of-funnel social media data.",
+      "required_tools": [
+        "get_social_media_analytics"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "In the web analytics platform, find the corresponding article and look at the 'average time on page' for traffic coming from that social media source.",
+      "expected_outcome": "Agent gets the on-site engagement data.",
+      "required_tools": [
+        "get_analytics_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Combine the data to report on the full engagement funnel (e.g., '10,000 impressions led to 500 clicks, with an average time on page of 90 seconds').",
+      "expected_outcome": "A complete picture of the engagement funnel is created.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

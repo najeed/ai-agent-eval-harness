@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_product-ps-11757",
+  "title": "Handle Project Change Request",
+  "description": "In the middle of an implementation project, a customer requests a new feature that is outside the original SOW.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Project Scoping & SOW",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the customer's request and review the original SOW to confirm the feature is out of scope.",
+      "expected_outcome": "Consultant validates that the request constitutes a scope change.",
+      "required_tools": [
+        "review_project_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Estimate the additional effort (hours) required for the new feature.",
+      "expected_outcome": "Consultant provides an accurate estimate for the extra work.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a change order document outlining the new scope, timeline impact, and additional cost.",
+      "expected_outcome": "Consultant creates a formal change order for the customer to approve.",
+      "required_tools": [
+        "create_change_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

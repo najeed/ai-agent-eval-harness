@@ -1,0 +1,51 @@
+{
+  "scenario_id": "information_technology_service-im-11839",
+  "title": "Backup - Perform Disaster Recovery Test",
+  "description": "A technician is performing a scheduled disaster recovery test for a client.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Backup & Disaster Recovery",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use the backup system to perform a test failover, booting a backed-up server in an isolated cloud environment.",
+      "expected_outcome": "The server's virtual machine boots successfully in the test environment.",
+      "required_tools": [
+        "execute_dr_test_failover"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the test server is functional by logging in and checking that key applications are running.",
+      "expected_outcome": "The technician confirms the server is operational.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Document the results of the DR test, including the time it took to failover, and shut down the test environment.",
+      "expected_outcome": "A successful DR test is documented for the client's compliance records.",
+      "required_tools": [
+        "generate_dr_test_report",
+        "shutdown_test_environment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

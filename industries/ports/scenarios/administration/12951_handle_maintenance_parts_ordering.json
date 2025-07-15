@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-af-12951",
+  "title": "Handle Maintenance Parts Ordering",
+  "description": "A maintenance technician determines a crane needs a new gearbox. A parts supervisor must order it.",
+  "use_case": "Port Administration & Finance",
+  "core_function": "Asset Management & Maintenance",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a parts request from the technician for a specific gearbox part number.",
+      "expected_outcome": "Supervisor receives the request for the replacement part.",
+      "required_tools": [
+        "get_parts_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the warehouse inventory to see if the part is in stock.",
+      "expected_outcome": "Supervisor finds that there are zero gearboxes of that type in stock.",
+      "required_tools": [
+        "check_inventory_stock_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a purchase order with the approved supplier for the gearbox and request expedited shipping.",
+      "expected_outcome": "A PO is created and sent to the OEM supplier.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

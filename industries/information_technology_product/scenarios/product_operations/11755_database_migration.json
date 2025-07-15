@@ -1,0 +1,66 @@
+{
+  "scenario_id": "information_technology_product-po-11755",
+  "title": "Perform Database Schema Migration",
+  "description": "A new product version requires a database schema migration that must be applied during a scheduled maintenance window.",
+  "use_case": "Product Operations & Reliability (SRE)",
+  "core_function": "Deployment & Release Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Announce the scheduled maintenance on the status page and in-app.",
+      "expected_outcome": "Agent informs customers of the upcoming downtime.",
+      "required_tools": [
+        "update_status_page"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the maintenance window, run the pre-approved database migration script.",
+      "expected_outcome": "Agent successfully executes the schema migration.",
+      "required_tools": [
+        "run_db_migration_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Perform post-migration data integrity checks to ensure no data was lost or corrupted.",
+      "expected_outcome": "Agent runs validation queries and confirms data integrity.",
+      "required_tools": [
+        "run_data_validation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Bring the application back online and remove the maintenance page.",
+      "expected_outcome": "The maintenance is completed successfully.",
+      "required_tools": [
+        "update_status_page"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

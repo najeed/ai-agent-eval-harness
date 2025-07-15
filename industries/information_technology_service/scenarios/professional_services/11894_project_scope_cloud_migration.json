@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-ps-11894",
+  "title": "Project Scoping - Cloud Migration",
+  "description": "A client wants to migrate their on-premise servers to a public cloud like AWS or Azure and needs a quote.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Scoping & Quoting",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a discovery tool on the client's on-premise environment to inventory all servers and their specifications.",
+      "expected_outcome": "The sales engineer has a complete list of servers to be migrated.",
+      "required_tools": [
+        "run_cloud_discovery_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the discovery data to estimate the monthly cost of running the equivalent servers in the cloud.",
+      "expected_outcome": "An estimated cloud spend is calculated.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a quote that includes the professional services hours for the migration project and the estimated ongoing monthly cloud costs.",
+      "expected_outcome": "A comprehensive quote is provided to the client.",
+      "required_tools": [
+        "create_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

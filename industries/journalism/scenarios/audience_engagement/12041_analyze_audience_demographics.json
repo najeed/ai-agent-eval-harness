@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ae-12041",
+  "title": "Analyze Audience Demographics",
+  "description": "An editor wants to understand the demographic makeup (age, gender, location) of their website's audience to better tailor content.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Performance Analysis",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Navigate to the 'Audience Demographics' section of the web analytics platform.",
+      "expected_outcome": "Agent accesses the correct report.",
+      "required_tools": [
+        "get_analytics_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_navigation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the age, gender, and geographic location data of the website's visitors over the last 6 months.",
+      "expected_outcome": "Agent understands the primary demographics of the audience.",
+      "required_tools": [
+        "analyze_analytics_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a summary report of the findings for the editorial team.",
+      "expected_outcome": "The team receives a clear picture of who their readers are.",
+      "required_tools": [
+        "generate_summary_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "clarity_of_report",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

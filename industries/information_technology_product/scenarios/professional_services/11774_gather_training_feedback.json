@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-ps-11774",
+  "title": "Gather Post-Training Feedback",
+  "description": "After a training session, the consultant sends out a feedback survey to attendees.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Custom Training Delivery",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a feedback survey with questions about the trainer, content, and overall experience.",
+      "expected_outcome": "Consultant prepares a relevant feedback survey.",
+      "required_tools": [
+        "create_survey"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Email the survey link to all training attendees.",
+      "expected_outcome": "The survey is successfully distributed.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the survey results and summarize the findings to improve future training sessions.",
+      "expected_outcome": "Consultant uses the feedback to make tangible improvements.",
+      "required_tools": [
+        "analyze_survey_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

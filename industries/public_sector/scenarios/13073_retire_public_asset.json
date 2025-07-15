@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-pw-13073",
+  "title": "Retire a Public Asset",
+  "description": "A city vehicle has reached the end of its service life and needs to be retired from the asset management system and sent to auction.",
+  "use_case": "Public Works & Infrastructure",
+  "core_function": "Asset Management",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the vehicle to be retired in the asset management system.",
+      "expected_outcome": "The fleet manager locates the correct vehicle record.",
+      "required_tools": [
+        "get_asset_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the asset's status to 'Retired' or 'Pending Disposal'.",
+      "expected_outcome": "The manager successfully updates the status of the asset.",
+      "required_tools": [
+        "update_asset_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate the necessary paperwork to transfer the asset to the city's auctioneer.",
+      "expected_outcome": "The manager creates the documentation needed to dispose of the vehicle.",
+      "required_tools": [
+        "generate_asset_disposal_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

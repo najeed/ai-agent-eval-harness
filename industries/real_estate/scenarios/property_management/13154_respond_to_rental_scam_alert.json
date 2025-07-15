@@ -1,0 +1,48 @@
+{
+  "scenario_id": "realestate-pm-13154",
+  "title": "Respond to a Rental Scam Alert",
+  "description": "A person calls saying they saw your rental property advertised on Craigslist for a much lower price and were asked to wire a deposit.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Confirm that your company did not post the Craigslist ad and that it is a scam.",
+      "expected_outcome": "Agent verifies that the company does not advertise on Craigslist.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Advise the caller not to send any money and to report the fraudulent ad to the platform.",
+      "expected_outcome": "Agent provides clear and accurate advice to protect the potential victim.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Flag the fraudulent ad on the platform for removal.",
+      "expected_outcome": "Agent successfully navigates to the platform and reports the scam listing.",
+      "required_tools": [
+        "report_fraudulent_listing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

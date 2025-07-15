@@ -1,0 +1,64 @@
+{
+  "scenario_id": "lw-wo-12285",
+  "title": "Perform an Outbound Quality Audit",
+  "description": "Before an order is sealed, a quality auditor randomly selects it for an audit to verify picking and packing accuracy.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Value-Added Services",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan a package's shipping label at the audit station.",
+      "expected_outcome": "The system displays the order details for the auditor.",
+      "required_tools": [
+        "get_order_by_shipping_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The auditor opens the package and scans each item inside to verify it against the order.",
+      "expected_outcome": "The auditor finds that all items and quantities are correct.",
+      "required_tools": [
+        "verify_package_contents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The auditor marks the quality audit as 'Passed' in the system.",
+      "expected_outcome": "The order is logged as having passed the audit.",
+      "required_tools": [
+        "log_quality_audit_result"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The package is resealed and sent to the shipping dock.",
+      "expected_outcome": "The audited package proceeds to shipping.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

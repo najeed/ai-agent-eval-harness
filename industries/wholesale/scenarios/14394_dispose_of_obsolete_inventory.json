@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-im-14394",
+  "title": "Dispose of Obsolete Inventory",
+  "description": "A product has been discontinued for years, and the remaining obsolete inventory needs to be disposed of.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Inventory Control",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a report to identify all inventory with no sales activity in the last two years.",
+      "expected_outcome": "Agent gets a list of obsolete stock.",
+      "required_tools": [
+        "get_obsolete_inventory_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a disposal order for the obsolete items.",
+      "expected_outcome": "A formal order to dispose of the goods is created.",
+      "required_tools": [
+        "create_disposal_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Adjust the inventory records to write off the disposed stock.",
+      "expected_outcome": "Agent adjusts the inventory quantity to zero, recording it as a write-off.",
+      "required_tools": [
+        "write_off_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

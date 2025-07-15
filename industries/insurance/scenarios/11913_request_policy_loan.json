@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-la-11913",
+  "title": "Request a Loan Against Policy Cash Value",
+  "description": "A whole life policyholder wants to take a loan against the cash value of their policy.",
+  "use_case": "Life & Annuities",
+  "core_function": "Policy Servicing",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and verify their identity.",
+      "expected_outcome": "Agent securely identifies the customer.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the available cash value and the maximum loan amount.",
+      "expected_outcome": "Agent calculates the maximum amount the customer can borrow against their policy.",
+      "required_tools": [
+        "calculate_max_loan_amount"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the terms of the loan, including the interest rate, and process the loan request.",
+      "expected_outcome": "Agent clearly explains the loan terms and successfully processes the disbursement of funds.",
+      "required_tools": [
+        "process_policy_loan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

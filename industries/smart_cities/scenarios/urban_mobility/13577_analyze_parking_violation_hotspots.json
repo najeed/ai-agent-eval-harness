@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-um-13577",
+  "title": "Analyze Parking Violation Hotspots",
+  "description": "A parking enforcement manager wants to know which areas have the most parking violations to better allocate enforcement officers.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "Parking Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve all parking violation data from the last 3 months.",
+      "expected_outcome": "Agent successfully queries the parking enforcement database.",
+      "required_tools": [
+        "get_parking_violation_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a heatmap visualization showing the density of violations across the city.",
+      "expected_outcome": "The system generates a map highlighting the streets with the most tickets.",
+      "required_tools": [
+        "generate_heatmap"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_visualization_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a report with the top 5 violation hotspots for the enforcement manager.",
+      "expected_outcome": "Agent provides an actionable intelligence report.",
+      "required_tools": [
+        "generate_enforcement_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "scenario_id": "telecom-sl-13847",
+  "title": "Onboarding - SIM-Only Plan Activation",
+  "description": "A customer has received their new SIM card for a SIM-only plan and needs to activate it.",
+  "use_case": "Sales and Onboarding",
+  "core_function": "Onboarding and Activation",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the customer for the ICCID number from the new SIM card.",
+      "expected_outcome": "Agent correctly captures the SIM card number.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Activate the SIM card in the billing system.",
+      "expected_outcome": "Agent successfully activates the SIM.",
+      "required_tools": [
+        "activate_sim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the customer to insert the SIM and restart their phone.",
+      "expected_outcome": "Agent provides clear final instructions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-go-12587",
+  "title": "Player Appeals a Ban",
+  "description": "A player who was banned for toxic behavior submits an appeal, claiming they have reformed.",
+  "use_case": "Gaming Operations",
+  "core_function": "Anti-Cheat & Moderation",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the player's account details, the original ban reason, and their chat logs.",
+      "expected_outcome": "Agent accesses all historical data related to the ban.",
+      "required_tools": [
+        "get_player_details",
+        "get_ban_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the player's appeal and their past behavior.",
+      "expected_outcome": "Agent reviews the case and notes the player has had multiple previous suspensions.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the history of repeat offenses, deny the appeal and uphold the ban.",
+      "expected_outcome": "Agent denies the appeal and sends a notification to the player explaining the decision.",
+      "required_tools": [
+        "deny_ban_appeal",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-cs-11737",
+  "title": "Moderate Community Forum Post",
+  "description": "An inappropriate and non-constructive post has been flagged in the public community forum.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Knowledge & Self-Service",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the flagged post and determine that it violates the community guidelines.",
+      "expected_outcome": "Agent confirms the post is inappropriate.",
+      "required_tools": [
+        "review_flagged_content"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Remove the post from the forum.",
+      "expected_outcome": "Agent successfully deletes the post.",
+      "required_tools": [
+        "delete_forum_post"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a private warning to the user who made the post, explaining the violation.",
+      "expected_outcome": "Agent communicates the policy violation to the user.",
+      "required_tools": [
+        "send_private_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

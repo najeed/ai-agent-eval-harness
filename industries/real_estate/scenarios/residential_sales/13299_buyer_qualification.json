@@ -1,0 +1,56 @@
+{
+  "scenario_id": "real_estate-rs-13299",
+  "title": "New Buyer Financial Qualification",
+  "description": "An agent must assess a new home buyer's financial readiness and guide them to get pre-approved for a mortgage.",
+  "use_case": "Residential Sales",
+  "core_function": "Client Onboarding & Qualification",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather basic financial information from the buyer (income, debts, down payment amount).",
+      "expected_outcome": "Agent collects necessary financial details to understand the buyer's budget.",
+      "required_tools": [
+        "intake_form_capture"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the buyer with a list of 3 trusted mortgage lenders.",
+      "expected_outcome": "Agent successfully provides a list of recommended lenders.",
+      "required_tools": [
+        "get_lender_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the importance of mortgage pre-approval and set a follow-up task to check on their progress.",
+      "expected_outcome": "Agent clearly communicates the next steps and creates a reminder in the CRM.",
+      "required_tools": [
+        "create_crm_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        },
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

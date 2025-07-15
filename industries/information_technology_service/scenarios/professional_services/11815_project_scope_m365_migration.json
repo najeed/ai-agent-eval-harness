@@ -1,0 +1,51 @@
+{
+  "scenario_id": "information_technology_service-ps-11815",
+  "title": "Project Scoping - Microsoft 365 Migration",
+  "description": "A potential client with an on-premise Exchange server wants a quote to migrate their email to Microsoft 365.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Scoping & Quoting",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather key details from the potential client, such as the number of mailboxes, total data size, and current Exchange version.",
+      "expected_outcome": "The sales engineer has all the necessary information to scope the project.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use the gathered details to estimate the total number of hours required for the migration project.",
+      "expected_outcome": "A realistic effort estimate is created.",
+      "required_tools": [
+        "use_estimation_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a formal quote and Statement of Work (SOW) detailing the project scope, timeline, and cost.",
+      "expected_outcome": "A professional and accurate quote is provided to the potential client.",
+      "required_tools": [
+        "create_quote",
+        "create_sow"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

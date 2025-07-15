@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ue-13564",
+  "title": "Manage Landfill Methane Gas Levels",
+  "description": "Sensors at the city landfill report rising methane gas levels, requiring an operator to activate the gas flare system.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Waste Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'High Methane Level' alert from the landfill monitoring system.",
+      "expected_outcome": "Agent acknowledges the environmental safety alert.",
+      "required_tools": [
+        "get_landfill_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the readings from multiple sensors to confirm the high methane levels are widespread.",
+      "expected_outcome": "Agent confirms the validity of the alert.",
+      "required_tools": [
+        "get_environmental_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Remotely activate the landfill's gas flare system to safely burn off the excess methane.",
+      "expected_outcome": "Agent successfully activates the flare system.",
+      "required_tools": [
+        "activate_landfill_flare"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

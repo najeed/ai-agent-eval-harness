@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-13259",
+  "title": "Send Bulk Tenant Notice",
+  "description": "The water will be shut off for building-wide plumbing repairs. The manager must notify all tenants in the building.",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft a clear notice explaining the reason, date, and time of the water shut-off.",
+      "expected_outcome": "Agent writes a concise and informative notice.",
+      "required_tools": [
+        "generate_text"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a list of all current tenants in the affected building.",
+      "expected_outcome": "Agent correctly pulls the list of tenants for the specific property.",
+      "required_tools": [
+        "get_tenant_list_by_property"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the notice to all tenants via email and post physical copies in common areas.",
+      "expected_outcome": "Agent successfully distributes the notice through multiple channels.",
+      "required_tools": [
+        "send_bulk_email",
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

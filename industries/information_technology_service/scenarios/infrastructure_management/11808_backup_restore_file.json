@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-im-11808",
+  "title": "Backup - Restore Deleted File",
+  "description": "An end-user accidentally deleted an important file from a shared network drive and needs it restored from last night's backup.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Backup & Disaster Recovery",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the file server and the exact path and name of the file that needs to be restored.",
+      "expected_outcome": "The technician has the full path of the deleted file.",
+      "required_tools": [
+        "get_ticket_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the backup system, browse the previous night's backup set for the file server, and locate the file.",
+      "expected_outcome": "The technician successfully finds the file in the backup archive.",
+      "required_tools": [
+        "browse_backup_archive"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Restore the file to its original location and notify the user that it is available.",
+      "expected_outcome": "The file is successfully restored, and the user's issue is resolved.",
+      "required_tools": [
+        "restore_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

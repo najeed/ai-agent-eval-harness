@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ps-13528",
+  "title": "Locate a Missing Person with a Smart Watch",
+  "description": "A family reports an elderly person with dementia as missing. The person is wearing a city-registered GPS smart watch.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Emergency Response",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a missing person report and the ID of their registered smart watch.",
+      "expected_outcome": "Agent gets the critical device ID.",
+      "required_tools": [
+        "get_emergency_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the real-time location of the smart watch.",
+      "expected_outcome": "The system returns the current GPS coordinates of the watch.",
+      "required_tools": [
+        "get_iot_device_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a police unit to the reported coordinates to find the missing person.",
+      "expected_outcome": "Agent sends police to the exact location.",
+      "required_tools": [
+        "dispatch_emergency_unit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

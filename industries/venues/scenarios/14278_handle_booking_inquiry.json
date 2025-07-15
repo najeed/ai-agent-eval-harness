@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-em-14278",
+  "title": "Handle a Booking Inquiry",
+  "description": "A potential client submits a web form asking for information on renting the ballroom for a gala.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Event Booking & Contracting",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the web form lead in the CRM.",
+      "expected_outcome": "Agent acknowledges the new lead.",
+      "required_tools": [
+        "get_new_leads"
+      ],
+      "success_criteria": [
+        {
+          "metric": "alert_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the standard ballroom rental information packet to the client's email address.",
+      "expected_outcome": "Agent sends the info packet.",
+      "required_tools": [
+        "send_information_packet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a task for a sales manager to follow up with the client by phone within 24 hours.",
+      "expected_outcome": "Agent creates and assigns a follow-up task in the CRM.",
+      "required_tools": [
+        "create_follow_up_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

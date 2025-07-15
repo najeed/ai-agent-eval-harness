@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-vo-13646",
+  "title": "Schedule Routine Facility Maintenance",
+  "description": "A stadium manager needs to schedule the annual inspection and maintenance for the stadium's HVAC system.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Facility & Turf Management",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the stadium's event schedule to find a suitable maintenance window during the off-season.",
+      "expected_outcome": "Agent identifies a two-week period with no scheduled events.",
+      "required_tools": [
+        "get_venue_event_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the approved HVAC vendor to schedule the maintenance.",
+      "expected_outcome": "Agent successfully schedules the service with the vendor.",
+      "required_tools": [
+        "schedule_vendor_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order in the facility management system.",
+      "expected_outcome": "Agent logs the scheduled maintenance in the system.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

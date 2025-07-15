@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-pg-13530",
+  "title": "Notify Residents of Road Closure for a Parade",
+  "description": "The city has approved a parade. An operator must notify residents and businesses along the route of upcoming road closures.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Public Information & Alerting",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the approved parade route and the schedule for road closures.",
+      "expected_outcome": "Agent gets the geographic route and timing details.",
+      "required_tools": [
+        "get_event_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a list of all residential and commercial addresses along the parade route.",
+      "expected_outcome": "Agent gets a list of all affected properties.",
+      "required_tools": [
+        "get_addresses_along_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a targeted notification email or text message to all affected addresses about the closures.",
+      "expected_outcome": "Agent successfully sends the targeted alert.",
+      "required_tools": [
+        "send_targeted_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

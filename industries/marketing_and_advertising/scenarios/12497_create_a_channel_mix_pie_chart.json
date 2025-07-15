@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-ar-12497",
+  "title": "Create a Channel Mix Pie Chart",
+  "description": "An analyst needs to create a pie chart that shows the percentage of website traffic coming from each marketing channel.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Dashboarding & Visualization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve website session data, broken down by 'Default Channel Grouping', for the last 30 days.",
+      "expected_outcome": "Agent gets the data showing sessions from Organic Search, Paid Search, Direct, etc.",
+      "required_tools": [
+        "google_analytics_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "In a reporting or spreadsheet tool, create a pie chart using this data.",
+      "expected_outcome": "Agent successfully generates the pie chart.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "visualization_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the chart is properly labeled with the channel names and percentages.",
+      "expected_outcome": "The chart is clear, accurate, and easy to understand.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

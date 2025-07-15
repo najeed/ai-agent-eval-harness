@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ps-13593",
+  "title": "Track Stolen City Asset",
+  "description": "A GPS tracker on a valuable city-owned asset (like a high-end mower from the parks department) indicates it has left its designated area.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Predictive Policing & Prevention",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'Geofence Exit' alert for 'Mower #3'.",
+      "expected_outcome": "Agent acknowledges the asset theft alert.",
+      "required_tools": [
+        "get_geofence_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Begin tracking the asset's real-time location and direction of travel.",
+      "expected_outcome": "The system displays the asset's current location and path on a map.",
+      "required_tools": [
+        "get_iot_device_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the police department of the theft in progress and provide them with continuous location updates.",
+      "expected_outcome": "Agent provides police with live tracking information to facilitate recovery.",
+      "required_tools": [
+        "send_notification_to_pd"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

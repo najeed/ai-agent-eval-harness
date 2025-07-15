@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-im-11809",
+  "title": "Monitoring - Low Disk Space Alert",
+  "description": "An RMM alert indicates that a server's C: drive has less than 10% free space.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Monitoring & Alerting",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the alert.",
+      "expected_outcome": "A technician takes ownership.",
+      "required_tools": [
+        "acknowledge_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a script via the RMM tool to identify the largest files and folders on the drive.",
+      "expected_outcome": "The script reveals that old application log files are taking up most of the space.",
+      "required_tools": [
+        "run_script_on_endpoint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run another script to safely delete log files older than 90 days, freeing up space and resolving the alert.",
+      "expected_outcome": "Disk space is reclaimed, and the alert clears.",
+      "required_tools": [
+        "run_script_on_endpoint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

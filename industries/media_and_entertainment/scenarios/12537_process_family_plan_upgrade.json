@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-ae-12537",
+  "title": "Process Subscriber Family Plan Upgrade",
+  "description": "A subscriber on a standard plan wants to upgrade to a family plan to add their partner to the account.",
+  "use_case": "Audience Engagement & Subscriber Management",
+  "core_function": "Subscriber Lifecycle Management",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the subscriber and explain the features and cost of the family plan.",
+      "expected_outcome": "Agent clearly communicates the benefits and new monthly price.",
+      "required_tools": [
+        "get_subscriber_details",
+        "get_plan_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Process the plan upgrade on the primary account.",
+      "expected_outcome": "Agent successfully changes the subscription plan.",
+      "required_tools": [
+        "update_subscription_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send an invitation link to the partner's email address to join the family plan.",
+      "expected_outcome": "Agent successfully sends the invitation.",
+      "required_tools": [
+        "send_family_plan_invite"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-ind-13716",
+  "title": "Set up IRS Installment Agreement",
+  "description": "A taxpayer owes taxes but cannot pay the full amount at once. They want to set up a monthly payment plan with the IRS.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Payment & Refund Management",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Determine the total tax amount owed by the taxpayer.",
+      "expected_outcome": "Agent confirms the final balance due.",
+      "required_tools": [
+        "finalize_return"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the taxpayer's eligibility for the Online Payment Agreement (OPA) program.",
+      "expected_outcome": "Agent confirms the taxpayer meets the criteria for a streamlined installment agreement.",
+      "required_tools": [
+        "check_installment_agreement_eligibility"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Complete and submit Form 9465, Installment Agreement Request, with the tax return.",
+      "expected_outcome": "Agent successfully prepares and files the request for a payment plan.",
+      "required_tools": [
+        "prepare_form_9465"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

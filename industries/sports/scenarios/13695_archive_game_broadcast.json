@@ -1,0 +1,52 @@
+{
+  "scenario_id": "sports-bm-13695",
+  "title": "Archive a Game Broadcast",
+  "description": "After a game broadcast is complete, the full recording must be archived for future use.",
+  "use_case": "Broadcasting & Media",
+  "core_function": "Media Rights & Distribution",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the high-resolution recording of the full game broadcast.",
+      "expected_outcome": "Agent has the master video file.",
+      "required_tools": [
+        "get_game_recording"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add metadata to the file, including the date, teams, and key players.",
+      "expected_outcome": "Agent successfully tags the file with relevant metadata.",
+      "required_tools": [
+        "add_video_metadata"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Transfer the file to the long-term video archive.",
+      "expected_outcome": "Agent successfully archives the broadcast.",
+      "required_tools": [
+        "transfer_to_archive"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

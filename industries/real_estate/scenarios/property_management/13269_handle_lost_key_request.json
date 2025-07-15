@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-13269",
+  "title": "Handle a Tenant's Lost Key Request",
+  "description": "A tenant has lost their key and needs a replacement. The agent must provide a new key and charge the tenant.",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the tenant's request for a new key.",
+      "expected_outcome": "Agent logs the request from the tenant.",
+      "required_tools": [
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the lease agreement for the key replacement fee amount.",
+      "expected_outcome": "Agent finds the correct fee in the lease document.",
+      "required_tools": [
+        "get_lease_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Charge the replacement fee to the tenant's ledger and arrange for them to pick up a new key.",
+      "expected_outcome": "Agent applies the fee and coordinates key pickup.",
+      "required_tools": [
+        "apply_tenant_charge",
+        "send_tenant_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

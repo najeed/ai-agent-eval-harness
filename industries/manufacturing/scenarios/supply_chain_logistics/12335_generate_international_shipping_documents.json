@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mfg-sl-12335",
+  "title": "Generate International Shipping Documents",
+  "description": "An order is being shipped internationally and requires a commercial invoice and customs declaration.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Outbound & Shipping",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the sales order and verify all product details, including country of origin and HS codes.",
+      "expected_outcome": "Agent confirms all necessary customs information is present on the order.",
+      "required_tools": [
+        "get_sales_order_details",
+        "get_product_compliance_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate the commercial invoice based on the order details.",
+      "expected_outcome": "Agent successfully generates the commercial invoice document.",
+      "required_tools": [
+        "generate_commercial_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Complete and print the required customs declaration form (e.g., CN22/23).",
+      "expected_outcome": "Agent generates the appropriate customs form for the destination country.",
+      "required_tools": [
+        "generate_customs_declaration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

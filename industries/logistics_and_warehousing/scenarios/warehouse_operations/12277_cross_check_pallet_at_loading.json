@@ -1,0 +1,64 @@
+{
+  "scenario_id": "lw-wo-12277",
+  "title": "Cross-Check Pallet at Loading Dock",
+  "description": "To prevent loading errors, a final check is performed by scanning a pallet's license plate at the dock door to ensure it belongs on the truck being loaded.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Outbound & Shipping",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A loader scans the dock door barcode to set their context to the current shipment being loaded.",
+      "expected_outcome": "The scanner is now locked to a specific manifest.",
+      "required_tools": [
+        "get_manifest_by_dock_door"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The loader brings a pallet from staging and scans its license plate.",
+      "expected_outcome": "The pallet ID is captured.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system validates if the scanned pallet belongs to the manifest for that dock door. It returns a 'Success' message.",
+      "expected_outcome": "The system confirms the pallet is correct, and the loader proceeds to load it.",
+      "required_tools": [
+        "validate_pallet_for_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The loader scans another pallet, but the system returns an 'Error: Pallet Belongs to Different Shipment' message, preventing a loading error.",
+      "expected_outcome": "The system successfully prevents an incorrect pallet from being loaded.",
+      "required_tools": [
+        "validate_pallet_for_shipment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "error_detection_rate",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

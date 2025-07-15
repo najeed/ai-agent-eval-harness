@@ -1,0 +1,62 @@
+{
+  "scenario_id": "lw-wo-12273",
+  "title": "Pick to Cart for Multiple Orders",
+  "description": "An operator uses a smart cart to pick multiple small orders simultaneously in a single pass through the warehouse.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Outbound & Shipping",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The system creates a batch of 8 small, single-line orders and assigns them to the operator's smart cart.",
+      "expected_outcome": "The operator's cart terminal shows 8 order slots.",
+      "required_tools": [
+        "create_batch_pick_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system directs the operator to a pick location. The operator scans the item.",
+      "expected_outcome": "The operator is guided along an optimized pick path.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The lights on the smart cart illuminate for the two orders that require this item, indicating where the operator should place them.",
+      "expected_outcome": "The operator is visually guided to place the correct item in the correct order totes.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "system_integration_check",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The operator repeats the process until all orders in the batch are complete and delivers the cart to the packing area.",
+      "expected_outcome": "Multiple orders are picked efficiently in a single trip.",
+      "required_tools": [
+        "confirm_batch_pick_completion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

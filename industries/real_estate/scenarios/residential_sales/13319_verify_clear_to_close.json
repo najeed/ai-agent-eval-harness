@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-rs-13319",
+  "title": "Verify 'Clear to Close'",
+  "description": "An agent must coordinate with the lender and title company to confirm that all conditions are met for the transaction to close.",
+  "use_case": "Residential Sales",
+  "core_function": "Closing & Escrow",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Contact the buyer's mortgage lender to confirm they have issued the 'clear to close'.",
+      "expected_outcome": "Agent receives written confirmation from the lender that the loan is approved and funded.",
+      "required_tools": [
+        "contact_lender"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the title company to ensure the title search is complete and there are no liens or encumbrances.",
+      "expected_outcome": "Agent confirms the title is clear.",
+      "required_tools": [
+        "contact_title_company"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify all parties (buyer, seller, other agent) that the transaction is officially clear to close and confirm the closing appointment.",
+      "expected_outcome": "A confirmation email is sent to all stakeholders.",
+      "required_tools": [
+        "send_closing_confirmation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

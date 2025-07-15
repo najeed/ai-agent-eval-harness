@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-proc-12689",
+  "title": "Manage Reagent Inventory",
+  "description": "A plant operator manages the inventory of a key reagent like cyanide or flocculant.",
+  "use_case": "Processing & Metallurgy",
+  "core_function": "Metallurgical Accounting",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current level of the main cyanide storage tank.",
+      "expected_outcome": "The tank level is retrieved from the control system.",
+      "required_tools": [
+        "get_tank_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the remaining days of supply based on the current consumption rate.",
+      "expected_outcome": "The calculation shows there are only 5 days of supply left, which is below the minimum reorder point of 7 days.",
+      "required_tools": [
+        "get_reagent_consumption_rate",
+        "calculate_days_of_supply"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a purchase requisition to order a new shipment of cyanide from the supplier.",
+      "expected_outcome": "A purchase request is created to ensure the plant does not run out of the critical reagent.",
+      "required_tools": [
+        "create_purchase_requisition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

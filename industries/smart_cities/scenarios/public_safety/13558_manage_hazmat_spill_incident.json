@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-ps-13558",
+  "title": "Manage Hazmat Spill Incident",
+  "description": "A truck has overturned, spilling a hazardous chemical. An operator must coordinate a multi-agency response.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Incident & Disaster Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 911 call about an overturned truck and identify the chemical from the truck's placard number.",
+      "expected_outcome": "Agent identifies the hazardous material involved.",
+      "required_tools": [
+        "lookup_hazmat_placard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Establish an exclusion zone around the spill and dispatch the specialized fire department Hazmat team.",
+      "expected_outcome": "Agent defines the safety perimeter and dispatches the correct team.",
+      "required_tools": [
+        "define_hazard_zone",
+        "dispatch_emergency_unit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the environmental protection agency and public health department of the spill.",
+      "expected_outcome": "Agent correctly notifies all required external agencies.",
+      "required_tools": [
+        "send_agency_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

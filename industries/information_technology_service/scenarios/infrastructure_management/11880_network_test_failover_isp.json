@@ -1,0 +1,51 @@
+{
+  "scenario_id": "information_technology_service-im-11880",
+  "title": "Server & Network - Test ISP Failover",
+  "description": "A technician needs to test the automatic internet failover at a client site with two ISP connections.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Server & Network Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Notify the client of the planned brief outage for the test.",
+      "expected_outcome": "The client is aware of the test.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Simulate a failure of the primary ISP connection by disconnecting its cable from the firewall.",
+      "expected_outcome": "The primary connection goes down.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the firewall automatically fails over to the secondary ISP connection and that internet access is restored within moments.",
+      "expected_outcome": "The test is successful, proving the failover configuration works as expected.",
+      "required_tools": [
+        "get_firewall_logs",
+        "ping_device"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "sports-bm-13635",
+  "title": "Produce a Player Interview Segment",
+  "description": "A broadcast needs to produce a pre-recorded interview with a star player to air during a pre-game show.",
+  "use_case": "Broadcasting & Media",
+  "core_function": "Live Broadcast Production",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule the interview with the player and a reporter.",
+      "expected_outcome": "Agent finds a suitable time and books the interview.",
+      "required_tools": [
+        "check_player_availability",
+        "schedule_interview"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "After the interview is filmed, ingest the raw footage.",
+      "expected_outcome": "Agent loads the footage into the editing system.",
+      "required_tools": [
+        "ingest_raw_footage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Edit the interview down to a 3-minute segment, adding graphics and background music.",
+      "expected_outcome": "Agent produces the final, ready-to-air video segment.",
+      "required_tools": [
+        "edit_video_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

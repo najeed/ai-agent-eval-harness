@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-14187",
+  "title": "State Estimator Analysis",
+  "description": "The EMS runs a state estimator to create a complete and accurate model of the current state of the power grid, even with incomplete or noisy sensor data.",
+  "use_case": "Grid Operations",
+  "core_function": "System Control & Monitoring",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all available real-time SCADA measurements from across the grid.",
+      "expected_outcome": "System collects all available telemetry data.",
+      "required_tools": [
+        "get_scada_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_aggregation_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the state estimation algorithm, which uses the grid topology and the measurements to calculate the most likely value for all system parameters (e.g., voltage, power flow).",
+      "expected_outcome": "System produces a complete, solved power flow case.",
+      "required_tools": [
+        "run_state_estimator"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify any bad or missing data by comparing the estimated values to the actual measurements.",
+      "expected_outcome": "System flags a specific meter that is providing an erroneous reading.",
+      "required_tools": [
+        "detect_bad_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

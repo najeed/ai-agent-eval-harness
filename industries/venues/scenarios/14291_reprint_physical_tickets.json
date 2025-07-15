@@ -1,0 +1,64 @@
+{
+  "scenario_id": "venues-tb-14291",
+  "title": "Reprint Physical Tickets",
+  "description": "A guest arrives at the box office saying they left their printed tickets at home.",
+  "use_case": "Ticketing & Box Office",
+  "core_function": "Box Office Operations",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the guest for their photo ID and the credit card used to purchase the tickets.",
+      "expected_outcome": "Agent receives the guest's identification.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the order in the ticketing system to verify the purchase.",
+      "expected_outcome": "Agent finds the valid order.",
+      "required_tools": [
+        "search_ticket_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deactivate the barcodes on the original tickets.",
+      "expected_outcome": "Agent voids the original tickets.",
+      "required_tools": [
+        "deactivate_ticket_barcodes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Reprint the tickets on new ticket stock and give them to the guest.",
+      "expected_outcome": "Agent prints and provides the new tickets.",
+      "required_tools": [
+        "reprint_tickets"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

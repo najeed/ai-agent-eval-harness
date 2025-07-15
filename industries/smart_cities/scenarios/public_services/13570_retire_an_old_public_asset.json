@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-pg-13570",
+  "title": "Retire an Old Public Asset",
+  "description": "A public fountain is being decommissioned. An operator must update the city's asset records.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Smart Asset Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a work order confirming the decommissioning of the 'Central Plaza Fountain'.",
+      "expected_outcome": "Agent acknowledges the asset change.",
+      "required_tools": [
+        "get_work_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Locate the fountain in the asset management database.",
+      "expected_outcome": "Agent finds the correct asset record.",
+      "required_tools": [
+        "get_asset_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Change the asset's status to 'Decommissioned' and archive its record.",
+      "expected_outcome": "Agent successfully updates the asset database to reflect the change.",
+      "required_tools": [
+        "update_asset_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

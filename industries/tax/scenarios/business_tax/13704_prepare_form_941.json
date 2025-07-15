@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-bus-13704",
+  "title": "Prepare Form 941, Employer's Quarterly Federal Tax Return",
+  "description": "A small business with 3 employees needs to file its quarterly payroll tax return, Form 941.",
+  "use_case": "Business Tax Services",
+  "core_function": "Payroll & Employment Tax",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the quarterly payroll data, including total wages paid and federal income tax withheld.",
+      "expected_outcome": "Agent successfully imports all relevant payroll figures for the quarter.",
+      "required_tools": [
+        "import_payroll_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the employer and employee portions of Social Security and Medicare taxes.",
+      "expected_outcome": "Agent accurately calculates the FICA taxes.",
+      "required_tools": [
+        "calculate_fica_taxes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Complete Form 941 and reconcile the total taxes with the total payroll tax deposits made during the quarter.",
+      "expected_outcome": "Agent prepares an accurate Form 941 that reconciles with deposits.",
+      "required_tools": [
+        "prepare_form_941"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

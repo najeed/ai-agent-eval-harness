@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-sb-13506",
+  "title": "Remotely Dim Streetlights for Energy Savings",
+  "description": "During late-night hours, an operator needs to dim streetlights in a commercial district to save energy.",
+  "use_case": "Smart Buildings & Infrastructure",
+  "core_function": "Smart Street Lighting",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the 'Downtown Commercial' lighting zone.",
+      "expected_outcome": "Agent selects the correct group of streetlights.",
+      "required_tools": [
+        "get_lighting_zones"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute a command to dim all lights within the zone to 40% brightness.",
+      "expected_outcome": "Agent successfully sends the dimming command.",
+      "required_tools": [
+        "set_lighting_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the lights in the zone have reported the new, lower power consumption level.",
+      "expected_outcome": "Agent checks the dashboard and confirms the energy savings.",
+      "required_tools": [
+        "get_lighting_power_consumption"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

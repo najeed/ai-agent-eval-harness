@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-cp-12556",
+  "title": "Hire a Freelance Video Editor",
+  "description": "A production needs to hire a freelance video editor for a short-term project.",
+  "use_case": "Content Production & Management",
+  "core_function": "Pre-production & Development",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search a database of pre-approved freelancers for video editors with experience in the relevant genre.",
+      "expected_outcome": "Agent finds five suitable freelance editors.",
+      "required_tools": [
+        "search_freelancer_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the availability of the shortlisted editors for the project dates.",
+      "expected_outcome": "Agent confirms two of the five editors are available.",
+      "required_tools": [
+        "check_freelancer_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a contract offer to the selected editor.",
+      "expected_outcome": "Agent generates and sends a standard freelance contract.",
+      "required_tools": [
+        "generate_freelance_contract"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

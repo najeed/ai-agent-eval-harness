@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-com-13205",
+  "title": "Find Office Lease Space for Client",
+  "description": "A tech startup needs to find a 5,000 sqft office space for lease. The agent must search for suitable properties.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Leasing & Tenant Representation",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the client's requirements: 5,000 sqft, Class A/B office, specific submarket, budget of $50/sqft/year.",
+      "expected_outcome": "Agent correctly logs all client requirements.",
+      "required_tools": [
+        "get_client_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search commercial listing services (e.g., CoStar, LoopNet) for available properties matching the criteria.",
+      "expected_outcome": "Agent generates a list of at least 5 matching properties.",
+      "required_tools": [
+        "search_commercial_listings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compile the search results into a report for the client, including property photos, floor plans, and leasing contact info.",
+      "expected_outcome": "Agent creates a professional, easy-to-read report for the client.",
+      "required_tools": [
+        "generate_property_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

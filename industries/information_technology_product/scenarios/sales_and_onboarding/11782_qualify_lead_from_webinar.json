@@ -1,0 +1,51 @@
+{
+  "scenario_id": "information_technology_product-sl-11782",
+  "title": "Qualify Lead from Webinar",
+  "description": "Following a marketing webinar, an agent needs to follow up with attendees who showed high engagement (e.g., asked questions).",
+  "use_case": "Sales & Account Management",
+  "core_function": "New Customer Acquisition",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get a list of webinar attendees who asked questions or stayed for the entire duration.",
+      "expected_outcome": "Agent gets a list of high-engagement leads.",
+      "required_tools": [
+        "get_webinar_attendee_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact one of the leads to ask if they have any further questions and to understand their needs.",
+      "expected_outcome": "Agent initiates a sales conversation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the conversation, qualify the lead and schedule a follow-up demo.",
+      "expected_outcome": "Agent successfully converts a marketing-qualified lead to a sales-qualified lead.",
+      "required_tools": [
+        "update_lead_score",
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

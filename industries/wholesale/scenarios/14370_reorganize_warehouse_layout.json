@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-im-14370",
+  "title": "Reorganize Warehouse Layout",
+  "description": "To improve efficiency, a warehouse manager wants to reorganize the layout, moving high-velocity items closer to the shipping docks.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Inventory Control",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze sales data to identify the fastest-moving products (ABC analysis).",
+      "expected_outcome": "Agent generates a report identifying the 'A' items (highest velocity).",
+      "required_tools": [
+        "perform_abc_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a new warehouse layout plan that moves the 'A' items to the most accessible locations.",
+      "expected_outcome": "Agent creates a new slotting plan for the warehouse.",
+      "required_tools": [
+        "generate_warehouse_slotting_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create work orders for the warehouse staff to move the inventory to the new locations.",
+      "expected_outcome": "Agent generates the tasks for the physical reorganization.",
+      "required_tools": [
+        "create_inventory_move_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

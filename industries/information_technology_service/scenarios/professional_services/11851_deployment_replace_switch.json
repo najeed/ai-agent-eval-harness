@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-ps-11851",
+  "title": "Deployment - Replace Aging Network Switch",
+  "description": "A project involves replacing an old, out-of-warranty network switch with a new one during a weekend maintenance window.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Technology Deployment & Migration",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Back up the configuration of the old switch.",
+      "expected_outcome": "The existing configuration is saved.",
+      "required_tools": [
+        "backup_switch_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Translate and apply the configuration to the new switch.",
+      "expected_outcome": "The new switch is configured with all the necessary VLANs, ports, and settings.",
+      "required_tools": [
+        "configure_switch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "During the maintenance window, physically swap the old switch with the new one and test connectivity.",
+      "expected_outcome": "The new switch is online and network functionality is restored.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

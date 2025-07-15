@@ -1,0 +1,62 @@
+{
+  "scenario_id": "venues-gs-14298",
+  "title": "Handle Service Animal Inquiry",
+  "description": "A guest calls to ask about the policy for bringing their service animal to an event.",
+  "use_case": "Guest & Patron Services",
+  "core_function": "Accessibility & Special Needs",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the venue's official service animal policy from the knowledge base.",
+      "expected_outcome": "Agent finds the policy.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the guest that trained service animals are welcome.",
+      "expected_outcome": "Agent clearly communicates the policy.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the rules for service animals (e.g., must be leashed, under control) and clarify that emotional support animals are not permitted.",
+      "expected_outcome": "Agent accurately explains the distinction and rules.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Ask if the guest needs an aisle seat or any other accommodation and make a note on their ticket order if necessary.",
+      "expected_outcome": "Agent proactively offers further assistance.",
+      "required_tools": [
+        "add_note_to_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

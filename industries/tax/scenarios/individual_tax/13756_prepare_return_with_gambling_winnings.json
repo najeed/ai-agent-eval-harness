@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-ind-13756",
+  "title": "Prepare Return with Gambling Winnings",
+  "description": "A taxpayer received a Form W-2G for significant gambling winnings.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Data Collection & Input",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Enter the gambling winnings from Form W-2G as 'Other Income' on Schedule 1.",
+      "expected_outcome": "Agent correctly reports the winnings.",
+      "required_tools": [
+        "enter_w2g_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather information on the taxpayer's gambling losses for the year.",
+      "expected_outcome": "Agent collects documentation of losses.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Deduct the gambling losses on Schedule A, up to the amount of the winnings.",
+      "expected_outcome": "Agent correctly claims the gambling loss deduction, offsetting the winnings.",
+      "required_tools": [
+        "enter_schedule_a_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "media-cp-12536",
+  "title": "Manage Color Grading Session",
+  "description": "A colorist needs access to the final edited sequence of a film to begin the color grading process.",
+  "use_case": "Content Production & Management",
+  "core_function": "Post-production & VFX",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the final, picture-locked edit of the film from the asset management system.",
+      "expected_outcome": "Agent locates the correct version of the final edit.",
+      "required_tools": [
+        "find_final_edit_sequence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate an Edit Decision List (EDL) from the sequence.",
+      "expected_outcome": "Agent successfully exports an EDL file.",
+      "required_tools": [
+        "generate_edl"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the colorist with the final sequence and the EDL file.",
+      "expected_outcome": "Agent securely transfers the necessary files to the colorist.",
+      "required_tools": [
+        "transfer_files_securely"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

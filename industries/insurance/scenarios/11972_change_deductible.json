@@ -1,0 +1,52 @@
+{
+  "scenario_id": "insurance-pc-11972",
+  "title": "Change Auto Insurance Deductible",
+  "description": "A customer wants to lower their monthly premium by raising their collision deductible.",
+  "use_case": "Property & Casualty (P&C) Insurance",
+  "core_function": "Policy Administration",
+  "industry": "Insurance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the policyholder and their current deductible amounts.",
+      "expected_outcome": "Agent finds the customer's policy and notes their current deductibles.",
+      "required_tools": [
+        "get_policyholder_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Present the premium savings for different, higher deductible options.",
+      "expected_outcome": "Agent shows the customer how much they would save by increasing their deductible from $500 to $1000.",
+      "required_tools": [
+        "quote_deductible_change"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the policy with the new deductible chosen by the customer.",
+      "expected_outcome": "Agent successfully updates the policy and confirms the new premium.",
+      "required_tools": [
+        "update_deductible"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

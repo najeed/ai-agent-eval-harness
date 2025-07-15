@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-ms-12872",
+  "title": "Manage Artwork for Packaging Components",
+  "description": "A labeling specialist must coordinate the update of artwork for a product carton following a change to the prescribing information.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Supply Chain & Traceability",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a notification that a labeling update requires a change to the product carton.",
+      "expected_outcome": "Agent identifies the required text change.",
+      "required_tools": [
+        "get_change_control_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new artwork change request in the artwork management system.",
+      "expected_outcome": "Agent initiates a new request, linking it to the parent change control.",
+      "required_tools": [
+        "create_artwork_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the request to the graphic design vendor to create the new version of the artwork.",
+      "expected_outcome": "Agent sends the redlined text to the vendor.",
+      "required_tools": [
+        "send_request_to_vendor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Receive the proof from the vendor and route it for internal review and approval before ordering new cartons.",
+      "expected_outcome": "Agent receives the proof and routes it for sign-off.",
+      "required_tools": [
+        "route_document_for_approval"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

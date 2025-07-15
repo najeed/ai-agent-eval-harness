@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ldr-12124",
+  "title": "Draft a Cease and Desist Letter",
+  "description": "An attorney needs to draft a cease and desist letter to a third party who is infringing on a client's trademark.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Legal Research & Writing",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather evidence of the trademark infringement (e.g., screenshots of the infringing use).",
+      "expected_outcome": "Agent collects the necessary proof.",
+      "required_tools": [
+        "web_browser"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select the firm's standard cease and desist letter template.",
+      "expected_outcome": "Agent retrieves the correct template.",
+      "required_tools": [
+        "get_document_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft the letter, identifying the client's trademark, describing the infringing activity, and demanding that the activity cease immediately to avoid legal action.",
+      "expected_outcome": "Agent produces a strong and clear demand letter.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

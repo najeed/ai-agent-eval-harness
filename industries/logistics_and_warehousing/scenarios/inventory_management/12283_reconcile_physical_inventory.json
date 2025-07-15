@@ -1,0 +1,67 @@
+{
+  "scenario_id": "lw-im-12283",
+  "title": "Reconcile Annual Physical Inventory",
+  "description": "After a full wall-to-wall physical inventory count, an accountant must reconcile the physical counts with the system records and post the financial adjustment.",
+  "use_case": "Inventory Management",
+  "core_function": "Inventory Control",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Upload the final physical count file into the inventory system.",
+      "expected_outcome": "The physical counts are loaded into the system.",
+      "required_tools": [
+        "upload_physical_count_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a variance report comparing the system's on-hand quantities to the physical counts.",
+      "expected_outcome": "A report is generated showing all items with discrepancies (shrinkage or overages).",
+      "required_tools": [
+        "generate_inventory_variance_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total financial value of the net variance.",
+      "expected_outcome": "The total value of the inventory adjustment is calculated.",
+      "required_tools": [
+        "calculate_inventory_variance_value"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Post the inventory adjustments to update the system quantities and send the financial entry to the general ledger.",
+      "expected_outcome": "The system inventory is updated to match the physical count, and the financial impact is recorded.",
+      "required_tools": [
+        "post_inventory_adjustment",
+        "send_gl_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

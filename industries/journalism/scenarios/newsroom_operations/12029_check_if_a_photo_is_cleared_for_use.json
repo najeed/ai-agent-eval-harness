@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-no-12029",
+  "title": "Check if a Photo is Cleared for Use",
+  "description": "An editor wants to use a photo found online, but must first verify that the publication has the legal right to use it.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Legal & Ethical Review",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Perform a reverse image search to find the original source and creator of the photograph.",
+      "expected_outcome": "Agent identifies the photographer and where the image was first published.",
+      "required_tools": [
+        "reverse_image_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the image's metadata and source for any copyright information or usage licenses (e.g., Creative Commons, Getty Images).",
+      "expected_outcome": "Agent determines the copyright status of the image.",
+      "required_tools": [
+        "check_image_metadata"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the image is copyrighted, contact the photographer or agency to negotiate a licensing fee.",
+      "expected_outcome": "Agent either secures the rights to use the image or determines it cannot be used.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

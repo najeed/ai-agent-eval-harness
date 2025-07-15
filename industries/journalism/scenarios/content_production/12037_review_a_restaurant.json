@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-cp-12037",
+  "title": "Review a Restaurant",
+  "description": "A food critic has visited a new restaurant and needs to write a review, balancing description of the food, atmosphere, and service.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Writing & Drafting",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Consult notes taken during the restaurant visit about each dish, the decor, and the service.",
+      "expected_outcome": "Agent has all the raw material for the review.",
+      "required_tools": [
+        "note_taking_app"
+      ],
+      "success_criteria": [
+        {
+          "metric": "detail_of_notes",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft the review, using vivid and descriptive language to describe the flavors and textures of the food.",
+      "expected_outcome": "The review makes the reader feel like they can taste the food.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "descriptive_writing_quality",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Conclude with a clear recommendation and a star rating, consistent with the publication's rating system.",
+      "expected_outcome": "The review provides a clear, final judgment for the reader.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "clarity_of_recommendation",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

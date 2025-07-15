@@ -1,0 +1,50 @@
+{
+  "scenario_id": "real_estate-rs-13378",
+  "title": "Manage a Post-Closing Issue",
+  "description": "A week after closing, a buyer discovers a latent defect (e.g., a hidden leak) that was not disclosed. They contact their agent for help.",
+  "use_case": "Residential Sales",
+  "core_function": "Closing & Escrow",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Advise the buyer to document the issue thoroughly with photos and repair estimates.",
+      "expected_outcome": "The buyer gathers evidence of the defect and its repair cost.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the seller's property disclosure statement to see if the issue should have been disclosed.",
+      "expected_outcome": "Agent determines if there was a potential failure to disclose.",
+      "required_tools": [
+        "review_disclosure_statement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the buyer on their potential recourse, such as contacting the seller to request they cover the repair cost, and recommend they consult with a real estate attorney.",
+      "expected_outcome": "The agent provides guidance and recommends legal counsel for a post-closing dispute.",
+      "required_tools": [
+        "get_attorney_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "strategic_advice_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

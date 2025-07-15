@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ue-13559",
+  "title": "Identify Unusually High Water Consumption",
+  "description": "A smart water meter reports unusually high, continuous water usage at a residence, suggesting a major leak.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Water & Wastewater Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'High Continuous Flow' alert from a residential smart water meter.",
+      "expected_outcome": "Agent acknowledges the potential leak alert.",
+      "required_tools": [
+        "get_water_system_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the residence's historical water usage to confirm the current pattern is abnormal.",
+      "expected_outcome": "Agent confirms the usage is significantly higher than the historical average.",
+      "required_tools": [
+        "get_historical_water_usage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Proactively notify the resident via text message and email about the potential leak and recommend they check for running toilets or broken pipes.",
+      "expected_outcome": "Agent sends a helpful, proactive notification to the customer.",
+      "required_tools": [
+        "send_customer_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

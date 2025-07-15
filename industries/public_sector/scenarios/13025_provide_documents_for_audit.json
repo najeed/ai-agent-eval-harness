@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ps-rc-13025",
+  "title": "Provide Documents for a Program Audit",
+  "description": "A state auditor is conducting an audit of a public housing program and has requested specific case files.",
+  "use_case": "Regulatory & Compliance",
+  "core_function": "Audit & Oversight",
+  "industry": "Public Sector",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the official request from the auditor, identifying the specific case files needed.",
+      "expected_outcome": "The program manager logs the audit request.",
+      "required_tools": [
+        "log_audit_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search for and retrieve the requested case files from the system.",
+      "expected_outcome": "The manager successfully gathers all requested digital case files.",
+      "required_tools": [
+        "search_case_files"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the documents to the auditor through a secure transfer method.",
+      "expected_outcome": "The manager securely transmits the files to the auditor.",
+      "required_tools": [
+        "send_secure_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-ps-11816",
+  "title": "Project Management - Weekly Status Update",
+  "description": "A project manager needs to provide a weekly status update to a client for an ongoing project.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Execution & Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the project plan and get status updates on all active tasks from the assigned technicians.",
+      "expected_outcome": "The project manager has a clear picture of the week's progress.",
+      "required_tools": [
+        "get_project_task_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the project's RAG status (Red, Amber, Green) and note any new risks or issues.",
+      "expected_outcome": "The project's health status is accurately updated.",
+      "required_tools": [
+        "update_project_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a concise status summary email to the client's main point of contact.",
+      "expected_outcome": "The client is kept informed of the project's progress.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

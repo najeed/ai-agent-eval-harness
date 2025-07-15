@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-tr-13982",
+  "title": "Send Updated Itinerary After Change",
+  "description": "A flight time in a passenger's itinerary has been changed by the airline. The agent needs to send the updated itinerary.",
+  "use_case": "Transportation & Travel",
+  "core_function": "Ticketing & Documentation",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the booking affected by the schedule change from a system alert.",
+      "expected_outcome": "Agent correctly identifies the booking that needs to be updated.",
+      "required_tools": [
+        "get_schedule_change_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the passenger has accepted the schedule change.",
+      "expected_outcome": "Agent confirms the passenger has acknowledged and accepted the new flight time.",
+      "required_tools": [
+        "check_schedule_change_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate and email the new, updated itinerary to the passenger.",
+      "expected_outcome": "Agent successfully sends the updated travel documents.",
+      "required_tools": [
+        "send_updated_itinerary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

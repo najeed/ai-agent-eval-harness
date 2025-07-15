@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-13221",
+  "title": "Process Security Deposit Refund",
+  "description": "A tenant has moved out. After inspection, the agent must calculate and process the security deposit refund.",
+  "use_case": "Property Management",
+  "core_function": "Financial Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the move-out inspection report and identify any damages beyond normal wear and tear.",
+      "expected_outcome": "Agent identifies a broken window and stains on the carpet.",
+      "required_tools": [
+        "get_inspection_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get repair cost estimates for the identified damages.",
+      "expected_outcome": "Agent obtains quotes for window repair and carpet cleaning.",
+      "required_tools": [
+        "get_vendor_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the refund amount by deducting repair costs from the original deposit and generate a disposition letter.",
+      "expected_outcome": "Agent correctly calculates the refund and creates the required legal notice.",
+      "required_tools": [
+        "calculate_security_deposit_refund",
+        "generate_disposition_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

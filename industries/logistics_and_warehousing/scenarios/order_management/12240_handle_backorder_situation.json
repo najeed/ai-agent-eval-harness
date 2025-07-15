@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-om-12240",
+  "title": "Handle a Backorder Situation",
+  "description": "A customer places an order for an item that is out of stock. The agent must inform the customer and provide options.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Order Processing",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "When processing the order, the system flags an item as out of stock.",
+      "expected_outcome": "The system identifies the stockout and places the order on hold.",
+      "required_tools": [
+        "validate_order_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the next expected receipt date for the out-of-stock item from open purchase orders.",
+      "expected_outcome": "Agent finds the item is expected to be back in stock in 7 days.",
+      "required_tools": [
+        "get_item_eta"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Contact the customer, explain the situation, provide the ETA, and ask if they want to wait or cancel the item.",
+      "expected_outcome": "Agent clearly communicates the options to the customer, who agrees to wait.",
+      "required_tools": [
+        "send_customer_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

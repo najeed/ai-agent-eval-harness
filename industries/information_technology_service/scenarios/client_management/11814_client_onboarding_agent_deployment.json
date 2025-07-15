@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-cm-11814",
+  "title": "Client Onboarding - Deploy RMM Agents",
+  "description": "As part of a new client onboarding, a technician needs to deploy the RMM agent software to all of the client's computers.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Client Onboarding",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get a list of all computer hostnames from the client's Active Directory.",
+      "expected_outcome": "The technician has a complete list of target machines.",
+      "required_tools": [
+        "get_ad_computer_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a deployment tool to push the RMM agent installation to all computers on the list.",
+      "expected_outcome": "The agent software is deployed across the client's environment.",
+      "required_tools": [
+        "deploy_agent"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify in the RMM console that all computers have checked in and are now under management.",
+      "expected_outcome": "The technician confirms that all devices are now visible and manageable.",
+      "required_tools": [
+        "get_device_health"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

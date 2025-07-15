@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-cre-13381",
+  "title": "Assist with a Zoning Variance Application",
+  "description": "A client wants to open a restaurant in a space not zoned for it. The agent must assist them in applying for a zoning variance.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Due Diligence",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Research the local zoning code and the process for obtaining a variance.",
+      "expected_outcome": "Agent understands the specific requirements and steps for a variance application.",
+      "required_tools": [
+        "get_zoning_regulations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Refer the client to a specialized land-use attorney to handle the application.",
+      "expected_outcome": "The client is connected with a legal expert.",
+      "required_tools": [
+        "get_attorney_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "recommendation_relevance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide supporting documentation for the application, such as market data showing a need for a new restaurant in the area.",
+      "expected_outcome": "The agent provides data to help justify the variance request.",
+      "required_tools": [
+        "get_market_analysis_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "content_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "real_estate-cre-13347",
+  "title": "Manage a Call for Offers Process",
+  "description": "For a high-demand investment property, an agent manages a formal 'call for offers' process with a specific deadline.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Investment Sales",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Distribute the Offering Memorandum and set a firm deadline for all offers to be submitted.",
+      "expected_outcome": "All potential buyers are notified of the offer deadline.",
+      "required_tools": [
+        "send_email_blast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive and log all offers as they are submitted, ensuring they are complete.",
+      "expected_outcome": "All submitted offers are organized and time-stamped.",
+      "required_tools": [
+        "log_offer_submission"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After the deadline, create a summary of all offers for the seller and schedule a meeting to review them and select the best one.",
+      "expected_outcome": "The seller is presented with a clear comparison of all offers to make an informed decision.",
+      "required_tools": [
+        "create_offer_summary_matrix"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

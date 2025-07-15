@@ -1,0 +1,53 @@
+{
+  "scenario_id": "wholesale-om-14397",
+  "title": "Handle Order with Multiple Ship-To Locations",
+  "description": "A retail chain places a single large order but needs parts of it shipped to different store locations.",
+  "use_case": "Order Management & Sales",
+  "core_function": "Order Processing & Fulfillment",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a purchase order with multiple ship-to addresses.",
+      "expected_outcome": "Agent enters the order, noting the different destinations for different line items.",
+      "required_tools": [
+        "create_multi_destination_sales_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically splits the sales order into multiple shipments, one for each destination.",
+      "expected_outcome": "The single order is broken into several sub-shipments in the WMS.",
+      "required_tools": [
+        "auto_split_order_by_destination"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The warehouse fulfills each shipment separately.",
+      "expected_outcome": "Each store location receives its correct portion of the order.",
+      "required_tools": [
+        "generate_pick_list",
+        "generate_shipping_label"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-ri-12016",
+  "title": "Transcribe a Recorded Interview",
+  "description": "A reporter has a one-hour audio recording of an interview and needs a written transcript to pull quotes from.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Source & Interview Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Upload the audio file to an automated transcription service.",
+      "expected_outcome": "The audio file is successfully uploaded.",
+      "required_tools": [
+        "upload_audio_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run the transcription tool on the audio file.",
+      "expected_outcome": "The service generates a rough text transcript of the interview.",
+      "required_tools": [
+        "run_automated_transcription"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the automated transcript against the audio, correcting any errors in names, places, or technical terms.",
+      "expected_outcome": "A fully accurate and cleaned-up transcript is produced.",
+      "required_tools": [
+        "text_editor",
+        "audio_player"
+      ],
+      "success_criteria": [
+        {
+          "metric": "transcription_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    }
+  ]
+}

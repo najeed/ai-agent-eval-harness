@@ -1,0 +1,50 @@
+{
+  "scenario_id": "ports-go-12944",
+  "title": "Manage VBS Slot Release",
+  "description": "Due to increased productivity, the terminal can handle more trucks. The gate manager decides to release more appointment slots.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Gate Processing & Appointments",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze current truck turnaround times and gate queue lengths.",
+      "expected_outcome": "Manager notes that turnaround times are low and there are no queues, indicating spare capacity.",
+      "required_tools": [
+        "get_gate_kpi_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Decide to release an additional 20 appointment slots per hour for the next 4 hours.",
+      "expected_outcome": "A decision is made to increase capacity.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the Vehicle Booking System (VBS) to make the new slots available to trucking companies.",
+      "expected_outcome": "The new slots are successfully added to the VBS and become available for booking.",
+      "required_tools": [
+        "update_vbs_slot_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

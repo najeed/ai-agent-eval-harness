@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-ms-12846",
+  "title": "Plan Weekly Production Schedule",
+  "description": "A production planner needs to create the manufacturing schedule for the upcoming week based on demand forecasts and material availability.",
+  "use_case": "Manufacturing & Supply Chain",
+  "core_function": "Production & Batch Management",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the demand forecast for all products for the next month.",
+      "expected_outcome": "Agent retrieves the forecast and identifies which products have the most urgent demand.",
+      "required_tools": [
+        "get_demand_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the inventory of the required raw materials and API for the high-demand products.",
+      "expected_outcome": "Agent confirms that all necessary materials are in stock and released.",
+      "required_tools": [
+        "check_inventory_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a production schedule that prioritizes the high-demand products and optimizes equipment utilization.",
+      "expected_outcome": "Agent generates a schedule that sequences batches to minimize changeover times.",
+      "required_tools": [
+        "create_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_relevance",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Publish the final schedule and create the electronic work orders for the scheduled batches.",
+      "expected_outcome": "Agent publishes the schedule and the corresponding work orders are created in the MES.",
+      "required_tools": [
+        "publish_schedule",
+        "create_work_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

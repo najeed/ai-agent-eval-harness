@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_product-cs-11788",
+  "title": "Update Outdated Knowledge Base Article",
+  "description": "A customer points out that a knowledge base article is outdated and its screenshots no longer match the current user interface.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Knowledge & Self-Service",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate the outdated article based on the customer's feedback.",
+      "expected_outcome": "Agent finds the correct article.",
+      "required_tools": [
+        "search_knowledge_base"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Take new screenshots of the current UI and update the step-by-step instructions in the article.",
+      "expected_outcome": "Agent updates the article to be accurate and current.",
+      "required_tools": [
+        "kb_editor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Publish the updated article and thank the customer for their feedback.",
+      "expected_outcome": "The documentation is corrected, and the customer feels valued.",
+      "required_tools": [
+        "publish_kb_article",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

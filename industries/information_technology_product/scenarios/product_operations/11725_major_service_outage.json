@@ -1,0 +1,67 @@
+{
+  "scenario_id": "information_technology_product-po-11725",
+  "title": "Major Service Outage (P1)",
+  "description": "An automated alert indicates a P1 critical service outage affecting all customers.",
+  "use_case": "Product Operations & Reliability (SRE)",
+  "core_function": "Incident & Outage Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the P1 alert and initiate the incident response protocol.",
+      "expected_outcome": "Agent starts the incident response process, creating a war room and notifying the on-call engineer.",
+      "required_tools": [
+        "start_incident"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the public status page to inform customers of the ongoing outage.",
+      "expected_outcome": "Agent posts a clear and timely update to the status page.",
+      "required_tools": [
+        "update_status_page"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "After engineers find the root cause (e.g., failed deployment), execute the rollback procedure.",
+      "expected_outcome": "Agent coordinates the rollback of the failed deployment.",
+      "required_tools": [
+        "execute_rollback"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Once service is restored, update the status page again and begin the post-mortem analysis.",
+      "expected_outcome": "Agent marks the incident as resolved and schedules a post-mortem meeting.",
+      "required_tools": [
+        "update_status_page",
+        "schedule_postmortem"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

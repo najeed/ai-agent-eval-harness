@@ -1,0 +1,47 @@
+{
+  "scenario_id": "information_technology_product-cs-11709",
+  "title": "Integration Failure with 3rd Party App",
+  "description": "A customer reports that the integration with a third-party application (e.g., Salesforce) has stopped syncing.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Technical Troubleshooting",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the integration logs for connection errors.",
+      "expected_outcome": "Agent finds 'Authentication Failure' errors in the logs.",
+      "required_tools": [
+        "get_integration_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Hypothesize that the API key or password for the third-party app has expired or been changed.",
+      "expected_outcome": "Agent correctly identifies the likely root cause.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Guide the customer to re-authenticate the integration by entering their current credentials for the third-party app.",
+      "expected_outcome": "Agent provides clear instructions that resolve the syncing issue.",
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-rs-13152",
+  "title": "Assemble a Listing Presentation",
+  "description": "An agent is meeting a potential seller and needs to prepare a listing presentation to win their business.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Property Listing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare a Comparative Market Analysis (CMA) for the seller's property.",
+      "expected_outcome": "A detailed CMA report is generated.",
+      "required_tools": [
+        "generate_cma_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Prepare a marketing plan outlining how the property will be advertised (e.g., online, social media, print).",
+      "expected_outcome": "A customized marketing plan is created for the specific property.",
+      "required_tools": [
+        "generate_marketing_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Combine the CMA, marketing plan, and agent's resume into a single presentation deck.",
+      "expected_outcome": "A professional slide deck is assembled, ready for the client meeting.",
+      "required_tools": [
+        "create_presentation_deck"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

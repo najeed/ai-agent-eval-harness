@@ -1,0 +1,54 @@
+{
+  "scenario_id": "og-up-12777",
+  "title": "Plan Subsea Well Intervention",
+  "description": "A subsea engineer plans an intervention on a subsea well using a remotely operated vehicle (ROV) to replace a faulty sensor.",
+  "use_case": "Upstream",
+  "core_function": "Asset & Maintenance Management",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the faulty sensor and the specific ROV tooling required to replace it.",
+      "expected_outcome": "The correct replacement part and ROV tools are identified.",
+      "required_tools": [
+        "get_subsea_well_schematic",
+        "get_rov_tool_catalog"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Develop a detailed, step-by-step procedure for the ROV to perform the replacement operation.",
+      "expected_outcome": "A safe and efficient work procedure is written.",
+      "required_tools": [
+        "write_rov_procedure"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_completeness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book a vessel with an ROV and schedule the intervention in the offshore operational plan.",
+      "expected_outcome": "The vessel and crew are booked, and the job is added to the 90-day plan.",
+      "required_tools": [
+        "book_support_vessel",
+        "update_operational_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-pm-13117",
+  "title": "Address Tenant Noise Complaint",
+  "description": "A tenant emails to complain about a noisy neighbor's late-night parties. The PM must address the issue.",
+  "use_case": "Property Management",
+  "core_function": "Leasing & Tenant Relations",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge receipt of the complaining tenant's email and thank them for the information.",
+      "expected_outcome": "A professional and empathetic email response is sent to the tenant who made the complaint.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the lease agreement for the accused tenant, specifically the 'quiet enjoyment' clause.",
+      "expected_outcome": "Agent confirms the relevant lease clause regarding noise.",
+      "required_tools": [
+        "get_lease_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a formal 'Lease Violation Warning' notice to the tenant accused of being noisy.",
+      "expected_outcome": "A standard warning notice is generated and sent, and the action is logged in both tenants' communication logs.",
+      "required_tools": [
+        "send_legal_notice",
+        "log_communication"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

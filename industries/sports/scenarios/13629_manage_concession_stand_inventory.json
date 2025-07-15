@@ -1,0 +1,53 @@
+{
+  "scenario_id": "sports-fe-13629",
+  "title": "Manage Concession Stand Inventory",
+  "description": "During a game, a concession stand is running low on hot dog buns. An agent needs to request more from the central storeroom.",
+  "use_case": "Fan Engagement & Ticketing",
+  "core_function": "Merchandise & Concessions",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a low inventory alert from the concession stand's point-of-sale system.",
+      "expected_outcome": "Agent is alerted that 'hot dog buns' are low at stand 101.",
+      "required_tools": [
+        "get_pos_inventory_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the inventory level in the central storeroom.",
+      "expected_outcome": "Agent confirms there are more hot dog buns in the main storeroom.",
+      "required_tools": [
+        "check_storeroom_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a restocking request and dispatch a staff member to deliver the buns to the concession stand.",
+      "expected_outcome": "Agent successfully creates and dispatches the restocking order.",
+      "required_tools": [
+        "create_restocking_request",
+        "dispatch_event_staff"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

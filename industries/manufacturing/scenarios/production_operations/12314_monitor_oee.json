@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-po-12314",
+  "title": "Monitor Overall Equipment Effectiveness (OEE)",
+  "description": "A plant manager wants to review the OEE score for the main assembly line for the previous day.",
+  "use_case": "Production & Operations",
+  "core_function": "Real-time Monitoring & Control",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the assembly line and the desired date range for the OEE report.",
+      "expected_outcome": "Agent selects 'Assembly Line 1' and yesterday's date.",
+      "required_tools": [
+        "get_oee_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the OEE score and its components (Availability, Performance, Quality).",
+      "expected_outcome": "Agent retrieves the report showing an OEE of 75% (90% Availability, 95% Performance, 88% Quality).",
+      "required_tools": [
+        "get_oee_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_presentation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Drill down into the largest loss factor, which is Quality, to see the main reasons for defects.",
+      "expected_outcome": "Agent identifies that 'surface scratches' were the primary quality defect recorded.",
+      "required_tools": [
+        "get_quality_loss_reasons"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

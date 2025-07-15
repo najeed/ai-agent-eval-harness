@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-res-13240",
+  "title": "Manage a Multiple Offer Situation",
+  "description": "A seller has received three offers on their property. The agent must organize the offers and present them to the seller.",
+  "use_case": "Residential Sales",
+  "core_function": "Offer & Transaction Coordination",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive and log all three offers, noting the price, terms, and contingencies of each.",
+      "expected_outcome": "Agent accurately records the key details of each offer.",
+      "required_tools": [
+        "log_offer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a comparison spreadsheet or summary sheet to easily compare the offers side-by-side.",
+      "expected_outcome": "Agent generates a clear, easy-to-understand comparison for the seller.",
+      "required_tools": [
+        "generate_offer_comparison_sheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Advise the seller on the strengths and weaknesses of each offer and help them decide whether to accept one or send out multiple counter-offers.",
+      "expected_outcome": "Agent provides strategic advice to help the seller navigate the situation.",
+      "required_tools": [
+        "provide_strategic_advice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

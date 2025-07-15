@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-cp-12039",
+  "title": "Update a Live Blog",
+  "description": "During a developing news event (like an election night), an editor must continuously update a live blog with the latest information from reporters.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Publishing & CMS Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor internal communication channels (e.g., Slack) for updates from field reporters.",
+      "expected_outcome": "Agent is aware of all incoming information.",
+      "required_tools": [
+        "communication_platform"
+      ],
+      "success_criteria": [
+        {
+          "metric": "situational_awareness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Quickly write a short, clear update for each new piece of information.",
+      "expected_outcome": "New information is turned into a blog post format.",
+      "required_tools": [
+        "cms_live_blog_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Publish the update to the live blog, ensuring the newest posts appear at the top.",
+      "expected_outcome": "The live blog is kept current with the latest developments.",
+      "required_tools": [
+        "cms_live_blog_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "timeliness_of_updates",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

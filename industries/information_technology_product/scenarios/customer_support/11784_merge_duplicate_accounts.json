@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_product-cs-11784",
+  "title": "Merge Duplicate User Accounts",
+  "description": "A user accidentally signed up twice with two different email addresses and wants to merge their accounts.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Account & Billing Support",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the two accounts the user wants to merge.",
+      "expected_outcome": "Agent locates both user accounts in the system.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain the merge process, including which email address will become the primary and that data will be combined.",
+      "expected_outcome": "Agent sets clear expectations for the merge process.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Execute the account merge tool, selecting one account as the primary and the other to be merged and deactivated.",
+      "expected_outcome": "Agent successfully merges the two accounts into one.",
+      "required_tools": [
+        "merge_accounts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

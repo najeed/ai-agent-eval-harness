@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-ps-11886",
+  "title": "Deployment - Configure New Firewall",
+  "description": "As part of a firewall replacement project, a technician needs to configure the new firewall.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Technology Deployment & Migration",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the discovery documentation to understand all the required firewall rules, VPN tunnels, and network segments.",
+      "expected_outcome": "The technician has a complete list of configuration requirements.",
+      "required_tools": [
+        "get_client_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Configure the new firewall with all the required settings in a staging environment.",
+      "expected_outcome": "The firewall is fully configured before being deployed.",
+      "required_tools": [
+        "configure_firewall"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the final configuration and prepare for the physical installation.",
+      "expected_outcome": "The configuration is backed up and ready for deployment.",
+      "required_tools": [
+        "backup_firewall_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

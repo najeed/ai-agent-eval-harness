@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-im-11862",
+  "title": "Server & Network - Investigate High Server CPU",
+  "description": "An RMM alert indicates a client's remote desktop server has had sustained 100% CPU usage for over an hour.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Server & Network Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Connect to the server and open Task Manager to view running processes.",
+      "expected_outcome": "Technician connects to the server.",
+      "required_tools": [
+        "connect_to_server"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify a specific user's session and a particular application process that is consuming all the CPU.",
+      "expected_outcome": "A 'runaway' process is identified as the root cause.",
+      "required_tools": [
+        "get_running_processes"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "End the runaway process and contact the user to inform them.",
+      "expected_outcome": "Server CPU usage returns to normal, and the issue is resolved.",
+      "required_tools": [
+        "end_process"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

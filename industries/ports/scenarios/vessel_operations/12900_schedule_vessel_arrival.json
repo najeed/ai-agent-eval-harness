@@ -1,0 +1,54 @@
+{
+  "scenario_id": "ports-vo-12900",
+  "title": "Schedule a Vessel Arrival",
+  "description": "A shipping agent requests a berth for an incoming container vessel. The port scheduler must find an available berth and time slot.",
+  "use_case": "Vessel Operations",
+  "core_function": "Berth & Pilotage Management",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the vessel nomination, including ETA, vessel size (LOA, beam), and cargo details.",
+      "expected_outcome": "Operator correctly identifies the vessel 'MSC London' and its specifications.",
+      "required_tools": [
+        "get_vessel_nomination"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the berth schedule for availability based on vessel size and requested ETA.",
+      "expected_outcome": "Operator finds an open slot at Berth 5 that can accommodate the vessel's size.",
+      "required_tools": [
+        "check_berth_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Allocate the berth, schedule pilot and tug services, and send confirmation to the agent.",
+      "expected_outcome": "Berth 5 is allocated, services are booked, and a confirmation is sent.",
+      "required_tools": [
+        "allocate_berth",
+        "schedule_pilot_tugs",
+        "send_confirmation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

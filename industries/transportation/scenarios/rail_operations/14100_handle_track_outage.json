@@ -1,0 +1,67 @@
+{
+  "scenario_id": "tr-ro-14100",
+  "title": "Handle a Major Track Outage",
+  "description": "A bridge washout has closed a main rail line for an extended period. A manager must re-route all affected trains.",
+  "use_case": "Rail Operations",
+  "core_function": "Network Control & Dispatch",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Log the track outage in the system for a specific segment of the network.",
+      "expected_outcome": "The main line is marked as out-of-service.",
+      "required_tools": [
+        "block_track_segment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify all trains that were scheduled to use that track segment.",
+      "expected_outcome": "A list of affected trains is generated.",
+      "required_tools": [
+        "find_trains_by_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "For each affected train, find a viable detour route, potentially using trackage rights on another railroad's lines.",
+      "expected_outcome": "New, longer routes are found for all trains.",
+      "required_tools": [
+        "find_detour_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the schedule and routing for each train and notify the crews of their new instructions.",
+      "expected_outcome": "All affected trains are re-routed to bypass the outage.",
+      "required_tools": [
+        "update_train_route",
+        "send_crew_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

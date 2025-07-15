@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-ro-14032",
+  "title": "Manage Crew Rest Periods",
+  "description": "A crew dispatcher must ensure that a train crew does not violate federally mandated rest period rules.",
+  "use_case": "Rail Operations",
+  "core_function": "Train & Crew Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the duty history for a crew being considered for a new assignment.",
+      "expected_outcome": "Agent retrieves the crew's work history for the last 7 days.",
+      "required_tools": [
+        "get_crew_duty_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system automatically calculates the crew's available work hours before they must begin a mandatory rest period.",
+      "expected_outcome": "The system shows the crew has 6 hours of duty time left.",
+      "required_tools": [
+        "calculate_crew_rest_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the available hours to the estimated trip time for the new assignment.",
+      "expected_outcome": "The agent sees the trip is estimated to take 8 hours, meaning this crew cannot legally complete it.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Select a different, fully-rested crew for the assignment.",
+      "expected_outcome": "A compliant crew is assigned to the train.",
+      "required_tools": [
+        "assign_crew_to_train"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

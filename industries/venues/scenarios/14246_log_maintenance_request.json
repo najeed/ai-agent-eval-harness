@@ -1,0 +1,64 @@
+{
+  "scenario_id": "venues-vo-14246",
+  "title": "Log a Facility Maintenance Request",
+  "description": "An usher notices a broken armrest on a seat and reports it.",
+  "use_case": "Venue Operations & Logistics",
+  "core_function": "Housekeeping & Maintenance",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the exact location of the broken seat (section, row, seat number).",
+      "expected_outcome": "Agent records the precise location.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new work order in the facility maintenance system.",
+      "expected_outcome": "Agent successfully creates a new maintenance ticket.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Describe the issue ('broken armrest') and set the priority to 'Low'.",
+      "expected_outcome": "Agent adds the details and priority to the work order.",
+      "required_tools": [
+        "update_work_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Assign the work order to the general maintenance crew's queue.",
+      "expected_outcome": "Agent routes the ticket to the correct team.",
+      "required_tools": [
+        "assign_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

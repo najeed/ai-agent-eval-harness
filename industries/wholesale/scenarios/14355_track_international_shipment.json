@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-sp-14355",
+  "title": "Track an International Shipment",
+  "description": "A manager needs to track the status of a critical international shipment from a supplier in Asia.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Inbound Logistics",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the purchase order and get the container number or bill of lading.",
+      "expected_outcome": "Agent has the necessary tracking information.",
+      "required_tools": [
+        "get_purchase_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Track the ocean freight to see the vessel's location and estimated arrival at port.",
+      "expected_outcome": "Agent finds the vessel is scheduled to arrive at the port in 3 days.",
+      "required_tools": [
+        "track_ocean_freight"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the status of the customs clearance.",
+      "expected_outcome": "Agent confirms that all customs paperwork has been pre-filed and is in good order.",
+      "required_tools": [
+        "check_customs_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

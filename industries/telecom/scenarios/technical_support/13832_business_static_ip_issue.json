@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-ts-13832",
+  "title": "Advanced Diagnostics - Static IP Not Routing",
+  "description": "A business customer reports that the static IP address for their server is unreachable from the internet.",
+  "use_case": "Technical Support",
+  "core_function": "Advanced Diagnostics",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the static IP address assigned to the customer's account.",
+      "expected_outcome": "Agent confirms the correct static IP address.",
+      "required_tools": [
+        "get_service_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the routing configuration in the core network for the customer's static IP.",
+      "expected_outcome": "Agent finds that the route for the static IP is not correctly propagated.",
+      "required_tools": [
+        "check_core_routing_tables"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Escalate the issue to the IP engineering team to correct the routing configuration.",
+      "expected_outcome": "Agent creates a high-priority ticket with all relevant details for the IP engineering team.",
+      "required_tools": [
+        "create_trouble_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-12122",
+  "title": "Manage an IP Portfolio",
+  "description": "An IP paralegal needs to review a client's trademark portfolio to identify upcoming renewal deadlines.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Intellectual Property (IP) Management",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the client's IP portfolio in the management software.",
+      "expected_outcome": "Agent retrieves the list of all trademarks.",
+      "required_tools": [
+        "ip_management_software_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Filter the portfolio to show all trademarks with a renewal deadline in the next 6 months.",
+      "expected_outcome": "Agent generates a list of upcoming deadlines.",
+      "required_tools": [
+        "ip_management_software_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a report of the upcoming deadlines for the supervising attorney and the client.",
+      "expected_outcome": "Agent produces a clear report to ensure no deadlines are missed.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

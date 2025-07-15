@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-cm-11865",
+  "title": "SLA Reporting - Patch Compliance",
+  "description": "An account manager needs to generate a report for a client demonstrating patch compliance for all their managed servers.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Service Level Agreement (SLA) & Reporting",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use the RMM tool to generate a patch compliance report for all the client's servers.",
+      "expected_outcome": "A report is generated showing which patches are installed or missing on each server.",
+      "required_tools": [
+        "generate_patch_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the report to calculate the overall compliance percentage.",
+      "expected_outcome": "The analysis shows that 98% of all applicable patches are installed.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the report to the client.",
+      "expected_outcome": "The client receives the compliance report.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ue-13584",
+  "title": "Forecast Energy Production from Solar Farm",
+  "description": "A grid operator needs a forecast of the expected energy production from the city's main solar farm for the next day to plan other generation.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Smart Grid & Energy Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the next day's weather forecast, specifically cloud cover and solar irradiance levels.",
+      "expected_outcome": "Agent gets the necessary weather data.",
+      "required_tools": [
+        "get_weather_forecast"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Input the weather forecast into the solar production forecasting model.",
+      "expected_outcome": "The system runs the prediction model.",
+      "required_tools": [
+        "run_solar_forecasting_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate an hour-by-hour forecast of the solar farm's expected megawatt output for the next 24 hours.",
+      "expected_outcome": "Agent provides the grid operator with an actionable energy forecast.",
+      "required_tools": [
+        "generate_energy_forecast_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

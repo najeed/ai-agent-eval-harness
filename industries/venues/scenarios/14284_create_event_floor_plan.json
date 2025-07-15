@@ -1,0 +1,67 @@
+{
+  "scenario_id": "venues-em-14284",
+  "title": "Create an Event Floor Plan",
+  "description": "An event planner is working with a client to design the floor plan for a trade show with 50 exhibitor booths.",
+  "use_case": "Event Management & Booking",
+  "core_function": "Event Planning & Coordination",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Open the venue's floor plan design software for the main exhibition hall.",
+      "expected_outcome": "Agent loads the correct template.",
+      "required_tools": [
+        "open_floor_plan_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add 50 standard 10x10 foot booths to the floor plan, ensuring proper spacing for aisles.",
+      "expected_outcome": "Agent lays out the booths according to fire code and accessibility standards.",
+      "required_tools": [
+        "add_elements_to_floor_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "design_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add other elements like the registration desk, a food court area, and restrooms.",
+      "expected_outcome": "Agent completes the detailed floor plan.",
+      "required_tools": [
+        "add_elements_to_floor_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "design_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Save the floor plan and share it with the client for their approval.",
+      "expected_outcome": "Agent sends a PDF of the floor plan to the client.",
+      "required_tools": [
+        "save_floor_plan",
+        "send_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ae-12042",
+  "title": "Repurpose an Article as a Video Script",
+  "description": "A popular article is being turned into a short video. An editor needs to adapt the text into a script suitable for narration.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Archive Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the original article from the archive.",
+      "expected_outcome": "Agent has the source text.",
+      "required_tools": [
+        "get_archived_article"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Rewrite the article in a more conversational tone, suitable for being spoken aloud.",
+      "expected_outcome": "A new, more conversational script is drafted.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_style_appropriateness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Break the script into short segments and add visual cues for the video editor (e.g., '[B-roll of traffic]').",
+      "expected_outcome": "The script is formatted for video production.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

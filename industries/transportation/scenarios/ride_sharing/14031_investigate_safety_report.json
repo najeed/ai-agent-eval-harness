@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-rs-14031",
+  "title": "Investigate a Rider's Safety Report",
+  "description": "A rider submits a report claiming their driver was driving erratically. A trust and safety agent must investigate.",
+  "use_case": "Ride-Sharing & On-Demand Mobility",
+  "core_function": "Safety & Incident Response",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the safety report and retrieve the details of the associated trip.",
+      "expected_outcome": "Agent accesses the trip record and the rider's complaint.",
+      "required_tools": [
+        "get_safety_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the telematics data for the trip, including speed, acceleration, and braking events.",
+      "expected_outcome": "Agent analyzes the sensor data from the driver's phone.",
+      "required_tools": [
+        "get_trip_telematics_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The data shows several hard braking events and speeding relative to the posted limit, corroborating the rider's report.",
+      "expected_outcome": "The agent finds evidence to support the claim.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Temporarily suspend the driver's account pending a direct conversation and potential retraining.",
+      "expected_outcome": "The agent takes immediate action to mitigate risk by suspending the driver.",
+      "required_tools": [
+        "update_driver_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

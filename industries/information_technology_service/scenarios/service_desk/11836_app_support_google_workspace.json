@@ -1,0 +1,46 @@
+{
+  "scenario_id": "information_technology_service-sd-11836",
+  "title": "Application Support - Google Workspace Sync Issue",
+  "description": "A user reports that their Google Drive is not syncing files from their desktop.",
+  "use_case": "Service Desk & End-User Support",
+  "core_function": "Application Support",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the Google Workspace status dashboard for any known issues.",
+      "expected_outcome": "The technician confirms there are no widespread issues with Google Drive.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Guide the user to pause and resume syncing in the Google Drive desktop client.",
+      "expected_outcome": "This simple step does not resolve the issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the user to sign out of the Google Drive client, and then sign back in to force a re-authentication and re-sync.",
+      "expected_outcome": "This action resolves the sync issue, and files begin syncing correctly.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

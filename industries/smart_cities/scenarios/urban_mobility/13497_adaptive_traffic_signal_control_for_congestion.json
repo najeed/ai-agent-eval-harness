@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-um-13497",
+  "title": "Adaptive Traffic Signal Control for Congestion",
+  "description": "An operator needs to respond to a sudden traffic jam on a major arterial road by adjusting traffic signal timing.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "Traffic Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge an alert for unusually high traffic volume on 'Main Street Corridor'.",
+      "expected_outcome": "Agent identifies the congested area from the traffic monitoring system.",
+      "required_tools": [
+        "get_traffic_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze real-time traffic flow and queue length data for the affected intersections.",
+      "expected_outcome": "Agent confirms a bottleneck at the intersection of Main St and 5th Ave.",
+      "required_tools": [
+        "get_traffic_flow_data",
+        "get_intersection_queue_length"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Activate the 'Congestion Relief' signal timing plan for the affected corridor to prioritize flow on Main Street.",
+      "expected_outcome": "Agent successfully applies the new timing plan to the traffic signals.",
+      "required_tools": [
+        "set_traffic_signal_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

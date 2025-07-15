@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-maint-12646",
+  "title": "Manage Haul Truck Tire Performance",
+  "description": "A tire specialist monitors the condition of haul truck tires to maximize their lifespan and avoid premature failures.",
+  "use_case": "Maintenance & Asset Management",
+  "core_function": "Asset Strategy & Planning",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve real-time data from the tire pressure monitoring system (TPMS) for the entire truck fleet.",
+      "expected_outcome": "A dashboard shows the current pressure and temperature of every tire.",
+      "required_tools": [
+        "get_tpms_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Receive an alert for a tire on truck HT-25 that is running hot and losing pressure.",
+      "expected_outcome": "The specialist acknowledges the alert, which indicates a potential problem.",
+      "required_tools": [
+        "get_fms_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "response_time_minutes",
+          "threshold": 5
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the mine dispatcher to route the truck to the workshop immediately for a tire change to prevent a blowout.",
+      "expected_outcome": "The truck is safely routed to the workshop, and a potentially dangerous tire failure is averted.",
+      "required_tools": [
+        "send_instruction_to_dispatcher"
+      ],
+      "success_criteria": [
+        {
+          "metric": "risk_management_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

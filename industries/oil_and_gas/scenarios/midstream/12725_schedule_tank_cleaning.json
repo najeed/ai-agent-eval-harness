@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-mid-12725",
+  "title": "Schedule Storage Tank Cleaning",
+  "description": "A terminal manager schedules a crude oil storage tank to be taken out of service for inspection and cleaning, as required by regulation.",
+  "use_case": "Midstream",
+  "core_function": "Terminal & Storage Management",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the inspection and cleaning history for tank TK-105 to confirm it is due for service.",
+      "expected_outcome": "The system confirms the tank is due for its 10-year inspection.",
+      "required_tools": [
+        "get_asset_maintenance_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Coordinate with schedulers to empty the tank and plan for the inventory to be rerouted to other tanks.",
+      "expected_outcome": "A plan is in place to manage inventory during the tank outage.",
+      "required_tools": [
+        "create_inventory_movement_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_effectiveness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for the tank cleaning and inspection and schedule a specialized contractor.",
+      "expected_outcome": "A work order is created, and the contractor is officially scheduled for the job.",
+      "required_tools": [
+        "create_maintenance_work_order",
+        "schedule_contractor"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

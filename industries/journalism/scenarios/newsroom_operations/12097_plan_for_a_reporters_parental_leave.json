@@ -1,0 +1,51 @@
+{
+  "scenario_id": "journalism-no-12097",
+  "title": "Plan for a Reporter's Parental Leave",
+  "description": "A reporter is going on parental leave for three months. Their editor must plan to reassign their beat and ongoing stories.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Assignment & Workflow",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Meet with the departing reporter to get a full list of their stories and sources.",
+      "expected_outcome": "The editor has a complete handover document.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "comprehensiveness_of_information",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify other reporters on the team who have the expertise and bandwidth to cover the beat temporarily.",
+      "expected_outcome": "A suitable replacement reporter is identified.",
+      "required_tools": [
+        "get_reporter_schedules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Formally reassign the beat and transition the ongoing stories to the new reporter.",
+      "expected_outcome": "The coverage is seamlessly transitioned.",
+      "required_tools": [
+        "assign_story",
+        "newsroom_management_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-go-12981",
+  "title": "Manage Rail Car Inspection",
+  "description": "Before a train is loaded, each empty rail car must be inspected for damage or debris.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Rail Operations",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A train arrives, and a work order is generated to inspect all its cars.",
+      "expected_outcome": "A new inspection work order is created in the system.",
+      "required_tools": [
+        "create_inspection_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch a team of inspectors to walk the length of the train.",
+      "expected_outcome": "The inspection team is assigned the job.",
+      "required_tools": [
+        "dispatch_inspection_team"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The inspectors check each car and report its status (OK, Damaged, Dirty). Any cars that fail inspection are flagged and not loaded.",
+      "expected_outcome": "The inspectors log their findings, flagging one car as 'Damaged'. The system prevents any container from being planned onto that car.",
+      "required_tools": [
+        "log_inspection_results",
+        "update_asset_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

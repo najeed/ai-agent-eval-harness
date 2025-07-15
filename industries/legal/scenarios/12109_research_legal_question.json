@@ -1,0 +1,62 @@
+{
+  "scenario_id": "legal-ldr-12109",
+  "title": "Research a Specific Legal Question",
+  "description": "An associate needs to research case law to answer a specific question: 'What constitutes 'reasonable accommodation' for a religious practice under Title VII in the 9th Circuit?'",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Legal Research & Writing",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Formulate a search query for a legal research database like Westlaw or LexisNexis.",
+      "expected_outcome": "Agent creates an effective search query using Boolean operators and relevant keywords.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute the search, filtering for cases within the 9th Circuit Court of Appeals.",
+      "expected_outcome": "Agent retrieves a list of relevant cases.",
+      "required_tools": [
+        "legal_research_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the top 5-10 cases to synthesize a rule and identify the key factors the court considers.",
+      "expected_outcome": "Agent identifies the legal test and factors used by the court.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Draft a research memo summarizing the findings, citing the key cases.",
+      "expected_outcome": "Agent produces a memo that directly answers the partner's question.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

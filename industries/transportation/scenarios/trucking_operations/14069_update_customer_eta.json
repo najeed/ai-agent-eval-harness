@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tr-to-14069",
+  "title": "Update Customer with Revised ETA",
+  "description": "A driver is delayed by weather. The dispatcher must provide the customer with a new estimated time of arrival (ETA).",
+  "use_case": "Trucking & Freight Operations",
+  "core_function": "Dispatch & Load Management",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The driver reports a delay due to a snowstorm.",
+      "expected_outcome": "The dispatcher logs the delay reason.",
+      "required_tools": [
+        "log_delay_reason"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system recalculates the ETA based on the driver's current location and the reduced speed.",
+      "expected_outcome": "A new, later ETA is generated.",
+      "required_tools": [
+        "recalculate_eta"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The dispatcher sends an automated notification to the customer with the revised ETA.",
+      "expected_outcome": "The customer is proactively informed of the delay.",
+      "required_tools": [
+        "send_customer_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

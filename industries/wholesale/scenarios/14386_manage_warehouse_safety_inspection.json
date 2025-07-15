@@ -1,0 +1,50 @@
+{
+  "scenario_id": "wholesale-im-14386",
+  "title": "Manage a Warehouse Safety Inspection",
+  "description": "A warehouse manager needs to conduct a routine safety inspection.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Inventory Control",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use a digital checklist to inspect the warehouse for potential safety hazards (e.g., blocked aisles, unsafe stacking).",
+      "expected_outcome": "The manager completes the inspection checklist on a tablet.",
+      "required_tools": [
+        "conduct_safety_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify any safety violations.",
+      "expected_outcome": "The inspection identifies a pallet that is stacked too high.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a corrective action task for the identified violation and assign it to a warehouse worker.",
+      "expected_outcome": "Agent creates a task for a worker to restack the pallet safely.",
+      "required_tools": [
+        "create_corrective_action_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

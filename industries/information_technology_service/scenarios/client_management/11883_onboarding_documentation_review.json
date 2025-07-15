@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-cm-11883",
+  "title": "Client Onboarding - Final Documentation Review",
+  "description": "Before handing a new client over to the service desk, the onboarding team conducts a final review of all documentation.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Client Onboarding",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review all configurations in the central documentation system for completeness and accuracy.",
+      "expected_outcome": "The team reviews network diagrams, credentials, procedures, and contact lists.",
+      "required_tools": [
+        "get_client_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify any missing information and work to get it before the handover.",
+      "expected_outcome": "The team finds that the ISP account number is missing and obtains it from the client.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Formally sign off on the onboarding, making the client 'live' for the service desk.",
+      "expected_outcome": "The onboarding process is completed.",
+      "required_tools": [
+        "update_client_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

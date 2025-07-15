@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-13133",
+  "title": "Conduct Semi-Annual Preventive Maintenance Check",
+  "description": "The PM needs to schedule and document a semi-annual preventive maintenance inspection for a property.",
+  "use_case": "Property Management",
+  "core_function": "Maintenance & Vendor Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Notify the tenant of the upcoming inspection, providing at least 24 hours' notice.",
+      "expected_outcome": "A formal 'Notice of Entry' is generated and sent to the tenant.",
+      "required_tools": [
+        "send_legal_notice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Using a checklist, inspect key items like smoke detectors, HVAC filters, and look for signs of leaks.",
+      "expected_outcome": "Agent completes a preventive maintenance checklist for the unit.",
+      "required_tools": [
+        "complete_inspection_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If any issues are found (e.g., dirty HVAC filter), create a work order to address them.",
+      "expected_outcome": "A new work order is created to replace the HVAC filter.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

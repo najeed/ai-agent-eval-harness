@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_product-ps-11752",
+  "title": "Troubleshoot Custom Integration Error",
+  "description": "A custom API integration built by the professional services team is failing with an authorization error.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Custom Integration & Development",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the integration's execution logs to find the specific error.",
+      "expected_outcome": "Consultant finds a '403 Forbidden' error in the logs.",
+      "required_tools": [
+        "get_integration_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the permissions of the API key being used by the integration.",
+      "expected_outcome": "Consultant discovers the API key lacks the required 'write' permission for the endpoint it's trying to access.",
+      "required_tools": [
+        "get_api_key_permissions"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a new API key with the correct permissions and update the integration script.",
+      "expected_outcome": "Consultant resolves the issue by correcting the permissions.",
+      "required_tools": [
+        "create_api_key",
+        "update_integration_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

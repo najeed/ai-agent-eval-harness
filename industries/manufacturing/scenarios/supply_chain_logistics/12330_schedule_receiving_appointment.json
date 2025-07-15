@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mfg-sl-12330",
+  "title": "Schedule a Receiving Appointment",
+  "description": "A supplier needs to schedule a delivery appointment for a large shipment arriving next week.",
+  "use_case": "Supply Chain & Logistics",
+  "core_function": "Inbound & Receiving",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Access the warehouse's receiving dock calendar.",
+      "expected_outcome": "Agent opens the scheduling tool for the receiving department.",
+      "required_tools": [
+        "get_receiving_dock_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find an available time slot for the specified date and shipment size.",
+      "expected_outcome": "Agent identifies an open 2-hour slot on the requested day.",
+      "required_tools": [
+        "find_available_dock_slot"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Book the appointment and send a confirmation to the supplier.",
+      "expected_outcome": "Agent successfully schedules the appointment and a confirmation email is sent.",
+      "required_tools": [
+        "book_dock_appointment",
+        "send_supplier_confirmation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

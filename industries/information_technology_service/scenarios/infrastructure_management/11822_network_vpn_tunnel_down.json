@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-im-11822",
+  "title": "Server & Network - VPN Tunnel Down",
+  "description": "An automated alert indicates that a site-to-site VPN tunnel between a client's office and their Azure environment is down.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Server & Network Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the status of the VPN gateway in the Azure portal.",
+      "expected_outcome": "The Azure portal shows the gateway is active and connected.",
+      "required_tools": [
+        "get_azure_vpn_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Log in to the client's on-premise firewall and check the VPN logs.",
+      "expected_outcome": "The firewall logs show a 'Phase 2 Mismatch' error, indicating a configuration problem.",
+      "required_tools": [
+        "get_firewall_logs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Correct the misconfigured VPN policy on the on-premise firewall and restart the tunnel.",
+      "expected_outcome": "The VPN tunnel successfully re-establishes its connection.",
+      "required_tools": [
+        "update_firewall_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "scenario_id": "wholesale-cr-14352",
+  "title": "Provide Product Training Materials to a Retailer",
+  "description": "A retailer's staff needs access to training materials for a wholesaler's products.",
+  "use_case": "Customer & Retailer Support",
+  "core_function": "Retailer Onboarding & Training",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a request from a retailer for training materials.",
+      "expected_outcome": "Agent understands the retailer's need.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Provide the retailer with a link to the online training portal, which contains videos and guides.",
+      "expected_outcome": "Agent sends the retailer the link to the training resources.",
+      "required_tools": [
+        "get_training_portal_link"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up user accounts for the retailer's staff so they can access the portal.",
+      "expected_outcome": "Agent successfully creates the user accounts.",
+      "required_tools": [
+        "create_portal_user"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

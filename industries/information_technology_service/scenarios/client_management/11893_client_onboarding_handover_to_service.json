@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-cm-11893",
+  "title": "Client Onboarding - Handover to Service Desk",
+  "description": "The onboarding project for a new client is complete, and a formal handover meeting is held with the service desk team.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Client Onboarding",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The onboarding project manager schedules the handover meeting.",
+      "expected_outcome": "Meeting is scheduled.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the meeting, the onboarding team walks the service desk team through the client's environment, documentation, and any special procedures.",
+      "expected_outcome": "The service desk team is fully briefed on the new client.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The client's status in the PSA is officially changed to 'Managed', and they are now supported by the service desk.",
+      "expected_outcome": "The handover is complete.",
+      "required_tools": [
+        "update_client_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

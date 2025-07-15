@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-sb-13576",
+  "title": "Investigate Bridge Over-Height Vehicle Alert",
+  "description": "Sensors on a low-clearance bridge detect a vehicle that is too tall to pass safely. An operator must intervene.",
+  "use_case": "Smart Buildings & Infrastructure",
+  "core_function": "Structural Health Monitoring",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an 'Over-Height Vehicle' alert from the 'Old Mill Bridge' sensor system.",
+      "expected_outcome": "Agent acknowledges the immediate traffic hazard alert.",
+      "required_tools": [
+        "get_structural_health_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately activate the flashing warning lights and the 'Turn Back Now' dynamic message sign on the approach to the bridge.",
+      "expected_outcome": "Agent activates the warning systems to stop the truck.",
+      "required_tools": [
+        "activate_warning_lights",
+        "update_dynamic_message_sign"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a police unit to the location to assist the truck in turning around safely.",
+      "expected_outcome": "Agent sends police to manage the traffic situation.",
+      "required_tools": [
+        "dispatch_emergency_unit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

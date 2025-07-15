@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-no-12065",
+  "title": "Arrange for a Press Pass",
+  "description": "A reporter needs a press pass to gain access to a secure event, like a political convention.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Resource Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the official media credential application form on the event organizer's website.",
+      "expected_outcome": "Agent locates the correct application form.",
+      "required_tools": [
+        "search_web"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Fill out the application with the reporter's details and the publication's information.",
+      "expected_outcome": "The application is filled out accurately.",
+      "required_tools": [
+        "fill_web_form"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Submit the application and any required supporting documents (e.g., a letter from the editor).",
+      "expected_outcome": "The credential application is successfully submitted.",
+      "required_tools": [
+        "submit_web_form",
+        "upload_file"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

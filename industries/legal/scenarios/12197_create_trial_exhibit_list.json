@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ldr-12197",
+  "title": "Create a Trial Exhibit List",
+  "description": "In preparation for trial, a paralegal needs to create a list of all exhibits the party intends to use.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Pleadings & Motions Practice",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Compile all potential trial exhibits.",
+      "expected_outcome": "Agent has a collection of all documents and physical evidence.",
+      "required_tools": [
+        "case_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a list with columns for Exhibit Number, a brief description, and whether it has been admitted into evidence.",
+      "expected_outcome": "Agent creates a structured exhibit list.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Populate the list with all the potential exhibits.",
+      "expected_outcome": "Agent produces a complete list to be exchanged with the court and opposing counsel.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

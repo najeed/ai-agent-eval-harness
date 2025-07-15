@@ -1,0 +1,50 @@
+{
+  "scenario_id": "legal-pm-12187",
+  "title": "Check Attorney CLE Compliance",
+  "description": "A firm administrator needs to check the Continuing Legal Education (CLE) compliance status for all attorneys in the firm ahead of the annual reporting deadline.",
+  "use_case": "Law Practice Management",
+  "core_function": "Conflicts & Ethics",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "For each attorney, access the state bar's online portal to check their reported CLE credits.",
+      "expected_outcome": "Agent retrieves the current credit status for each attorney.",
+      "required_tools": [
+        "state_bar_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the reported credits against the state's annual requirements, including any requirements for specific topics like ethics.",
+      "expected_outcome": "Agent identifies any attorneys who are deficient in their required credits.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a reminder email to any attorney who is not yet in compliance, notifying them of their remaining requirements and the deadline.",
+      "expected_outcome": "Agent proactively notifies attorneys who need to complete more CLE.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

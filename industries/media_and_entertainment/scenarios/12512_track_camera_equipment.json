@@ -1,0 +1,66 @@
+{
+  "scenario_id": "media-cp-12512",
+  "title": "Track Missing Camera Equipment",
+  "description": "A high-value camera lens is reported missing from a production set. An agent must track its last known location.",
+  "use_case": "Content Production & Management",
+  "core_function": "Asset Management & Logistics",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the missing lens by its asset tag in the asset management system.",
+      "expected_outcome": "Agent correctly identifies the specific lens.",
+      "required_tools": [
+        "find_asset_by_tag"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the asset's check-in/check-out history.",
+      "expected_outcome": "Agent finds the lens was last checked out by the second unit camera operator.",
+      "required_tools": [
+        "get_asset_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the production schedule to see where the second unit was filming on that day.",
+      "expected_outcome": "Agent determines the second unit was at the 'downtown alley' location.",
+      "required_tools": [
+        "get_production_schedule"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Notify the production manager and the second unit operator about the missing lens and its last known location.",
+      "expected_outcome": "Agent sends a clear and concise notification to the relevant parties.",
+      "required_tools": [
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

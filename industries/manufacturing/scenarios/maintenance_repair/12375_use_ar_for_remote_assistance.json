@@ -1,0 +1,50 @@
+{
+  "scenario_id": "mfg-mr-12375",
+  "title": "Use AR for Remote Assistance",
+  "description": "A junior technician is struggling with a complex repair and uses an Augmented Reality (AR) headset to get help from a senior expert.",
+  "use_case": "Maintenance & Repair",
+  "core_function": "Technical Documentation & Support",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Initiate a remote assistance call from the AR device.",
+      "expected_outcome": "The junior technician starts a video call with a remote expert.",
+      "required_tools": [
+        "start_ar_remote_assistance_call"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Share their point-of-view video stream with the remote expert.",
+      "expected_outcome": "The remote expert can see exactly what the on-site technician sees.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive on-screen annotations and instructions from the expert to guide the repair.",
+      "expected_outcome": "The expert draws circles and arrows on the screen to highlight the correct components, guiding the technician to a successful repair.",
+      "required_tools": [
+        "receive_ar_annotations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

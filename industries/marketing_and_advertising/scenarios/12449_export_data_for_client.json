@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-ar-12449",
+  "title": "Export Data for a Client",
+  "description": "A client has requested a raw data export of their campaign performance from the last month.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Performance Reporting",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the correct date range (last month) in the ad platform.",
+      "expected_outcome": "Agent sets the date range correctly.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Select all relevant performance columns to include in the export.",
+      "expected_outcome": "Agent chooses the columns for spend, clicks, impressions, etc.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Export the data as a CSV file.",
+      "expected_outcome": "Agent successfully downloads the requested raw data.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

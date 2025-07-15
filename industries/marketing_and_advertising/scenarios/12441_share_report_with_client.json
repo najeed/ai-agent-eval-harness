@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-ar-12441",
+  "title": "Share a Report with a Client",
+  "description": "An analyst has finalized a monthly report and needs to share it with the client.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Performance Reporting",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a shareable link for the report from the reporting tool.",
+      "expected_outcome": "Agent creates a link to the dashboard or report.",
+      "required_tools": [
+        "reporting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ensure the sharing settings are set to 'view only' to prevent the client from making edits.",
+      "expected_outcome": "Agent correctly configures the permissions for the link.",
+      "required_tools": [
+        "reporting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft an email to the client, including the link to the report and a brief summary of the results.",
+      "expected_outcome": "Agent writes and sends a clear, professional email to the client.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-go-14193",
+  "title": "Microgrid Islanding Operation",
+  "description": "During a wider grid outage, a community microgrid must safely disconnect from the main grid and operate independently to keep power on for its local customers.",
+  "use_case": "Grid Operations",
+  "core_function": "Distribution Automation",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The microgrid controller detects the loss of voltage from the main grid.",
+      "expected_outcome": "Controller identifies the start of an upstream outage.",
+      "required_tools": [
+        "detect_grid_outage"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The controller automatically opens the main switch, physically disconnecting the microgrid from the surrounding grid.",
+      "expected_outcome": "System successfully and safely islands the microgrid.",
+      "required_tools": [
+        "control_interconnection_switch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The controller starts the microgrid's generators and uses its batteries to form a stable, independent grid, restoring power to the local customers.",
+      "expected_outcome": "Microgrid successfully forms its own grid and maintains stable voltage and frequency.",
+      "required_tools": [
+        "manage_microgrid_resources"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

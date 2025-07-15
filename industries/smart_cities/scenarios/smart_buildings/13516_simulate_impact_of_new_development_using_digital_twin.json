@@ -1,0 +1,66 @@
+{
+  "scenario_id": "smartcities-sb-13516",
+  "title": "Simulate Impact of New Development Using Digital Twin",
+  "description": "A developer has proposed a new high-rise building. A city planner uses the digital twin to assess its impact on traffic and solar access.",
+  "use_case": "Smart Buildings & Infrastructure",
+  "core_function": "Digital Twin & Urban Planning",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Load the proposed building's 3D model into the city's digital twin at the specified location.",
+      "expected_outcome": "Agent successfully imports the new building model.",
+      "required_tools": [
+        "load_model_into_digital_twin"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a traffic simulation to model the impact of the new residents and office workers on the surrounding streets.",
+      "expected_outcome": "The simulation shows a 20% increase in congestion on an adjacent street.",
+      "required_tools": [
+        "run_traffic_simulation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "simulation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a shadow analysis to determine the building's impact on sunlight for a nearby public park.",
+      "expected_outcome": "The simulation shows the park will be in shadow for an additional 2 hours per day.",
+      "required_tools": [
+        "run_shadow_analysis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "simulation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a report with the simulation results to be included in the planning review.",
+      "expected_outcome": "Agent creates a summary report with key findings and visualizations.",
+      "required_tools": [
+        "generate_simulation_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "journalism-ri-12000",
+  "title": "Researching a Company for an Expos\u00e9",
+  "description": "A reporter is starting an investigation into a local company suspected of environmental violations and needs to gather initial background information.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Story Research & Development",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search public records for the company's corporate filings, permits, and any past fines or citations.",
+      "expected_outcome": "Agent retrieves a list of relevant legal and corporate documents.",
+      "required_tools": [
+        "search_public_records_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Scan news archives and social media for any previous reporting or public discussion about the company.",
+      "expected_outcome": "Agent compiles a summary of prior coverage and public sentiment.",
+      "required_tools": [
+        "search_news_archives",
+        "search_social_media"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehensiveness_of_summary",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify key executives and board members and search for their professional histories and potential conflicts of interest.",
+      "expected_outcome": "Agent creates a profile for each key person associated with the company.",
+      "required_tools": [
+        "search_professional_networks",
+        "search_public_records_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

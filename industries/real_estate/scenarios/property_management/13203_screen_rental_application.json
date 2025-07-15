@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-pm-13203",
+  "title": "Screen a Rental Application",
+  "description": "A prospective tenant has submitted an application for a rental unit. The agent must perform a background and credit check.",
+  "use_case": "Property Management",
+  "core_function": "Leasing & Marketing",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the new rental application from the system.",
+      "expected_outcome": "Agent correctly identifies the applicant and the property they applied for.",
+      "required_tools": [
+        "get_rental_application"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a credit check and criminal background check using the applicant's provided information.",
+      "expected_outcome": "Agent successfully runs the checks through an integrated service.",
+      "required_tools": [
+        "run_tenant_screening"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the screening report against the property's qualifying criteria (e.g., credit score > 650, no evictions) and approve or deny the application.",
+      "expected_outcome": "Agent makes an accurate decision based on the report and criteria.",
+      "required_tools": [
+        "update_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

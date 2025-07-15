@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-ps-11850",
+  "title": "Project Management - Get Milestone Sign-off",
+  "description": "A project manager needs to get formal client sign-off for a major project milestone before proceeding to the next phase.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Execution & Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare a milestone completion report demonstrating that all deliverables for the phase are complete.",
+      "expected_outcome": "A clear, detailed report is created.",
+      "required_tools": [
+        "generate_project_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the report and a formal sign-off form to the client.",
+      "expected_outcome": "The client receives the necessary documents.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive the signed form from the client and update the project plan to mark the milestone as complete.",
+      "expected_outcome": "The milestone is officially completed, and the next phase can begin.",
+      "required_tools": [
+        "update_project_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

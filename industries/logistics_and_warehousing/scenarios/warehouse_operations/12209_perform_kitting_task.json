@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-wo-12209",
+  "title": "Perform a Kitting Task",
+  "description": "An operator is assigned a work order to assemble a 'gift basket' kit from several individual items.",
+  "use_case": "Warehouse Operations",
+  "core_function": "Value-Added Services",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the kitting work order, which lists the component items and the quantity of kits to assemble.",
+      "expected_outcome": "Agent correctly identifies the components and target quantity.",
+      "required_tools": [
+        "get_kitting_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Pick the required quantities of all component items from their storage locations.",
+      "expected_outcome": "Agent gathers all necessary components at the kitting station.",
+      "required_tools": [
+        "create_internal_pick_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assemble the kits according to instructions, then report the completion of the work order.",
+      "expected_outcome": "Agent reports 50 kits assembled. The system deducts the component inventory and adds 50 units of the new kit SKU.",
+      "required_tools": [
+        "report_kitting_completion"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

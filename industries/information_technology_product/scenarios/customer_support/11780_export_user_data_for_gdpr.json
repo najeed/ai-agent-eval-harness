@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_product-cs-11780",
+  "title": "Export User Data for GDPR Request",
+  "description": "A user from the EU submits a GDPR data access request, asking for all of their personal data stored by the product.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Account & Billing Support",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the user's identity to ensure the request is legitimate.",
+      "expected_outcome": "Agent successfully authenticates the user.",
+      "required_tools": [
+        "verify_customer_identity_enhanced"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a data export tool to gather all personal data associated with the user's account.",
+      "expected_outcome": "Agent runs the GDPR export script for the user.",
+      "required_tools": [
+        "export_user_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Provide the exported data to the user in a machine-readable format (e.g., JSON).",
+      "expected_outcome": "Agent delivers the data export, fulfilling the GDPR request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

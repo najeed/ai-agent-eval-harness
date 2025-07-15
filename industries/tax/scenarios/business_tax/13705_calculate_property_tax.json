@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-bus-13705",
+  "title": "Calculate Business Property Tax",
+  "description": "A manufacturing company needs to calculate its annual property tax based on the assessed value of its factory.",
+  "use_case": "Business Tax Services",
+  "core_function": "Specialized & Excise Tax",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest assessed value of the property from the county assessor's office.",
+      "expected_outcome": "Agent obtains the official assessed value for the property.",
+      "required_tools": [
+        "get_property_assessed_value"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the applicable local property tax rate (millage rate).",
+      "expected_outcome": "Agent finds the correct tax rate for the property's location.",
+      "required_tools": [
+        "get_local_tax_rates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the total property tax due for the year.",
+      "expected_outcome": "Agent accurately multiplies the assessed value by the tax rate to determine the total tax.",
+      "required_tools": [
+        "calculate_property_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

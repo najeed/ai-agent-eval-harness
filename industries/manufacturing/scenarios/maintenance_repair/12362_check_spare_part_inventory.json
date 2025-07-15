@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mfg-mr-12362",
+  "title": "Check Spare Part Inventory",
+  "description": "A technician needs a specific hydraulic pump to repair a machine and must check if it's in the maintenance storeroom.",
+  "use_case": "Maintenance & Repair",
+  "core_function": "Asset & Spares Management",
+  "industry": "Manufacturing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the part number for the required hydraulic pump.",
+      "expected_outcome": "Agent finds the part number from the equipment's BOM.",
+      "required_tools": [
+        "get_asset_bom"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Search the inventory system for the part number to check stock levels and location.",
+      "expected_outcome": "Agent finds that there are two pumps in stock in the main storeroom.",
+      "required_tools": [
+        "check_spare_part_inventory"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a request to withdraw one pump from inventory for the repair job.",
+      "expected_outcome": "Agent successfully reserves one pump against the maintenance work order.",
+      "required_tools": [
+        "withdraw_spare_part"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

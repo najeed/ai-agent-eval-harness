@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-ue-13554",
+  "title": "Schedule Street Sweeping Based on Air Quality Data",
+  "description": "To combat particulate matter pollution, an operator schedules street sweeping on roads with high dust levels detected by mobile sensors.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Environmental Monitoring",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the latest air quality map, which highlights several streets with high levels of road dust (PM10).",
+      "expected_outcome": "Agent identifies the problem streets from the environmental data.",
+      "required_tools": [
+        "get_air_quality_map"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate an optimized route for a street sweeper to clean only the identified high-pollution streets.",
+      "expected_outcome": "Agent creates a targeted cleaning route.",
+      "required_tools": [
+        "generate_optimized_route"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order and dispatch the street sweeping crew.",
+      "expected_outcome": "Agent dispatches the crew with the specific route.",
+      "required_tools": [
+        "create_work_order",
+        "dispatch_utility_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

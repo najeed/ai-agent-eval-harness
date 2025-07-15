@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ldr-12112",
+  "title": "Prepare a Privilege Log",
+  "description": "After a document review, a litigation paralegal needs to create a privilege log for all documents that were withheld from production based on attorney-client privilege.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Discovery & E-Discovery",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all documents tagged as 'Privileged' from the e-discovery platform.",
+      "expected_outcome": "Agent retrieves the list of privileged documents.",
+      "required_tools": [
+        "ediscovery_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each document, create a log entry that includes the date, author, recipients, a brief non-privileged description, and the specific privilege being asserted.",
+      "expected_outcome": "Agent creates a detailed log entry for each document without revealing privileged information.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Format the entries into a formal privilege log document for production to the opposing counsel.",
+      "expected_outcome": "Agent produces a properly formatted privilege log.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

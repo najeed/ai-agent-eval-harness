@@ -1,0 +1,50 @@
+{
+  "scenario_id": "utils-cs-14186",
+  "title": "Apply Charity Pledge to Account",
+  "description": "A local charity has pledged to pay $200 towards a low-income customer's past-due utility bill.",
+  "use_case": "Customer Service",
+  "core_function": "Billing & Account Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the payment pledge from the charity agency.",
+      "expected_outcome": "Agent receives the pledge details, including customer name, account number, and amount.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the customer account and the past-due balance.",
+      "expected_outcome": "Agent confirms the account details are correct.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Apply the pledged amount as a credit to the customer's account.",
+      "expected_outcome": "Agent successfully posts the credit, reducing the customer's balance due.",
+      "required_tools": [
+        "apply_manual_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

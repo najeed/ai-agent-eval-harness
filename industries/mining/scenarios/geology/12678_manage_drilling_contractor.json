@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-geo-12678",
+  "title": "Manage Drilling Contractor Performance",
+  "description": "An exploration manager reviews the performance of a drilling contractor to ensure they are meeting their contractual obligations.",
+  "use_case": "Geology & Exploration",
+  "core_function": "Exploration & Targeting",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the daily drilling reports from the contractor for the past month.",
+      "expected_outcome": "All daily reports are collected.",
+      "required_tools": [
+        "get_daily_drilling_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the data to calculate key performance indicators (KPIs) like meters drilled per shift and rig utilization.",
+      "expected_outcome": "The contractor's KPIs are calculated.",
+      "required_tools": [
+        "calculate_drilling_kpis"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the KPIs against the contractual targets. Hold a meeting with the contractor to discuss performance and address any shortfalls.",
+      "expected_outcome": "The performance review shows that utilization is below target, and a meeting is scheduled to discuss an improvement plan.",
+      "required_tools": [
+        "compare_kpis_to_targets",
+        "schedule_performance_review"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

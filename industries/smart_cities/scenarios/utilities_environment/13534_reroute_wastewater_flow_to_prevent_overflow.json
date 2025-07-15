@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ue-13534",
+  "title": "Reroute Wastewater Flow to Prevent Overflow",
+  "description": "During a heavy storm, a wastewater interceptor is nearing capacity. An operator must reroute flow to a storage basin to prevent a sanitary sewer overflow.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Water & Wastewater Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'High Level' alert for the 'Elm Street Interceptor'.",
+      "expected_outcome": "Agent acknowledges the critical wastewater system alert.",
+      "required_tools": [
+        "get_wastewater_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the current level of the nearby 'Emergency Storage Basin'.",
+      "expected_outcome": "Agent confirms the storage basin has sufficient capacity.",
+      "required_tools": [
+        "get_storage_basin_level"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Remotely open a valve to divert a portion of the wastewater flow from the interceptor to the storage basin.",
+      "expected_outcome": "Agent successfully operates the valve to prevent an overflow.",
+      "required_tools": [
+        "control_wastewater_valve"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

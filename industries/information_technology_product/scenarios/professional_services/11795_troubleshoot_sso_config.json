@@ -1,0 +1,47 @@
+{
+  "scenario_id": "information_technology_product-ps-11795",
+  "title": "Troubleshoot SSO Configuration",
+  "description": "A customer who configured SSO themselves reports it is not working.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Implementation & Configuration",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the SSO configuration settings the customer entered into the system.",
+      "expected_outcome": "Consultant has access to the customer's current settings.",
+      "required_tools": [
+        "get_sso_settings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compare the customer's settings against the metadata from their Identity Provider.",
+      "expected_outcome": "Consultant finds a typo in the 'Entity ID' field.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Inform the customer of the typo and have them correct it.",
+      "expected_outcome": "The customer corrects the typo, and SSO begins working.",
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

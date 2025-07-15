@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_service-ps-11867",
+  "title": "Project Management - Budget Management",
+  "description": "A project manager reviews the budget for an ongoing project and sees that it is at risk of going over budget.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Execution & Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review all time entries and expenses logged against the project.",
+      "expected_outcome": "The project manager identifies which tasks took longer than estimated.",
+      "required_tools": [
+        "get_project_financials"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Meet with the technical team to understand the reasons for the extra time.",
+      "expected_outcome": "The PM learns about unforeseen technical challenges.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Proactively communicate the budget risk to the client and discuss options, such as de-scoping certain tasks to stay within budget.",
+      "expected_outcome": "The PM manages the client's expectations and collaborates on a solution.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

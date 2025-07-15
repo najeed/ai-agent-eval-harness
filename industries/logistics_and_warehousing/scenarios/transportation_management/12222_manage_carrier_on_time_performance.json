@@ -1,0 +1,50 @@
+{
+  "scenario_id": "lw-tm-12222",
+  "title": "Manage Carrier On-Time Performance",
+  "description": "A carrier manager needs to review the on-time pickup and delivery performance for a specific carrier over the last quarter.",
+  "use_case": "Transportation Management",
+  "core_function": "Freight & Carrier Management",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a performance report for the selected carrier for the previous quarter.",
+      "expected_outcome": "Agent successfully generates the carrier scorecard report.",
+      "required_tools": [
+        "generate_carrier_scorecard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the report to identify the on-time pickup and on-time delivery percentages.",
+      "expected_outcome": "Agent finds the carrier's on-time delivery is 85%, which is below the 95% target.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft an email to the carrier representative with the performance data to request a corrective action plan.",
+      "expected_outcome": "Agent prepares a data-driven communication to the carrier to address the performance issue.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

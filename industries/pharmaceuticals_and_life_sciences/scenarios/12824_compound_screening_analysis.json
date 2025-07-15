@@ -1,0 +1,66 @@
+{
+  "scenario_id": "pharma-rd-12824",
+  "title": "Analyze High-Throughput Screening Data",
+  "description": "A scientist needs to analyze data from a high-throughput screening (HTS) campaign to identify 'hit' compounds.",
+  "use_case": "Research & Development",
+  "core_function": "Drug Discovery & Target Identification",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the raw data from the HTS plate reader for thousands of compounds.",
+      "expected_outcome": "Agent successfully imports the data, including plate layouts and fluorescence readings.",
+      "required_tools": [
+        "import_hts_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_import_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Normalize the data against positive and negative controls on each plate.",
+      "expected_outcome": "Agent correctly applies a normalization algorithm to the raw data.",
+      "required_tools": [
+        "normalize_screening_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate a Z-score for each compound to measure its activity.",
+      "expected_outcome": "Agent correctly calculates the Z-score for all compounds.",
+      "required_tools": [
+        "calculate_hit_score"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Generate a list of 'hit' compounds that meet the activity threshold (e.g., Z-score > 3).",
+      "expected_outcome": "Agent produces a final list of hit compounds for follow-up studies.",
+      "required_tools": [
+        "generate_hit_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

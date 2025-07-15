@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-cp-13189",
+  "title": "Check Agent's License Status",
+  "description": "A brokerage manager needs to verify that all agents in the office have renewed their real estate licenses and completed their continuing education.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all agents affiliated with the brokerage.",
+      "expected_outcome": "Agent has a complete roster of licensed agents.",
+      "required_tools": [
+        "get_agent_roster"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each agent, search the state's real estate commission license lookup portal.",
+      "expected_outcome": "The manager checks each agent's license status on the official state website.",
+      "required_tools": [
+        "search_state_license_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Identify any agents with expired licenses or upcoming renewal dates and send them a reminder.",
+      "expected_outcome": "The manager finds one agent whose license expires next month and sends them a reminder notice.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

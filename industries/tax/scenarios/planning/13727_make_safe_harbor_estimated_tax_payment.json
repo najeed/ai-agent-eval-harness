@@ -1,0 +1,50 @@
+{
+  "scenario_id": "tax-plan-13727",
+  "title": "Make Safe Harbor Estimated Tax Payment",
+  "description": "To avoid underpayment penalties, a taxpayer wants to make estimated tax payments based on the prior year's tax liability (safe harbor rule).",
+  "use_case": "Tax Planning & Advisory",
+  "core_function": "Estimated Tax & Projections",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the total tax liability from the taxpayer's prior year tax return.",
+      "expected_outcome": "Agent finds the total tax from last year's Form 1040.",
+      "required_tools": [
+        "get_prior_year_tax_liability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the required annual payment based on the safe harbor rule (e.g., 100% or 110% of prior year tax).",
+      "expected_outcome": "Agent correctly calculates the total amount that must be paid for the current year.",
+      "required_tools": [
+        "calculate_safe_harbor_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Divide the total required payment by four and advise the client of the quarterly payment amount.",
+      "expected_outcome": "Agent provides the client with the exact amount to pay each quarter.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

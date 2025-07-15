@@ -1,0 +1,50 @@
+{
+  "scenario_id": "realestate-pm-13190",
+  "title": "Handle a Reasonable Accommodation Request for a Service Animal",
+  "description": "A new applicant for a 'no pets' building states they have a service animal. The PM must handle the request correctly under the Fair Housing Act.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the request and understand that service animals are not pets and 'no pets' policies do not apply.",
+      "expected_outcome": "Agent correctly identifies this as a fair housing accommodation issue, not a pet policy issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "knowledge_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "If the disability is not obvious, request reliable documentation that the animal performs a necessary service related to a disability.",
+      "expected_outcome": "Agent sends a formal, legally compliant request for verification of the animal's status.",
+      "required_tools": [
+        "request_accommodation_verification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Upon receiving valid documentation, approve the accommodation and proceed with the application process.",
+      "expected_outcome": "The accommodation is approved, and the applicant is not charged any pet fees or deposits.",
+      "required_tools": [
+        "update_application_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_verification",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

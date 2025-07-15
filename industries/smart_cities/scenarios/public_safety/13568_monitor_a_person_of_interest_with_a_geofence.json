@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ps-13568",
+  "title": "Monitor a Person of Interest with a Geofence",
+  "description": "Police have a person of interest under surveillance and want to be alerted if they enter a sensitive area.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Predictive Policing & Prevention",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a request from police to monitor a specific device ID (e.g., a phone or vehicle tracker).",
+      "expected_outcome": "Agent acknowledges the surveillance request.",
+      "required_tools": [
+        "get_police_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a geofence around a sensitive location, such as a school or government building.",
+      "expected_outcome": "Agent successfully draws the virtual fence on the map.",
+      "required_tools": [
+        "create_geofence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Set up an alert to be sent directly to the requesting detective if the monitored device ID crosses into the geofenced area.",
+      "expected_outcome": "Agent successfully creates the conditional alert.",
+      "required_tools": [
+        "set_geofence_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

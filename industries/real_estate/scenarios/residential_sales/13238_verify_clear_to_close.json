@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-res-13238",
+  "title": "Verify 'Clear to Close'",
+  "description": "The closing date is approaching. The agent needs to confirm with the buyer's lender that the loan is fully approved and ready to fund.",
+  "use_case": "Residential Sales",
+  "core_function": "Closing & Post-Sale",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the transaction and the contact information for the buyer's loan officer.",
+      "expected_outcome": "Agent retrieves the correct lender contact info.",
+      "required_tools": [
+        "get_transaction_contacts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the loan officer to request confirmation of the 'Clear to Close' status.",
+      "expected_outcome": "Agent sends a clear request to the lender.",
+      "required_tools": [
+        "send_email_to_lender"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Receive confirmation from the lender and notify all parties (seller's agent, escrow) that the loan is ready.",
+      "expected_outcome": "Agent receives the confirmation and disseminates the information to the relevant parties.",
+      "required_tools": [
+        "log_communication",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "scenario_id": "journalism-cp-12071",
+  "title": "Choose a 'Pull Quote' for an Article Layout",
+  "description": "A print designer needs a 'pull quote' (a short, compelling excerpt) from a feature story to use as a large, graphical element in the layout.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Publishing & CMS Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Read through the final draft of the article.",
+      "expected_outcome": "Agent is familiar with the content.",
+      "required_tools": [
+        "document_viewer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehension_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify several short, powerful, and representative quotes from the article.",
+      "expected_outcome": "A list of potential pull quotes is generated.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "relevance_of_selection",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Select the single best quote that captures the essence of the story and will entice people to read.",
+      "expected_outcome": "The final pull quote is chosen.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Send the selected quote to the print designer.",
+      "expected_outcome": "The designer receives the content they need for the layout.",
+      "required_tools": [
+        "communication_platform"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

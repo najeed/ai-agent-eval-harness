@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_product-sl-11744",
+  "title": "Competitive Win-Back",
+  "description": "A lead reveals they are currently using a competitor's product but are unhappy with it.",
+  "use_case": "Sales & Account Management",
+  "core_function": "New Customer Acquisition",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the customer's frustration and ask about the specific pain points with the competitor's product.",
+      "expected_outcome": "Agent gathers competitive intelligence.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a competitive battlecard to highlight the product's advantages that directly address the customer's pain points.",
+      "expected_outcome": "Agent makes a compelling, targeted pitch against the competitor.",
+      "required_tools": [
+        "get_competitive_battlecard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Offer a free trial and assistance with data migration to make switching easy.",
+      "expected_outcome": "Agent lowers the barrier to entry for the customer to switch providers.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

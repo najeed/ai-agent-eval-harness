@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ps-13538",
+  "title": "Cross-Reference Stolen Vehicle Report",
+  "description": "A police department reports a stolen vehicle. An operator must check the city's license plate reader network for sightings.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Emergency Response",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'stolen vehicle' report with the vehicle's license plate number.",
+      "expected_outcome": "Agent receives the license plate to search for.",
+      "required_tools": [
+        "get_police_reports"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the city-wide Automated License Plate Reader (ALPR) network for any matches in the last 24 hours.",
+      "expected_outcome": "The system returns a match, showing the vehicle passed a reader on 'Highway 3' one hour ago.",
+      "required_tools": [
+        "query_alpr_network"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Relay the location and time of the last sighting to the requesting police department.",
+      "expected_outcome": "Agent provides actionable intelligence to law enforcement.",
+      "required_tools": [
+        "send_notification_to_pd"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

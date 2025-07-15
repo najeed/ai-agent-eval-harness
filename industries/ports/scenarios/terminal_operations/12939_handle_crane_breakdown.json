@@ -1,0 +1,52 @@
+{
+  "scenario_id": "ports-to-12939",
+  "title": "Handle a Quay Crane Breakdown",
+  "description": "During vessel operations, a quay crane suddenly stops working. The shift manager must manage the situation to minimize delays.",
+  "use_case": "Terminal Operations",
+  "core_function": "Quay & Crane Operations",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an alert that a crane has broken down and is no longer operational.",
+      "expected_outcome": "Manager is notified that QC-02 has a 'Spreader Fault' and is stopped.",
+      "required_tools": [
+        "get_equipment_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately create a high-priority maintenance work order and dispatch the on-duty engineering team.",
+      "expected_outcome": "A priority 1 work order is sent to the maintenance crew.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Re-assign the broken crane's remaining work instructions to other operating cranes on the vessel.",
+      "expected_outcome": "The work queue for QC-02 is redistributed to QC-01 and QC-03 to continue operations.",
+      "required_tools": [
+        "reassign_crane_work_queue"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

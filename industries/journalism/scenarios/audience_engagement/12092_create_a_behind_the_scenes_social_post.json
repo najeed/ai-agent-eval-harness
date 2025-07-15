@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ae-12092",
+  "title": "Create a 'Behind the Scenes' Social Post",
+  "description": "To build a connection with the audience, a reporter posts a 'behind the scenes' photo or video from their reporting process.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Community Interaction",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "While on assignment, take a photo or short video that shows the reporting process (e.g., a photo of their notebook, a view from the press box).",
+      "expected_outcome": "An interesting behind-the-scenes asset is captured.",
+      "required_tools": [
+        "camera"
+      ],
+      "success_criteria": [
+        {
+          "metric": "visual_quality",
+          "threshold": 0.8
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a caption that gives a small insight into the process of journalism.",
+      "expected_outcome": "An engaging and informative caption is written.",
+      "required_tools": [
+        "social_media_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the content to a platform like Instagram or Twitter.",
+      "expected_outcome": "The post is published.",
+      "required_tools": [
+        "social_media_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

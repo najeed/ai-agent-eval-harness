@@ -1,0 +1,47 @@
+{
+  "scenario_id": "information_technology_product-cs-11796",
+  "title": "Explain New Feature from Release Notes",
+  "description": "A customer calls asking for more details about a new feature they saw mentioned in the latest release notes.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Onboarding & Feature Adoption",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ask the customer which new feature they are interested in.",
+      "expected_outcome": "Agent identifies the feature in question.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the internal documentation and training materials for that new feature.",
+      "expected_outcome": "Agent reviews the internal guide for the feature.",
+      "required_tools": [
+        "search_internal_docs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Explain the purpose, benefits, and basic usage of the new feature to the customer.",
+      "expected_outcome": "The customer understands the new feature and how it can help them.",
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

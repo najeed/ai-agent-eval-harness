@@ -1,0 +1,62 @@
+{
+  "scenario_id": "information_technology_service-ps-11866",
+  "title": "Project Scoping - Respond to RFP",
+  "description": "A large company has issued a formal Request for Proposal (RFP) for a complete managed IT services contract.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Scoping & Quoting",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Thoroughly review the RFP to understand all requirements, from technical needs to service level agreements.",
+      "expected_outcome": "The sales team has a complete understanding of the request.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a detailed proposal document that addresses every point in the RFP, outlining the proposed services, team, and methodology.",
+      "expected_outcome": "A comprehensive and professional proposal is written.",
+      "required_tools": [
+        "create_proposal_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Develop a detailed pricing proposal for all requested services.",
+      "expected_outcome": "Accurate pricing is created.",
+      "required_tools": [
+        "create_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Submit the complete proposal package by the RFP deadline.",
+      "expected_outcome": "The proposal is submitted on time.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

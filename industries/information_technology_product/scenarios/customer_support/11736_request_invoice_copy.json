@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_product-cs-11736",
+  "title": "Request Invoice Copy",
+  "description": "A customer's accounting department needs a PDF copy of an invoice from 6 months ago.",
+  "use_case": "Customer Support & Success",
+  "core_function": "Account & Billing Support",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Authenticate the user and confirm they have billing permissions.",
+      "expected_outcome": "Agent verifies the user is an account admin.",
+      "required_tools": [
+        "verify_customer_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Locate the specific invoice from 6 months ago in the billing history.",
+      "expected_outcome": "Agent finds the correct historical invoice.",
+      "required_tools": [
+        "get_invoice_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Download the invoice as a PDF and email it to the customer.",
+      "expected_outcome": "Agent successfully sends the requested invoice.",
+      "required_tools": [
+        "download_invoice_pdf",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

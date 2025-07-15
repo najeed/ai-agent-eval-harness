@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-ta-13996",
+  "title": "Handle Tour Cancellation by Operator",
+  "description": "A boat tour has been cancelled by the operator due to bad weather. The agent must inform booked customers and process refunds.",
+  "use_case": "Tours & Attractions",
+  "core_function": "Activity Booking & Scheduling",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Generate a list of all customers booked on the cancelled tour.",
+      "expected_outcome": "Agent successfully retrieves a list of affected customers.",
+      "required_tools": [
+        "get_customer_list_for_activity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a notification (SMS or email) to all affected customers informing them of the cancellation.",
+      "expected_outcome": "Agent successfully sends out the cancellation alerts.",
+      "required_tools": [
+        "send_bulk_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process a full refund for all bookings for the cancelled tour.",
+      "expected_outcome": "Agent successfully initiates refunds for all affected customers.",
+      "required_tools": [
+        "process_bulk_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

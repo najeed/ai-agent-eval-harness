@@ -1,0 +1,54 @@
+{
+  "scenario_id": "mining-plan-12601",
+  "title": "Design Open Pit Blast Pattern",
+  "description": "A drill and blast engineer designs a blast pattern for an open-pit mine to achieve optimal fragmentation for the shovels.",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Drill & Blast Design",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Define the blast polygon area on the current mine plan and import the relevant block model data (e.g., rock type, hardness).",
+      "expected_outcome": "The area to be blasted is defined, and its rock properties are understood.",
+      "required_tools": [
+        "define_blast_polygon",
+        "get_block_model_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Design the blast pattern, specifying drillhole diameter, spacing, burden, and depth.",
+      "expected_outcome": "An efficient drill pattern is designed for the rock conditions.",
+      "required_tools": [
+        "design_drill_pattern"
+      ],
+      "success_criteria": [
+        {
+          "metric": "engineering_design_compliance",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Design the charging plan (explosive type and amount per hole) and the initiation timing sequence.",
+      "expected_outcome": "A safe and effective charging and timing plan is created to control vibration and fragmentation.",
+      "required_tools": [
+        "design_charging_plan",
+        "design_timing_sequence"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

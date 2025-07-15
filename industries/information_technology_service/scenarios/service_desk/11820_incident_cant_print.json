@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-sd-11820",
+  "title": "Incident - Can't Print",
+  "description": "A user reports they are unable to print to the main office printer, getting an 'access denied' error.",
+  "use_case": "Service Desk & End-User Support",
+  "core_function": "Incident & Request Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify the printer is online and accessible on the network.",
+      "expected_outcome": "The technician pings the printer successfully and can access its web interface.",
+      "required_tools": [
+        "ping_device"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Restart the print spooler service on the user's computer.",
+      "expected_outcome": "Restarting the spooler does not resolve the issue.",
+      "required_tools": [
+        "run_script_on_endpoint"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Remove and re-add the printer on the user's computer, forcing it to re-download the driver and settings.",
+      "expected_outcome": "Re-installing the printer resolves the access issue and the user can now print.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

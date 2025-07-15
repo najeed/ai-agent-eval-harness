@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-cm-11813",
+  "title": "Account Management - Conduct QBR",
+  "description": "An account manager (vCIO) conducts a Quarterly Business Review with a client to discuss past performance and future IT strategy.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Account & Relationship Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare the QBR presentation deck, including performance metrics, project updates, and strategic recommendations.",
+      "expected_outcome": "A comprehensive QBR deck is created.",
+      "required_tools": [
+        "generate_qbr_deck"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Lead the QBR meeting with the client, presenting the information and facilitating a discussion about their business goals.",
+      "expected_outcome": "A successful strategic discussion takes place with the client.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Based on the discussion, create a quote for a new project to address a business need identified during the meeting (e.g., improving cybersecurity posture).",
+      "expected_outcome": "The QBR leads to a new sales opportunity.",
+      "required_tools": [
+        "create_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

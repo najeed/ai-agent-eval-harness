@@ -1,0 +1,65 @@
+{
+  "scenario_id": "venues-tb-14244",
+  "title": "Upgrade Season Ticket Holder Seats",
+  "description": "A long-time season ticket holder wants to upgrade their seats to a better location for the next season.",
+  "use_case": "Ticketing & Box Office",
+  "core_function": "Ticket Administration",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Look up the customer's account and their current seat location.",
+      "expected_outcome": "Agent finds the customer's account and current seats.",
+      "required_tools": [
+        "get_season_ticket_holder_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the seat upgrade availability list for the upcoming season.",
+      "expected_outcome": "Agent finds several better seat locations that are available.",
+      "required_tools": [
+        "get_seat_upgrade_options"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Present the available upgrade options and the difference in price to the customer.",
+      "expected_outcome": "Agent clearly communicates the new seat locations and the additional cost.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Process the seat upgrade and generate the new invoice for the season tickets.",
+      "expected_outcome": "Agent successfully updates the customer's seats and invoice.",
+      "required_tools": [
+        "update_season_ticket_seats",
+        "generate_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

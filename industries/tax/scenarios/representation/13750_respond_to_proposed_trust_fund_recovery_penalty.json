@@ -1,0 +1,53 @@
+{
+  "scenario_id": "tax-rep-13750",
+  "title": "Respond to Proposed Trust Fund Recovery Penalty",
+  "description": "A business owner is being held personally liable for unpaid payroll taxes (Trust Fund Recovery Penalty). They need to respond.",
+  "use_case": "Taxpayer Representation & Resolution",
+  "core_function": "Notice & Correspondence Management",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the case to determine if the owner was a 'responsible person' and if the failure to pay was 'willful'.",
+      "expected_outcome": "Agent analyzes the facts against the legal standards for the penalty.",
+      "required_tools": [
+        "analyze_tfpr_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Gather evidence to support the owner's defense (e.g., they had no control over finances).",
+      "expected_outcome": "Agent compiles relevant documents and testimony.",
+      "required_tools": [
+        "request_client_documents"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare a formal protest to appeal the proposed penalty.",
+      "expected_outcome": "Agent drafts and files an appeal to dispute the penalty assessment.",
+      "required_tools": [
+        "draft_protest_letter",
+        "file_appeal"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

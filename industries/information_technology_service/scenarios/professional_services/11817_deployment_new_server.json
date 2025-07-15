@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_service-ps-11817",
+  "title": "Deployment - New Server Installation",
+  "description": "As part of a project, a technician is deploying a new physical server in a client's server room.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Technology Deployment & Migration",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Physically rack and cable the new server in the client's server rack.",
+      "expected_outcome": "The server is securely installed and connected to power and network.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Configure the server's remote management (iLO/iDRAC) and BIOS settings.",
+      "expected_outcome": "The server hardware is configured correctly.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Install the hypervisor (e.g., VMware ESXi) and configure it according to the project plan.",
+      "expected_outcome": "The server operating system is installed and ready for use.",
+      "required_tools": [
+        "install_os"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

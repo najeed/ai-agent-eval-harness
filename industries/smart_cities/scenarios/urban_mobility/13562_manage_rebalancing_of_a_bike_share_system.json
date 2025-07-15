@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-um-13562",
+  "title": "Manage Rebalancing of a Bike Share System",
+  "description": "Data shows that all bike share docks in a residential area are full, while docks in the downtown area are empty. An operator must rebalance the system.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "EV Charging & Micromobility",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the bike share system dashboard and identify the stations with 0% and 100% availability.",
+      "expected_outcome": "Agent confirms the imbalance in the system.",
+      "required_tools": [
+        "get_bikeshare_station_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a work order for the rebalancing crew.",
+      "expected_outcome": "Agent creates a task for the field team.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the crew a task to pick up bikes from the full stations and drop them off at the empty stations.",
+      "expected_outcome": "Agent dispatches the crew with specific instructions.",
+      "required_tools": [
+        "assign_rebalancing_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

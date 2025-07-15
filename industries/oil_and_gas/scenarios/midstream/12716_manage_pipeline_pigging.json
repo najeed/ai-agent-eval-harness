@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-mid-12716",
+  "title": "Manage Pipeline Pigging Operation",
+  "description": "An operator schedules and monitors the run of a 'smart pig' (an inline inspection tool) through a pipeline to check for corrosion.",
+  "use_case": "Midstream",
+  "core_function": "Pipeline Operations & Control",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Schedule the pig run in the operations system, notifying all affected parties.",
+      "expected_outcome": "The pigging operation is officially scheduled.",
+      "required_tools": [
+        "schedule_pigging_run"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Monitor the pig's progress through the pipeline by tracking its location via pig signallers.",
+      "expected_outcome": "The operator tracks the pig in real-time as it passes key points.",
+      "required_tools": [
+        "get_pig_location_updates"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Confirm the pig has been successfully received at the downstream trap and log the completion of the run.",
+      "expected_outcome": "The run is logged as complete, and the inspection data is ready for download.",
+      "required_tools": [
+        "confirm_pig_receipt",
+        "log_operation_complete"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

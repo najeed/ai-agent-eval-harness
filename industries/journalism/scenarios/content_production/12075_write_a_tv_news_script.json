@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-cp-12075",
+  "title": "Write a TV News Script",
+  "description": "A broadcast journalist needs to write a 90-second script for the evening news about a city council meeting.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Writing & Drafting",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the video footage and notes from the meeting to find the most important or dramatic moment.",
+      "expected_outcome": "The key soundbite and event are identified.",
+      "required_tools": [
+        "video_player",
+        "note_taking_app"
+      ],
+      "success_criteria": [
+        {
+          "metric": "relevance_of_selection",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a script in a standard two-column format (video cues on the left, audio/narration on the right).",
+      "expected_outcome": "A properly formatted broadcast script is created.",
+      "required_tools": [
+        "script_writing_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "structural_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Time the script by reading it aloud to ensure it fits within the 90-second slot.",
+      "expected_outcome": "The script is confirmed to be the correct length.",
+      "required_tools": [
+        "stopwatch"
+      ],
+      "success_criteria": [
+        {
+          "metric": "timing_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

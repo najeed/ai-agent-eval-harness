@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-im-12259",
+  "title": "Process a Return for Refurbishment",
+  "description": "A returned electronic item is not resalable as-is but can be refurbished. It needs to be routed to the refurbishment department.",
+  "use_case": "Inventory Management",
+  "core_function": "Returns & Reverse Logistics",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "During the returns inspection process, an operator grades the item's condition as 'Requires Refurbishment'.",
+      "expected_outcome": "The item is given the correct disposition code.",
+      "required_tools": [
+        "update_rma_disposition"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system creates a transfer order to move the item from the returns area to the refurbishment work center.",
+      "expected_outcome": "A task is generated to move the item internally.",
+      "required_tools": [
+        "create_internal_move_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The item's inventory status is changed to 'In Refurbishment', making it unavailable for sale.",
+      "expected_outcome": "The system accurately reflects the item's current, non-sellable status.",
+      "required_tools": [
+        "update_inventory_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

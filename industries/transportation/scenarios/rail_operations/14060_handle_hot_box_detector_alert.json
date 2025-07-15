@@ -1,0 +1,64 @@
+{
+  "scenario_id": "tr-ro-14060",
+  "title": "Handle a Hot Box Detector Alert",
+  "description": "A wayside hot box detector sends an alert for an overheated wheel bearing on a specific railcar in a passing train.",
+  "use_case": "Rail Operations",
+  "core_function": "Network Control & Dispatch",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive an automated, high-priority alert from a hot box detector, specifying the train, railcar axle number, and temperature.",
+      "expected_outcome": "The dispatcher is immediately alerted to the critical safety issue.",
+      "required_tools": [
+        "get_wayside_detector_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately contact the train crew via radio and instruct them to stop the train for an inspection.",
+      "expected_outcome": "The train is safely brought to a stop.",
+      "required_tools": [
+        "contact_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Instruct the crew to inspect the specific axle identified by the detector.",
+      "expected_outcome": "The crew is guided to the potential defect.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The crew confirms the hot box. The dispatcher arranges for the railcar to be set out at the nearest siding for repair.",
+      "expected_outcome": "The defective car is safely removed from the train, preventing a potential derailment.",
+      "required_tools": [
+        "create_car_repair_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-im-11855",
+  "title": "Cloud - Create New AWS IAM User",
+  "description": "A client needs a new IAM user created in AWS for a developer, with access restricted to specific services.",
+  "use_case": "Infrastructure & Cloud Management",
+  "core_function": "Cloud Resource Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Clarify the exact permissions the developer needs (e.g., read-only access to S3 and full access to EC2).",
+      "expected_outcome": "The technician has a clear list of required permissions.",
+      "required_tools": [
+        "get_ticket_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new IAM policy with the specified permissions.",
+      "expected_outcome": "A new, least-privilege IAM policy is created.",
+      "required_tools": [
+        "create_iam_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "security_protocol_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the new IAM user and attach the newly created policy to it.",
+      "expected_outcome": "The developer user account is created with the correct permissions.",
+      "required_tools": [
+        "create_iam_user"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

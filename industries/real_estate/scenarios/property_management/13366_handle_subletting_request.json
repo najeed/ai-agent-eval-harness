@@ -1,0 +1,53 @@
+{
+  "scenario_id": "real_estate-pm-13366",
+  "title": "Handle a Tenant's Subletting Request",
+  "description": "A tenant requests permission to sublet their apartment for the summer.",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations & Renewals",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the original lease agreement to see if subletting is permitted.",
+      "expected_outcome": "Agent determines the lease allows subletting with landlord approval.",
+      "required_tools": [
+        "get_lease_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Require the tenant to have the proposed sub-tenant complete a rental application.",
+      "expected_outcome": "The sub-tenant submits an application for screening.",
+      "required_tools": [
+        "send_application_link"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Screen the sub-tenant's application. If they are approved, draft a sublease agreement for all parties to sign.",
+      "expected_outcome": "The sub-tenant is approved and a formal sublease agreement is executed.",
+      "required_tools": [
+        "run_background_check",
+        "generate_sublease_agreement"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

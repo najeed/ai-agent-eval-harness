@@ -1,0 +1,48 @@
+{
+  "scenario_id": "tr-pt-14034",
+  "title": "Provide Trip Planning Assistance",
+  "description": "A tourist calls the customer service line for help planning a trip from their hotel to a museum using public transit.",
+  "use_case": "Public Transit Operations",
+  "core_function": "Passenger Information Systems",
+  "industry": "Transportation",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather the origin (hotel address) and destination (museum address) from the caller.",
+      "expected_outcome": "Agent correctly notes the start and end points of the trip.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Use a trip planning tool to find the best route.",
+      "expected_outcome": "The tool returns a recommended trip: 'Take Route 12 bus to Central Station, then transfer to the Red Line train.'",
+      "required_tools": [
+        "plan_trip"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Clearly communicate the step-by-step instructions, including bus/train numbers, stop names, and estimated travel time, to the customer.",
+      "expected_outcome": "The customer understands how to make their trip.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

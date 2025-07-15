@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ri-12047",
+  "title": "Scrape Data from a Government Website",
+  "description": "A data journalist needs to collect data from a government website that does not offer a downloadable file. They must write a script to scrape the data.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Data Journalism & Fact-Checking",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the structure of the target website to identify the HTML elements containing the data.",
+      "expected_outcome": "Agent identifies the correct HTML tags and classes to target.",
+      "required_tools": [
+        "web_browser_developer_tools"
+      ],
+      "success_criteria": [
+        {
+          "metric": "accuracy_of_identification",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Write a web scraping script (e.g., in Python) to automatically visit the web pages and extract the data.",
+      "expected_outcome": "Agent produces a functional scraping script.",
+      "required_tools": [
+        "python_web_scraping_library"
+      ],
+      "success_criteria": [
+        {
+          "metric": "code_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the script and save the extracted data into a structured format like a CSV file.",
+      "expected_outcome": "A clean, structured dataset is created from the website.",
+      "required_tools": [
+        "python_interpreter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_quality",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

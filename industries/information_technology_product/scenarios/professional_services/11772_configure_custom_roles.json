@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_product-ps-11772",
+  "title": "Configure Custom User Roles",
+  "description": "A customer needs several custom user roles configured to match their specific organizational structure and security policies.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Implementation & Configuration",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Work with the customer to define the exact permissions required for each custom role.",
+      "expected_outcome": "Consultant documents the permission matrix for each new role.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create the new roles in the product's admin panel and configure the specified permissions.",
+      "expected_outcome": "Consultant successfully creates the custom roles.",
+      "required_tools": [
+        "create_custom_role"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the new roles to test users and have the customer validate that the permissions are working as expected.",
+      "expected_outcome": "The customer confirms the roles are configured correctly.",
+      "required_tools": [
+        "assign_user_role"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

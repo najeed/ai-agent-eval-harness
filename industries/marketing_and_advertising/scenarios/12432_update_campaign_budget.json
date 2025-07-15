@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cm-12432",
+  "title": "Update Campaign Budget",
+  "description": "A campaign is performing better than expected, and the client has approved an additional budget. The manager needs to update the daily budget in the ad platform.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Campaign Monitoring & Optimization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the correct campaign in the advertising platform.",
+      "expected_outcome": "Agent selects the 'Q3 Lead Gen' campaign.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Increase the campaign's daily budget from $100 to $150.",
+      "expected_outcome": "Agent successfully updates the budget setting.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify that the change has been saved and is active.",
+      "expected_outcome": "Agent confirms the new budget is reflected in the campaign settings.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

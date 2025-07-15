@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ps-13573",
+  "title": "Provide First Responders with Building Entry Codes",
+  "description": "Firefighters responding to an alarm at a commercial building need the entry codes to get inside.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Emergency Response",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a request for access codes from a fire captain at the scene of an alarm.",
+      "expected_outcome": "Agent acknowledges the request from the first responder.",
+      "required_tools": [
+        "get_emergency_vehicle_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Look up the building address in the secure 'Knox Box' database.",
+      "expected_outcome": "Agent accesses the secure database.",
+      "required_tools": [
+        "query_knox_box_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Securely transmit the building's door and elevator access codes to the fire captain's authenticated device.",
+      "expected_outcome": "Agent provides the critical access information securely.",
+      "required_tools": [
+        "send_secure_message"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

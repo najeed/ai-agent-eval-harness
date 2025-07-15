@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-ha-13954",
+  "title": "Post Parking Charge to Folio",
+  "description": "A hotel guest has used the valet parking service and the charge needs to be added to their room bill.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Billing & Folio Management",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the guest's account using their vehicle's license plate or valet ticket number.",
+      "expected_outcome": "Agent correctly identifies the guest's room and folio.",
+      "required_tools": [
+        "get_guest_by_vehicle"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Retrieve the standard daily rate for valet parking.",
+      "expected_outcome": "Agent finds the correct parking fee.",
+      "required_tools": [
+        "get_service_pricing"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Post the parking charge to the guest's folio.",
+      "expected_outcome": "Agent successfully adds the charge to the guest's bill.",
+      "required_tools": [
+        "add_folio_charge"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

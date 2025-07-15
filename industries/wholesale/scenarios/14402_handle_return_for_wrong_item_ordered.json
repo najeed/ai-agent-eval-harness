@@ -1,0 +1,52 @@
+{
+  "scenario_id": "wholesale-im-14402",
+  "title": "Handle Return for Wrong Item Ordered",
+  "description": "A retailer admits they ordered the wrong item and wants to return it.",
+  "use_case": "Inventory & Warehouse Management",
+  "core_function": "Returns Management (RMA)",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The retailer requests an RMA for the item they ordered by mistake.",
+      "expected_outcome": "Agent creates the RMA.",
+      "required_tools": [
+        "create_rma"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inform the retailer that they will be responsible for the return shipping costs and may be subject to a restocking fee, per company policy.",
+      "expected_outcome": "Agent clearly communicates the return policy.",
+      "required_tools": [
+        "get_return_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "When the item is returned and inspected, issue a credit to the retailer, minus the restocking fee.",
+      "expected_outcome": "Agent processes the credit correctly.",
+      "required_tools": [
+        "issue_credit_memo"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

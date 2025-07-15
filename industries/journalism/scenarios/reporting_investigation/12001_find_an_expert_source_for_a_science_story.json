@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ri-12001",
+  "title": "Find an Expert Source for a Science Story",
+  "description": "A reporter is writing about a new medical breakthrough and needs to find a qualified, independent expert to comment on the research.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Source & Interview Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search academic databases for scientists who have published research on the relevant topic but are not affiliated with the original study.",
+      "expected_outcome": "Agent generates a list of potential expert sources with their publication histories.",
+      "required_tools": [
+        "search_academic_databases"
+      ],
+      "success_criteria": [
+        {
+          "metric": "relevance_of_sources",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find the contact information for the top three potential experts.",
+      "expected_outcome": "Agent retrieves university or institutional email addresses and phone numbers.",
+      "required_tools": [
+        "search_university_directories"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft a concise email to the experts introducing the story and requesting a brief interview.",
+      "expected_outcome": "Agent composes a professional and clear interview request.",
+      "required_tools": [
+        "draft_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

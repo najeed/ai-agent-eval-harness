@@ -1,0 +1,66 @@
+{
+  "scenario_id": "journalism-no-12089",
+  "title": "Handle an Angry Call from a Story Subject",
+  "description": "A person who was the subject of a critical story calls the newsroom, angry about their portrayal. An editor must handle the call.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Legal & Ethical Review",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Listen patiently to the caller's complaints without interrupting.",
+      "expected_outcome": "The caller feels heard.",
+      "required_tools": [
+        "phone_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_skill",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Ask the caller to specify which parts of the story they believe are factually inaccurate.",
+      "expected_outcome": "The editor focuses the conversation on specific, verifiable facts rather than general anger.",
+      "required_tools": [
+        "phone_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_de-escalation",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Promise to review their claims of inaccuracy with the reporter and check the source material.",
+      "expected_outcome": "The editor commits to a review process.",
+      "required_tools": [
+        "phone_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "If an error is found, initiate the corrections process. If not, politely stand by the story.",
+      "expected_outcome": "An informed decision is made and communicated to the caller.",
+      "required_tools": [
+        "phone_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

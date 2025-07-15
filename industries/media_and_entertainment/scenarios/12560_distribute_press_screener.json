@@ -1,0 +1,53 @@
+{
+  "scenario_id": "media-cp-12560",
+  "title": "Securely Distribute Press Screener",
+  "description": "A film studio needs to send a secure, watermarked screener of a new movie to a list of approved journalists before its release.",
+  "use_case": "Content Production & Management",
+  "core_function": "Rights & Royalties",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the final version of the movie and the list of approved journalists.",
+      "expected_outcome": "Agent accesses the movie file and the distribution list.",
+      "required_tools": [
+        "get_video_asset",
+        "get_distribution_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a unique, forensically watermarked copy of the movie for each journalist.",
+      "expected_outcome": "Agent successfully creates individually watermarked files for each recipient.",
+      "required_tools": [
+        "generate_watermarked_video"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a secure, time-limited viewing link for the watermarked copy to each journalist.",
+      "expected_outcome": "Agent successfully distributes the secure links.",
+      "required_tools": [
+        "send_secure_link"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "scenario_id": "realestate-pm-13173",
+  "title": "Prepare for an Eviction Hearing",
+  "description": "A PM has filed for eviction against a tenant for non-payment of rent and must prepare the file for the court hearing.",
+  "use_case": "Property Management",
+  "core_function": "Compliance & Legal",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all relevant documents: the signed lease, the full tenant ledger showing non-payment, and copies of all notices sent.",
+      "expected_outcome": "Agent compiles a complete package of all evidence.",
+      "required_tools": [
+        "get_lease_document",
+        "get_tenant_ledger",
+        "get_communication_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a chronological summary of events, from the first missed payment to the filing of the eviction.",
+      "expected_outcome": "A clear, dated timeline of all events is created.",
+      "required_tools": [
+        "generate_timeline_summary"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the complete document package and summary to the company's attorney.",
+      "expected_outcome": "The organized file is securely sent to the legal counsel preparing for the hearing.",
+      "required_tools": [
+        "send_secure_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-sb-13526",
+  "title": "Authorize Access to a Secure Facility",
+  "description": "A contractor needs temporary access to a secure room in a city building. An operator must grant them access for a specific time window.",
+  "use_case": "Smart Buildings & Infrastructure",
+  "core_function": "Building Automation & Control",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a request for temporary access for a specific person to the 'IT Server Room'.",
+      "expected_outcome": "Agent acknowledges the access request.",
+      "required_tools": [
+        "get_access_requests"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the contractor's identity against the approved vendor list.",
+      "expected_outcome": "Agent confirms the contractor is authorized to perform work.",
+      "required_tools": [
+        "verify_vendor_identity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Grant access to the 'IT Server Room' door for the specified contractor's ID card, valid for the next 4 hours.",
+      "expected_outcome": "Agent successfully updates the access control system with the temporary permission.",
+      "required_tools": [
+        "grant_temporary_access"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

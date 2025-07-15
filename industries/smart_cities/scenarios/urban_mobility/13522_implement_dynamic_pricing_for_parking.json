@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-um-13522",
+  "title": "Implement Dynamic Pricing for Parking",
+  "description": "To manage demand, an operator implements dynamic pricing for a downtown parking garage where prices increase as occupancy rises.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "Parking Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the current occupancy for 'Garage A', which is at 92%.",
+      "expected_outcome": "Agent confirms the high occupancy level.",
+      "required_tools": [
+        "get_parking_occupancy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Based on the high occupancy, increase the hourly parking rate by 25% according to the dynamic pricing rules.",
+      "expected_outcome": "Agent successfully applies the price increase.",
+      "required_tools": [
+        "set_parking_rate"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the pricing information on the garage's entrance sign and in the city parking app.",
+      "expected_outcome": "Agent ensures the new price is publicly displayed.",
+      "required_tools": [
+        "update_dynamic_message_sign",
+        "publish_parking_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

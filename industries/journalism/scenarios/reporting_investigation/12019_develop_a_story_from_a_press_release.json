@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-ri-12019",
+  "title": "Develop a Story from a Press Release",
+  "description": "A reporter receives a press release about a new product. They must go beyond the release to write an original story.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Story Research & Development",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the press release to understand the company's main claims.",
+      "expected_outcome": "Agent identifies the key marketing points from the release.",
+      "required_tools": [
+        "document_viewer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "comprehension_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Find independent industry analysts or competitors to get an outside perspective on the announcement.",
+      "expected_outcome": "Agent finds 2-3 sources who can provide context and a reality check.",
+      "required_tools": [
+        "search_news_archives",
+        "search_professional_networks"
+      ],
+      "success_criteria": [
+        {
+          "metric": "source_diversity",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Write a story that includes the company's announcement but also adds the context and analysis from independent sources.",
+      "expected_outcome": "Agent produces a balanced and original news story, not just a rewrite of the press release.",
+      "required_tools": [
+        "draft_article"
+      ],
+      "success_criteria": [
+        {
+          "metric": "journalistic_value_add",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

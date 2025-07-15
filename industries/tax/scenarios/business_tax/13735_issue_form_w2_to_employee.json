@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-bus-13735",
+  "title": "Issue Form W-2 to an Employee",
+  "description": "At year-end, a business needs to prepare and issue a Form W-2 to one of its employees.",
+  "use_case": "Business Tax Services",
+  "core_function": "Payroll & Employment Tax",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Compile the employee's total wages, tips, and other compensation for the year.",
+      "expected_outcome": "Agent gathers all payroll data for the employee.",
+      "required_tools": [
+        "compile_annual_payroll_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compile the total amounts withheld for federal income tax, Social Security, and Medicare.",
+      "expected_outcome": "Agent gathers all tax withholding data.",
+      "required_tools": [
+        "compile_annual_payroll_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Prepare the Form W-2 with all the compiled information and provide it to the employee.",
+      "expected_outcome": "Agent generates an accurate Form W-2.",
+      "required_tools": [
+        "prepare_form_w2"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

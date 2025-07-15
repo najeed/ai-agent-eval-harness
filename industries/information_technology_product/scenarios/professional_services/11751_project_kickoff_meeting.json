@@ -1,0 +1,48 @@
+{
+  "scenario_id": "information_technology_product-ps-11751",
+  "title": "Project Kickoff Meeting",
+  "description": "A project manager is leading the official kickoff meeting for a new implementation project.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Implementation & Configuration",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare and distribute a kickoff meeting agenda.",
+      "expected_outcome": "Project manager creates a clear agenda covering introductions, project goals, roles, and timeline.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Lead the kickoff meeting, presenting the project plan and establishing communication protocols.",
+      "expected_outcome": "Project manager successfully aligns all stakeholders and sets expectations.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Follow up with meeting minutes and action items.",
+      "expected_outcome": "Project manager documents the meeting outcomes and assigned tasks.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

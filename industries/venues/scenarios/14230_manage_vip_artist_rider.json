@@ -1,0 +1,52 @@
+{
+  "scenario_id": "venues-sh-14230",
+  "title": "Manage VIP Artist Hospitality Rider",
+  "description": "The manager for a performing artist sends their hospitality rider, which must be fulfilled by the venue.",
+  "use_case": "Sales & Hospitality",
+  "core_function": "VIP & Hospitality Management",
+  "industry": "Venues",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the hospitality rider for all food, beverage, and other requests.",
+      "expected_outcome": "Agent extracts a list of all required items (e.g., '24 bottles of Fiji water', '1 bowl of green M&Ms').",
+      "required_tools": [
+        "extract_rider_requirements"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Place an order with the venue's catering department for all food and beverage items.",
+      "expected_outcome": "Agent successfully places the catering order.",
+      "required_tools": [
+        "place_catering_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Coordinate with venue operations to ensure the dressing room is set up as specified in the rider.",
+      "expected_outcome": "Agent creates a task for the operations team to set up the dressing room.",
+      "required_tools": [
+        "create_operations_task"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

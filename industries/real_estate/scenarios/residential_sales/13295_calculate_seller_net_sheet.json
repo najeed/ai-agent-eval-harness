@@ -1,0 +1,54 @@
+{
+  "scenario_id": "realestate-res-13295",
+  "title": "Calculate a Seller Net Sheet",
+  "description": "A seller is considering an offer and wants to know how much money they will walk away with after all costs. The agent must prepare a seller net sheet.",
+  "use_case": "Residential Sales",
+  "core_function": "Buyer & Seller Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather all inputs: offer price, remaining mortgage balance, commission rate, and estimated closing costs (e.g., title, escrow, taxes).",
+      "expected_outcome": "Agent collects all necessary financial data.",
+      "required_tools": [
+        "get_offer_details",
+        "get_mortgage_payoff",
+        "get_estimated_closing_costs"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the total expenses by summing the mortgage payoff, commissions, and closing costs.",
+      "expected_outcome": "Agent accurately calculates the total deductions.",
+      "required_tools": [
+        "calculate_total_expenses"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Subtract the total expenses from the offer price to determine the estimated net proceeds for the seller and present it in a formatted sheet.",
+      "expected_outcome": "Agent generates an accurate seller net sheet.",
+      "required_tools": [
+        "generate_seller_net_sheet"
+      ],
+      "success_criteria": [
+        {
+          "metric": "report_generation_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

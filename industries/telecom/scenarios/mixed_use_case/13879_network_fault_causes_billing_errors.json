@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-mx-13879",
+  "title": "Network Fault Causes Mass Billing Errors",
+  "description": "A network fault caused incorrect data usage metering for a batch of customers. An agent must identify the affected customers and correct their bills.",
+  "use_case": "Mixed",
+  "core_function": "Fault Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge a network alert about a faulty data metering element.",
+      "expected_outcome": "Agent identifies the network element and the timeframe of the fault.",
+      "required_tools": [
+        "get_network_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Generate a list of all customers whose data traffic passed through the faulty element during that time.",
+      "expected_outcome": "Agent successfully queries for a list of affected customer accounts.",
+      "required_tools": [
+        "get_customers_by_network_path"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run a script to apply a corrective credit to all affected customer accounts.",
+      "expected_outcome": "Agent executes a bulk operation to fix the billing errors.",
+      "required_tools": [
+        "run_bulk_account_credit_script"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

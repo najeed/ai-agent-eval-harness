@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-cm-11889",
+  "title": "SLA Reporting - Analyze Ticket Trends",
+  "description": "An account manager analyzes ticket trends for a client to identify recurring problems.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Service Level Agreement (SLA) & Reporting",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Export all tickets for a client for the last quarter.",
+      "expected_outcome": "The manager has a CSV file of all recent tickets.",
+      "required_tools": [
+        "export_ticket_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Categorize and analyze the data to identify the most common ticket types.",
+      "expected_outcome": "The analysis reveals that 'password reset' tickets are the most frequent category, indicating a potential for user training or a self-service solution.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Propose implementing a self-service password reset (SSPR) solution to the client to reduce ticket volume and improve user experience.",
+      "expected_outcome": "A data-driven recommendation is made to the client.",
+      "required_tools": [
+        "create_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

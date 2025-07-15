@@ -1,0 +1,66 @@
+{
+  "scenario_id": "marketing-ar-12430",
+  "title": "Clean a Customer Data List",
+  "description": "An analyst needs to clean a list of customer data before importing it into a new marketing automation platform, removing duplicates and correcting formatting.",
+  "use_case": "Analytics & Reporting",
+  "core_function": "Customer Data Management",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Import the raw data from a CSV file.",
+      "expected_outcome": "Agent successfully loads the data.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify and remove any duplicate rows based on email address.",
+      "expected_outcome": "Agent de-duplicates the list.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_cleaning_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Standardize the formatting for fields like 'State' (e.g., ensuring all are 2-letter abbreviations).",
+      "expected_outcome": "Agent corrects formatting inconsistencies.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_cleaning_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Export the cleaned list, ready for import.",
+      "expected_outcome": "Agent produces a clean, standardized data file.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

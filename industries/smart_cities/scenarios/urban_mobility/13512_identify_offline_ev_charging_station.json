@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-um-13512",
+  "title": "Identify Offline EV Charging Station",
+  "description": "A citizen reports that an EV charging station is not working. An operator needs to verify the status and dispatch a technician.",
+  "use_case": "Urban Mobility & Transport",
+  "core_function": "EV Charging & Micromobility",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the EV charging station by its ID or location from the citizen report.",
+      "expected_outcome": "Agent locates the correct charging station in the system.",
+      "required_tools": [
+        "get_asset_by_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Run a remote diagnostic on the charging station.",
+      "expected_outcome": "The diagnostic tool returns a 'No Communication' error, confirming it is offline.",
+      "required_tools": [
+        "run_ev_charger_diagnostic"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a work order for a maintenance technician to repair the station and update its status to 'Out of Service' on public maps.",
+      "expected_outcome": "Agent successfully creates the work order and updates the public status.",
+      "required_tools": [
+        "create_work_order",
+        "update_ev_charger_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

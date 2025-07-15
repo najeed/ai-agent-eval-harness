@@ -1,0 +1,64 @@
+{
+  "scenario_id": "lw-om-12288",
+  "title": "Route Order to Optimal DC",
+  "description": "An e-commerce order is placed. The system must decide which distribution center (DC) to fulfill it from to minimize shipping cost and time.",
+  "use_case": "Order & Customer Management",
+  "core_function": "Order Processing",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "A new order is received with a specific customer delivery address.",
+      "expected_outcome": "The order details are captured.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "The system checks inventory availability for the ordered items at all DCs.",
+      "expected_outcome": "The system finds that three different DCs have the items in stock.",
+      "required_tools": [
+        "check_inventory_levels_across_network"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The system calculates the shipping cost and transit time from each of the three DCs to the customer's address.",
+      "expected_outcome": "The system gets shipping estimates from all three potential origin points.",
+      "required_tools": [
+        "get_shipping_rates_from_multiple_origins"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "The system selects the DC that offers the lowest shipping cost and routes the order there for fulfillment.",
+      "expected_outcome": "The order is automatically sent to the most cost-effective DC.",
+      "required_tools": [
+        "route_order_to_dc"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

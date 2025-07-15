@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-sp-12400",
+  "title": "Conduct Competitor Analysis",
+  "description": "A strategist needs to analyze the social media presence of three key competitors to inform an upcoming campaign strategy.",
+  "use_case": "Strategy & Planning",
+  "core_function": "Market & Audience Research",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the social media profiles of the three specified competitors.",
+      "expected_outcome": "Agent correctly locates the official social media accounts for the competitors.",
+      "required_tools": [
+        "web_search"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze their posting frequency, content themes, and engagement rates over the last 30 days.",
+      "expected_outcome": "Agent extracts and summarizes key performance metrics for each competitor.",
+      "required_tools": [
+        "social_media_analytics_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate a summary report highlighting competitor strengths, weaknesses, and opportunities for our brand.",
+      "expected_outcome": "Agent produces a concise report with actionable insights.",
+      "required_tools": [
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "insight_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

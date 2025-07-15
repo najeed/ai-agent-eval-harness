@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-wo-14160",
+  "title": "Pressure Reducing Valve (PRV) Control",
+  "description": "The system needs to adjust a PRV to manage pressure in a water distribution zone with changing demand.",
+  "use_case": "Water & Wastewater Operations",
+  "core_function": "Network Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Monitor the real-time pressure downstream of the PRV.",
+      "expected_outcome": "System gathers live pressure readings.",
+      "required_tools": [
+        "get_real_time_pressure_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_retrieval_accuracy",
+          "threshold": 0.99
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "As demand decreases overnight, the downstream pressure begins to rise.",
+      "expected_outcome": "System detects the rising pressure trend.",
+      "required_tools": [
+        "analyze_pressure_trends"
+      ],
+      "success_criteria": [
+        {
+          "metric": "event_detection_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a command to the PRV's actuator to modulate it towards the closed position, maintaining the target downstream pressure.",
+      "expected_outcome": "System successfully adjusts the PRV to lower the pressure.",
+      "required_tools": [
+        "control_valve_actuator"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

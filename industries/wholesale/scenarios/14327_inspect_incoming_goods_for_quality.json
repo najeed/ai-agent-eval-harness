@@ -1,0 +1,51 @@
+{
+  "scenario_id": "wholesale-sp-14327",
+  "title": "Inspect Incoming Goods for Quality",
+  "description": "A shipment of a new product arrives from a supplier, and a sample must be inspected for quality before the shipment is accepted.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Quality Assurance & Compliance",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Randomly select a sample of items from the newly arrived shipment.",
+      "expected_outcome": "A worker pulls a sample of 10 units for inspection.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Inspect the sample against the product's quality specifications.",
+      "expected_outcome": "The inspection reveals minor cosmetic defects that are outside the acceptable tolerance.",
+      "required_tools": [
+        "perform_quality_inspection"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Reject the shipment and notify the supplier of the quality issue.",
+      "expected_outcome": "Agent formally rejects the shipment and communicates the reason to the supplier.",
+      "required_tools": [
+        "reject_shipment",
+        "send_email_to_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ct-12125",
+  "title": "Negotiate a Contract Clause",
+  "description": "During a contract negotiation, an in-house counsel needs to redline a clause and propose alternative language.",
+  "use_case": "Corporate & Transactional",
+  "core_function": "Contract Lifecycle Management",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the unfavorable clause in the draft agreement.",
+      "expected_outcome": "Agent pinpoints the specific clause to be changed.",
+      "required_tools": [
+        "document_review_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "legal_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Draft a 'redline' version of the contract, striking through the original language and inserting the company's preferred language from its playbook.",
+      "expected_outcome": "Agent creates a redlined version of the document showing the proposed changes.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft a cover email to the opposing counsel explaining the business and legal reasons for the proposed change.",
+      "expected_outcome": "Agent writes a persuasive email to accompany the redlined draft.",
+      "required_tools": [
+        "email_client"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

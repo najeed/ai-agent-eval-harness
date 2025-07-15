@@ -1,0 +1,53 @@
+{
+  "scenario_id": "information_technology_service-ps-11898",
+  "title": "Project Management - Hardware Procurement",
+  "description": "A project manager needs to order the new server and firewall required for an upcoming project.",
+  "use_case": "Professional Services & Projects",
+  "core_function": "Project Execution & Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the project quote to get the exact make and model of the hardware to be ordered.",
+      "expected_outcome": "The PM has the correct hardware specifications.",
+      "required_tools": [
+        "get_quote_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Place the order with the preferred hardware distributor.",
+      "expected_outcome": "The order is successfully placed.",
+      "required_tools": [
+        "create_purchase_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Track the order and update the project plan with the estimated delivery date.",
+      "expected_outcome": "The project plan is updated with the hardware delivery timeline.",
+      "required_tools": [
+        "track_shipment",
+        "update_project_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

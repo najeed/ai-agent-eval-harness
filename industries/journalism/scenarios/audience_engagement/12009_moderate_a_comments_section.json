@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ae-12009",
+  "title": "Moderate a Comments Section",
+  "description": "A community manager must moderate the comments section on a controversial article, removing hate speech while allowing for civil debate.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Community Interaction",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the comments section for any posts that violate the community guidelines (e.g., personal attacks, spam, hate speech).",
+      "expected_outcome": "Agent identifies comments that need to be removed.",
+      "required_tools": [
+        "comment_moderation_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "violation_detection_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Delete the violating comments.",
+      "expected_outcome": "The inappropriate comments are removed from the page.",
+      "required_tools": [
+        "comment_moderation_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If a user is a repeat offender, ban them from commenting.",
+      "expected_outcome": "The problematic user is banned.",
+      "required_tools": [
+        "comment_moderation_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

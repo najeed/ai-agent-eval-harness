@@ -1,0 +1,52 @@
+{
+  "scenario_id": "realestate-com-13282",
+  "title": "Track Upcoming Lease Expirations",
+  "description": "A commercial property manager needs to identify all leases expiring in the next 12 months to begin renewal discussions.",
+  "use_case": "Commercial Real Estate",
+  "core_function": "Property & Asset Management",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Run a report to find all leases with an expiration date within the next 365 days.",
+      "expected_outcome": "Agent generates a list of all upcoming lease expirations.",
+      "required_tools": [
+        "get_lease_expiration_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each expiring lease, review the renewal option clause.",
+      "expected_outcome": "Agent notes the terms and notification deadline for each renewal option.",
+      "required_tools": [
+        "get_lease_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a task for the responsible agent to initiate renewal discussions with each tenant 9 months prior to expiration.",
+      "expected_outcome": "Agent creates and assigns follow-up tasks for each expiring lease.",
+      "required_tools": [
+        "create_task_reminder"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

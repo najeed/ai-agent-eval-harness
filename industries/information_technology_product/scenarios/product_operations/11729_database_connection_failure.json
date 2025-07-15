@@ -1,0 +1,67 @@
+{
+  "scenario_id": "information_technology_product-po-11729",
+  "title": "Database Connection Pool Exhaustion",
+  "description": "The application is throwing errors indicating it cannot get a connection to the database.",
+  "use_case": "Product Operations & Reliability (SRE)",
+  "core_function": "Incident & Outage Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the database monitoring dashboard and confirm that the number of active connections is at its maximum limit.",
+      "expected_outcome": "Agent identifies that the connection pool is exhausted.",
+      "required_tools": [
+        "view_database_dashboard"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Temporarily increase the maximum connection limit to restore service immediately.",
+      "expected_outcome": "Agent applies a temporary fix to mitigate the outage.",
+      "required_tools": [
+        "update_database_config"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Investigate which application service is holding onto connections and not releasing them properly.",
+      "expected_outcome": "Agent finds a memory leak in a specific microservice is causing the issue.",
+      "required_tools": [
+        "analyze_db_connections_by_service"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Restart the problematic microservice to clear the stuck connections and create a ticket for the owning team to fix the underlying leak.",
+      "expected_outcome": "Agent resolves the immediate issue and ensures a long-term fix is tracked.",
+      "required_tools": [
+        "restart_service",
+        "create_engineering_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

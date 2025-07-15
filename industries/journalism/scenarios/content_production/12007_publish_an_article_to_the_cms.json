@@ -1,0 +1,68 @@
+{
+  "scenario_id": "journalism-cp-12007",
+  "title": "Publish an Article to the CMS",
+  "description": "An online editor needs to take a finalized article and publish it to the website using the content management system (CMS).",
+  "use_case": "Content Production & Editing",
+  "core_function": "Publishing & CMS Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Copy the final text from a document and paste it into a new post in the CMS.",
+      "expected_outcome": "The text is successfully transferred to the CMS.",
+      "required_tools": [
+        "cms_interface"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Format the article with appropriate headings, subheadings, and hyperlinks.",
+      "expected_outcome": "The article is properly formatted for web readability.",
+      "required_tools": [
+        "cms_interface"
+      ],
+      "success_criteria": [
+        {
+          "metric": "formatting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add a featured image, relevant tags, and SEO-friendly metadata (meta title, meta description).",
+      "expected_outcome": "All necessary metadata is added for discoverability.",
+      "required_tools": [
+        "cms_interface",
+        "search_photo_library"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Publish the article and verify that it appears correctly on the live website.",
+      "expected_outcome": "The article is live and renders correctly for the public.",
+      "required_tools": [
+        "cms_interface",
+        "web_browser"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

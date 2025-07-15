@@ -1,0 +1,66 @@
+{
+  "scenario_id": "lw-tm-12270",
+  "title": "Divert a Shipment In-Transit",
+  "description": "A customer needs to change the final destination of a shipment that is already on its way.",
+  "use_case": "Transportation Management",
+  "core_function": "Real-time Tracking & Visibility",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Find the active shipment and verify it has not yet been delivered.",
+      "expected_outcome": "Agent confirms the shipment is still in transit.",
+      "required_tools": [
+        "get_shipment_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the carrier's dispatch to request a re-consignment to the new address.",
+      "expected_outcome": "Agent communicates the new delivery address to the carrier.",
+      "required_tools": [
+        "send_carrier_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "The carrier provides the cost for the diversion. The agent gets approval from the customer.",
+      "expected_outcome": "The additional freight charges are calculated and approved.",
+      "required_tools": [
+        "calculate_reconsignment_fee"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the shipment's destination in the TMS and confirm the diversion with the carrier.",
+      "expected_outcome": "The shipment is now routed to the new destination.",
+      "required_tools": [
+        "update_shipment_destination"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

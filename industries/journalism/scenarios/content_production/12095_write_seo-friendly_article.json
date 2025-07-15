@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-cp-12095",
+  "title": "Write SEO-Friendly Article",
+  "description": "A reporter is writing an article on a popular topic and needs to ensure it is optimized to rank well in search engine results.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Publishing & CMS Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Use an SEO tool to research the most common keywords and phrases people use when searching for this topic.",
+      "expected_outcome": "A list of target keywords is generated.",
+      "required_tools": [
+        "seo_research_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "relevance_of_keywords",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Incorporate the target keywords naturally into the article's headline, subheadings, and body text.",
+      "expected_outcome": "The article is optimized for the target keywords.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "seo_best_practices_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Write a compelling meta description that includes the primary keyword and will entice users to click from a search results page.",
+      "expected_outcome": "An effective meta description is drafted.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 0.9
+        }
+      ]
+    }
+  ]
+}

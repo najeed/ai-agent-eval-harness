@@ -1,0 +1,53 @@
+{
+  "scenario_id": "real_estate-pm-13360",
+  "title": "Manage Delinquent Rent Collections",
+  "description": "A property manager must follow a collections process for a tenant who is 30 days late on rent.",
+  "use_case": "Property Management",
+  "core_function": "Rent Collection & Financials",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Send a formal 'Demand for Payment' letter to the delinquent tenant.",
+      "expected_outcome": "A formal demand letter is sent and documented.",
+      "required_tools": [
+        "generate_demand_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Attempt to contact the tenant by phone to discuss a payment plan.",
+      "expected_outcome": "Agent makes and logs attempts to reach the tenant.",
+      "required_tools": [
+        "contact_tenant",
+        "log_call_outcome"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If no payment is received, escalate the account to a collections agency or an attorney to begin formal eviction proceedings.",
+      "expected_outcome": "The account is forwarded to the appropriate third party for further action.",
+      "required_tools": [
+        "escalate_to_collections"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

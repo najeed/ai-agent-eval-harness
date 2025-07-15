@@ -1,0 +1,53 @@
+{
+  "scenario_id": "real_estate-pm-13389",
+  "title": "Handle Property Damage Caused by a Tenant",
+  "description": "A tenant causes significant damage to a property that exceeds their security deposit (e.g., breaks a window).",
+  "use_case": "Property Management",
+  "core_function": "Tenant Relations & Renewals",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Document the damage with photos and get a quote for the repair.",
+      "expected_outcome": "Agent has evidence of the damage and its cost.",
+      "required_tools": [
+        "take_photos",
+        "request_vendor_quote"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a formal notice to the tenant, demanding payment for the repair cost, citing the relevant clause in their lease.",
+      "expected_outcome": "The tenant is formally notified of their financial responsibility.",
+      "required_tools": [
+        "generate_demand_letter"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "If the tenant refuses to pay, file a claim in small claims court or with a collections agency to recover the costs.",
+      "expected_outcome": "Formal collection or legal action is initiated.",
+      "required_tools": [
+        "file_small_claims_case"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

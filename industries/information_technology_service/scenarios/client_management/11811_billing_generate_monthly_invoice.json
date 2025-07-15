@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-cm-11811",
+  "title": "Billing - Generate Monthly Recurring Invoice",
+  "description": "The finance department needs to generate and send the standard monthly recurring service invoices to all clients.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Billing & Invoicing",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "In the PSA tool, run the monthly billing process for a specific client.",
+      "expected_outcome": "The system generates an invoice based on the client's recurring service contract.",
+      "required_tools": [
+        "run_billing_process"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the generated invoice for accuracy, ensuring all recurring services and user counts are correct.",
+      "expected_outcome": "The invoice is verified to be accurate.",
+      "required_tools": [
+        "review_generated_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Email the finalized invoice to the client's billing contact.",
+      "expected_outcome": "The client successfully receives their monthly invoice.",
+      "required_tools": [
+        "email_invoice"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

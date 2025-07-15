@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ae-12096",
+  "title": "Manage a Live TV Call-In Segment",
+  "description": "A producer for a live TV news show must screen callers for a call-in segment with a political analyst.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Community Interaction",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Answer incoming calls from viewers.",
+      "expected_outcome": "The producer is connected to a viewer.",
+      "required_tools": [
+        "phone_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Briefly speak with the caller to understand their question and vet them for clarity and appropriateness.",
+      "expected_outcome": "The producer screens the caller and their question.",
+      "required_tools": [
+        "phone_system"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Place the best callers in a queue to be put on the air.",
+      "expected_outcome": "A queue of vetted callers is ready for the host.",
+      "required_tools": [
+        "call_queue_management_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

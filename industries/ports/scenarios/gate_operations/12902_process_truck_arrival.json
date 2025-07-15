@@ -1,0 +1,54 @@
+{
+  "scenario_id": "ports-go-12902",
+  "title": "Process a Truck Arriving at the Gate",
+  "description": "A truck arrives at the port gate to pick up an import container. The gate clerk must process its entry.",
+  "use_case": "Gate & Landside Operations",
+  "core_function": "Gate Processing & Appointments",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the truck license plate and container number from the gate's OCR camera system.",
+      "expected_outcome": "Clerk's system correctly displays the truck and container identifiers.",
+      "required_tools": [
+        "get_ocr_gate_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the truck has a valid appointment (VBS) and the container has been cleared by customs.",
+      "expected_outcome": "Clerk confirms a valid appointment and 'Customs Cleared' status for the container.",
+      "required_tools": [
+        "check_vbs_appointment",
+        "check_container_customs_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a job ticket to the driver with the container's yard location and instruct them to proceed.",
+      "expected_outcome": "A ticket is printed, and the gate barrier is opened.",
+      "required_tools": [
+        "issue_gate_ticket",
+        "open_gate_barrier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

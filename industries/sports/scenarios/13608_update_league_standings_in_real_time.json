@@ -1,0 +1,66 @@
+{
+  "scenario_id": "sports-lm-13608",
+  "title": "Update League Standings in Real Time",
+  "description": "As a game ends, an agent must immediately update the official league standings.",
+  "use_case": "League & Competition Management",
+  "core_function": "Standings & Results Management",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the final score and official result of the completed game.",
+      "expected_outcome": "Agent receives the final score from the official scorer.",
+      "required_tools": [
+        "get_final_game_result"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the win/loss records for both teams involved.",
+      "expected_outcome": "Agent successfully updates the records for the two teams.",
+      "required_tools": [
+        "update_team_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Recalculate the league standings based on the new records.",
+      "expected_outcome": "Agent successfully re-ranks all teams in the league.",
+      "required_tools": [
+        "recalculate_league_standings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Publish the updated standings to the league website and mobile app.",
+      "expected_outcome": "Agent pushes the new standings to all public-facing platforms.",
+      "required_tools": [
+        "publish_updated_standings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "og-mid-12766",
+  "title": "Manage Pipeline Hydrostatic Test",
+  "description": "An integrity engineer manages a hydrostatic pressure test on a newly constructed pipeline to ensure it is safe to operate.",
+  "use_case": "Midstream",
+  "core_function": "Compliance & Safety",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Develop a hydrotest plan, specifying the test pressure (e.g., 1.25 times max operating pressure) and duration.",
+      "expected_outcome": "A detailed and compliant test plan is created.",
+      "required_tools": [
+        "create_hydrotest_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Monitor the pressure in the pipeline segment in real-time as it is filled with water and brought up to the test pressure.",
+      "expected_outcome": "The pressure is monitored and held steady at the target test pressure.",
+      "required_tools": [
+        "get_realtime_pressure_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Analyze the pressure data over the test duration. A stable pressure confirms no leaks. Generate the final test report.",
+      "expected_outcome": "The test is successful, and a certified report is generated for regulatory filing.",
+      "required_tools": [
+        "analyze_pressure_test_data",
+        "generate_test_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cm-12444",
+  "title": "Set Up Ad Dayparting",
+  "description": "An account manager wants to schedule ads to run only during business hours (9 AM - 5 PM, Monday-Friday) to target B2B customers.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Paid Search (SEM)",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Navigate to the ad scheduling settings for the target campaign.",
+      "expected_outcome": "Agent finds the correct settings in the ad platform.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a custom ad schedule for Monday to Friday, from 9:00 to 17:00.",
+      "expected_outcome": "Agent successfully inputs the desired schedule.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Save the new ad schedule.",
+      "expected_outcome": "The campaign is now configured to only run ads during the specified times.",
+      "required_tools": [
+        "ads_manager_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tourism-ha-13929",
+  "title": "Redeem Loyalty Points for Stay",
+  "description": "A loyalty program member wants to book a room using their points.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Loyalty & Guest Relations",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the customer's loyalty account and check their points balance.",
+      "expected_outcome": "Agent finds the customer has enough points for a free night.",
+      "required_tools": [
+        "get_loyalty_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check for award night availability for the customer's desired dates.",
+      "expected_outcome": "Agent confirms a standard room is available for a points redemption.",
+      "required_tools": [
+        "check_award_availability"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create the reservation using points and confirm the booking with the customer.",
+      "expected_outcome": "Agent successfully books the award stay and deducts the points.",
+      "required_tools": [
+        "book_award_stay"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "journalism-ri-12090",
+  "title": "Develop Story Idea from Public Data",
+  "description": "A data journalist browses a city's open data portal looking for potential stories.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Story Research & Development",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Scan the city's open data portal for newly released or interesting datasets.",
+      "expected_outcome": "Agent identifies a dataset on restaurant health code violations.",
+      "required_tools": [
+        "web_browser"
+      ],
+      "success_criteria": [
+        {
+          "metric": "discovery_effectiveness",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Download and analyze the dataset, looking for patterns or outliers.",
+      "expected_outcome": "Agent finds that violations have increased by 50% in the last year.",
+      "required_tools": [
+        "data_analysis_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Formulate a story pitch based on the finding: 'Restaurant health code violations are on the rise across the city.'",
+      "expected_outcome": "A data-driven story idea is developed.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "insight_quality",
+          "threshold": 0.95
+        }
+      ]
+    }
+  ]
+}

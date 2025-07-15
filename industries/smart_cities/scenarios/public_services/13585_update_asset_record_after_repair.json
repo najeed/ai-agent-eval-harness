@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-pg-13585",
+  "title": "Update Asset Record After Repair",
+  "description": "A maintenance crew has just repaired a broken water pump. An operator must update the asset's records.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Smart Asset Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a completed work order for the repair of 'Water Pump #4'.",
+      "expected_outcome": "Agent acknowledges the completed work.",
+      "required_tools": [
+        "get_work_order_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Locate 'Water Pump #4' in the asset management database.",
+      "expected_outcome": "Agent finds the correct asset record.",
+      "required_tools": [
+        "get_asset_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Add a new entry to the asset's maintenance history, detailing the repair work done and the date.",
+      "expected_outcome": "Agent successfully updates the maintenance log for the asset.",
+      "required_tools": [
+        "update_asset_maintenance_log"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

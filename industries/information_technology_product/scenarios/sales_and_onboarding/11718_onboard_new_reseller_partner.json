@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-sl-11718",
+  "title": "Onboard New Reseller Partner",
+  "description": "A new reseller partner has signed a contract and needs to be set up in the system and trained.",
+  "use_case": "Sales & Account Management",
+  "core_function": "Partner & Channel Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new partner account in the CRM.",
+      "expected_outcome": "Agent successfully sets up the new partner in the system.",
+      "required_tools": [
+        "create_partner_account"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Grant the partner access to the partner portal, which contains marketing materials and deal registration.",
+      "expected_outcome": "Agent provisions access to the partner portal.",
+      "required_tools": [
+        "provision_portal_access"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a welcome and training session with the new partner.",
+      "expected_outcome": "Agent successfully schedules the partner onboarding session.",
+      "required_tools": [
+        "schedule_meeting"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

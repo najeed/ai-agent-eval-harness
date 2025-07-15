@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-ind-13769",
+  "title": "Claim Credit for Other Dependents",
+  "description": "A taxpayer is supporting their elderly parent who lives with them and wants to claim them as a dependent.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Deductions & Credits Optimization",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Verify that the parent meets the criteria to be a qualifying relative.",
+      "expected_outcome": "Agent confirms the parent meets the gross income and support tests.",
+      "required_tools": [
+        "verify_qualifying_relative_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Add the parent as a dependent on the tax return.",
+      "expected_outcome": "Agent correctly enters the parent's information.",
+      "required_tools": [
+        "enter_dependent_info"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Claim the non-refundable Credit for Other Dependents.",
+      "expected_outcome": "Agent correctly applies the credit to the taxpayer's return.",
+      "required_tools": [
+        "calculate_other_dependent_credit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

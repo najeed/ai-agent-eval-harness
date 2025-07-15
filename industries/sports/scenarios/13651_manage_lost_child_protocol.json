@@ -1,0 +1,50 @@
+{
+  "scenario_id": "sports-vo-13651",
+  "title": "Manage Lost Child Protocol",
+  "description": "A parent reports their child is missing at the stadium. The security team must execute the 'lost child' protocol.",
+  "use_case": "Venue & Event Operations",
+  "core_function": "Venue Safety & Security",
+  "industry": "Sports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get a description of the child and their last known location from the parent.",
+      "expected_outcome": "Agent has all the necessary details about the missing child.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Immediately notify all security and event staff with the child's description.",
+      "expected_outcome": "Agent sends a broadcast alert to all staff radios.",
+      "required_tools": [
+        "broadcast_to_staff_radios"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Monitor surveillance cameras in the child's last known area.",
+      "expected_outcome": "Agent begins reviewing camera footage to try and locate the child.",
+      "required_tools": [
+        "get_camera_feed_by_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

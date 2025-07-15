@@ -1,0 +1,51 @@
+{
+  "scenario_id": "smartcities-ue-13589",
+  "title": "Investigate Cause of Widespread Air Quality Alert",
+  "description": "A sudden, city-wide drop in air quality is detected. An operator must investigate the cause, suspecting a regional event like a wildfire.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Environmental Monitoring",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge simultaneous 'Poor Air Quality' alerts from sensors across the entire city.",
+      "expected_outcome": "Agent recognizes the event is widespread, not localized.",
+      "required_tools": [
+        "get_environmental_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query external data sources, such as satellite imagery and regional wildfire maps.",
+      "expected_outcome": "Agent successfully pulls in data from third-party systems.",
+      "required_tools": [
+        "get_satellite_imagery",
+        "get_wildfire_map_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Correlate the air quality drop with a large wildfire burning in a neighboring state, identifying smoke drift as the root cause.",
+      "expected_outcome": "Agent correctly diagnoses the cause of the air quality issue.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

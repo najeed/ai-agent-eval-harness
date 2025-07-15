@@ -1,0 +1,52 @@
+{
+  "scenario_id": "telecom-no-13861",
+  "title": "Diagnose Cell Tower Failure - Backhaul",
+  "description": "A cell tower is online but not passing traffic. The agent suspects a backhaul link failure.",
+  "use_case": "Network Operations",
+  "core_function": "Fault Management",
+  "industry": "Telecom",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Ping the cell tower's management interface to confirm it is responsive.",
+      "expected_outcome": "The ping is successful, indicating the tower has power and is running.",
+      "required_tools": [
+        "ping_network_element"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the status of the fiber backhaul link connected to the tower.",
+      "expected_outcome": "Agent finds the backhaul link status is 'Down'.",
+      "required_tools": [
+        "get_backhaul_link_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a ticket for the fiber optics team to investigate the physical link.",
+      "expected_outcome": "Agent creates a detailed ticket for the correct team.",
+      "required_tools": [
+        "create_trouble_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

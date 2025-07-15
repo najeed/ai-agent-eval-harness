@@ -1,0 +1,48 @@
+{
+  "scenario_id": "legal-pm-12190",
+  "title": "Create a Case Budget",
+  "description": "A client has requested a budget for a new litigation matter. A senior associate needs to create a phased budget.",
+  "use_case": "Law Practice Management",
+  "core_function": "Case Management & Intake",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Break the litigation into phases (e.g., 'Initial Pleadings', 'Discovery', 'Summary Judgment', 'Trial').",
+      "expected_outcome": "Agent creates a structured outline of the case lifecycle.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each phase, estimate the number of attorney and paralegal hours required.",
+      "expected_outcome": "Agent estimates the time commitment for each phase.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "planning_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Using the firm's billing rates, calculate the estimated legal fees for each phase and the total estimated cost.",
+      "expected_outcome": "Agent produces a detailed budget spreadsheet.",
+      "required_tools": [
+        "spreadsheet_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

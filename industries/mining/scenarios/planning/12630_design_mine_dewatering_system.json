@@ -1,0 +1,52 @@
+{
+  "scenario_id": "mining-plan-12630",
+  "title": "Design Mine Dewatering System",
+  "description": "A planning engineer designs a dewatering system for a new open pit mine, including sump locations, pumps, and pipelines.",
+  "use_case": "Mine Planning & Engineering",
+  "core_function": "Ventilation & Services Design",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Estimate the expected groundwater inflow and rainfall runoff into the pit over the life of the mine.",
+      "expected_outcome": "A water balance model is created, showing the volume of water to be pumped.",
+      "required_tools": [
+        "run_hydrology_model"
+      ],
+      "success_criteria": [
+        {
+          "metric": "estimation_accuracy",
+          "threshold": 0.85
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Determine the required pumping capacity for each phase of the mine's life.",
+      "expected_outcome": "The required pump sizes and number of pumps are calculated.",
+      "required_tools": [
+        "calculate_pumping_capacity"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Design the layout of sumps, pumps, and pipelines on the mine plan, ensuring the system can be expanded as the pit gets deeper.",
+      "expected_outcome": "A complete dewatering system design is created.",
+      "required_tools": [
+        "design_dewatering_layout"
+      ],
+      "success_criteria": [
+        {
+          "metric": "planning_completeness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_service-sd-11800",
+  "title": "Incident - Laptop Won't Boot",
+  "description": "An end-user reports that their company-issued laptop is not starting up and is showing a 'No Bootable Device' error.",
+  "use_case": "Service Desk & End-User Support",
+  "core_function": "Incident & Request Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new ticket in the PSA, documenting the user's details and the specific error message.",
+      "expected_outcome": "A new ticket is created with all relevant initial information.",
+      "required_tools": [
+        "create_ticket"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Access the client's documentation to check the age and warranty status of the laptop.",
+      "expected_outcome": "Agent finds the laptop is 4 years old and out of warranty.",
+      "required_tools": [
+        "get_client_documentation"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Diagnose the issue as a likely hard drive failure and arrange for a replacement laptop to be configured and shipped to the user.",
+      "expected_outcome": "Agent correctly diagnoses the hardware failure and initiates the laptop replacement process.",
+      "required_tools": [
+        "create_asset_replacement_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-ri-12094",
+  "title": "Verify Authenticity of a Leaked Document",
+  "description": "A reporter receives a supposedly leaked document. They must take steps to verify it is real before reporting on it.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Data Journalism & Fact-Checking",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze the document for any signs of forgery, such as inconsistencies in formatting, logos, or language compared to known genuine documents.",
+      "expected_outcome": "A preliminary analysis of the document's physical characteristics is completed.",
+      "required_tools": [
+        "document_viewer"
+      ],
+      "success_criteria": [
+        {
+          "metric": "analytical_accuracy",
+          "threshold": 0.9
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the factual claims within the document against known facts.",
+      "expected_outcome": "Agent cross-references details in the document with public information.",
+      "required_tools": [
+        "search_web"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Attempt to find a source within the relevant organization who can confirm or deny the document's authenticity.",
+      "expected_outcome": "The reporter seeks independent confirmation from a trusted source.",
+      "required_tools": [
+        "search_contact_database",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "source_management",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

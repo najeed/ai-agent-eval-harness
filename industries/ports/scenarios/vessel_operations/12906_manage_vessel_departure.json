@@ -1,0 +1,53 @@
+{
+  "scenario_id": "ports-vo-12906",
+  "title": "Manage a Vessel Departure",
+  "description": "A vessel has completed cargo operations and is ready to depart. The operator must coordinate its sailing.",
+  "use_case": "Vessel Operations",
+  "core_function": "Berth & Pilotage Management",
+  "industry": "Ports",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the Estimated Time of Departure (ETD) from the vessel's agent.",
+      "expected_outcome": "Operator receives and logs the ETD.",
+      "required_tools": [
+        "log_vessel_etd"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule pilot, tugs, and mooring gang services for the ETD.",
+      "expected_outcome": "All necessary departure services are booked in the system.",
+      "required_tools": [
+        "schedule_pilot_tugs",
+        "schedule_mooring_gang"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Notify the Vessel Traffic Service (VTS) of the planned departure to ensure a clear channel.",
+      "expected_outcome": "The VTS acknowledges the sailing plan and confirms the departure window.",
+      "required_tools": [
+        "notify_vts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

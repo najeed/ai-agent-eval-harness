@@ -1,0 +1,50 @@
+{
+  "scenario_id": "wholesale-cr-14356",
+  "title": "Handle a Product Catalog Update Request",
+  "description": "A retailer notices that a product in the online catalog has an incorrect description. They report it to customer support.",
+  "use_case": "Customer & Retailer Support",
+  "core_function": "Product & Catalog Inquiries",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the report from the retailer about the incorrect product description.",
+      "expected_outcome": "Agent understands which product has the error.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Verify the correct product description from the master product information system.",
+      "expected_outcome": "Agent finds the correct description.",
+      "required_tools": [
+        "get_master_product_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the product description in the online catalog.",
+      "expected_outcome": "Agent successfully corrects the description on the website.",
+      "required_tools": [
+        "update_product_catalog_entry"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

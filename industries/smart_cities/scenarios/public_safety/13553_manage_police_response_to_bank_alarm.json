@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-ps-13553",
+  "title": "Manage Police Response to Bank Alarm",
+  "description": "A silent alarm is triggered at a downtown bank. An operator must coordinate the police response.",
+  "use_case": "Public Safety & Security",
+  "core_function": "Emergency Response",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a silent alarm notification from 'First City Bank'.",
+      "expected_outcome": "Agent acknowledges the high-priority alarm.",
+      "required_tools": [
+        "get_alarm_notifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Dispatch the nearest patrol units and provide them with a live feed from the bank's exterior cameras.",
+      "expected_outcome": "Agent sends units and provides them with visual intel.",
+      "required_tools": [
+        "dispatch_emergency_unit",
+        "share_camera_feed"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Access the building's floor plan from the city database and send it to the responding officers' terminals.",
+      "expected_outcome": "Agent provides tactical information to the officers.",
+      "required_tools": [
+        "get_building_floorplan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

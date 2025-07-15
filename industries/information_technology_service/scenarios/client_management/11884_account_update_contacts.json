@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_service-cm-11884",
+  "title": "Account Management - Update Client Contacts",
+  "description": "A client informs their account manager that their primary point of contact has left the company.",
+  "use_case": "Client & Contract Management",
+  "core_function": "Account & Relationship Management",
+  "industry": "Information Technology Service",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the information and ask for the name and details of the new primary contact.",
+      "expected_outcome": "The account manager gathers the new contact's information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Update the primary contact information in the PSA tool.",
+      "expected_outcome": "The client record in the PSA is updated.",
+      "required_tools": [
+        "update_psa_contact"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a welcome email to the new primary contact, introducing themself and the service.",
+      "expected_outcome": "A positive relationship is initiated with the new contact.",
+      "required_tools": [
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

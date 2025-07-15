@@ -1,0 +1,64 @@
+{
+  "scenario_id": "information_technology_product-po-11745",
+  "title": "API Performance Degradation",
+  "description": "An alert indicates that the p95 latency for a key API endpoint has exceeded its SLO.",
+  "use_case": "Product Operations & Reliability (SRE)",
+  "core_function": "Incident & Outage Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge the latency alert.",
+      "expected_outcome": "Agent takes ownership of the alert.",
+      "required_tools": [
+        "acknowledge_alert"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the application performance monitoring (APM) tool to trace the slow requests.",
+      "expected_outcome": "Agent finds the slowdown is caused by an external API call to a third-party service.",
+      "required_tools": [
+        "view_apm_traces"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Check the status page of the third-party service.",
+      "expected_outcome": "Agent confirms the third-party service is experiencing a partial outage.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Update the company's own status page to inform customers about the issue with the third-party dependency.",
+      "expected_outcome": "Agent provides transparent communication to customers.",
+      "required_tools": [
+        "update_status_page"
+      ],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

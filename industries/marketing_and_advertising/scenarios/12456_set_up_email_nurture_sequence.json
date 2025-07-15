@@ -1,0 +1,66 @@
+{
+  "scenario_id": "marketing-cm-12456",
+  "title": "Set Up an Email Nurture Sequence",
+  "description": "A marketer needs to create a 3-part email nurture sequence for new leads who download an ebook.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Email & Marketing Automation",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create an automated workflow triggered when a user submits the ebook download form.",
+      "expected_outcome": "Agent sets up the correct trigger for the sequence.",
+      "required_tools": [
+        "email_marketing_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Schedule the first email (delivering the ebook) to be sent immediately.",
+      "expected_outcome": "Agent adds the first email to the workflow.",
+      "required_tools": [
+        "email_marketing_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Schedule a second, follow-up email with related content to be sent 3 days later.",
+      "expected_outcome": "Agent adds a time delay and the second email.",
+      "required_tools": [
+        "email_marketing_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Schedule a third email with a soft call-to-action (e.g., 'schedule a demo') to be sent 5 days after that.",
+      "expected_outcome": "Agent completes the 3-part nurture sequence.",
+      "required_tools": [
+        "email_marketing_platform_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

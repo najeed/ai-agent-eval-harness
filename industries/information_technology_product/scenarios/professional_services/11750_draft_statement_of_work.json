@@ -1,0 +1,50 @@
+{
+  "scenario_id": "information_technology_product-ps-11750",
+  "title": "Draft Statement of Work (SOW)",
+  "description": "Following a successful discovery phase, a consultant needs to draft an SOW for a standard implementation project.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Project Scoping & SOW",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Select the appropriate SOW template for a 'Standard Implementation'.",
+      "expected_outcome": "Consultant chooses the correct template from the document library.",
+      "required_tools": [
+        "get_sow_template"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Fill in the SOW with the customer's details, project scope, timeline, and cost, based on the discovery document.",
+      "expected_outcome": "Consultant creates a detailed and accurate SOW.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send the draft SOW to the customer for review and signature.",
+      "expected_outcome": "Consultant sends the SOW to the customer.",
+      "required_tools": [
+        "send_for_signature"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

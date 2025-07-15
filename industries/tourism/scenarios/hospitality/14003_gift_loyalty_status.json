@@ -1,0 +1,51 @@
+{
+  "scenario_id": "tourism-ha-14003",
+  "title": "Gift Loyalty Status",
+  "description": "A top-tier loyalty member wants to use their annual benefit to gift Gold status to a family member.",
+  "use_case": "Hospitality & Accommodations",
+  "core_function": "Loyalty & Guest Relations",
+  "industry": "Tourism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve the member's loyalty profile and confirm they have an unused 'Gift Status' benefit available.",
+      "expected_outcome": "Agent confirms the member is eligible to gift status.",
+      "required_tools": [
+        "get_loyalty_account",
+        "check_member_benefits"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Collect the name and email address of the family member who will receive the gifted status.",
+      "expected_outcome": "Agent gathers the recipient's information.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process the status gift, upgrading the recipient's account to Gold and marking the benefit as used on the primary member's account.",
+      "expected_outcome": "Agent successfully processes the request, and the recipient's account is upgraded.",
+      "required_tools": [
+        "gift_loyalty_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-sl-11722",
+  "title": "Process Partner Deal Registration",
+  "description": "A reseller partner submits a new deal registration for a lead they have sourced.",
+  "use_case": "Sales & Account Management",
+  "core_function": "Partner & Channel Management",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive the deal registration request from the partner portal.",
+      "expected_outcome": "Agent reviews the submitted lead details.",
+      "required_tools": [
+        "get_partner_deal_registrations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the CRM to ensure the lead is not an existing customer or already in the sales pipeline (de-duplication).",
+      "expected_outcome": "Agent confirms the lead is new and not an existing opportunity.",
+      "required_tools": [
+        "search_crm_for_lead"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Approve the deal registration, linking the new opportunity to the partner's account.",
+      "expected_outcome": "Agent approves the registration, ensuring the partner will get credit for the deal.",
+      "required_tools": [
+        "approve_deal_registration"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

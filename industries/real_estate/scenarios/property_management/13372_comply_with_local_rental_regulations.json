@@ -1,0 +1,53 @@
+{
+  "scenario_id": "real_estate-pm-13372",
+  "title": "Comply with Local Rental Regulations",
+  "description": "A city passes a new ordinance requiring all rental properties to be registered. A property manager must comply for their entire portfolio.",
+  "use_case": "Property Management",
+  "core_function": "Leasing & Tenant Screening",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the new city ordinance to understand the registration requirements and deadline.",
+      "expected_outcome": "Agent is fully aware of the new legal requirements.",
+      "required_tools": [
+        "review_legal_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Compile a list of all managed properties within that city.",
+      "expected_outcome": "A complete list of affected properties is generated.",
+      "required_tools": [
+        "query_property_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Complete and submit the registration form and fee for each property before the deadline.",
+      "expected_outcome": "All properties are successfully registered with the city.",
+      "required_tools": [
+        "submit_online_form",
+        "process_payment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "compliance_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

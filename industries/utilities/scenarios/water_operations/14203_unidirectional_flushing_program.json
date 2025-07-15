@@ -1,0 +1,52 @@
+{
+  "scenario_id": "utils-wo-14203",
+  "title": "Plan Unidirectional Flushing Program",
+  "description": "A water quality engineer is planning a unidirectional flushing program to clean water mains and improve water quality in a specific neighborhood.",
+  "use_case": "Water & Wastewater Operations",
+  "core_function": "Asset Management",
+  "industry": "Utilities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Using a hydraulic model, design a flushing sequence (which valves and hydrants to open/close) that will achieve the necessary scouring velocity in the pipes.",
+      "expected_outcome": "System generates an optimized, step-by-step flushing plan.",
+      "required_tools": [
+        "generate_flushing_plan"
+      ],
+      "success_criteria": [
+        {
+          "metric": "plan_completeness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create work orders for the field crews based on the flushing plan.",
+      "expected_outcome": "System creates a series of linked work orders for the crews.",
+      "required_tools": [
+        "create_batch_work_orders"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Generate notifications for the affected customers, letting them know about the potential for temporary discolored water.",
+      "expected_outcome": "System creates a customer notification list and message.",
+      "required_tools": [
+        "generate_customer_notifications"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

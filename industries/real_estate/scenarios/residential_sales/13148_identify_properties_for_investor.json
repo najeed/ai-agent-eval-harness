@@ -1,0 +1,53 @@
+{
+  "scenario_id": "realestate-rs-13148",
+  "title": "Identify Properties for an Investor",
+  "description": "An investor client is looking for properties with high rental yield potential. The agent needs to find suitable options.",
+  "use_case": "Residential & Commercial Sales",
+  "core_function": "Valuation & Market Analysis",
+  "industry": "Real Estate",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search the MLS for multi-family properties or single-family homes in areas with strong rental demand.",
+      "expected_outcome": "Agent searches for 2-4 unit properties in specific zip codes known for rentals.",
+      "required_tools": [
+        "search_mls_for_actives"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "For each potential property, estimate the market rent based on rental comparables.",
+      "expected_outcome": "Agent uses a rental data tool to find average rents for similar properties in the area.",
+      "required_tools": [
+        "get_rental_comparables"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Calculate the estimated Gross Rental Yield for the top 3 properties and present them to the investor.",
+      "expected_outcome": "A summary report showing the potential yield for each property is created and sent to the client.",
+      "required_tools": [
+        "calculate_rental_yield",
+        "generate_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

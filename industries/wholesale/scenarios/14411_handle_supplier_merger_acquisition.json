@@ -1,0 +1,50 @@
+{
+  "scenario_id": "wholesale-sp-14411",
+  "title": "Handle a Supplier Merger/Acquisition",
+  "description": "A key supplier is acquired by another company. A procurement manager must update the supplier records and understand any changes.",
+  "use_case": "Supplier & Procurement Management",
+  "core_function": "Supplier Relationship Management",
+  "industry": "Wholesale",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive notification of the merger/acquisition.",
+      "expected_outcome": "Agent is aware of the change.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact the new parent company to get updated contact and remittance information.",
+      "expected_outcome": "Agent gets the new supplier details.",
+      "required_tools": [
+        "contact_supplier"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_gathering_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Update the supplier record in the system with the new information.",
+      "expected_outcome": "Agent successfully updates the supplier's master file.",
+      "required_tools": [
+        "update_supplier_record"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

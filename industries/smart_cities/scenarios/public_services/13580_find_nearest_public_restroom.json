@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-pg-13580",
+  "title": "Find Nearest Public Restroom",
+  "description": "A tourist uses a city information kiosk to find the nearest available public restroom.",
+  "use_case": "Public Services & Governance",
+  "core_function": "Public Information & Alerting",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a request from a kiosk for the nearest public restroom.",
+      "expected_outcome": "The system gets the kiosk's location.",
+      "required_tools": [
+        "get_kiosk_location"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Query the public asset database for all 'Public Restroom' assets, filtering for those that are currently 'Open' and not 'Out of Service'.",
+      "expected_outcome": "The system retrieves a list of available restrooms.",
+      "required_tools": [
+        "query_assets_by_type_and_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Display a map on the kiosk screen showing the route to the nearest available restroom.",
+      "expected_outcome": "The system provides the user with clear directions.",
+      "required_tools": [
+        "display_map_on_kiosk"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "legal-ldr-12171",
+  "title": "File a Document Under Seal",
+  "description": "An attorney needs to file a document that contains highly confidential trade secrets, requiring it to be filed under seal.",
+  "use_case": "Litigation & Dispute Resolution",
+  "core_function": "Pleadings & Motions Practice",
+  "industry": "Legal",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Draft a motion to file under seal, explaining to the court why the information is confidential and requires protection.",
+      "expected_outcome": "Agent drafts the necessary motion.",
+      "required_tools": [
+        "document_drafting_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a redacted, public version of the document with the confidential information blacked out.",
+      "expected_outcome": "Agent creates the public version of the file.",
+      "required_tools": [
+        "redaction_tool"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Electronically file the motion to seal, the redacted public version, and submit the unredacted version to the court through the proper sealed filing procedure.",
+      "expected_outcome": "Agent correctly follows the complex e-filing procedure for sealed documents.",
+      "required_tools": [
+        "ecf_filing_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

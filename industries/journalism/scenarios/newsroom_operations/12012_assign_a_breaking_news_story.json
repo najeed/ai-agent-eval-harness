@@ -1,0 +1,53 @@
+{
+  "scenario_id": "journalism-no-12012",
+  "title": "Assign a Breaking News Story",
+  "description": "An editor needs to assign a breaking news story to the most appropriate available reporter.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Assignment & Workflow",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Review the list of on-duty reporters and their current assignments.",
+      "expected_outcome": "Agent gets a list of available reporters.",
+      "required_tools": [
+        "get_reporter_schedules"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify a reporter who is not on a deadline and is physically closest to the event.",
+      "expected_outcome": "Agent selects the best-positioned reporter for the assignment.",
+      "required_tools": [
+        "get_reporter_locations"
+      ],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Assign the story to the selected reporter in the newsroom management system and send them a notification.",
+      "expected_outcome": "The reporter is officially assigned and alerted.",
+      "required_tools": [
+        "assign_story",
+        "send_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

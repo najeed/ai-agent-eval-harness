@@ -1,0 +1,53 @@
+{
+  "scenario_id": "smartcities-ue-13579",
+  "title": "Detect Gas Leak in Utility Network",
+  "description": "A methane sensor in a gas utility pipeline reports a significant leak. An operator must initiate an emergency response.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Smart Grid & Energy Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Receive a 'Gas Leak Detected' alert with a specific location from a pipeline sensor.",
+      "expected_outcome": "Agent acknowledges the critical safety alert.",
+      "required_tools": [
+        "get_gas_system_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Remotely shut off the gas valves on either side of the leak to isolate the section.",
+      "expected_outcome": "Agent successfully operates the valves to stop the flow of gas.",
+      "required_tools": [
+        "control_gas_valve"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a gas utility repair crew and the fire department to the location.",
+      "expected_outcome": "Agent dispatches both utility and emergency response teams.",
+      "required_tools": [
+        "dispatch_utility_crew",
+        "dispatch_emergency_unit"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

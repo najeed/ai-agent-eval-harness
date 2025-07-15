@@ -1,0 +1,52 @@
+{
+  "scenario_id": "og-up-12702",
+  "title": "Optimize ESP Performance",
+  "description": "A production engineer analyzes real-time data from an Electrical Submersible Pump (ESP) to optimize its frequency for maximum oil production without causing damage.",
+  "use_case": "Upstream",
+  "core_function": "Production Operations",
+  "industry": "Oil and Gas",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve real-time sensor data for the target well's ESP, including frequency, intake pressure, and motor temperature.",
+      "expected_outcome": "Live data stream for the ESP is established and visualized.",
+      "required_tools": [
+        "get_realtime_sensor_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze the ESP performance curve against the current operating conditions to identify optimization potential.",
+      "expected_outcome": "The engineer determines the optimal operating frequency.",
+      "required_tools": [
+        "analyze_esp_performance_curve"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 0.95
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Send a command to the SCADA system to adjust the ESP frequency to the new, optimized setpoint.",
+      "expected_outcome": "The ESP frequency is successfully adjusted, and production rate increases.",
+      "required_tools": [
+        "set_esp_frequency"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

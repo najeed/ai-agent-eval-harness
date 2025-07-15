@@ -1,0 +1,52 @@
+{
+  "scenario_id": "information_technology_product-ps-11799",
+  "title": "Send Post-Project CSAT Survey",
+  "description": "After a project is closed, a project manager sends a Customer Satisfaction (CSAT) survey to the main project sponsor.",
+  "use_case": "Professional Services & Implementation",
+  "core_function": "Project Scoping & SOW",
+  "industry": "Information Technology Product",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Identify the primary contact/sponsor for the recently closed project.",
+      "expected_outcome": "Project manager finds the correct contact person.",
+      "required_tools": [
+        "get_customer_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send the standard post-project CSAT survey.",
+      "expected_outcome": "The survey is successfully sent to the customer.",
+      "required_tools": [
+        "send_survey"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Review the submitted feedback and share it with the project team.",
+      "expected_outcome": "The team receives feedback on their performance.",
+      "required_tools": [
+        "analyze_survey_results"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

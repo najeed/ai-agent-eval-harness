@@ -1,0 +1,50 @@
+{
+  "scenario_id": "journalism-ri-12051",
+  "title": "Conduct an Off-the-Record Briefing",
+  "description": "A source is willing to provide background information to help a reporter understand a complex topic, but does not want to be quoted. The reporter must conduct an 'off-the-record' briefing.",
+  "use_case": "Reporting & Investigation",
+  "core_function": "Source & Interview Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Before the meeting, clearly establish the ground rules with the source, confirming the conversation is 'off the record'.",
+      "expected_outcome": "Both parties agree on the terms of the conversation.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "During the meeting, take detailed notes for personal understanding, but do not record the conversation.",
+      "expected_outcome": "Agent captures the information for background context without creating a record that could identify the source.",
+      "required_tools": [
+        "note_taking_app"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Use the information learned to find other, on-the-record sources or public documents that can confirm the information.",
+      "expected_outcome": "The off-the-record information is used as a roadmap for further, verifiable reporting.",
+      "required_tools": [
+        "search_public_records_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "journalistic_integrity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-ops-12658",
+  "title": "Manage Underground Dewatering",
+  "description": "An underground operator inspects and manages the pumps and sumps that keep their work area dry.",
+  "use_case": "Mine Operations",
+  "core_function": "Underground Production",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Perform a daily inspection of the local sump and pumps, checking for leaks or unusual noises.",
+      "expected_outcome": "The daily inspection is completed.",
+      "required_tools": [
+        "complete_inspection_checklist"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Notice that the sump level is high and one of the two pumps is not running.",
+      "expected_outcome": "The operator identifies a problem with one of the pumps.",
+      "required_tools": [
+        "check_sump_level",
+        "check_pump_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_identification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Attempt to restart the pump. When it fails, create a high-priority work order for an electrician to troubleshoot the pump's motor.",
+      "expected_outcome": "A corrective maintenance work order is created in the system for the failed pump.",
+      "required_tools": [
+        "create_maintenance_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

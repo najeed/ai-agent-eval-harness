@@ -1,0 +1,53 @@
+{
+  "scenario_id": "mining-proc-12662",
+  "title": "Reconcile Mine to Mill",
+  "description": "A metallurgist reconciles the tons and grade of ore that the mine claimed to have sent to the plant with what the plant actually received and processed.",
+  "use_case": "Processing & Metallurgy",
+  "core_function": "Metallurgical Accounting",
+  "industry": "Mining",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Get the total tons and grade delivered to the crusher for the month, as reported by the mine.",
+      "expected_outcome": "The mine's production figures are retrieved.",
+      "required_tools": [
+        "get_mine_production_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Get the total tons and grade processed by the mill for the month, as measured by the plant's weightometers and samplers.",
+      "expected_outcome": "The plant's processed figures are retrieved.",
+      "required_tools": [
+        "get_plant_feed_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Compare the two sets of figures and calculate the variance. Investigate any significant discrepancy.",
+      "expected_outcome": "The reconciliation shows a 5% variance in tons, which triggers an investigation into the calibration of the mine's truck scales.",
+      "required_tools": [
+        "calculate_reconciliation_variance",
+        "log_investigation_request"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 0.98
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ue-13504",
+  "title": "Detect and Locate Water Main Break",
+  "description": "Flow sensors in the water network indicate a significant pressure drop, suggesting a major leak or main break.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Water & Wastewater Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Acknowledge a 'Major Pressure Loss' alarm in 'Water Sector 7'.",
+      "expected_outcome": "Agent identifies the alarm and the affected water sector.",
+      "required_tools": [
+        "get_water_system_alerts"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Analyze flow rate data from sensors within the sector to triangulate the likely location of the break.",
+      "expected_outcome": "The system analyzes the data and suggests the break is located near 'Oak Street'.",
+      "required_tools": [
+        "analyze_water_flow_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "root_cause_analysis_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Dispatch a water utility repair crew to the suspected location to confirm and begin repairs.",
+      "expected_outcome": "Agent creates a work order and dispatches a crew.",
+      "required_tools": [
+        "dispatch_utility_crew"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "scenario_id": "smartcities-ue-13569",
+  "title": "Optimize Solar Panel Cleaning Schedule",
+  "description": "An operator analyzes energy output and soiling data from solar panels on city buildings to schedule cleanings only when needed.",
+  "use_case": "Utilities & Environment",
+  "core_function": "Smart Grid & Energy Management",
+  "industry": "Smart Cities",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve power output and soiling sensor data from the city's solar panel arrays.",
+      "expected_outcome": "Agent gets the performance data for all solar assets.",
+      "required_tools": [
+        "get_solar_panel_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Identify panels where energy output has dropped by more than 10% due to soiling.",
+      "expected_outcome": "Agent generates a list of solar arrays that require cleaning.",
+      "required_tools": [
+        "analyze_soiling_impact"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create work orders for the maintenance crew to clean only the identified, underperforming panels.",
+      "expected_outcome": "Agent schedules cleanings based on condition rather than a fixed schedule.",
+      "required_tools": [
+        "create_work_order"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

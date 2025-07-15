@@ -1,0 +1,52 @@
+{
+  "scenario_id": "tax-ind-13729",
+  "title": "Prepare Return with Dividend Income",
+  "description": "A taxpayer received Form 1099-DIV for dividends from stocks.",
+  "use_case": "Individual Tax Preparation & Filing",
+  "core_function": "Data Collection & Input",
+  "industry": "Tax",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Enter the data from Form 1099-DIV, distinguishing between ordinary and qualified dividends.",
+      "expected_outcome": "Agent correctly inputs the dividend amounts into the tax software.",
+      "required_tools": [
+        "enter_1099div_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Calculate the tax on qualified dividends at the preferential capital gains rates.",
+      "expected_outcome": "Agent ensures the qualified dividends are taxed correctly.",
+      "required_tools": [
+        "calculate_qualified_dividend_tax"
+      ],
+      "success_criteria": [
+        {
+          "metric": "calculation_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Ensure the total dividend income is correctly reported on the final return.",
+      "expected_outcome": "Agent verifies the accuracy of the final tax calculation.",
+      "required_tools": [
+        "finalize_return"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

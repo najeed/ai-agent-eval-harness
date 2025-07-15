@@ -1,0 +1,52 @@
+{
+  "scenario_id": "marketing-cm-12440",
+  "title": "Set Up Conversion Tracking",
+  "description": "For a new website, a marketer needs to set up conversion tracking to measure form submissions.",
+  "use_case": "Campaign Management & Execution",
+  "core_function": "Campaign Monitoring & Optimization",
+  "industry": "Marketing and Advertising",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Create a new 'thank you' page that users are redirected to after submitting the form.",
+      "expected_outcome": "Agent creates the destination page.",
+      "required_tools": [
+        "content_management_system_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Create a new 'destination' goal in Google Analytics that tracks views of the 'thank you' page.",
+      "expected_outcome": "Agent successfully sets up the goal in Google Analytics.",
+      "required_tools": [
+        "google_analytics_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "parameter_setting_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Import the new goal into Google Ads to enable conversion tracking for ad campaigns.",
+      "expected_outcome": "Agent successfully links Google Analytics and Google Ads for conversion tracking.",
+      "required_tools": [
+        "google_ads_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

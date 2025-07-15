@@ -1,0 +1,52 @@
+{
+  "scenario_id": "lw-im-12255",
+  "title": "Adjust Inventory for Warehouse Damage",
+  "description": "A forklift operator accidentally damages a pallet of goods in the warehouse. The damaged items must be adjusted out of inventory.",
+  "use_case": "Inventory Management",
+  "core_function": "Inventory Control",
+  "industry": "Logistics and Warehousing",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "The operator reports the damage incident, specifying the item, location, and quantity damaged.",
+      "expected_outcome": "A damage report is created in the system.",
+      "required_tools": [
+        "create_damage_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_entry_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "A supervisor reviews the report and approves the inventory adjustment.",
+      "expected_outcome": "The supervisor authorizes the write-off.",
+      "required_tools": [
+        "approve_damage_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Process an inventory adjustment to remove the damaged quantity from stock, using 'Warehouse Damage' as the reason.",
+      "expected_outcome": "The system inventory is updated to reflect the loss.",
+      "required_tools": [
+        "create_inventory_adjustment"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

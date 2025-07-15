@@ -1,0 +1,38 @@
+{
+  "scenario_id": "journalism-no-12064",
+  "title": "Set up a Team Meeting",
+  "description": "An editor needs to schedule a meeting with three reporters and a photo editor to plan upcoming coverage.",
+  "use_case": "Newsroom Operations",
+  "core_function": "Internal Collaboration",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Check the calendars of all five team members to find a mutually available time slot.",
+      "expected_outcome": "Agent identifies a 30-minute slot where everyone is free.",
+      "required_tools": [
+        "calendar_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Send a calendar invitation to all attendees with the meeting time, location (or video call link), and a brief agenda.",
+      "expected_outcome": "A meeting invitation is sent to all required personnel.",
+      "required_tools": [
+        "calendar_software"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

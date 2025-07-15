@@ -1,0 +1,67 @@
+{
+  "scenario_id": "pharma-rd-12884",
+  "title": "Perform Virtual Screening of Compounds",
+  "description": "A computational chemist wants to perform a virtual screen of a large compound library against a protein target structure.",
+  "use_case": "Research & Development",
+  "core_function": "Drug Discovery & Target Identification",
+  "industry": "Pharmaceuticals and Life Sciences",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Prepare the 3D structure of the target protein for docking.",
+      "expected_outcome": "Agent loads the protein structure and prepares it by adding hydrogens and assigning charges.",
+      "required_tools": [
+        "prepare_protein_for_docking"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Prepare the library of millions of compounds for screening.",
+      "expected_outcome": "Agent processes the compound library to generate 3D conformations for each molecule.",
+      "required_tools": [
+        "prepare_compound_library"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Run the virtual screening (docking) simulation.",
+      "expected_outcome": "Agent runs the docking program, which calculates a binding score for each compound.",
+      "required_tools": [
+        "run_virtual_screening"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Analyze the results and select the top-scoring compounds for purchase and in vitro testing.",
+      "expected_outcome": "Agent sorts the results by score and selects the top 1000 compounds for follow-up.",
+      "required_tools": [
+        "analyze_docking_results",
+        "generate_compound_purchase_list"
+      ],
+      "success_criteria": [
+        {
+          "metric": "data_analysis_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

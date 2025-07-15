@@ -1,0 +1,64 @@
+{
+  "scenario_id": "journalism-ae-12061",
+  "title": "Create a 'Best Of' Collection",
+  "description": "At the end of the year, an editor wants to create a collection of the publication's 10 best investigative reports from that year.",
+  "use_case": "Audience Engagement & Analytics",
+  "core_function": "Archive Management",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Search the archive for all articles published in the last year with the tag 'investigative'.",
+      "expected_outcome": "A list of all investigative pieces is generated.",
+      "required_tools": [
+        "search_digital_archive"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Review the list with senior editors to select the 10 most impactful reports.",
+      "expected_outcome": "A curated list of the top 10 stories is created.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "decision_making_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Create a new 'collection' page in the CMS.",
+      "expected_outcome": "A new page is created to house the collection.",
+      "required_tools": [
+        "cms_interface"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Add links and summaries for the 10 selected articles to the collection page and publish it.",
+      "expected_outcome": "The 'Best of the Year' collection is live.",
+      "required_tools": [
+        "cms_interface"
+      ],
+      "success_criteria": [
+        {
+          "metric": "process_adherence",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

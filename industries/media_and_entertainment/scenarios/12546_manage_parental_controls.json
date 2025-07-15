@@ -1,0 +1,48 @@
+{
+  "scenario_id": "media-bo-12546",
+  "title": "User Sets Up Parental Controls",
+  "description": "A user wants to set up parental controls on their streaming account to restrict content for their children.",
+  "use_case": "Broadcasting & Streaming Operations",
+  "core_function": "Content Delivery & CDN",
+  "industry": "Media and Entertainment",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Guide the user to the parental control settings in their account.",
+      "expected_outcome": "Agent provides clear instructions for navigating to the settings page.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Explain how to create a child's profile and set a content rating limit (e.g., PG).",
+      "expected_outcome": "Agent clearly explains the process of setting a rating restriction.",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "communication_clarity",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Verify from the backend that the new profile and its restrictions have been saved correctly.",
+      "expected_outcome": "Agent checks the system and confirms the parental controls are active.",
+      "required_tools": [
+        "get_user_profile_settings"
+      ],
+      "success_criteria": [
+        {
+          "metric": "verification_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

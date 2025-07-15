@@ -1,0 +1,54 @@
+{
+  "scenario_id": "journalism-cp-12036",
+  "title": "Write an Obituary",
+  "description": "A prominent community member has passed away. A reporter must write a respectful and comprehensive obituary.",
+  "use_case": "Content Production & Editing",
+  "core_function": "Writing & Drafting",
+  "industry": "Journalism",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Gather key biographical details: date of birth, date of death, education, career, and family members.",
+      "expected_outcome": "Agent compiles all the necessary factual information.",
+      "required_tools": [
+        "search_news_archives",
+        "search_public_records_database"
+      ],
+      "success_criteria": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Contact a family member or close friend to get personal anecdotes and quotes about the deceased.",
+      "expected_outcome": "Agent gathers personal stories that add color and humanity to the obituary.",
+      "required_tools": [
+        "phone_call_log",
+        "send_email"
+      ],
+      "success_criteria": [
+        {
+          "metric": "source_management",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Draft the obituary, combining the biographical facts with the personal remembrances in a respectful tone.",
+      "expected_outcome": "Agent writes a well-structured and sensitive obituary.",
+      "required_tools": [
+        "draft_document"
+      ],
+      "success_criteria": [
+        {
+          "metric": "writing_quality",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}
