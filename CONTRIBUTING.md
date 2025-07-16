@@ -7,7 +7,7 @@ First off, thank you for considering contributing! Your help is essential for bu
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by our Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior. [docs/CODE_OF_CONDUCT.md][![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](docs/CODE_OF_CONDUCT.md)
+This project and everyone participating in it is governed by our Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior. [docs/CODE_OF_CONDUCT.md](docs/CODE_OF_CONDUCT.md)[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](docs/CODE_OF_CONDUCT.md)
 
 ## How Can I Contribute?
 
