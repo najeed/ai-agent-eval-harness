@@ -38,9 +38,18 @@ You can run an evaluation from the command line by specifying the industry and t
     pip install -e .
     pip install Flask requests
     ```
-3.  From a different bash window, run the server to instantiate the example agent:
+
+3.  From a different terminal, run the server to instantiate the example agent:
     ```bash
     python ./sample_agent/agent_app.py
+    ```
+    Test the agent is running by issuing a curl request from another terminal:
+    ```bash
+    curl -X POST http://localhost:5001/execute_task -H "Content-Type: application/json" -d "{\"task_description\": \"First, identify the customer and their current speed tier.\"}"
+    ```
+    You should see a response similar to: 
+    ```
+    {"action":"call_tool","summary":"Identified customer Jane Doe on plan 100 Mbps Fiber.","tool_name":"get_customer_details","tool_output":{"customer_name":"Jane Doe","plan":"100 Mbps Fiber","status":"success"},"tool_params":{"customer_id":"cust_123"}}
     ```
 
 4.  Run the main script:
