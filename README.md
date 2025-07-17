@@ -36,11 +36,16 @@ You can run an evaluation from the command line by specifying the industry and t
 2.  (Optional) Build the eval_runner module:
     ```bash
     pip install -e .
+    pip install Flask requests
+    ```
+3.  From a different bash window, run the server to instantiate the example agent:
+    ```bash
+    python ./sample_agent/agent_app.py
     ```
 
-2.  Run the main script:
+4.  Run the main script:
     ```bash
-    python -m eval_runner --industry manufacturing --scenario maintenance_repair
+    python -m eval_runner --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json
     ```
 
 This will load the specified scenario(s), run the evaluation engine against the criteria, and print a detailed report to the console.
