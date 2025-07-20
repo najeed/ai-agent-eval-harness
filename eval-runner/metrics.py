@@ -1,5 +1,6 @@
 # eval-runner/metrics.py
 
+
 def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) -> float:
     """
     Calculates the correctness of tool calls by the agent.
@@ -12,8 +13,11 @@ def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) ->
     Returns:
         A score of 1.0 for a perfect match, 0.0 otherwise.
     """
-    print(f"      [Metrics] Comparing expected tools {expected_tools} vs. actual {actual_tools}")
+    print(
+        f"      [Metrics] Comparing expected tools {expected_tools} vs. actual {actual_tools}"
+    )
     return 1.0 if set(expected_tools) == set(actual_tools) else 0.0
+
 
 def calculate_generic_accuracy() -> float:
     """
@@ -26,6 +30,7 @@ def calculate_generic_accuracy() -> float:
     """
     # TODO: Replace with actual metric logic (e.g., NLP-based comparison, exact match).
     return 1.0
+
 
 def calculate_communication_clarity() -> float:
     """
