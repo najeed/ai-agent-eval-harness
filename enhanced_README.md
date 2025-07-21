@@ -66,8 +66,8 @@ ai-agent-eval-harness/
 ├── industries/                 # Industry-specific evaluation assets
 │   ├── manufacturing/
 │   │   ├── scenarios/         # JSON scenario definitions
-│   │   │   ├── maintenance_repair.json
-│   │   │   └── quality_assurance_control.json
+│   │   │   ├── maintenance_repair
+│   │   │   └── quality_assurance_control
 │   │   └── datasets/          # Supporting data files
 │   │       ├── equipment_data.csv
 │   │       └── failure_logs.jsonl
