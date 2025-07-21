@@ -29,7 +29,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-dev.txt
-        pip install pytest flake8 Flask requests black
+        pip install pytest flake8 Flask requests black jsonschema
     
     - name: Lint with flake8
       run: |

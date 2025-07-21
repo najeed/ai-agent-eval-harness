@@ -38,7 +38,7 @@
       "task_id": "task-3",
       "description": "View the schedule for the upcoming week.",
       "expected_outcome": "The system displays the associate's assigned shifts, including dates, times, and roles.",
-      "required_outcome_success_criteria": [
+      "success_criteria": [
         {
           "metric": "information_retrieval_accuracy",
           "threshold": 1.0
