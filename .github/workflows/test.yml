@@ -27,8 +27,5 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -e .
-        pip install pytest flake8 Flask requests black
+        pip install pytest pytest-cov flake8 Flask requests black
         pytest --cov=eval_runner
-#       python -m pip install --upgrade pip
-#       pip install -r requirements-dev.txt
-#       pip install pytest flake8 Flask requests black
