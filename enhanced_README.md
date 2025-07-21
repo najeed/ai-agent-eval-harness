@@ -1,7 +1,7 @@
 # 🤖 AI Agent Evaluation Harness
 
-[![CI](https://github.com/ai-agent-eval-harness/repository/workflows/CI/badge.svg)]
-[![Tests](https://github.com/najeed/ai-agent-eval-harness/workflows/Tests/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
+[![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
+[![Tests](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/test.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Contributors](https://img.shields.io/github/contributors/najeed/ai-agent-eval-harness)](https://github.com/najeed/ai-agent-eval-harness/graphs/contributors)
