@@ -42,7 +42,8 @@ def main():
     for scenario_path_part in args.scenario:
         # Construct the full path to the scenario file or directory
         full_path = base_path / args.industry / "scenarios" / scenario_path_part
-
+        if scenario_path_part=="all":
+            scenario_path_part = "" # Handle 'all' as a special case to include all scenarios in that industry
         if not full_path.exists():
             print(f"⚠️ Warning: Path not found, skipping: {full_path}")
             continue
