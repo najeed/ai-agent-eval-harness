@@ -1,3 +1,11 @@
+"""
+__main__.py
+
+This is the entry point for the AI Agent Evaluation Harness. It parses command-line arguments, loads scenarios, runs the evaluation engine, and generates reports.
+
+Typical usage:
+    python -m eval-runner --industry accounting --scenario accounts_payable/001.json
+"""
 # eval-runner/__main__.py
 
 import argparse
@@ -12,9 +20,16 @@ def main():
     """
     Main entry point for the AI Agent Evaluation Harness.
 
-    Parses command-line arguments to determine which evaluations to run,
-    loads the necessary scenarios, executes the evaluation engine,
-    and generates a report of the results.
+    Parses command-line arguments to determine which evaluations to run, loads the necessary scenarios, executes the evaluation engine, and generates a report of the results.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Example:
+        $ python -m eval-runner --industry accounting --scenario accounts_payable/001.json
     """
     parser = argparse.ArgumentParser(description="AI Agent Evaluation Harness")
     parser.add_argument(

@@ -1,17 +1,33 @@
+"""
+metrics.py
+
+This module defines evaluation metrics for the AI Agent Evaluation Harness.
+It provides functions to assess agent performance on tool usage, accuracy, and communication clarity.
+
+Typical usage example:
+    from eval_runner import metrics
+    score = metrics.calculate_tool_call_correctness(["search"], ["search"])
+"""
 # eval-runner/metrics.py
 
 
 def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) -> float:
     """
     Calculates the correctness of tool calls by the agent.
-    A simple metric: 1.0 if the sets of tools match exactly, 0.0 otherwise.
+    Returns 1.0 if the sets of tools match exactly, 0.0 otherwise.
 
     Args:
-        expected_tools: A list of tool names the agent was expected to use.
-        actual_tools: A list of tool names the agent actually used.
+        expected_tools (list): A list of tool names the agent was expected to use.
+        actual_tools (list): A list of tool names the agent actually used.
 
     Returns:
-        A score of 1.0 for a perfect match, 0.0 otherwise.
+        float: A score of 1.0 for a perfect match, 0.0 otherwise.
+
+    Example:
+        >>> calculate_tool_call_correctness(["search"], ["search"])
+        1.0
+        >>> calculate_tool_call_correctness(["search"], ["lookup"])
+        0.0
     """
     print(
         f"      [Metrics] Comparing expected tools {expected_tools} vs. actual {actual_tools}"
@@ -21,12 +37,15 @@ def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) ->
 
 def calculate_generic_accuracy() -> float:
     """
-    A placeholder function to simulate a successful metric calculation.
-    In a real scenario, this would involve comparing the agent's output
-    to a ground-truth answer.
+    Placeholder function to simulate a successful metric calculation.
+    In a real scenario, this would involve comparing the agent's output to a ground-truth answer.
 
     Returns:
-        A float score, hardcoded to 1.0 for this simulation.
+        float: A score, hardcoded to 1.0 for this simulation.
+
+    Example:
+        >>> calculate_generic_accuracy()
+        1.0
     """
     # TODO: Replace with actual metric logic (e.g., NLP-based comparison, exact match).
     return 1.0
@@ -34,11 +53,15 @@ def calculate_generic_accuracy() -> float:
 
 def calculate_communication_clarity() -> float:
     """
-    A placeholder function to simulate a successful communication clarity check.
+    Placeholder function to simulate a successful communication clarity check.
     In a real scenario, this would involve NLP analysis of the agent's response.
 
     Returns:
-        A float score, hardcoded to 1.0 for this simulation.
+        float: A score, hardcoded to 1.0 for this simulation.
+
+    Example:
+        >>> calculate_communication_clarity()
+        1.0
     """
     # TODO: Replace with actual metric logic (e.g., NLP-based comparison).
     return 1.0

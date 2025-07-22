@@ -1,3 +1,14 @@
+"""
+engine.py
+
+This module provides the core evaluation engine for the AI Agent Evaluation Harness.
+It is responsible for executing scenario tasks by interacting with an AI agent API,
+evaluating the agent's performance using various metrics, and returning the results.
+
+Typical usage example:
+    from eval_runner import engine
+    results = engine.run_evaluation(scenario_dict)
+"""
 # eval-runner/engine.py
 
 import requests
@@ -12,18 +23,23 @@ AGENT_API_URL = os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")
 # set AGENT_API_URL=http://aievalharness.pythonanywhere.com/execute_task
 def run_evaluation(scenario: dict) -> list:
     """
-    Executes the evaluation for a given scenario.
-
-    This function iterates through the tasks defined in the scenario,
-    simulates an AI agent performing those tasks, and evaluates the
-    outcome against the defined success criteria.
+    Executes the evaluation for a given scenario by simulating an AI agent performing each task and evaluating the outcome.
 
     Args:
-        scenario: A dictionary containing the loaded scenario data.
+        scenario (dict): A dictionary containing the loaded scenario data. Must include 'scenario_id' and a list of 'tasks'.
 
     Returns:
-        A list of dictionaries, where each dictionary contains the
-        results for a single task.
+        list: A list of dictionaries, each containing the results for a single task, including metric scores and success status.
+
+    Example:
+        >>> scenario = {"scenario_id": "123", "tasks": [{"task_id": "t1", "description": "...", "success_criteria": [{"metric": "tool_call_correctness", "threshold": 1.0}]}]}
+        >>> results = run_evaluation(scenario)
+        >>> print(results)
+        [{"task_id": "t1", "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": True}]}]
+
+    Raises:
+        requests.exceptions.RequestException: If the agent API call fails.
+        json.JSONDecodeError: If the agent response is not valid JSON.
     """
     all_task_results = []
 
