@@ -14,6 +14,7 @@ An open-source, standardized framework for evaluating AI agent performance acros
 - Python 3.8 or higher
 - pip package manager
 - Git
+-   A curious mind and tinkering spirit
 
 ### Installation
 
