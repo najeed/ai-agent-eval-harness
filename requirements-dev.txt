@@ -1,9 +1,10 @@
 pytest>=7.0.0
 pytest-cov>=2.0.0
 flake8>=3.0.0
-Flask>=2.0.0
+Flask>=2.0.0,<3.0.0
+Werkzeug>=2.0.0,<3.0.0
 requests>=2.0.0
-jsonschema>=3.0.0
+jsonschema>=4.0.0
 black>=21.0.0
 
 # Additional development dependencies can be added here
