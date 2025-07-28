@@ -11,3 +11,8 @@ packages = ["eval_runner"]
 
 [tool.setuptools.package-dir]
 eval_runner = "eval-runner"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+python_files = ["test_*.py"]

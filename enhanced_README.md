@@ -345,3 +345,19 @@ This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENS
 Made with ❤️ by the AI Agent Evaluation community
 
 </div>
+
+## Running Tests
+
+To run the test suite and ensure code quality:
+
+1. Install development dependencies:
+   ```bash
+   pip install -r requirements-dev.txt
+   ```
+
+2. Run all tests using pytest:
+   ```bash
+   pytest
+   ```
+
+Test configuration is managed in `pyproject.toml`. All tests are located in the `tests/` directory. Ensure all tests pass before submitting changes.
