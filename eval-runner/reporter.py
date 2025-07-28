@@ -1,13 +1,30 @@
+"""
+reporter.py
+
+This module provides reporting utilities for the AI Agent Evaluation Harness.
+It generates and prints summary reports of evaluation results for scenarios and tasks.
+
+Typical usage example:
+    from eval_runner import reporter
+    reporter.generate_report(scenario_dict, results_list)
+"""
 # eval-runner/reporter.py
 
 
 def generate_report(scenario: dict, results: list):
     """
-    Generates and prints a summary report of the evaluation results.
+    Generates and prints a summary report of the evaluation results for a scenario.
 
     Args:
-        scenario: The dictionary of the scenario that was run.
-        results: The list of results from the evaluation engine.
+        scenario (dict): The dictionary of the scenario that was run.
+        results (list): The list of results from the evaluation engine.
+
+    Returns:
+        None
+
+    Example:
+        >>> from eval_runner import reporter
+        >>> reporter.generate_report(scenario, results)
     """
     print("\n" + "=" * 50)
     print("EVALUATION REPORT")
