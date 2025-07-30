@@ -1,4 +1,3 @@
-# .github/ISSUE_TEMPLATE/scenario_contribution.md
 ---
 name: Scenario Contribution
 about: Contribute a new evaluation scenario
