@@ -1,6 +1,12 @@
 <!-- README.md (root of the project) -->
 
-# AI Agent Evaluation Harness
+# 🤖 AI Agent Evaluation Harness
+
+[![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
+[![Tests](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/test.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Contributors](https://img.shields.io/github/contributors/najeed/ai-agent-eval-harness)](https://github.com/najeed/ai-agent-eval-harness/graphs/contributors)
 
 Welcome to the AI Agent Evaluation Harness, an open-source framework for assessing the capabilities of AI agents across a wide range of industries and use cases.
 
@@ -62,6 +68,27 @@ This will load the specified scenario(s), run the evaluation engine against the 
 ## How to Contribute
 
 This is a community-driven project, and we welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines on how to add new industries, scenarios, or improve the evaluation engine.
+
+Here are ways to get involved:
+
+### 🌟 Quick Contributions
+- ⭐ Star this repository
+- 🐛 [Report bugs](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=bug_report.md)
+- 💡 [Suggest features](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=feature_request.md)
+- 📖 Improve documentation
+
+### 🔨 Code Contributions
+- 🆕 [Good first issues](https://github.com/najeed/ai-agent-eval-harness/labels/good%20first%20issue)
+- 🧪 Add test scenarios
+- 🏭 [Contribute new industries](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=industry_request.md)
+- 🎯 [Create evaluation scenarios](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=scenario_contribution.md)
+
+### Contributors
+Thanks to all our contributors! 🙌
+
+<a href="https://github.com/najeed/ai-agent-eval-harness/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=najeed/ai-agent-eval-harness" />
+</a>
 
 ## License
 
