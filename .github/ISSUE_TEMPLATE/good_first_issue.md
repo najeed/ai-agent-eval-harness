@@ -1,4 +1,3 @@
-# .github/ISSUE_TEMPLATE/good_first_issue.md
 ---
 name: Good First Issue
 about: Create an issue suitable for new contributors

@@ -1,4 +1,3 @@
-# .github/ISSUE_TEMPLATE/documentation.md
 ---
 name: Documentation Improvement
 about: Improve or add documentation
