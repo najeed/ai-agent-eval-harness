@@ -1,4 +1,3 @@
-# .github/ISSUE_TEMPLATE/industry_request.md
 ---
 name: Industry Request
 about: Request support for a new industry
