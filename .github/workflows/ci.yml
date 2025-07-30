@@ -37,4 +37,52 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     
     - name: Test with pytest
-      run: pytest
+      run: pytest    
+        
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+#    - name: Build and push Docker image
+#      uses: docker/build-push-action@v4
+#      with:
+#        context: .
+#        push: true
+#        tags: ai-agent-eval-harness:latest
+#        cache-from: type=registry,ref=ai-agent-eval-harness:cache
+#        cache-to: type=registry,ref=ai-agent-eval-harness:cache,mode=max
+#        build-args: |
+#          PYTHON_VERSION=${{ matrix.python-version }}
+#        platforms: linux/amd64,linux/arm64
+#      env:
+#        DOCKER_BUILDKIT: 1
+
+#    - name: Notify on failure
+#      if: failure()
+#      run: echo "Tests failed on ${{ matrix.os }} with Python ${{ matrix.python-version }}"
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+#    - name: Notify on success
+#      if: success()
+#      run: echo "Tests passed on ${{ matrix.os }} with Python ${{ matrix.python-version }}"
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+#        MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+#        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+#        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+#        EMAIL_RECIPIENTS: ${{ secrets.EMAIL_RECIPIENTS }}
+#        EMAIL_SUBJECT: "CI Tests Passed"
+#        EMAIL_BODY: "All tests passed successfully on ${{ matrix.os }} with Python ${{ matrix.python-version }}."
+#        EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+#        EMAIL_SMTP_SERVER: ${{ secrets.EMAIL_SMTP_SERVER }}
+#        EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
+#        EMAIL_SMTP_USER: ${{ secrets.EMAIL_SMTP_USER }}
+#        EMAIL_SMTP_PASSWORD: ${{ secrets.EMAIL_SMTP_PASSWORD }}
+#        EMAIL_USE_TLS: ${{ secrets.EMAIL_USE_TLS }}
+#        EMAIL_USE_SSL: ${{ secrets.EMAIL_USE_SSL }}
+#        EMAIL_ATTACHMENT: ${{ secrets.EMAIL_ATTACHMENT }}
+#        EMAIL_ATTACHMENT_NAME: "ci_report.txt"
