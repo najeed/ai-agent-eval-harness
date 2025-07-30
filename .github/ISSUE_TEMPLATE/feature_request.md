@@ -1,10 +1,10 @@
-# .github/ISSUE_TEMPLATE/feature_request.md
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: '[FEATURE] '
-labels: ['enhancement']
+title: "[FEATURE] "
+labels: enhancement
 assignees: ''
+
 ---
 
 **Is your feature request related to a problem? Please describe.**
@@ -23,5 +23,3 @@ Add any other context or screenshots about the feature request here.
 - [ ] Small (1-2 days)
 - [ ] Medium (1 week)
 - [ ] Large (2+ weeks)
-
----
