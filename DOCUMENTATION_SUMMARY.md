@@ -1,7 +1,7 @@
 # Test Suite Documentation Summary
 
 ## Overview
-This document summarizes the comprehensive in-source documentation that has been added to the test suite for the AI Agent Evaluation Harness project. All documentation follows the Google style docstring format as requested.
+This document summarizes the comprehensive in-source documentation that has been added to the test suite for the AI Agent Evaluation Harness project. All documentation follows the Google-style docstring format.
 
 ## Documentation Added
 

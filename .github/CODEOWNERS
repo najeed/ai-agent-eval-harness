@@ -1,0 +1,19 @@
+        # Default owners for all files
+        * @najeed
+
+        # Owners for specific directories
+        /tests/ @aayam-bajaj
+        /schemas/ @najeed
+        /docs/ @devbm7
+        /eval-runner/ @devbm7
+        /sample_agent/ @najeed
+        /industries/ @najeed
+
+        # Owners for specific file types
+        *.json @najeed
+        *.yml @najeed
+        *.toml @najeed
+        *.png @najeed
+
+        # Overriding previous rules for specific files
+        #/industries/aerospace/scenarios/mro/*_schedule_engine_overhaul.json @someone_else

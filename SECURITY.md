@@ -16,7 +16,7 @@ We take the security of the AI Agent Evaluation Harness seriously. If you discov
 ### How to Report
 
 1. **Do NOT create a public GitHub issue** for security vulnerabilities
-2. Send an email to ai.eval.harness.contact+najeed@gmail.com with the subject line: "Security Vulnerability Report"
+2. Send an email to ai.eval.harness.contact+security@gmail.com with the subject line: "Security Vulnerability Report"
 3. Include the following information:
    - Description of the vulnerability
    - Steps to reproduce the issue
