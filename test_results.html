@@ -1,0 +1,142 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>AI Agent Evaluation Report</title>
+            
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+            .header { background-color: #f4f4f4; padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+            .summary { background-color: #e8f5e8; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+            .task-section { margin-bottom: 30px; }
+            table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+            .success { color: #28a745; font-weight: bold; }
+            .failure { color: #dc3545; font-weight: bold; }
+            .metric-success { background-color: #d4edda; }
+            .metric-failure { background-color: #f8d7da; }
+            .chart-container { margin: 20px 0; text-align: center; }
+        </style>
+        
+        </head>
+        <body>
+            
+        <div class="header">
+            <h1>Evaluation Report</h1>
+            <p><strong>Scenario:</strong> Process a Purchase Order-Backed Invoice (ac-ap-1)</p>
+            <p><strong>Industry:</strong> Accounting</p>
+            <p><strong>Description:</strong> An accountant receives a standard invoice from a supplier that has a corresponding purchase order and goods receipt note.</p>
+            <p><strong>Generated:</strong> 2025-08-19T11:29:19.849133</p>
+        </div>
+        
+        <div class="summary">
+            <h2>Summary</h2>
+            <p><strong>Total Tasks:</strong> 3</p>
+            <p><strong>Successful Tasks:</strong> <span class="success">0</span></p>
+            <p><strong>Failed Tasks:</strong> <span class="failure">3</span></p>
+            <p><strong>Success Rate:</strong> 0.00%</p>
+        </div>
+        
+            <div class="chart-container">
+                <h3>Success Rate Visualization</h3>
+                <canvas id="successChart" width="400" height="200"></canvas>
+            </div>
+            <div class="task-section"><h2>Task Details</h2>
+            <h3>Task: task-1 <span class="failure">[FAILURE]</span></h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Score</th>
+                        <th>Threshold</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+            
+                    <tr class="metric-failure">
+                        <td>data_extraction_accuracy</td>
+                        <td>0.00</td>
+                        <td>0.99</td>
+                        <td>❌</td>
+                    </tr>
+                </tbody></table>
+            <h3>Task: task-2 <span class="failure">[FAILURE]</span></h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Score</th>
+                        <th>Threshold</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+            
+                    <tr class="metric-failure">
+                        <td>verification_accuracy</td>
+                        <td>0.00</td>
+                        <td>1.00</td>
+                        <td>❌</td>
+                    </tr>
+                </tbody></table>
+            <h3>Task: task-3 <span class="failure">[FAILURE]</span></h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Score</th>
+                        <th>Threshold</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+            
+                    <tr class="metric-failure">
+                        <td>tool_call_correctness</td>
+                        <td>0.00</td>
+                        <td>1.00</td>
+                        <td>❌</td>
+                    </tr>
+                </tbody></table></div>
+            
+        <script>
+            // Simple canvas-based chart
+            const canvas = document.getElementById('successChart');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                const successful = 0;
+                const failed = 3;
+                const total = successful + failed;
+                
+                // Draw simple bar chart
+                const barWidth = 80;
+                const barSpacing = 100;
+                const maxHeight = 150;
+                
+                // Success bar
+                const successHeight = total > 0 ? (successful / total) * maxHeight : 0;
+                ctx.fillStyle = '#28a745';
+                ctx.fillRect(50, 200 - successHeight, barWidth, successHeight);
+                ctx.fillStyle = '#000';
+                ctx.fillText('Success: ' + successful, 50, 220);
+                
+                // Failure bar
+                const failureHeight = total > 0 ? (failed / total) * maxHeight : 0;
+                ctx.fillStyle = '#dc3545';
+                ctx.fillRect(50 + barSpacing, 200 - failureHeight, barWidth, failureHeight);
+                ctx.fillStyle = '#000';
+                ctx.fillText('Failed: ' + failed, 50 + barSpacing, 220);
+                
+                // Title
+                ctx.font = '16px Arial';
+                ctx.fillText('Task Results', 100, 30);
+            }
+        </script>
+        
+        </body>
+        </html>
+        
