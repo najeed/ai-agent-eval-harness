@@ -15,13 +15,14 @@ import requests
 import json
 import os
 from . import metrics
+from .result import EvaluationResult
 
 # Read the agent URL from an environment variable, with a default for local testing
 AGENT_API_URL = os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")
 
 
 # set AGENT_API_URL=http://aievalharness.pythonanywhere.com/execute_task
-def run_evaluation(scenario: dict) -> list:
+def run_evaluation(scenario: dict) -> EvaluationResult:
     """
     Executes the evaluation for a given scenario by simulating an AI agent performing each task and evaluating the outcome.
 
@@ -29,13 +30,14 @@ def run_evaluation(scenario: dict) -> list:
         scenario (dict): A dictionary containing the loaded scenario data. Must include 'scenario_id' and a list of 'tasks'.
 
     Returns:
-        list: A list of dictionaries, each containing the results for a single task, including metric scores and success status.
+        EvaluationResult: An EvaluationResult instance containing the scenario data and task results with export capabilities.
 
     Example:
         >>> scenario = {"scenario_id": "123", "tasks": [{"task_id": "t1", "description": "...", "success_criteria": [{"metric": "tool_call_correctness", "threshold": 1.0}]}]}
         >>> results = run_evaluation(scenario)
-        >>> print(results)
-        [{"task_id": "t1", "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": True}]}]
+        >>> results.export_csv("results.csv")
+        >>> results.export_json("results.json")
+        >>> results.export_html("report.html", include_charts=True)
 
     Raises:
         requests.exceptions.RequestException: If the agent API call fails.
@@ -125,4 +127,5 @@ def run_evaluation(scenario: dict) -> list:
 
         all_task_results.append(task_results)
 
-    return all_task_results
+    # Return an EvaluationResult instance with export capabilities
+    return EvaluationResult(scenario, all_task_results)

@@ -1,0 +1,4 @@
+scenario_id,scenario_title,scenario_description,industry,task_id,metric_name,score,threshold,success,timestamp
+ac-ap-1,Process a Purchase Order-Backed Invoice,An accountant receives a standard invoice from a supplier that has a corresponding purchase order and goods receipt note.,Accounting,task-1,data_extraction_accuracy,0.0,0.99,False,2025-08-19T11:28:43.821184
+ac-ap-1,Process a Purchase Order-Backed Invoice,An accountant receives a standard invoice from a supplier that has a corresponding purchase order and goods receipt note.,Accounting,task-2,verification_accuracy,0.0,1.0,False,2025-08-19T11:28:43.821184
+ac-ap-1,Process a Purchase Order-Backed Invoice,An accountant receives a standard invoice from a supplier that has a corresponding purchase order and goods receipt note.,Accounting,task-3,tool_call_correctness,0.0,1.0,False,2025-08-19T11:28:43.821184

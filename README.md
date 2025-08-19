@@ -65,6 +65,56 @@ You can run an evaluation from the command line by specifying the industry and t
 
 This will load the specified scenario(s), run the evaluation engine against the criteria, and print a detailed report to the console.
 
+### Export Results
+
+You can export evaluation results in multiple formats for analysis, reporting, and sharing:
+
+#### CSV Export
+Export results in CSV format for data analysis and Excel compatibility:
+```bash
+python -m eval_runner --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json --export csv --output results.csv
+```
+
+#### JSON Export
+Export results in JSON format for programmatic processing:
+```bash
+python -m eval_runner --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json --export json --output results.json
+```
+
+#### HTML Export
+Export results in HTML format for human-readable reports:
+```bash
+python -m eval_runner --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json --export html --output report.html
+```
+
+For HTML reports with visualization charts:
+```bash
+python -m eval_runner --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json --export html --output report.html --include-charts
+```
+
+**Note:** If `--output` is not specified, files will be automatically named using the scenario ID and timestamp.
+
+### Programmatic API
+
+You can also use the export functionality programmatically:
+
+```python
+from eval_runner import engine, loader
+
+# Load and run evaluation
+scenario = loader.load_scenario("path/to/scenario.json")
+results = engine.run_evaluation(scenario)
+
+# Export in different formats
+results.export_csv("results.csv")
+results.export_json("results.json")
+results.export_html("report.html", include_charts=True)
+
+# Access summary statistics
+summary = results.get_summary_stats()
+print(f"Success rate: {summary['success_rate']}%")
+```
+
 ## How to Contribute
 
 This is a community-driven project, and we welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines on how to add new industries, scenarios, or improve the evaluation engine.

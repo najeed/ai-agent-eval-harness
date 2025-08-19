@@ -45,6 +45,22 @@ def main():
         required=True,
         help="One or more scenario files or directories to run (e.g., 'customer_service/01_billing_dispute.json' or 'customer_service').",
     )
+    parser.add_argument(
+        "--export",
+        type=str,
+        choices=["csv", "json", "html"],
+        help="Export format for evaluation results (csv, json, or html).",
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        help="Output file path for exported results. If not specified, auto-generated filename will be used.",
+    )
+    parser.add_argument(
+        "--include-charts",
+        action="store_true",
+        help="Include charts in HTML export (only applicable for HTML format).",
+    )
 
     args = parser.parse_args()
 
@@ -111,6 +127,30 @@ def main():
         # 3. Generate and display the report
         print("📊 Generating report...")
         reporter.generate_report(scenario_data, results)
+        
+        # 4. Export results if requested
+        if args.export:
+            print(f"📤 Exporting results in {args.export.upper()} format...")
+            
+            # Generate output filename if not provided
+            if args.output:
+                output_path = args.output
+            else:
+                scenario_id = scenario_data.get('scenario_id', 'scenario')
+                timestamp = results.timestamp.replace(':', '-').replace('.', '-')
+                output_path = f"{scenario_id}_{timestamp}.{args.export}"
+            
+            try:
+                if args.export == "csv":
+                    results.export_csv(output_path)
+                elif args.export == "json":
+                    results.export_json(output_path)
+                elif args.export == "html":
+                    results.export_html(output_path, include_charts=args.include_charts)
+                    
+                print(f"✅ Results exported successfully to: {output_path}")
+            except Exception as e:
+                print(f"❌ Error exporting results: {e}")
 
     print("\n" + "=" * 80)
     print("✅ ALL EVALUATIONS FINISHED.")
