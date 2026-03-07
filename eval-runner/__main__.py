@@ -16,7 +16,9 @@ from pathlib import Path
 import sys
 
 
-def main():
+import asyncio
+
+async def main_async():
     """
     Main entry point for the AI Agent Evaluation Harness.
 
@@ -87,35 +89,47 @@ def main():
 
     print(f"\n✅ Discovered {len(scenarios_to_run)} total scenario(s) to run.")
 
-    # --- 2. Loop through and execute each scenario ---
+    # --- 2. Load all scenarios ---
+    loaded_scenarios = []
+    
     for i, scenario_path in enumerate(scenarios_to_run):
-        print("\n" + "#" * 80)
-        print(
-            f"RUNNING SCENARIO {i+1}/{len(scenarios_to_run)}: {scenario_path.relative_to(base_path)}"
-        )
-        print("#" * 80)
-
-        # 1. Load the evaluation scenario
         try:
             scenario_data = loader.load_scenario(scenario_path)
-            print(f"✅ Successfully loaded scenario: {scenario_data.get('title')}")
+            loaded_scenarios.append({"path": scenario_path, "data": scenario_data})
         except Exception as e:
-            print(f"❌ Error loading scenario: {e}")
-            continue  # Skip to the next scenario
+            print(f"❌ Error loading scenario {scenario_path}: {e}")
+            continue
 
-        # 2. Run the evaluation engine
-        print("⚙️  Running evaluation engine...")
-        results = engine.run_evaluation(scenario_data)
-        print("✅ Engine run complete.")
+    print(f"✅ Successfully loaded {len(loaded_scenarios)} scenarios.")
 
-        # 3. Generate and display the report
-        print("📊 Generating report...")
-        reporter.generate_report(scenario_data, results)
+    # --- 3. Execute all scenarios concurrently ---
+    print("\n" + "#" * 80)
+    print("⚙️  Running evaluation engine concurrently for all scenarios...")
+    print("#" * 80)
+
+    # Creating tasks for concurrent execution
+    tasks = []
+    for item in loaded_scenarios:
+        tasks.append(engine.run_evaluation(item["data"]))
+    
+    # Run them all
+    results_list = await asyncio.gather(*tasks)
+    print("✅ Engine runs complete.")
+
+    # --- 4. Generate and display reports sequentially ---
+    for item, results in zip(loaded_scenarios, results_list):
+        print("\n" + "#" * 80)
+        print(f"REPORT FOR: {item['path'].relative_to(base_path)}")
+        print("#" * 80)
+        reporter.generate_report(item["data"], results)
 
     print("\n" + "=" * 80)
     print("✅ ALL EVALUATIONS FINISHED.")
     print("=" * 80 + "\n")
 
+
+def main():
+    asyncio.run(main_async())
 
 if __name__ == "__main__":
     main()

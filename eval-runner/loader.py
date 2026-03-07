@@ -10,6 +10,7 @@ Typical usage example:
 """
 # eval-runner/loader.py
 
+import csv
 import json
 from pathlib import Path
 
@@ -47,20 +48,42 @@ def load_scenario(file_path: Path) -> dict:
             )
 
 
+
 def load_dataset(file_path: Path):
     """
-    Loads a dataset file (e.g., .jsonl, .csv). This is a placeholder and should be expanded to handle different file types.
-
+    Loads a dataset file (e.g., .jsonl, .csv).
+    
     Args:
         file_path (Path): The Path object pointing to the dataset file.
 
     Returns:
-        None
+        list: A list of dictionaries representing the dataset rows.
 
     Example:
         >>> from pathlib import Path
-        >>> load_dataset(Path('industries/accounting/datasets/sample.csv'))
+        >>> data = load_dataset(Path('industries/accounting/datasets/sample.csv'))
     """
-    # TODO: Implement dataset loading logic based on file extension.
-    print(f"   [Loader] Placeholder for loading dataset from: {file_path}")
-    pass
+    print(f"   [Loader] Loading dataset from: {file_path}")
+    if not file_path.exists():
+        raise FileNotFoundError(f"Dataset file not found at {file_path}")
+
+    dataset = []
+    
+    # Handle CSV
+    if file_path.suffix == '.csv':
+        with open(file_path, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                dataset.append(row)
+                
+    # Handle JSONL
+    elif file_path.suffix == '.jsonl':
+        with open(file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.strip():
+                    dataset.append(json.loads(line))
+                    
+    else:
+        print(f"   [Loader] Warning: Unsupported dataset format {file_path.suffix}")
+
+    return dataset

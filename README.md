@@ -28,7 +28,7 @@ The harness is organized into two main parts:
 ### Prerequisites
 
 -   Python 3.8+
--   A curious and tinkering spirit
+-   A curious mind and tinkering spirit
 
 ### Running an Evaluation
 

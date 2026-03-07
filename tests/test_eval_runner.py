@@ -74,7 +74,8 @@ def test_scenario_loading():
     assert len(scenario_data["tasks"]) > 0
 
 
-def test_basic_evaluation():
+@pytest.mark.asyncio
+async def test_basic_evaluation():
     """
     Test simple evaluation run execution.
     

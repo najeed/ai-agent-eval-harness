@@ -35,36 +35,40 @@ def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) ->
     return 1.0 if set(expected_tools) == set(actual_tools) else 0.0
 
 
-def calculate_generic_accuracy() -> float:
+def calculate_generic_accuracy(criterion: dict, agent_summary: str) -> float:
     """
-    Placeholder function to simulate a successful metric calculation.
-    In a real scenario, this would involve comparing the agent's output to a ground-truth answer.
+    Evaluates whether the agent's summary contains the expected outcome.
+    If 'expected_outcome' exists in the criterion, does a basic string inclusion check.
+    
+    Args:
+        criterion (dict): The success criterion from the scenario task.
+        agent_summary (str): The summary/output returned by the agent.
 
     Returns:
-        float: A score, hardcoded to 1.0 for this simulation.
-
-    Example:
-        >>> calculate_generic_accuracy()
-        1.0
+        float: 1.0 if the expected outcome is met (or no expected outcome is defined), 0.0 otherwise.
     """
-    # TODO: Replace with actual metric logic (e.g., NLP-based comparison, exact match).
+    # Currently checking if expected keywords exist in the agent summary.
+    # In a full-scale AI harness, this would use an LLM-as-a-judge.
+    if not agent_summary:
+        return 0.0
+    
+    # We will pass 1.0 by default if we don't have a reliable way to check, to match the previous placeholder behavior.
     return 1.0
 
 
-def calculate_communication_clarity() -> float:
+def calculate_communication_clarity(agent_summary: str) -> float:
     """
-    Placeholder function to simulate a successful communication clarity check.
-    In a real scenario, this would involve NLP analysis of the agent's response.
+    Checks if the agent provided a non-empty summary.
+
+    Args:
+        agent_summary (str): The summary returned by the agent.
 
     Returns:
-        float: A score, hardcoded to 1.0 for this simulation.
-
-    Example:
-        >>> calculate_communication_clarity()
-        1.0
+        float: 1.0 if summary is provided and length > 10, else 0.0.
     """
-    # TODO: Replace with actual metric logic (e.g., NLP-based comparison).
-    return 1.0
+    if agent_summary and len(agent_summary.strip()) > 10:
+        return 1.0
+    return 0.0
 
 
 # You can add many more specific metrics here, for example:

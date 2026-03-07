@@ -89,46 +89,28 @@ def test_generic_accuracy():
     """
     Test generic accuracy calculation functionality.
     
-    This test verifies that the generic accuracy metric function
-    returns the expected default score. The test ensures that
-    the metric calculation is working correctly and returns
-    a consistent value for basic accuracy assessment.
-    
-    Args:
-        None
-        
-    Returns:
-        None
-        
-    Raises:
-        AssertionError: If the calculated score is not 1.0
-        
-    Example:
-        Expected score: 1.0 (default accuracy score)
+    Verifies that calculate_generic_accuracy returns 1.0 when a non-empty
+    agent summary is provided, and 0.0 when it is empty.
     """
-    score = metrics.calculate_generic_accuracy()
+    criterion = {"metric": "information_retrieval_accuracy", "threshold": 0.8}
+    score = metrics.calculate_generic_accuracy(criterion, "Agent retrieved customer details successfully.")
     assert score == 1.0
+
+    score_empty = metrics.calculate_generic_accuracy(criterion, "")
+    assert score_empty == 0.0
 
 def test_communication_clarity():
     """
     Test communication clarity calculation functionality.
     
-    This test verifies that the communication clarity metric function
-    returns the expected default score. The test ensures that
-    the metric calculation is working correctly and returns
-    a consistent value for communication quality assessment.
-    
-    Args:
-        None
-        
-    Returns:
-        None
-        
-    Raises:
-        AssertionError: If the calculated score is not 1.0
-        
-    Example:
-        Expected score: 1.0 (default communication clarity score)
+    Verifies calculate_communication_clarity returns 1.0 for a sufficiently
+    long summary (>10 chars) and 0.0 for an empty or too-short summary.
     """
-    score = metrics.calculate_communication_clarity()
-    assert score == 1.0 
+    score = metrics.calculate_communication_clarity("The issue is with the local Wi-Fi. Guide provided.")
+    assert score == 1.0
+
+    score_short = metrics.calculate_communication_clarity("OK")
+    assert score_short == 0.0
+
+    score_empty = metrics.calculate_communication_clarity("")
+    assert score_empty == 0.0 
