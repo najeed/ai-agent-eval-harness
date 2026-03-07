@@ -2,7 +2,7 @@
 loader.py
 
 This module provides utilities for loading scenario and dataset files for the AI Agent Evaluation Harness.
-It supports loading scenario JSON files and includes a placeholder for dataset loading.
+It supports loading scenario JSON files with schema validation, and dataset loading for CSV/JSONL.
 
 Typical usage example:
     from eval_runner import loader
@@ -13,26 +13,36 @@ Typical usage example:
 import csv
 import json
 from pathlib import Path
+from jsonschema import validate, ValidationError
+
+# Load the schema once at module level
+_SCHEMA_PATH = Path(__file__).parent.parent / "schemas" / "scenario.schema.json"
+_SCENARIO_SCHEMA = None
+
+
+def _get_schema() -> dict:
+    """Lazy-loads and caches the scenario JSON schema."""
+    global _SCENARIO_SCHEMA
+    if _SCENARIO_SCHEMA is None:
+        with open(_SCHEMA_PATH, "r") as f:
+            _SCENARIO_SCHEMA = json.load(f)
+    return _SCENARIO_SCHEMA
 
 
 def load_scenario(file_path: Path) -> dict:
     """
-    Loads a scenario JSON file from the given path.
+    Loads and validates a scenario JSON file from the given path.
 
     Args:
         file_path (Path): The Path object pointing to the .json scenario file.
 
     Returns:
-        dict: A dictionary containing the scenario data.
+        dict: A dictionary containing the validated scenario data.
 
     Raises:
         FileNotFoundError: If the file does not exist.
         json.JSONDecodeError: If the file is not valid JSON.
-
-    Example:
-        >>> from pathlib import Path
-        >>> scenario = load_scenario(Path('industries/accounting/scenarios/accounts_payable/001.json'))
-        >>> print(scenario['scenario_id'])
+        ValueError: If the scenario fails schema validation.
     """
     print(f"   [Loader] Attempting to load from: {file_path}")
     if not file_path.exists():
@@ -41,11 +51,20 @@ def load_scenario(file_path: Path) -> dict:
     with open(file_path, "r") as f:
         try:
             scenario_data = json.load(f)
-            return scenario_data
         except json.JSONDecodeError as e:
             raise json.JSONDecodeError(
                 f"Error decoding JSON from {file_path}: {e.msg}", e.doc, e.pos
             )
+
+    # Validate against schema
+    try:
+        validate(instance=scenario_data, schema=_get_schema())
+    except ValidationError as e:
+        raise ValueError(
+            f"Schema validation failed for {file_path}: {e.message}"
+        )
+
+    return scenario_data
 
 
 

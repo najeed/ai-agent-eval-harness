@@ -18,52 +18,60 @@ Our goal is to create a standardized, community-driven benchmark for AI agent pe
 
 The harness is organized into two main parts:
 
--   `/industries`: Contains all the evaluation assets, categorized by industry. Each industry has:
+-   `/industries`: Contains all the evaluation assets (4,400+ scenarios), categorized by 44 industries. Each industry has:
     -   `/scenarios`: Detailed JSON files describing specific tasks and goals for an agent.
     -   `/datasets`: Supporting data files (`.csv`, `.jsonl`, etc.) needed for the scenarios.
 -   `/eval-runner`: A modular Python application to load scenarios, execute evaluations, and report on performance.
+    -   `engine.py` — Multi-turn conversation loop with agent API
+    -   `tool_sandbox.py` — In-process mock tool executor
+    -   `loader.py` — Scenario loading with schema validation + CSV/JSONL dataset loading
+    -   `metrics.py` — Metric calculations (tool correctness, accuracy, clarity)
+    -   `reporter.py` — Console report generation
+-   `/sample_agent`: A rule-based Flask agent for the telecom scenario.
+-   `/schemas`: JSON Schema definitions for scenario validation.
+-   `/tests`: 25 tests across 6 test files.
+-   `/docs`: API specs, evaluation guide, and contribution guides.
 
 ## Getting Started
 
 ### Prerequisites
 
 -   Python 3.8+
--   A curious mind and tinkering spirit
+-   pip
 
 ### Running an Evaluation
 
-You can run an evaluation from the command line by specifying the industry and the scenario file or folder. If a folder is specified, it iterates over all the files in that folder.
-
-1.  Navigate to the parent `ai-agent-eval-harness` directory:
+1.  Clone and install:
     ```bash
-    cd /path/to/ai-agent-eval-harness
-    ```
-
-2.  (Optional) Build the eval_runner module:
-    ```bash
+    git clone https://github.com/najeed/ai-agent-eval-harness.git
+    cd ai-agent-eval-harness
     pip install -e .
-    pip install Flask requests
+    pip install -r requirements.txt
     ```
 
-3.  From a different terminal, run the server to instantiate the example agent:
+2.  Start the sample agent (in a separate terminal):
     ```bash
     python ./sample_agent/agent_app.py
     ```
-    Test if the agent is running by issuing a curl request from another terminal:
-    ```bash
-    curl -X POST http://localhost:5001/execute_task -H "Content-Type: application/json" -d "{\"task_description\": \"First, identify the customer and their current speed tier.\"}"
-    ```
-    If the server is up, you should see a response similar to: 
-    ```
-    {"action":"call_tool","summary":"Identified customer Jane Doe on plan 100 Mbps Fiber.","tool_name":"get_customer_details","tool_output":{"customer_name":"Jane Doe","plan":"100 Mbps Fiber","status":"success"},"tool_params":{"customer_id":"cust_123"}}
-    ```
 
-4.  Run the main script:
+3.  Run the evaluation:
     ```bash
     python -m eval_runner --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json
     ```
 
-This will load the specified scenario(s), run the evaluation engine against the criteria, and print a detailed report to the console.
+### Running Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint URL |
+| `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
 
 ## How to Contribute
 

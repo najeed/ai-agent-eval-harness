@@ -64,8 +64,16 @@ def test_load_valid_scenario(tmp_path):
         "title": "Test Scenario",
         "industry": "test",
         "description": "A test scenario.",
+        "use_case": "Testing",
+        "core_function": "Unit Test",
         "tasks": [
-            {"task_id": "t1", "description": "Test task.", "required_tools": [], "success_criteria": []}
+            {
+                "task_id": "t1",
+                "description": "Test task.",
+                "expected_outcome": "Task completes successfully.",
+                "required_tools": [],
+                "success_criteria": []
+            }
         ]
     }
     scenario_file = tmp_path / "scenario.json"

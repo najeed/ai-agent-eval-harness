@@ -34,3 +34,31 @@ Each object in the `success_criteria` array links a metric to a threshold:
 -   `threshold`: The minimum score (from 0.0 to 1.0) required to pass this criterion.
 
 A task is only considered successful if **all** of its success criteria are met.
+
+## Async Execution (Phase 1)
+
+The evaluation harness runs scenarios concurrently using `asyncio.gather`. All scenarios discovered by the CLI are loaded first, then evaluated in parallel via `aiohttp`. The `AGENT_API_URL` environment variable controls the target agent endpoint.
+
+## Dataset Loading (Phase 1)
+
+The `loader.load_dataset()` function supports loading `.csv` and `.jsonl` dataset files for use as task context:
+
+```python
+from pathlib import Path
+from eval_runner import loader
+
+data = loader.load_dataset(Path("industries/accounting/datasets/sample.csv"))
+# Returns: [{"col1": "val1", ...}, ...]
+```
+
+## Available Metrics (Phase 1)
+
+| Metric | Function | Description |
+|---|---|---|
+| `tool_call_correctness` | `calculate_tool_call_correctness` | Exact set-match of expected vs. actual tools |
+| `*` (any other) | `calculate_generic_accuracy` | Checks if agent returned a non-empty summary |
+| `communication_clarity` | `calculate_communication_clarity` | Checks summary length > 10 characters |
+
+## Schema Validation (Phase 2)
+
+Scenarios are validated against `schemas/scenario.schema.json` at load time. Any scenario that fails validation will raise a `ValueError` with a clear error message.
