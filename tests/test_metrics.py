@@ -113,4 +113,42 @@ def test_communication_clarity():
     assert score_short == 0.0
 
     score_empty = metrics.calculate_communication_clarity("")
-    assert score_empty == 0.0 
+    assert score_empty == 0.0
+
+
+# --- Edge-case tests ---
+
+def test_tool_correctness_both_empty():
+    """Both expected and actual are empty → perfect match."""
+    assert metrics.calculate_tool_call_correctness([], []) == 1.0
+
+
+def test_tool_correctness_superset():
+    """Agent used extra tools beyond what's expected → mismatch."""
+    assert metrics.calculate_tool_call_correctness(["a"], ["a", "b"]) == 0.0
+
+
+def test_tool_correctness_duplicates_ignored():
+    """Duplicate tools in lists should not affect set comparison."""
+    assert metrics.calculate_tool_call_correctness(["a", "a", "b"], ["b", "a"]) == 1.0
+
+
+def test_generic_accuracy_none_summary():
+    """None-like empty string → 0.0."""
+    criterion = {"metric": "accuracy", "threshold": 0.5}
+    assert metrics.calculate_generic_accuracy(criterion, "") == 0.0
+
+
+def test_communication_clarity_whitespace_only():
+    """Whitespace-only summary should fail (strip removes it)."""
+    assert metrics.calculate_communication_clarity("           ") == 0.0
+
+
+def test_communication_clarity_exactly_10_chars():
+    """Exactly 10 chars after strip → fails (must be > 10)."""
+    assert metrics.calculate_communication_clarity("1234567890") == 0.0
+
+
+def test_communication_clarity_11_chars():
+    """11 chars → passes."""
+    assert metrics.calculate_communication_clarity("12345678901") == 1.0

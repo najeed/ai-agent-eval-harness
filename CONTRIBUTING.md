@@ -33,15 +33,29 @@ If you have ideas for new metrics, reporting formats, or improvements to the eva
 
 1.  Fork the repository.
 2.  Create a new branch for your feature (`git checkout -b feature/new-metric`).
-3.  Make your changes to the code in the `/eval-runner` directory.
-4.  Add comments and docstrings to any new functions.
-5.  Submit a Pull Request with a clear description of your changes.
+3.  Install the project in development mode:
+    ```bash
+    pip install -e .
+    pip install -r requirements-dev.txt
+    ```
+4.  Make your changes to the code in the `/eval-runner` directory. Key modules:
+    -   `engine.py` — Multi-turn conversation loop
+    -   `tool_sandbox.py` — Mock tool execution
+    -   `loader.py` — Scenario loading with schema validation
+    -   `metrics.py` — Score calculation
+    -   `reporter.py` — Report generation
+5.  Add tests for new functionality. If your code is async, use `@pytest.mark.asyncio`.
+6.  Run the test suite and ensure all tests pass:
+    ```bash
+    pytest tests/ -v
+    ```
+7.  Submit a Pull Request with a clear description of your changes.
 
 ## Pull Request Process
 
 1.  Ensure any new code is commented and follows the existing style.
 2.  Update the README.md or other documentation if your changes require it.
-3.  Increase the version numbers in any examples and the README.md to the new version that this Pull Request would represent. The versioning scheme we use is [SemVer](http://semver.org/).
+3.  Run `flake8 . --select=E9,F63,F7,F82` to check for syntax errors.
 4.  Your PR will be reviewed by a maintainer, who may ask for changes.
 
 We look forward to your contributions!

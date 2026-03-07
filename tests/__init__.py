@@ -9,10 +9,12 @@ schema validation, and tool sandbox behavior.
 Test Modules:
 - test_runner.py: Tests for scenario loading and validation
 - test_agents.py: Tests for AI agent API functionality
-- test_metrics.py: Tests for evaluation metrics calculation
+- test_metrics.py: Tests for evaluation metrics calculation and edge cases
 - test_eval_runner.py: Tests for evaluation runner core functionality
 - test_schema_validation.py: Tests for JSON schema validation of all 4400+ scenarios
 - test_tool_sandbox.py: Tests for the mock tool execution sandbox
+- test_engine.py: Tests for the multi-turn conversation engine
+- test_reporter.py: Tests for the evaluation report generator
 
 Example:
     To run all tests:

@@ -154,3 +154,54 @@ def test_invalid_scenario():
             assert "tasks" not in scenario
         elif scenario.get("tasks") == []:
             assert len(scenario["tasks"]) == 0
+
+
+# --- Edge-case tests ---
+
+def test_load_csv_empty_file():
+    """Empty CSV (headers only) returns empty list."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
+        f.write("col1,col2\n")
+        f.flush()
+        temp_path = Path(f.name)
+
+    data = loader.load_dataset(temp_path)
+    assert data == []
+    temp_path.unlink(missing_ok=True)
+
+
+def test_load_jsonl_empty_file():
+    """Empty JSONL returns empty list."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False) as f:
+        f.write("")
+        f.flush()
+        temp_path = Path(f.name)
+
+    data = loader.load_dataset(temp_path)
+    assert data == []
+    temp_path.unlink(missing_ok=True)
+
+
+def test_schema_validation_passes_for_real_scenario():
+    """A real industry scenario file passes schema validation."""
+    # Pick any scenario that exists across the full dataset
+    scenario_dir = Path(__file__).parent.parent / "industries"
+    any_json = next(scenario_dir.rglob("*.json"), None)
+    if any_json:
+        scenario = loader.load_scenario(any_json)
+        assert "scenario_id" in scenario
+        assert "tasks" in scenario
+    else:
+        pytest.skip("No industry scenario files found")
+
+
+def test_load_invalid_json_file():
+    """Malformed JSON raises JSONDecodeError."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+        f.write("{broken json!!}")
+        f.flush()
+        temp_path = Path(f.name)
+
+    with pytest.raises(Exception):
+        loader.load_scenario(temp_path)
+    temp_path.unlink(missing_ok=True)

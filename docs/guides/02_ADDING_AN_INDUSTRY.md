@@ -28,7 +28,22 @@ This guide provides a step-by-step process for adding a new industry to the eval
 
 If your scenario requires external data (like a CSV of transactions or a JSONL file of user profiles), add the data file to the `datasets` directory. Be sure to anonymize any sensitive information.
 
-## Step 5: Submit a Pull Request
+## Step 5: Validate Against Schema
+
+All scenarios are validated at load time against `schemas/scenario.schema.json`. Your scenario **must** include these required fields:
+
+**Scenario level:**
+- `scenario_id`, `title`, `description`, `use_case`, `core_function`, `industry`, `tasks`
+
+**Task level** (each item in `tasks`):
+- `task_id`, `description`, `expected_outcome`, `success_criteria`
+
+Run schema validation locally:
+```bash
+python -c "from eval_runner.loader import load_scenario; from pathlib import Path; load_scenario(Path('industries/YOUR_INDUSTRY/scenarios/YOUR_SCENARIO.json'))"
+```
+
+## Step 6: Submit a Pull Request
 
 Once you have created the directory structure and added at least one complete scenario, please submit a Pull Request. In the description, briefly explain the industry and the use cases you are starting to build out.
 
