@@ -22,15 +22,15 @@ The harness is organized into two main parts:
     -   `/scenarios`: Detailed JSON files describing specific tasks and goals for an agent.
     -   `/datasets`: Supporting data files (`.csv`, `.jsonl`, etc.) needed for the scenarios.
 -   `/eval-runner`: A modular Python application to load scenarios, execute evaluations, and report on performance.
-    -   `engine.py` — Multi-turn conversation loop with agent API
-    -   `tool_sandbox.py` — In-process mock tool executor
+    -   `engine.py` — Multi-turn conversation loop with state-aware execution
+    -   `tool_sandbox.py` — Stateful mock tool executor with governance policy enforcement
     -   `loader.py` — Scenario loading with schema validation + CSV/JSONL dataset loading
-    -   `metrics.py` — Metric calculations (tool correctness, accuracy, clarity)
+    -   `metrics.py` — Metric calculations (tool correctness, state verification, policy compliance)
     -   `reporter.py` — Console report generation
 -   `/sample_agent`: A rule-based Flask agent for the telecom scenario.
 -   `/schemas`: JSON Schema definitions for scenario validation.
--   `/tests`: 25 tests across 6 test files.
--   `/docs`: API specs, evaluation guide, and contribution guides.
+-   `/tests`: Comprehensive test suite including stateful execution and governance policies.
+-   `/docs`: Architecture, API specs, and evaluation guides.
 
 ## Getting Started
 

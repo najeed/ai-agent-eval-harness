@@ -34,9 +34,11 @@ All scenarios are validated at load time against `schemas/scenario.schema.json`.
 
 **Scenario level:**
 - `scenario_id`, `title`, `description`, `use_case`, `core_function`, `industry`, `tasks`
+- (Optional) `initial_state`, `policies`
 
 **Task level** (each item in `tasks`):
 - `task_id`, `description`, `expected_outcome`, `success_criteria`
+- (Optional) `expected_state_changes`
 
 Run schema validation locally:
 ```bash

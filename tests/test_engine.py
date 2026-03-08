@@ -336,3 +336,78 @@ async def test_engine_provide_instructions_action():
 
     assert results[0]["turns_taken"] == 1
     assert session._call_count == 1
+
+@pytest.mark.asyncio
+async def test_engine_policy_violation_feedback_loop():
+    """Verify that a policy violation is sent back to the agent as feedback."""
+    scenario = {
+        "scenario_id": "policy-test",
+        "industry": "test",
+        "policies": {"apply_refund": {"max_limit": 50}},
+        "tasks": [{
+            "task_id": "task-1",
+            "required_tools": ["apply_refund"],
+            "success_criteria": [{"metric": "policy_compliance", "threshold": 1.0}]
+        }]
+    }
+    responses = [
+        # Turn 1: Agent tries to exceed limit
+        MockResponse({
+            "action": "call_tool",
+            "tool_name": "apply_refund",
+            "tool_params": {"amount": 100},
+            "summary": "Trying refund."
+        }),
+        # Turn 2: Agent responds to the GOVERNANCE ERROR and corrects
+        MockResponse({
+            "action": "final_answer",
+            "summary": "Limited the refund to 50."
+        })
+    ]
+    session = MockSession(responses)
+
+    with patch("eval_runner.engine.aiohttp.ClientSession", return_value=session):
+        results = await engine.run_evaluation(scenario)
+
+    task_result = results[0]
+    # Check compliance metric
+    compliance = next(m for m in task_result["metrics"] if m["metric"] == "policy_compliance")
+    assert compliance["score"] == 0.0  # Violation occurred
+    assert compliance["success"] is False
+
+
+@pytest.mark.asyncio
+async def test_engine_state_verification_metric():
+    """Verify that state_verification metric is calculated and reported."""
+    scenario = {
+        "scenario_id": "state-test",
+        "industry": "test",
+        "initial_state": {"current_plan": "Basic"},
+        "tasks": [{
+            "task_id": "task-1",
+            "required_tools": ["update_plan"],
+            "expected_state_changes": [{"path": "current_plan", "value": "Premium"}],
+            "success_criteria": [{"metric": "state_verification", "threshold": 1.0}]
+        }]
+    }
+    responses = [
+        MockResponse({
+            "action": "call_tool",
+            "tool_name": "update_plan",
+            "tool_params": {"current_plan": "Premium"},
+            "summary": "Updating plan."
+        }),
+        MockResponse({
+            "action": "final_answer",
+            "summary": "Plan updated."
+        })
+    ]
+    session = MockSession(responses)
+
+    with patch("eval_runner.engine.aiohttp.ClientSession", return_value=session):
+        results = await engine.run_evaluation(scenario)
+
+    task_result = results[0]
+    state_metric = next(m for m in task_result["metrics"] if m["metric"] == "state_verification")
+    assert state_metric["score"] == 1.0
+    assert state_metric["success"] is True

@@ -152,3 +152,17 @@ def test_communication_clarity_exactly_10_chars():
 def test_communication_clarity_11_chars():
     """11 chars → passes."""
     assert metrics.calculate_communication_clarity("12345678901") == 1.0
+def test_policy_compliance_metric():
+    """Verify policy compliance detection in history."""
+    history = [
+        {"role": "user", "content": "hello"},
+        {"role": "assistant", "content": "I did it.", "sandbox_response": {"status": "success"}},
+        {"role": "assistant", "content": "I violated it.", "sandbox_response": {"status": "policy_violation"}}
+    ]
+    score = metrics.calculate_policy_compliance(history)
+    assert score == 0.0
+
+    safe_history = [
+        {"role": "assistant", "content": "OK", "sandbox_response": {"status": "success"}}
+    ]
+    assert metrics.calculate_policy_compliance(safe_history) == 1.0

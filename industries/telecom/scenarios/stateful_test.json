@@ -1,0 +1,36 @@
+{
+    "scenario_id": "stateful_test_001",
+    "title": "Stateful Customer Update",
+    "description": "Verify that the agent can update a customer's plan and that the harness correctly tracks the state change.",
+    "use_case": "customer support",
+    "core_function": "billing",
+    "industry": "telecom",
+    "initial_state": {
+        "customer_id": "cust_123",
+        "current_plan": "Basic",
+        "status": "active"
+    },
+    "tasks": [
+        {
+            "task_id": "update_plan",
+            "description": "Update the plan for customer cust_123 to 'Premium'.",
+            "expected_outcome": "The customer plan is updated to Premium.",
+            "required_tools": [
+                "update_customer_plan"
+            ],
+            "success_criteria": [
+                {
+                    "metric": "tool_call_correctness",
+                    "threshold": 1.0
+                }
+            ],
+            "expected_state_changes": [
+                {
+                    "path": "current_plan",
+                    "value": "Premium"
+                }
+            ]
+        }
+    ],
+    "version": "1.0.0"
+}

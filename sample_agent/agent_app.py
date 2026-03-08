@@ -1,4 +1,4 @@
-# agent_app.py
+﻿# agent_app.py
 # A simple, rule-based AI agent simulator using the Flask web framework.
 # This agent is designed to handle the "Home Internet Troubleshooting - Slow Speed" scenario.
 

@@ -74,3 +74,31 @@ def test_sandbox_default_params():
     result = sandbox.execute("tool_x")
     assert result["status"] == "success"
     assert result["params_received"] == {}
+
+def test_sandbox_state_initialization():
+    """Test that state is initialized correctly from the scenario."""
+    scenario = {
+        "initial_state": {"customer_name": "Jane Doe", "balance": 100},
+        "tasks": [{"required_tools": ["any_tool"]}]
+    }
+    sandbox = ToolSandbox(scenario)
+    assert sandbox.state == {"customer_name": "Jane Doe", "balance": 100}
+
+
+def test_sandbox_state_mutation():
+    """Test that 'update_' and 'set_' tools mutate the state."""
+    scenario = {
+        "initial_state": {"current_plan": "Basic"},
+        "tasks": [{"required_tools": ["update_plan", "set_balance"]}]
+    }
+    sandbox = ToolSandbox(scenario)
+
+    # update_
+    sandbox.execute("update_plan", {"current_plan": "Premium"})
+    assert sandbox.state["current_plan"] == "Premium"
+
+    # set_
+    sandbox.execute("set_balance", {"amount": 500})
+    assert sandbox.state["amount"] == 500
+
+

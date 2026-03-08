@@ -134,6 +134,10 @@
     "initial_state": {
       "type": "object",
       "description": "The starting state of the sandbox (e.g., database records, file contents)"
+    },
+    "policies": {
+      "type": "object",
+      "description": "Governance policies to be enforced during execution (e.g., spending limits, tool constraints)"
     }
   },
   "definitions": {

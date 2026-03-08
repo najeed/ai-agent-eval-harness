@@ -1,4 +1,4 @@
-"""
+﻿"""
 engine.py
 
 This module provides the core evaluation engine for the AI Agent Evaluation Harness.
@@ -58,10 +58,11 @@ async def run_evaluation(scenario: dict) -> list:
             conversation_history = []
             agent_actions = {"used_tools": []}
             agent_response = {}
-            current_message = task.get("description")
+            current_message = task.get("description") or ""
 
             for turn in range(1, MAX_TURNS + 1):
-                print(f"         [Turn {turn}/{MAX_TURNS}] Sending: {current_message[:80]}...")
+                msg_preview = str(current_message)[:80] if current_message else ""
+                print(f"         [Turn {turn}/{MAX_TURNS}] Sending: {msg_preview}...")
 
                 try:
                     payload = {
@@ -79,13 +80,13 @@ async def run_evaluation(scenario: dict) -> list:
                         agent_response = await response.json()
 
                 except aiohttp.ClientError as e:
-                    print(f"         [Engine] ❌ Connection error: {e}")
+                    print(f"         [Engine] Connection error: {e}")
                     break
                 except asyncio.TimeoutError:
-                    print(f"         [Engine] ❌ Request timed out.")
+                    print(f"         [Engine] Request timed out.")
                     break
                 except json.JSONDecodeError:
-                    print(f"         [Engine] ❌ Invalid JSON from agent.")
+                    print(f"         [Engine] Invalid JSON from agent.")
                     break
 
                 # Record the turn
@@ -101,8 +102,15 @@ async def run_evaluation(scenario: dict) -> list:
 
                     # Execute via sandbox and prepare the next turn
                     tool_result = sandbox.execute(tool_name, tool_params)
-                    conversation_history.append({"role": "environment", "content": tool_result})
-                    current_message = f"Tool '{tool_name}' returned: {json.dumps(tool_result)}. Continue with the task."
+
+                    if tool_result.get("status") == "policy_violation":
+                        # Return violation message to the agent as environment feedback
+                        violation_msg = tool_result.get("violation", "Unknown policy violation")
+                        conversation_history.append({"role": "environment", "content": {"status": "policy_violation", "message": violation_msg}})
+                        current_message = f"GOVERNANCE ERROR: {violation_msg}. Please adjust your action."
+                    else:
+                        conversation_history.append({"role": "environment", "content": tool_result})
+                        current_message = f"Tool '{tool_name}' returned: {json.dumps(tool_result)}. Continue with the task."
 
                 elif action == "call_multiple_tools" and "tool_names" in agent_response:
                     tool_names = agent_response["tool_names"]
@@ -118,15 +126,15 @@ async def run_evaluation(scenario: dict) -> list:
                     current_message = f"Tools {tool_names} returned: {json.dumps(all_tool_results)}. Continue with the task."
 
                 elif action in ("final_answer", "provide_instructions", "error"):
-                    # Agent has completed or errored — exit the loop
+                    # Agent has completed or errored â€” exit the loop
                     print(f"         [Turn {turn}] Agent signaled '{action}'. Ending conversation.")
                     break
                 else:
-                    # Unknown action or no further tool calls — treat as completion
+                    # Unknown action or no further tool calls â€” treat as completion
                     print(f"         [Turn {turn}] No further action from agent. Ending conversation.")
                     break
             else:
-                print(f"         [Engine] ⚠️ Max turns ({MAX_TURNS}) reached for task {task_id}.")
+                print(f"         [Engine] Warning: Max turns ({MAX_TURNS}) reached for task {task_id}.")
 
             # --- METRIC CALCULATION ---
             task_results = {
@@ -135,9 +143,19 @@ async def run_evaluation(scenario: dict) -> list:
                 "metrics": [],
             }
 
-            for criterion in task.get("success_criteria", []):
+            # Gather all metrics to evaluate
+            criteria = task.get("success_criteria", []).copy()
+
+            # Ensure state_verification and policy_compliance are evaluated even if not in scenario
+            if "expected_state_changes" in task and not any(c["metric"] == "state_verification" for c in criteria):
+                criteria.append({"metric": "state_verification", "threshold": 1.0})
+            if not any(c["metric"] == "policy_compliance" for c in criteria):
+                criteria.append({"metric": "policy_compliance", "threshold": 1.0})
+
+            for criterion in criteria:
                 metric_name = criterion.get("metric")
                 summary = agent_response.get("summary", "")
+                threshold = criterion.get("threshold", 1.0)
 
                 if metric_name == "tool_call_correctness":
                     score = metrics.calculate_tool_call_correctness(
@@ -145,17 +163,22 @@ async def run_evaluation(scenario: dict) -> list:
                     )
                 elif metric_name == "communication_clarity":
                     score = metrics.calculate_communication_clarity(summary)
+                elif metric_name == "state_verification":
+                    score = metrics.calculate_state_correctness(
+                        task.get("expected_state_changes", []), sandbox.state
+                    )
+                elif metric_name == "policy_compliance":
+                    score = metrics.calculate_policy_compliance(conversation_history)
                 else:
-                    # All other metrics use generic accuracy
                     score = metrics.calculate_generic_accuracy(criterion, summary)
 
-                is_success = score >= criterion.get("threshold", 1.0)
+                is_success = score >= threshold
 
                 task_results["metrics"].append(
                     {
                         "metric": metric_name,
                         "score": score,
-                        "threshold": criterion.get("threshold"),
+                        "threshold": threshold,
                         "success": is_success,
                     }
                 )

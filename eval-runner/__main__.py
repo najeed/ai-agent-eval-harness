@@ -1,4 +1,4 @@
-"""
+﻿"""
 __main__.py
 
 This is the entry point for the AI Agent Evaluation Harness. It parses command-line arguments, loads scenarios, runs the evaluation engine, and generates reports.
@@ -50,7 +50,7 @@ async def main_async():
 
     args = parser.parse_args()
 
-    print(f"🚀 Starting evaluation for industry '{args.industry}'...")
+    print(f"Starting evaluation for industry '{args.industry}'...")
 
     # --- 1. Discover all scenario files ---
     base_path = Path(__file__).parent.parent / "industries"
@@ -62,12 +62,12 @@ async def main_async():
         if scenario_path_part=="all":
             scenario_path_part = "" # Handle 'all' as a special case to include all scenarios in that industry
         if not full_path.exists():
-            print(f"⚠️ Warning: Path not found, skipping: {full_path}")
+            print(f"Warning: Path not found, skipping: {full_path}")
             continue
 
         if full_path.is_dir():
             # If it's a directory, find all .json files recursively
-            print(f"🔎 Found directory: {full_path}. Searching for scenarios...")
+            print(f"Found directory: {full_path}. Searching for scenarios...")
             json_files = sorted(full_path.rglob("*.json"))
             if not json_files:
                 print(f"   -> No .json scenarios found in {full_path}")
@@ -77,44 +77,44 @@ async def main_async():
             scenarios_to_run.append(full_path)
         else:
             print(
-                f"⚠️ Warning: Path is not a valid .json file or directory, skipping: {full_path}"
+                f"Warning: Path is not a valid .json file or directory, skipping: {full_path}"
             )
 
     # Remove duplicates that might occur if a file and its parent dir are both specified
     scenarios_to_run = sorted(list(set(scenarios_to_run)))
 
     if not scenarios_to_run:
-        print(f"❌ Error: No valid scenario files found to run.")
+        print(f"Error: No valid scenario files found to run.")
         sys.exit(1)
 
-    print(f"\n✅ Discovered {len(scenarios_to_run)} total scenario(s) to run.")
+    print(f"\nDiscovered {len(scenarios_to_run)} total scenario(s) to run.")
 
     # --- 2. Load all scenarios ---
     loaded_scenarios = []
-    
+
     for i, scenario_path in enumerate(scenarios_to_run):
         try:
             scenario_data = loader.load_scenario(scenario_path)
             loaded_scenarios.append({"path": scenario_path, "data": scenario_data})
         except Exception as e:
-            print(f"❌ Error loading scenario {scenario_path}: {e}")
+            print(f"Error loading scenario {scenario_path}: {e}")
             continue
 
-    print(f"✅ Successfully loaded {len(loaded_scenarios)} scenarios.")
+    print(f"Successfully loaded {len(loaded_scenarios)} scenarios.")
 
     # --- 3. Execute all scenarios concurrently ---
     print("\n" + "#" * 80)
-    print("⚙️  Running evaluation engine concurrently for all scenarios...")
+    print("Running evaluation engine concurrently for all scenarios...")
     print("#" * 80)
 
     # Creating tasks for concurrent execution
     tasks = []
     for item in loaded_scenarios:
         tasks.append(engine.run_evaluation(item["data"]))
-    
+
     # Run them all
     results_list = await asyncio.gather(*tasks)
-    print("✅ Engine runs complete.")
+    print("Engine runs complete.")
 
     # --- 4. Generate and display reports sequentially ---
     for item, results in zip(loaded_scenarios, results_list):
@@ -124,7 +124,7 @@ async def main_async():
         reporter.generate_report(item["data"], results)
 
     print("\n" + "=" * 80)
-    print("✅ ALL EVALUATIONS FINISHED.")
+    print("âœ… ALL EVALUATIONS FINISHED.")
     print("=" * 80 + "\n")
 
 

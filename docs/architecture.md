@@ -30,18 +30,20 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 │  │                        │                                  │     │
 │  │                        ▼                                  │     │
 │  │              ToolSandbox (tool_sandbox.py)                │     │
-│  │              Execute mock tool → return result            │     │
+│  │              • Persist/Mutate State (Milestone 1)         │     │
+│  │              • Enforce Governance Policies (Milestone 2)  │     │
+│  │              • Return status: "success" | "policy_violation"│     │
 │  │                        │                                  │     │
 │  │                        ▼                                  │     │
-│  │  Turn 2: Send tool result → Agent API                    │     │
+│  │  Turn 2: Send tool result or policy error → Agent API     │     │
 │  │  Agent returns: {"action": "final_answer", ...}          │     │
 │  │  → Loop ends                                             │     │
 │  └─────────────────────────────────────────────────────────┘     │
 │                                                                  │
 │  Metrics (metrics.py)                                            │
 │  • tool_call_correctness: set match of expected vs actual tools  │
-│  • calculate_generic_accuracy: non-empty summary check           │
-│  • calculate_communication_clarity: summary length > 10          │
+│  • state_verification: verify system state changes (M1)          │
+│  • policy_compliance: detect governance violations (M2)          │
 └──────────────────────┬───────────────────────────────────────────┘
                        │ results list
                        ▼
@@ -59,8 +61,8 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 | CLI | `eval-runner/__main__.py` | Argument parsing, scenario discovery, orchestration |
 | Loader | `eval-runner/loader.py` | JSON loading, schema validation, CSV/JSONL datasets |
 | Engine | `eval-runner/engine.py` | Multi-turn async conversation loop with agent API |
-| Tool Sandbox | `eval-runner/tool_sandbox.py` | In-process mock tool execution |
-| Metrics | `eval-runner/metrics.py` | Score calculation for success criteria |
+| Tool Sandbox | `eval-runner/tool_sandbox.py` | Stateful mock tool execution & governance policies |
+| Metrics | `eval-runner/metrics.py` | Score calculation (tools, state, policy compliance) |
 | Reporter | `eval-runner/reporter.py` | Console report generation |
 
 ## Key Environment Variables

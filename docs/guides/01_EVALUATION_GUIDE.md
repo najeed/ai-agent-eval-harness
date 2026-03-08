@@ -13,8 +13,10 @@ Each evaluation is defined by a `.json` file in an industry's `scenarios` direct
 -   `description`: A brief explanation of the overall goal of the scenario.
 -   `use_case`: The specific business function being tested (e.g., `Customer Service`).
 -   `industry`: The industry this scenario belongs to.
--   `core_function`: The category within the use case this scenario belongs to (e.g., `Billing and Payments`).
--   `tasks`: An array of task objects that represent the steps an agent must take to complete the scenario.
+-   `core_function`: The category within the use case this scenario belongs to.
+-   `initial_state`: (Optional) The starting state for the sandbox.
+-   `policies`: (Optional) Governance rules to enforce during execution.
+-   `tasks`: An array of task objects that represent the steps an agent must take.
 
 ## Task Structure
 
@@ -24,6 +26,7 @@ Each object in the `tasks` array represents a single step and contains:
 -   `description`: A clear description of what the agent needs to accomplish.
 -   `expected_outcome`: A description of what a successful completion of the task looks like.
 -   `required_tools`: A list of tool/API names that the agent is expected to use for this task.
+-   `expected_state_changes`: (Optional) A list of state paths and values that should be true after the task.
 -   `success_criteria`: An array defining how to measure success.
 
 ## Success Criteria & Metrics
@@ -56,6 +59,8 @@ data = loader.load_dataset(Path("industries/accounting/datasets/sample.csv"))
 | Metric | Function | Description |
 |---|---|---|
 | `tool_call_correctness` | `calculate_tool_call_correctness` | Exact set-match of expected vs. actual tools |
+| `state_verification` | `calculate_state_correctness` | Verify persistent system state changes |
+| `policy_compliance` | `calculate_policy_compliance` | Detect governance policy violations |
 | `*` (any other) | `calculate_generic_accuracy` | Checks if agent returned a non-empty summary |
 | `communication_clarity` | `calculate_communication_clarity` | Checks summary length > 10 characters |
 

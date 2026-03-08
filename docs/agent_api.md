@@ -71,6 +71,17 @@ Turn 2: Harness → Agent: "Tool 'get_customer_details' returned: {...}. Continu
 
 The loop ends when the agent sends `final_answer`, `provide_instructions`, `error`, or the max turn limit (default: 5) is reached.
 
+### Policy Violations (Governance feedback)
+
+If the agent attempts to call a tool in a way that violates a governance policy (e.g., exceeding a refund limit), the harness will return a `"status": "policy_violation"` in the environment message, allowing the agent to self-correct:
+
+```
+Turn 1: Harness → Agent: "Process a $100 refund..."
+         Agent → Harness: {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 100}}
+Turn 2: Harness → Agent: "GOVERNANCE ERROR: Amount 100 exceeds maximum allowed limit of 50. Please adjust."
+         Agent → Harness: {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 50}}
+```
+
 ## Environment Variables
 
 | Variable | Default | Description |

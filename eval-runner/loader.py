@@ -1,4 +1,4 @@
-"""
+﻿"""
 loader.py
 
 This module provides utilities for loading scenario and dataset files for the AI Agent Evaluation Harness.
@@ -71,7 +71,7 @@ def load_scenario(file_path: Path) -> dict:
 def load_dataset(file_path: Path):
     """
     Loads a dataset file (e.g., .jsonl, .csv).
-    
+
     Args:
         file_path (Path): The Path object pointing to the dataset file.
 
@@ -87,21 +87,21 @@ def load_dataset(file_path: Path):
         raise FileNotFoundError(f"Dataset file not found at {file_path}")
 
     dataset = []
-    
+
     # Handle CSV
     if file_path.suffix == '.csv':
         with open(file_path, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
                 dataset.append(row)
-                
+
     # Handle JSONL
     elif file_path.suffix == '.jsonl':
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in f:
                 if line.strip():
                     dataset.append(json.loads(line))
-                    
+
     else:
         print(f"   [Loader] Warning: Unsupported dataset format {file_path.suffix}")
 

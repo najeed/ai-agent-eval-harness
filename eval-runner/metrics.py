@@ -1,4 +1,4 @@
-"""
+﻿"""
 metrics.py
 
 This module defines evaluation metrics for the AI Agent Evaluation Harness.
@@ -30,7 +30,7 @@ def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) ->
         0.0
     """
     print(
-        f"      [Metrics] Comparing expected tools {expected_tools} vs. actual {actual_tools}"
+        "[Metrics] Comparing expected tools {} vs. actual {}".format(expected_tools, actual_tools)
     )
     return 1.0 if set(expected_tools) == set(actual_tools) else 0.0
 
@@ -39,7 +39,7 @@ def calculate_generic_accuracy(criterion: dict, agent_summary: str) -> float:
     """
     Evaluates whether the agent's summary contains the expected outcome.
     If 'expected_outcome' exists in the criterion, does a basic string inclusion check.
-    
+
     Args:
         criterion (dict): The success criterion from the scenario task.
         agent_summary (str): The summary/output returned by the agent.
@@ -51,7 +51,7 @@ def calculate_generic_accuracy(criterion: dict, agent_summary: str) -> float:
     # In a full-scale AI harness, this would use an LLM-as-a-judge.
     if not agent_summary:
         return 0.0
-    
+
     # We will pass 1.0 by default if we don't have a reliable way to check, to match the previous placeholder behavior.
     return 1.0
 
@@ -69,6 +69,60 @@ def calculate_communication_clarity(agent_summary: str) -> float:
     if agent_summary and len(agent_summary.strip()) > 10:
         return 1.0
     return 0.0
+
+
+def calculate_state_correctness(expected_changes: list, actual_state: dict) -> float:
+    """
+    Verifies if the sandbox state matches the expected changes.
+
+    Args:
+        expected_changes (list): List of dicts with 'path' and 'value'.
+        actual_state (dict): The final state from the ToolSandbox.
+
+    Returns:
+        float: Fraction of expected changes that were correctly applied (0.0 to 1.0).
+    """
+    if not expected_changes:
+        return 1.0
+
+    print(f"      [Metrics] Verifying {len(expected_changes)} expected state changes.")
+
+    correct_count = 0
+    for change in expected_changes:
+        path = change.get("path")
+        expected_val = change.get("value")
+
+        # Simple key lookup for now (can expand to JSONPath later)
+        actual_val = actual_state.get(path)
+
+        if actual_val == expected_val:
+            print(f"         [Metrics] State '{path}' matches expected value: {expected_val}")
+            correct_count += 1
+        else:
+            print(f"         [Metrics] State '{path}' mismatch. Expected: {expected_val}, Actual: {actual_val}")
+
+    return correct_count / len(expected_changes)
+
+
+def calculate_policy_compliance(conversation_history: list) -> float:
+    """
+    Checks the conversation history for policy violations.
+    Returns 1.0 if no violations were triggered, 0.0 otherwise.
+    """
+    def has_violation(obj):
+        if isinstance(obj, dict):
+            if obj.get("status") == "policy_violation":
+                return True
+            return any(has_violation(v) for v in obj.values())
+        if isinstance(obj, list):
+            return any(has_violation(item) for item in obj)
+        return False
+
+    if has_violation(conversation_history):
+        print("      [Metrics] Policy violation detected in history.")
+        return 0.0
+
+    return 1.0
 
 
 # You can add many more specific metrics here, for example:

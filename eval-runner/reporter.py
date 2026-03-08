@@ -1,4 +1,4 @@
-"""
+﻿"""
 reporter.py
 
 This module provides reporting utilities for the AI Agent Evaluation Harness.
@@ -44,15 +44,15 @@ def generate_report(scenario: dict, results: list):
         task_is_overall_success = all(m["success"] for m in task_result["metrics"])
 
         if task_is_overall_success:
+            status = "SUCCESS"
             successful_tasks += 1
-            status = "✅ SUCCESS"
         else:
-            status = "❌ FAILURE"
+            status = "FAILURE"
 
-        print(f"\n▶️ Task: {task_id} [{status}]")
+        print(f"\nTask: {task_id} [{status}]")
 
         for metric in task_result["metrics"]:
-            metric_status = "✅" if metric["success"] else "❌"
+            metric_status = "PASSED" if metric["success"] else "FAILED"
             print(
                 f"  {metric_status} Metric: {metric['metric']:<35} "
                 f"| Score: {metric['score']:.2f} "
