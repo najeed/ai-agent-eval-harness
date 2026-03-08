@@ -2,7 +2,15 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "AI Agent Evaluation Scenario",
   "type": "object",
-  "required": ["scenario_id", "title", "description", "use_case", "core_function", "industry", "tasks"],
+  "required": [
+    "scenario_id",
+    "title",
+    "description",
+    "use_case",
+    "core_function",
+    "industry",
+    "tasks"
+  ],
   "properties": {
     "scenario_id": {
       "type": "string",
@@ -36,62 +44,82 @@
       "type": "string",
       "description": "Industry tag (e.g. telecom, finance)"
     },
-    "tasks": {  
-        "type": "array",
-        "description": "List of tasks the agent is expected to perform",
-        "items": {
-            "type": "object",
-            "required": ["task_id", "description", "expected_outcome", "success_criteria"],
-            "properties": { 
-                "task_id": {
-                    "type": "string",
-                    "description": "Unique identifier for the task"
+    "tasks": {
+      "type": "array",
+      "description": "List of tasks the agent is expected to perform",
+      "items": {
+        "type": "object",
+        "required": [
+          "task_id",
+          "description",
+          "expected_outcome",
+          "success_criteria"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Unique identifier for the task"
+          },
+          "description": {
+            "type": "string",
+            "description": "Background context for the task"
+          },
+          "expected_outcome": {
+            "type": "string",
+            "description": "Ideal or expected response from the agent"
+          },
+          "required_tools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of tools the agent is expected to use"
+          },
+          "success_criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "metric",
+                "threshold"
+              ],
+              "properties": {
+                "metric": {
+                  "type": "string",
+                  "description": "The metric to be tested for the task"
                 },
-                "description": {
-                    "type": "string",
-                    "description": "Background context for the task"
-                },
-                "expected_outcome": {
-                    "type": "string",
-                    "description": "Ideal or expected response from the agent"
-                },
-                "required_tools": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "List of tools the agent is expected to use"
-                },
-                "success_criteria": 
-                { 
-                    "type": "array",
-                    "items": 
-                    {
-                        "type": "object",
-                        "required": ["metric", "threshold"],
-                        "properties": 
-                        { 
-                            "metric": {
-                                "type": "string",
-                                "description": "The metric to be tested for the task"
-                            },
-                            "threshold": {
-                                "type": "number",
-                                "description": "The threshold for the metric to be considered successful"
-                            }
-                        }
-                    },
-                    "description": "Criteria to determine if the task was successfully completed"
+                "threshold": {
+                  "type": "number",
+                  "description": "The threshold for the metric to be considered successful"
                 }
-            }
+              }
+            },
+            "description": "Criteria to determine if the task was successfully completed"
+          },
+          "expected_state_changes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/state_change"
+            },
+            "description": "Verified changes to the sandbox state after task execution"
+          }
         }
+      }
     },
     "tools_required": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "List of tools the agent is expected to use"
     },
     "complexity_level": {
       "type": "string",
-      "enum": ["low", "medium", "high"],
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
       "description": "Relative difficulty of the scenario"
     },
     "author": {
@@ -102,6 +130,28 @@
       "type": "string",
       "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
       "description": "Semantic version (e.g., 1.0 or 2.1.3)"
+    },
+    "initial_state": {
+      "type": "object",
+      "description": "The starting state of the sandbox (e.g., database records, file contents)"
+    }
+  },
+  "definitions": {
+    "state_change": {
+      "type": "object",
+      "required": [
+        "path",
+        "value"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "JSON path or key to the state variable"
+        },
+        "value": {
+          "description": "The expected value after task completion"
+        }
+      }
     }
   }
 }
