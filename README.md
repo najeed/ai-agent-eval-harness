@@ -41,7 +41,7 @@ The harness is organized into two main parts:
 
 ### Running an Evaluation
 
-1.  Clone and install:
+1.  **Clone and install locally**:
     ```bash
     git clone https://github.com/najeed/ai-agent-eval-harness.git
     cd ai-agent-eval-harness
@@ -49,21 +49,19 @@ The harness is organized into two main parts:
     pip install -r requirements.txt
     ```
 
-2.  Initialize Evaluation (Optional - for new agents):
-    Run the onboarding wizard to scaffold your project:
+2.  **OR Run via Docker (Instant Lab)**:
+    Start the entire lab (harness, agent, and dashboard):
     ```bash
-    eval-harness init
+    docker-compose up -d
     ```
 
-3.  Start the sample agent (in a separate terminal):
+3.  **Run evaluations inside the Lab**:
     ```bash
-    python ./sample_agent/agent_app.py
+    docker-compose exec harness eval-harness run --industry telecom --export
     ```
 
-4.  Run the evaluation:
-    ```bash
-    eval-harness run --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json --export
-    ```
+4.  **Visualize results**:
+    Open the dashboard at [http://localhost:8501](http://localhost:8501) to explore trajectories and metrics.
     The `--export` flag will generate a detailed JSON trajectory in the `reports/trajectories/` directory.
 
 ### Advanced Features

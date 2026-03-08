@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  agent:
+    build:
+      context: .
+      dockerfile: sample_agent/Dockerfile
+    ports:
+      - "5001:5001"
+    networks:
+      - lab-network
+
+  harness:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    environment:
+      - AGENT_API_URL=${AGENT_API_URL}
+      - EVAL_MAX_TURNS=${EVAL_MAX_TURNS}
+    depends_on:
+      - agent
+    networks:
+      - lab-network
+
+  dashboard:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "pip install streamlit pandas && streamlit run dashboard/app.py --server.port 8501 --server.address 0.0.0.0"
+    ports:
+      - "8501:8501"
+    depends_on:
+      - harness
+    networks:
+      - lab-network
+
+networks:
+  lab-network:
+    driver: bridge
