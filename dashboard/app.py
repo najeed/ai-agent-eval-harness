@@ -107,7 +107,7 @@ with t_col1:
 
 with t_col2:
     st.subheader("Decision Trajectory Map")
-    
+
     # Generate Mermaid from data
     history = task_result.get("conversation_history", [])
     mermaid_code = ["graph TD"]
