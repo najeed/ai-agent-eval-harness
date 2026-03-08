@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "scenario_id": "test_id",
+    "title": "Test",
+    "industry": null,
+    "timestamp": "20260309_044945"
+  },
+  "results": [
+    {
+      "task_id": "t1",
+      "metrics": []
+    }
+  ]
+}

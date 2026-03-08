@@ -21,10 +21,13 @@ Example:
 import os
 import json
 import pytest
+from pathlib import Path
 from jsonschema import validate, ValidationError
 
-SCHEMA_PATH = "schemas/scenario.schema.json"
-SCENARIOS_ROOT = "industries"
+# Systemic path resolution (Guardrail 4.7)
+BASE_DIR = Path(__file__).parent.parent
+SCHEMA_PATH = BASE_DIR / "schemas" / "scenario.schema.json"
+SCENARIOS_ROOT = BASE_DIR / "industries"
 
 @pytest.fixture(scope="module")
 def scenario_schema():
@@ -49,7 +52,7 @@ def scenario_schema():
         The fixture loads the schema from "schemas/scenario.schema.json"
         and returns it as a Python dictionary for use in validation tests.
     """
-    with open(SCHEMA_PATH, "r") as f:
+    with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
 def load_all_scenario_files():

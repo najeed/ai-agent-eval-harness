@@ -195,7 +195,7 @@ async def run_evaluation_flow(args):
             display_path = item['path']
         print(f"REPORT FOR: {display_path}")
         print("#" * 80)
-        reporter.generate_report(item["data"], results)
+        reporter.generate_report(item["data"], results, export_trajectory=args.export)
 
     print("\n" + "=" * 80)
     print("✅ ALL EVALUATIONS FINISHED.")
@@ -213,6 +213,7 @@ def main():
     run_parser.add_argument("--industry", help="The industry to evaluate")
     run_parser.add_argument("--scenario", nargs="+", default=["all"], help="Scenario files or directories to run")
     run_parser.add_argument("--config", default="eval_config.json", help="Path to evaluation config")
+    run_parser.add_argument("--export", action="store_true", help="Export detailed trajectory JSON")
 
     args = parser.parse_args()
     

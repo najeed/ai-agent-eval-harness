@@ -62,8 +62,13 @@ The harness is organized into two main parts:
 
 4.  Run the evaluation:
     ```bash
-    eval-harness run --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json
+    eval-harness run --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json --export
     ```
+    The `--export` flag will generate a detailed JSON trajectory in the `reports/trajectories/` directory.
+
+### Advanced Features
+- **Path Parsimony**: Evaluations automatically score agents on efficiency (fewer turns = higher score).
+- **Trajectory Visualization**: Failed tasks include a Mermaid decision tree in the report to help debug "wrong turns."
 
 ### Running Tests
 

@@ -125,6 +125,28 @@ def calculate_policy_compliance(conversation_history: list) -> float:
     return 1.0
 
 
+def calculate_path_parsimony(turns_taken: int, max_turns: int) -> float:
+    """
+    Calculates the efficiency of the agent's trajectory.
+    Score = 1.0 - (turns_taken - 1) / (max_turns - 1)
+    
+    Args:
+        turns_taken (int): Number of turns the agent took.
+        max_turns (int): Practical limit of turns allowed.
+        
+    Returns:
+        float: Score from 0.0 (max turns taken) to 1.0 (1 turn taken).
+    """
+    if max_turns <= 1:
+        return 1.0
+    
+    # Ensure turns_taken is at least 1
+    turns = max(1, turns_taken)
+    
+    score = 1.0 - (turns - 1) / (max_turns - 1)
+    return max(0.0, min(1.0, score))
+
+
 # You can add many more specific metrics here, for example:
 # - def calculate_response_relevance(agent_response, expected_summary): ...
 # - def calculate_sentiment_alignment(agent_response_sentiment, expected_sentiment): ...
