@@ -49,14 +49,20 @@ The harness is organized into two main parts:
     pip install -r requirements.txt
     ```
 
-2.  Start the sample agent (in a separate terminal):
+2.  Initialize Evaluation (Optional - for new agents):
+    Run the onboarding wizard to scaffold your project:
+    ```bash
+    eval-harness init
+    ```
+
+3.  Start the sample agent (in a separate terminal):
     ```bash
     python ./sample_agent/agent_app.py
     ```
 
-3.  Run the evaluation:
+4.  Run the evaluation:
     ```bash
-    python -m eval_runner --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json
+    eval-harness run --industry telecom --scenario technical_support/13814_home_internet_slow_speed.json
     ```
 
 ### Running Tests

@@ -12,6 +12,9 @@ packages = ["eval_runner"]
 [tool.setuptools.package-dir]
 eval_runner = "eval-runner"
 
+[project.scripts]
+eval-harness = "eval_runner.cli:main"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
