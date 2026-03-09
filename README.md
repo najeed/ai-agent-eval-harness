@@ -107,6 +107,21 @@ Thanks to all our contributors! 🙌
   <img src="https://contrib.rocks/image?repo=najeed/ai-agent-eval-harness" />
 </a>
 
-## License
+## Licensing & Editions
 
-This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
+This project follows an **Open Core** model.
+
+| Feature | Community Edition (OSS) | Enterprise Edition |
+| :--- | :--- | :--- |
+| Core Eval Engine | ✅ Included (BSL 1.1) | ✅ Included |
+| Industry JSON Scenarios | ✅ 4,400+ included | ✅ Priority Updates |
+| Docker Support | ✅ Included | ✅ High-Scale Clusters |
+| Adversarial Simulations | ❌ No | ✅ Advanced Red-Teaming |
+| Visual Dashboard | ❌ CLI Only | ✅ Web UI & Analytics |
+
+### License
+The core of this project is licensed under the **Business Source License 1.1**. 
+- **For Developers:** It is free to use for testing, research, and startups under $5M revenue.
+- **For Enterprise:** A commercial license is required for high-scale production and competing services.
+- **Future:** This code will automatically transition to **Apache 2.0** on January 1, 2032.
+See the [LICENSE](LICENSE) file for details.
