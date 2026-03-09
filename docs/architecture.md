@@ -6,51 +6,40 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                          CLI (__main__.py)                        │
-│  python -m eval_runner --industry telecom --scenario ...         │
-└──────────────────────┬───────────────────────────────────────────┘
-                       │ discovers .json files
-                       ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                     Loader (loader.py)                            │
-│  • Loads scenario JSON from disk                                 │
-│  • Validates against schemas/scenario.schema.json                │
-│  • Loads CSV/JSONL datasets                                      │
-└──────────────────────┬───────────────────────────────────────────┘
-                       │ validated scenario dict
-                       ▼
+│                          CLI (cli.py)                            │
+│  python -m eval_runner evaluate --industry telecom               │
+└──────────────────────┬─────────────┬─────────────────────────────┘
+                       │             │
+                       ▼             ▼
+┌───────────────────────────┐  ┌───────────────────────────┐
+│     Loader (loader.py)    │  │ PluginManager (plugins.py)│
+│ • LoaderRegistry (CSV/..) │  │ • Lifecycle Hooks         │
+│ • Schema Validation       │  │ • External Extensions     │
+└──────────────┬────────────┘  └─────────────┬─────────────┘
+               │ validated scenario          │
+               ▼                             ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │                     Engine (engine.py)                            │
 │                                                                  │
 │  ┌─────────────────────────────────────────────────────────┐     │
-│  │            Multi-turn Conversation Loop                  │     │
+│  │     Multi-turn Conversation Loop (with hooks)           │     │
 │  │                                                          │     │
-│  │  Turn 1: Send task_description → Agent API               │     │
-│  │  Agent returns: {"action": "call_tool", "tool_name": X}  │     │
-│  │                        │                                  │     │
-│  │                        ▼                                  │     │
-│  │              ToolSandbox (tool_sandbox.py)                │     │
-│  │              • Persist/Mutate State (Milestone 1)         │     │
-│  │              • Enforce Governance Policies (Milestone 2)  │     │
-│  │              • Return status: "success" | "policy_violation"│     │
-│  │                        │                                  │     │
-│  │                        ▼                                  │     │
-│  │  Turn 2: Send tool result or policy error → Agent API     │     │
-│  │  Agent returns: {"action": "final_answer", ...}          │     │
-│  │  → Loop ends                                             │     │
+│  │  [before_evaluation] -> [on_turn_end] -> [after_eval]    │     │
+│  │                                                          │     │
+│  │  EvaluationContext  &  TurnContext (typed)               │     │
 │  └─────────────────────────────────────────────────────────┘     │
 │                                                                  │
-│  Metrics (metrics.py)                                            │
-│  • tool_call_correctness: set match of expected vs actual tools  │
-│  • state_verification: verify system state changes (M1)          │
-│  • policy_compliance: detect governance violations (M2)          │
+│  Registries (metrics.py, loader.py, engine.py)                   │
+│  • MetricRegistry: Pluggable calculation functions               │
+│  • LoaderRegistry: Pluggable dataset parsers                     │
+│  • AgentAdapterRegistry: Pluggable communication protocols       │
 └──────────────────────┬───────────────────────────────────────────┘
                        │ results list
                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │                    Reporter (reporter.py)                         │
-│  • Prints per-task SUCCESS/FAILURE with metric scores            │
-│  • Calculates overall success rate                               │
+│  • Console reports & Markdown for PR Comments                    │
+│  • Trajectory Mermaid Visualization                             │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -58,12 +47,14 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 
 | Module | File | Purpose |
 |--------|------|---------|
-| CLI | `eval-runner/__main__.py` | Argument parsing, scenario discovery, orchestration |
-| Loader | `eval-runner/loader.py` | JSON loading, schema validation, CSV/JSONL datasets |
-| Engine | `eval-runner/engine.py` | Multi-turn async conversation loop with agent API |
+| CLI | `eval-runner/cli.py` | Argument parsing, scenario discovery, orchestration, plugin extensions |
+| Loader | `eval-runner/loader.py` | Universal dataset loading (CSV/JSONL), schema validation |
+| Engine | `eval-runner/engine.py` | Multi-turn async loop with Lifecycle Hooks |
+| Plugin Manager | `eval-runner/plugins.py`| Discovery and triggering of external capability hooks |
 | Tool Sandbox | `eval-runner/tool_sandbox.py` | Stateful mock tool execution & governance policies |
-| Metrics | `eval-runner/metrics.py` | Score calculation (tools, state, policy compliance) |
-| Reporter | `eval-runner/reporter.py` | Console report generation |
+| Metrics | `eval-runner/metrics.py` | Score calculation (tools, state, policy compliance, vibing) |
+| Contexts | `eval-runner/context.py` | Typed `EvaluationContext` and `TurnContext` for stability |
+| Reporter | `eval-runner/reporter.py` | Console report & Trajectory Mermaid generation |
 
 ## Key Environment Variables
 

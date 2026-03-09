@@ -106,14 +106,18 @@ def test_all_scenarios_are_valid(scenario_schema):
         If validation fails, it reports specific errors for each file.
     """
     errors = []
+    count = 0
     for path in load_all_scenario_files():
+        count += 1
         with open(path, "r") as f:
             try:
                 scenario = json.load(f)
                 validate(instance=scenario, schema=scenario_schema)
             except ValidationError as e:
                 errors.append((path, str(e)))
+    print(f"\n[DEBUG] Validated {count} scenario files.")
     if errors:
         for path, err in errors:
             print(f"Validation error in {path}: {err}")
         pytest.fail(f"{len(errors)} scenario file(s) failed schema validation")
+    assert count > 0, "No scenario files were found for validation!"

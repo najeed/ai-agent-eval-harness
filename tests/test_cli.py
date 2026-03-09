@@ -2,6 +2,7 @@
 test_cli.py
 
 Unit tests for the Onboarding CLI (eval_runner.cli).
+Updated for subparser architecture and robustness.
 """
 
 import json
@@ -54,10 +55,9 @@ def test_handle_init_scaffolding(tmp_path, monkeypatch):
     inputs = iter(["1", ""])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
     
-    # Run init in temporary directory
-    os.chdir(tmp_path)
+    # We chdir to tmp_path for the duration of this test
+    monkeypatch.chdir(tmp_path)
     
-    # We need to mock list_industries to return a known list
     with patch("eval_runner.cli.list_industries", return_value=["accounting", "telecom"]):
         cli.handle_init(None)
         

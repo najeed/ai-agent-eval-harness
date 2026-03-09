@@ -1,102 +1,67 @@
 ﻿"""
 tool_sandbox.py
 
-Provides an in-process mock tool execution environment for the AI Agent Evaluation Harness.
-When the engine's multi-turn loop receives a tool call from the agent, this sandbox
-returns a simulated success response, allowing the conversation to continue
-without requiring an external tool server.
-
-Typical usage:
-    from eval_runner.tool_sandbox import ToolSandbox
-    sandbox = ToolSandbox(scenario)
-    result = sandbox.execute("get_customer_details", {"customer_id": "cust_123"})
+Defines the environment in which the agent's tool calls are executed.
+Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 """
-# eval-runner/tool_sandbox.py
 
+import json
+from abc import ABC, abstractmethod
 
-class ToolSandbox:
-    """
-    In-process mock tool executor with state persistence.
-
-    Given a scenario, it knows which tools are valid and maintains
-    an internal state that can be mutated by tool calls.
-    """
+class AbstractSandbox(ABC):
+    """Abstract base class for tool execution sandboxes."""
 
     def __init__(self, scenario: dict):
-        """
-        Initialize the sandbox with the scenario's tool inventory and initial state.
-
-        Args:
-            scenario (dict): The loaded scenario data.
-        """
-        self.known_tools = set()
-        for task in scenario.get("tasks", []):
-            for tool in task.get("required_tools", []):
-                self.known_tools.add(tool)
-
-        # Initialize internal state from scenario
+        self.scenario = scenario
         self.state = scenario.get("initial_state", {}).copy()
 
-        # Initialize policies from scenario
-        self.policies = scenario.get("policies", {})
+    def setup(self):
+        """Perform one-time setup (e.g., spinning up Docker, init DB)."""
+        pass
 
-    def execute(self, tool_name: str, params: dict = None) -> dict:
+    def teardown(self):
+        """Perform one-time teardown (e.g., stopping containers)."""
+        pass
+
+    @abstractmethod
+    def execute(self, tool_name: str, params: dict) -> dict:
+        """Executes a tool and returns the result."""
+        pass
+
+class ToolSandbox(AbstractSandbox):
+    """
+    Standard implementation of the tool sandbox.
+    Uses a static mapping of tool behaviors defined in the scenario.
+    """
+
+    def execute(self, tool_name: str, params: dict) -> dict:
         """
-        Execute a mock tool call, enforce policies, and update internal state if applicable.
-
-        Args:
-            tool_name (str): Name of the tool the agent wants to call.
-            params (dict): Parameters the agent passed to the tool.
-
-        Returns:
-            dict: A mock result with status, tool_name, and updated state or policy violation info.
+        Executes a tool based on the mock behaviors defined in the scenario.
+        Updates the internal state if requested by the tool definition.
         """
-        if params is None:
-            params = {}
+        # 1. Identify tool behaviors in the scenario
+        # We look for a top-level 'tools' dictionary that defines effects.
+        all_tool_defs = self.scenario.get("tools", {})
+        tool_def = all_tool_defs.get(tool_name, {})
 
-        if tool_name not in self.known_tools:
-            print(f"      [Sandbox] Unknown tool requested: {tool_name}")
-            return {
-                "status": "error",
-                "tool_name": tool_name,
-                "output": f"Tool '{tool_name}' is not available in this scenario.",
-            }
+        # 2. Check for Policy Violations (Simulated)
+        # We simulate this by checking if 'amount' exceeds a limit in 'policies'
+        policies = self.scenario.get("policies", {})
+        if tool_name in policies:
+            limit = policies[tool_name].get("max_limit")
+            if limit and params.get("amount", 0) > limit:
+                return {
+                    "status": "policy_violation",
+                    "violation": f"Amount {params.get('amount')} exceeds limit of {limit}"
+                }
 
-        # --- POLICY ENFORCEMENT LOGIC ---
-        if self.policies and tool_name in self.policies:
-            policy = self.policies[tool_name]
-            print(f"      [Sandbox] Checking policy for {tool_name}: {policy}")
+        # 3. Apply State Changes
+        state_changes = tool_def.get("state_changes", [])
+        for change in state_changes:
+            path = change.get("path")
+            value = change.get("value")
+            if path:
+                self.state[path] = value
 
-            # For telecom scenarios (Milestone 2 test)
-            amount = params.get("amount")
-            if "max_limit" in policy and amount is not None:
-                print(f"      [Sandbox] Validating amount {amount} against limit {policy['max_limit']}")
-                if amount > policy["max_limit"]:
-                    print(f"      [Sandbox] Policy violation: {amount} > {policy['max_limit']}")
-                    return {
-                        "status": "policy_violation",
-                        "tool_name": tool_name,
-                        "violation": f"Amount {params['amount']} exceeds maximum allowed limit of {policy['max_limit']}.",
-                        "params_received": params
-                    }
-
-        print(f"      [Sandbox] Executing mock tool: {tool_name}({params})")
-
-        # --- STATE MUTATION LOGIC ---
-        # In a real system, this would be handled by specific tool implementations.
-        # For the harness, we use a generic 'update' heuristic.
-        output_msg = f"Mock result for {tool_name}"
-
-        if tool_name.startswith("update_") or tool_name.startswith("set_"):
-            for key, value in params.items():
-                if key in self.state or len(self.state) < 20: # Allow adding new keys if state is small
-                    self.state[key] = value
-            output_msg = f"Successfully updated state via {tool_name}"
-
-        return {
-            "status": "success",
-            "tool_name": tool_name,
-            "output": output_msg,
-            "params_received": params,
-            "current_state": self.state
-        }
+        # 4. Return Output
+        return tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})

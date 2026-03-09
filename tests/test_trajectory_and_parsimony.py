@@ -1,26 +1,27 @@
 """
-test_milestone4.py
+test_trajectory_and_parsimony.py
 
 Unit tests for Milestone 4 features: Path Parsimony and Trajectory Capturing.
+Aligned with OpenCore modular architecture and typed contexts.
 """
 
 import os
 import json
 import pytest
 from pathlib import Path
+from unittest.mock import patch, AsyncMock
 from eval_runner import metrics, engine, reporter
 
 def test_path_parsimony_calculation():
     """Verifies the efficiency score calculation."""
-    # max_turns = 5
     # Perfect efficiency (1 turn)
-    assert metrics.calculate_path_parsimony(1, 5) == 1.0
+    assert metrics.calculate_path_parsimony({}, 1, 5) == 1.0
     # Worst efficiency (5 turns)
-    assert metrics.calculate_path_parsimony(5, 5) == 0.0
+    assert metrics.calculate_path_parsimony({}, 5, 5) == 0.0
     # Middle (3 turns)
-    assert metrics.calculate_path_parsimony(3, 5) == 0.5
+    assert metrics.calculate_path_parsimony({}, 3, 5) == 0.5
     # Edge case: max_turns = 1
-    assert metrics.calculate_path_parsimony(1, 1) == 1.0
+    assert metrics.calculate_path_parsimony({}, 1, 1) == 1.0
 
 @pytest.mark.asyncio
 async def test_engine_captures_state_transitions():
@@ -35,7 +36,13 @@ async def test_engine_captures_state_transitions():
                 "required_tools": ["update_status"]
             }
         ],
-        "initial_state": {"status": "idle"}
+        "initial_state": {"status": "idle"},
+        "tools": {
+            "update_status": {
+                "state_changes": [{"path": "status", "value": "active"}],
+                "output": {"status": "success"}
+            }
+        }
     }
     
     # Mock agent response with a tool call
@@ -45,14 +52,13 @@ async def test_engine_captures_state_transitions():
         "tool_params": {"status": "active"}
     }
     
-    with patch("aiohttp.ClientSession.post") as mock_post:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         # Turn 1: Tool call
         # Turn 2: Signal final_answer
-        mock_post.return_value.__aenter__.return_value.status = 200
-        mock_post.return_value.__aenter__.return_value.json = AsyncMock(side_effect=[
+        mock_call.side_effect = [
             mock_response,
             {"action": "final_answer", "summary": "Done"}
-        ])
+        ]
         
         results = await engine.run_evaluation(scenario)
         history = results[0]["conversation_history"]
@@ -93,6 +99,3 @@ def test_trajectory_json_export(tmp_path):
         data = json.load(f)
         assert data["metadata"]["scenario_id"] == "test_id"
         assert "results" in data
-
-# Helper mocks
-from unittest.mock import patch, AsyncMock

@@ -31,6 +31,13 @@ The core engine must remain fast, modular, and lightweight.
 - **Typing:** All Python code must be fully type-hinted using `mypy` standards.
 - **Testing:** New features must include a unit test in the `/tests` directory.
 
+### 🔌 Extending via Plugins (Milestone 11+)
+You can now extend OpenCore without touching the primary engine logic.
+- **Lifecycle Hooks:** Plugins can subscribe to `before_evaluation`, `on_turn_end`, and `after_evaluation`.
+- **Registries:** Use the provided registries to add custom metrics, loaders, or agent adapters.
+- **Entry Points:** Register your plugins in your `pyproject.toml` under the `eval_runner.plugins` entry point group.
+- **Context Awareness:** Plugins receive typed `EvaluationContext` or `TurnContext` objects, ensuring stable integrations.
+
 ---
 
 ## 🚀 The Pull Request Process

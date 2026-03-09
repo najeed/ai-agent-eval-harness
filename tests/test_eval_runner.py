@@ -53,7 +53,8 @@ def test_scenario_schema_validation_rejects_invalid():
         f.flush()
         temp_path = Path(f.name)
 
-    with pytest.raises(ValueError, match="Schema validation failed"):
+    from jsonschema import ValidationError
+    with pytest.raises(ValidationError):
         loader.load_scenario(temp_path)
 
     temp_path.unlink(missing_ok=True)
@@ -109,6 +110,23 @@ def test_load_dataset_unsupported_format():
 
     data = loader.load_dataset(temp_path)
     assert data == []
+
+    temp_path.unlink(missing_ok=True)
+
+
+def test_load_dataset_with_format_override():
+    """Test loading a dataset with an explicit format_type override."""
+    # Create a CSV file with a .txt extension
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, newline="") as f:
+        f.write("id,label\n")
+        f.write("1,test\n")
+        f.flush()
+        temp_path = Path(f.name)
+
+    # Load with explicit .csv format_type
+    data = loader.load_dataset(temp_path, format_type=".csv")
+    assert len(data) == 1
+    assert data[0]["label"] == "test"
 
     temp_path.unlink(missing_ok=True)
 

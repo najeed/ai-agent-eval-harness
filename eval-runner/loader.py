@@ -29,22 +29,48 @@ def _get_schema() -> dict:
     return _SCENARIO_SCHEMA
 
 
+from typing import Dict, Callable, List
+
+class LoaderRegistry:
+    """Registry for data loaders."""
+    _loaders: Dict[str, Callable] = {}
+
+    @classmethod
+    def register(cls, extension: str):
+        """Decorator to register a loader for a specific file extension."""
+        def decorator(func: Callable):
+            cls._loaders[extension.lower()] = func
+            return func
+        return decorator
+
+    @classmethod
+    def get(cls, extension: str) -> Callable:
+        """Retrieves a loader for a specific extension."""
+        return cls._loaders.get(extension.lower())
+
+
+@LoaderRegistry.register(".csv")
+def load_csv(file_path: Path) -> List[Dict]:
+    dataset = []
+    with open(file_path, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            dataset.append(row)
+    return dataset
+
+
+@LoaderRegistry.register(".jsonl")
+def load_jsonl(file_path: Path) -> List[Dict]:
+    dataset = []
+    with open(file_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            if line.strip():
+                dataset.append(json.loads(line))
+    return dataset
+
+
 def load_scenario(file_path: Path) -> dict:
-    """
-    Loads and validates a scenario JSON file from the given path.
-
-    Args:
-        file_path (Path): The Path object pointing to the .json scenario file.
-
-    Returns:
-        dict: A dictionary containing the validated scenario data.
-
-    Raises:
-        FileNotFoundError: If the file does not exist.
-        json.JSONDecodeError: If the file is not valid JSON.
-        ValueError: If the scenario fails schema validation.
-    """
-    print(f"   [Loader] Attempting to load from: {file_path}")
+    """Loads and validates a scenario JSON file."""
     if not file_path.exists():
         raise FileNotFoundError(f"Scenario file not found at {file_path}")
 
@@ -56,53 +82,23 @@ def load_scenario(file_path: Path) -> dict:
                 f"Error decoding JSON from {file_path}: {e.msg}", e.doc, e.pos
             )
 
-    # Validate against schema
-    try:
-        validate(instance=scenario_data, schema=_get_schema())
-    except ValidationError as e:
-        raise ValueError(
-            f"Schema validation failed for {file_path}: {e.message}"
-        )
-
+    validate(instance=scenario_data, schema=_get_schema())
     return scenario_data
 
 
-
-def load_dataset(file_path: Path):
-    """
-    Loads a dataset file (e.g., .jsonl, .csv).
-
-    Args:
-        file_path (Path): The Path object pointing to the dataset file.
-
-    Returns:
-        list: A list of dictionaries representing the dataset rows.
-
-    Example:
-        >>> from pathlib import Path
-        >>> data = load_dataset(Path('industries/accounting/datasets/sample.csv'))
-    """
-    print(f"   [Loader] Loading dataset from: {file_path}")
+def load_dataset(file_path: Path, format_type: str = None) -> List[Dict]:
+    """Loads a dataset file using the registered loaders."""
     if not file_path.exists():
         raise FileNotFoundError(f"Dataset file not found at {file_path}")
 
-    dataset = []
+    # Use explicit format_type if provided, else fall back to file extension
+    ext = format_type if format_type else file_path.suffix
+    if not ext.startswith("."):
+        ext = f".{ext}"
 
-    # Handle CSV
-    if file_path.suffix == '.csv':
-        with open(file_path, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                dataset.append(row)
+    loader_func = LoaderRegistry.get(ext)
+    if loader_func:
+        return loader_func(file_path)
 
-    # Handle JSONL
-    elif file_path.suffix == '.jsonl':
-        with open(file_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                if line.strip():
-                    dataset.append(json.loads(line))
-
-    else:
-        print(f"   [Loader] Warning: Unsupported dataset format {file_path.suffix}")
-
-    return dataset
+    print(f"   [Loader] Warning: Unsupported dataset format {ext}")
+    return []

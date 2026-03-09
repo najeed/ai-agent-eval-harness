@@ -26,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "eval-runner"))
 
 # Import the metrics module directly
 import metrics
+from metrics import MetricRegistry
 
 def test_tool_call_correctness_exact_match():
     """
@@ -106,13 +107,13 @@ def test_communication_clarity():
     Verifies calculate_communication_clarity returns 1.0 for a sufficiently
     long summary (>10 chars) and 0.0 for an empty or too-short summary.
     """
-    score = metrics.calculate_communication_clarity("The issue is with the local Wi-Fi. Guide provided.")
+    score = metrics.calculate_communication_clarity({}, "The issue is with the local Wi-Fi. Guide provided.")
     assert score == 1.0
 
-    score_short = metrics.calculate_communication_clarity("OK")
+    score_short = metrics.calculate_communication_clarity({}, "OK")
     assert score_short == 0.0
 
-    score_empty = metrics.calculate_communication_clarity("")
+    score_empty = metrics.calculate_communication_clarity({}, "")
     assert score_empty == 0.0
 
 
@@ -141,28 +142,28 @@ def test_generic_accuracy_none_summary():
 
 def test_communication_clarity_whitespace_only():
     """Whitespace-only summary should fail (strip removes it)."""
-    assert metrics.calculate_communication_clarity("           ") == 0.0
+    assert metrics.calculate_communication_clarity({}, "           ") == 0.0
 
 
 def test_communication_clarity_exactly_10_chars():
     """Exactly 10 chars after strip → fails (must be > 10)."""
-    assert metrics.calculate_communication_clarity("1234567890") == 0.0
+    assert metrics.calculate_communication_clarity({}, "1234567890") == 0.0
 
 
 def test_communication_clarity_11_chars():
     """11 chars → passes."""
-    assert metrics.calculate_communication_clarity("12345678901") == 1.0
+    assert metrics.calculate_communication_clarity({}, "12345678901") == 1.0
 def test_policy_compliance_metric():
     """Verify policy compliance detection in history."""
     history = [
         {"role": "user", "content": "hello"},
-        {"role": "assistant", "content": "I did it.", "sandbox_response": {"status": "success"}},
-        {"role": "assistant", "content": "I violated it.", "sandbox_response": {"status": "policy_violation"}}
+        {"role": "agent", "content": {"action": "call_tool", "summary": "Violation"}, "status": "policy_violation"}, # Nested violation
+        {"role": "environment", "content": {"status": "policy_violation", "message": "error"}}
     ]
     score = metrics.calculate_policy_compliance(history)
     assert score == 0.0
 
     safe_history = [
-        {"role": "assistant", "content": "OK", "sandbox_response": {"status": "success"}}
+        {"role": "agent", "content": "OK", "sandbox_response": {"status": "success"}}
     ]
     assert metrics.calculate_policy_compliance(safe_history) == 1.0

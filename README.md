@@ -29,12 +29,14 @@ The harness is organized into two main parts:
 -   `/industries`: Contains all the evaluation assets (4,400+ scenarios), categorized by 44 industries. Each industry has:
     -   `/scenarios`: Detailed JSON files describing specific tasks and goals for an agent.
     -   `/datasets`: Supporting data files (`.csv`, `.jsonl`, etc.) needed for the scenarios.
--   `/eval-runner`: A modular Python application to load scenarios, execute evaluations, and report on performance.
-    -   `engine.py` — Multi-turn conversation loop with state-aware execution
+-   `/eval-runner`: A modular Python application with a plugin-based architecture.
+    -   `engine.py` — Multi-turn conversation loop with Lifecycle Hooks (before/after/on_turn)
     -   `tool_sandbox.py` — Stateful mock tool executor with governance policy enforcement
-    -   `loader.py` — Scenario loading with schema validation + CSV/JSONL dataset loading
-    -   `metrics.py` — Metric calculations (tool correctness, state verification, policy compliance)
-    -   `reporter.py` — Console report generation
+    -   `loader.py` — Dynamic Dataset Registry (JSONL, CSV, and custom)
+    -   `metrics.py` — Pluggable Metric Registry for easy extension
+    -   `plugins/` — Manager for loading external governance and capability modules
+    -   `context.py` — Typed `EvaluationContext` and `TurnContext` for stable integrations
+    -   `reporter.py` — Console and PR-ready markdown report generation
 -   `/sample_agent`: A rule-based Flask agent for the telecom scenario.
 -   `/schemas`: JSON Schema definitions for scenario validation.
 -   `/tests`: Comprehensive test suite including stateful execution and governance policies.
@@ -73,6 +75,8 @@ The harness is organized into two main parts:
     The `--export` flag will generate a detailed JSON trajectory in the `reports/trajectories/` directory.
 
 ### Advanced Features
+- **Universal Plugin Architecture**: Extend the engine without touching the core. Register custom Metrics, Loaders, or Agent Adapters via `entry_points`.
+- **Lifecycle Hooks**: Inject logic at key stages: `before_evaluation`, `on_turn_end`, and `after_evaluation`.
 - **Path Parsimony**: Evaluations automatically score agents on efficiency (fewer turns = higher score).
 - **Trajectory Visualization**: Failed tasks include a Mermaid decision tree in the report to help debug "wrong turns."
 
