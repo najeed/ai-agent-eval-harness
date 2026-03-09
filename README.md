@@ -5,10 +5,18 @@
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![Tests](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/test.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-orange.svg)](LICENSE)
 [![Contributors](https://img.shields.io/github/contributors/najeed/ai-agent-eval-harness)](https://github.com/najeed/ai-agent-eval-harness/graphs/contributors)
 
 Welcome to the AI Agent Evaluation Harness, an open-source framework for assessing the capabilities of AI agents across a wide range of industries and use cases.
+
+| Attribute | Specification |
+| :--- | :--- |
+| **Architect** | [Najeed Ahmed Khan](https://github.com/najeed) |
+| **License** | **BSL 1.1** (Converts to Apache 2.0 in 2030) |
+| **Status** | Production-Ready Framework |
+| **Core Goal** | Eliminating the "Agentic Reliability Gap" |
+| **Contribution** | Individual CLA Required |
 
 ## Mission
 
