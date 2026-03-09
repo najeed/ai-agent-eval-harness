@@ -9,6 +9,7 @@ import os
 import json
 import aiohttp
 import asyncio
+from typing import Dict, Any, List, Optional, Callable
 from . import plugins
 from . import metrics
 from .context import EvaluationContext, TurnContext
@@ -22,7 +23,7 @@ MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "5"))
 
 # Dynamic Adapter Registry for Agent Communication
 class AgentAdapterRegistry:
-    _adapters = {}
+    _adapters: Dict[str, Callable] = {}
     
     @classmethod
     def register(cls, protocol: str, adapter_func):
@@ -60,10 +61,10 @@ async def run_evaluation(scenario: dict) -> list:
         sandbox.setup()
         for task in scenario.get("tasks", []):
             task_id = task.get("task_id")
-            conversation_history = []
+            conversation_history: List[Dict[str, Any]] = []
             current_message = task.get("description") or ""
             turns_taken = 0
-            agent_actions = {"used_tools": []}
+            agent_actions: Dict[str, Any] = {"used_tools": []}
 
             for turn in range(1, MAX_TURNS + 1):
                 # Build Turn Context
@@ -157,16 +158,18 @@ async def run_evaluation(scenario: dict) -> list:
                 metric_func = metrics.MetricRegistry.get(m_name)
                 
                 score = 0.0
-                if m_name == "tool_call_correctness":
+                if m_name == "tool_call_correctness" and metric_func:
                     score = metric_func(task.get("required_tools", []), agent_actions["used_tools"])
-                elif m_name == "state_verification":
+                elif m_name == "state_verification" and metric_func:
                     score = metric_func(task.get("expected_state_changes", []), sandbox.state)
-                elif m_name == "policy_compliance":
+                elif m_name == "policy_compliance" and metric_func:
                     score = metric_func(conversation_history)
-                elif m_name == "path_parsimony":
+                elif m_name == "path_parsimony" and metric_func:
                     score = metric_func(criterion, turns_taken, MAX_TURNS)
-                elif metric_func:
-                    score = metric_func(criterion, agent_response.get("summary", ""))
+                elif metric_func is not None:
+                    # Safely handle potential missing agent_response if communication failed
+                    summary = agent_response.get("summary", "") if 'agent_response' in locals() and agent_response else ""
+                    score = metric_func(criterion, summary)
 
                 task_results["metrics"].append({
                     "metric": m_name, "score": score, "threshold": threshold, "success": score >= threshold
@@ -175,8 +178,9 @@ async def run_evaluation(scenario: dict) -> list:
             all_task_results.append(task_results)
 
     finally:
+        ctx.grounding_hits = sandbox.grounding_hits
         sandbox.teardown()
 
     # Lifecycle Hook: after_evaluation
-    plugins.manager.trigger("after_evaluation", all_task_results)
+    plugins.manager.trigger("after_evaluation", ctx, all_task_results)
     return all_task_results

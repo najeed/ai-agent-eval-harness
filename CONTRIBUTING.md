@@ -28,10 +28,17 @@ We have 4,400+ scenarios, but the world changes fast. If you are adding a new in
 ### 💻 Improving the Eval-Runner
 The core engine must remain fast, modular, and lightweight.
 - **No Heavy Dependencies:** Prevent adding large libraries to the core `requirements.txt`.
-- **Typing:** All Python code must be fully type-hinted using `mypy` standards.
+- **No Heavy Dependencies:** Prevent adding large libraries to the core `requirements.txt`.
+- **Typing:** All Python code must be fully type-hinted using `mypy` standards. Core packages must include `py.typed` to support explicit boundary typing (PEP 561).
 - **Testing:** New features must include a unit test in the `/tests` directory.
 
-### 🔌 Extending via Plugins (Milestone 11+)
+### 🤖 Multi-Agent & Orchestration Standards 
+As we evolve from "Bot" to "Crew" evaluation, new scenarios must consider:
+1. **Topology:** Define explicit `agent_topology` with `reads`/`writes` permissions for shared state.
+2. **Coordination Metrics:** Include `delegation_latency` or `loop_risk` in `crew_success_criteria` where applicable.
+3. **Shared State:** State changes should be namespaced (e.g., `billing:status`) to ensure synchronization across agents.
+
+### 🔌 Extending via Plugins
 You can now extend OpenCore without touching the primary engine logic.
 - **Lifecycle Hooks:** Plugins can subscribe to `before_evaluation`, `on_turn_end`, and `after_evaluation`.
 - **Registries:** Use the provided registries to add custom metrics, loaders, or agent adapters.

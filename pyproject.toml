@@ -1,6 +1,11 @@
 [project]
 name = "eval_runner"
 version = "0.1.0"
+dependencies = [
+    "jsonschema",
+    "sentence-transformers",
+    "numpy"
+]
 
 [build-system]
 requires = ["setuptools"]
@@ -11,6 +16,9 @@ packages = ["eval_runner"]
 
 [project.scripts]
 eval-harness = "eval_runner.cli:main"
+
+[project.entry-points."eval_runner.plugins"]
+coverage = "eval_runner.coverage_plugin:CoveragePlugin"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

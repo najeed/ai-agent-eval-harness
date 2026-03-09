@@ -21,7 +21,7 @@ class BaseEvalPlugin:
         """Called after each turn."""
         pass
     
-    def after_evaluation(self, results: list):
+    def after_evaluation(self, context: EvaluationContext, results: list):
         """Called after the evaluation is finished."""
         pass
     
@@ -39,14 +39,30 @@ class PluginManager:
     def load_plugins(self):
         """Discovers plugins via entry points."""
         # OpenCore looks for entry points in the 'eval_runner.plugins' group
-        eps = importlib.metadata.entry_points(group='eval_runner.plugins')
-        for entry_point in eps:
+        eps = importlib.metadata.entry_points()
+        if hasattr(eps, 'select'):
+            # Python 3.10+ select()
+            group_eps = eps.select(group='eval_runner.plugins')
+        else:
+            # Older dict-like behavior
+            group_eps = eps.get('eval_runner.plugins', [])
+            
+        for entry_point in group_eps:
             try:
                 plugin_cls = entry_point.load()
                 self.plugins.append(plugin_cls())
                 print(f"   [Plugins] Loaded plugin: {entry_point.name}")
             except Exception as e:
                 print(f"   [Plugins] Failed to load plugin {entry_point.name}: {e}")
+        
+        # Fallback: Always ensure CoveragePlugin is loaded for Phase 2
+        try:
+            from .coverage_plugin import CoveragePlugin
+            if not any(isinstance(p, CoveragePlugin) for p in self.plugins):
+                self.plugins.append(CoveragePlugin())
+                print("   [Plugins] Loaded internal plugin: coverage")
+        except ImportError:
+            pass
 
     def trigger(self, hook_name: str, *args, **kwargs):
         """Triggers a lifecycle hook on all loaded plugins."""

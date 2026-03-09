@@ -32,11 +32,13 @@ The harness is organized into two main parts:
 -   `/eval_runner`: A modular Python application with a plugin-based architecture.
     -   `engine.py` — Multi-turn conversation loop with Lifecycle Hooks (before/after/on_turn)
     -   `tool_sandbox.py` — Stateful mock tool executor with governance policy enforcement
-    -   `loader.py` — Dynamic Dataset Registry (JSONL, CSV, and custom)
+    -   `loader.py` — Universal Dataset Loader (JSONL, CSV, JSON v2)
+    -   `spec_parser.py` — Markdown PRD to Scenario parser
     -   `metrics.py` — Pluggable Metric Registry for easy extension
-    -   `plugins/` — Manager for loading external governance and capability modules
-    -   `context.py` — Typed `EvaluationContext` and `TurnContext` for stable integrations
-    -   `reporter.py` — Console and PR-ready markdown report generation
+    -   `plugins.py` — Plugin Manager for Lifecycle Hooks
+    -   `coverage_reporter.py` — HTML Heatmap generation
+    -   `context.py` — Typed `EvaluationContext` and `TurnContext`
+    -   `reporter.py` — Console and Trajectory report generation
 -   `/sample_agent`: A rule-based Flask agent for the telecom scenario.
 -   `/schemas`: JSON Schema definitions for scenario validation.
 -   `/tests`: Comprehensive test suite including stateful execution and governance policies.

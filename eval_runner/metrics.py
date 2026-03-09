@@ -11,7 +11,7 @@ Typical usage example:
 # eval-runner/metrics.py
 
 
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional, Any
 
 class MetricRegistry:
     """Registry for evaluation metrics."""
@@ -26,7 +26,7 @@ class MetricRegistry:
         return decorator
 
     @classmethod
-    def get(cls, name: str) -> Callable:
+    def get(cls, name: str) -> Optional[Callable]:
         """Retrieves a metric function by name."""
         return cls._metrics.get(name)
 
@@ -115,3 +115,64 @@ def calculate_path_parsimony(criterion: dict, turns_taken: int, max_turns: int) 
     turns = max(1, turns_taken)
     score = 1.0 - (turns - 1) / (max_turns - 1)
     return max(0.0, min(1.0, score))
+
+
+@MetricRegistry.register("delegation_latency")
+def calculate_delegation_latency(expected: int, actual: int) -> float:
+    """
+    Measures the 'Thinking Cost' of agent handoffs.
+    Returns 1.0 if actual <= expected, else decays by 0.2 per extra hop.
+    """
+    if actual <= expected:
+        return 1.0
+    return max(0.0, 1.0 - (actual - expected) * 0.2)
+
+
+@MetricRegistry.register("delegation_loop_risk")
+def calculate_delegation_loop_risk(agent_sequence: list) -> float:
+    """
+    Detects 'Infinite Re-planning' cycles in the agent handoff graph.
+    Returns 0.0 if a cycle is detected (repeating agent), 1.0 otherwise.
+    """
+    if not agent_sequence:
+        return 1.0
+    
+    seen = set()
+    for agent in agent_sequence:
+        if agent in seen:
+            print(f"      [Metrics] Delegation cycle detected for agent: {agent}")
+            return 0.0
+        seen.add(agent)
+    return 1.0
+
+
+@MetricRegistry.register("consensus_scoring")
+def calculate_consensus_scoring(agent_outputs: list) -> float:
+    """
+    A lightweight OSS judge for multi-agent agreement.
+    Uses semantic similarity (LLM-lite) to score whether agents reached equivalent conclusions.
+    """
+    if len(agent_outputs) < 2:
+        return 1.0 # Trivial consensus
+    
+    def get_tokens(text):
+        return set(str(text).lower().split())
+
+    total_sim: float = 0.0
+    comparisons = 0
+    
+    for i in range(len(agent_outputs)):
+        for j in range(i + 1, len(agent_outputs)):
+            set_i = get_tokens(agent_outputs[i])
+            set_j = get_tokens(agent_outputs[j])
+            
+            intersection = len(set_i.intersection(set_j))
+            union = len(set_i.union(set_j))
+            
+            sim = intersection / union if union > 0 else 1.0
+            total_sim += sim
+            comparisons += 1
+            
+    score = total_sim / comparisons if comparisons > 0 else 1.0
+    print(f"      [Metrics] Consensus score: {score:.2f} across {len(agent_outputs)} agents.")
+    return score

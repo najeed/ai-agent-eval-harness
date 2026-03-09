@@ -1,0 +1,87 @@
+{
+    "scenario_id": "telecom-ma-99999",
+    "title": "Multi-Agent Billing & Network Repair",
+    "description": "A complex multi-agent scenario where a billing agent must coordinate with a network specialist to resolve a high-bill complaint caused by technical faults.",
+    "use_case": "Mixed Use Case",
+    "core_function": "Multi-Agent Coordination",
+    "industry": "Telecom",
+    "version": "2.0.0",
+    "agent_topology": {
+        "billing_agent": {
+            "writes": [
+                "billing:dispute",
+                "coordination:handoff"
+            ],
+            "reads": [
+                "network:diagnostics"
+            ]
+        },
+        "network_specialist": {
+            "writes": [
+                "network:diagnostics"
+            ],
+            "reads": [
+                "billing:dispute",
+                "coordination:handoff"
+            ]
+        }
+    },
+    "tasks": [
+        {
+            "task_id": "task-1",
+            "description": "Billing agent receives complaint and delegates technical investigation to network specialist.",
+            "expected_outcome": "Delegation is recorded in the coordination namespace.",
+            "expected_delegations": 1,
+            "required_tools": [
+                "delegate_to_specialist"
+            ],
+            "success_criteria": [
+                {
+                    "metric": "tool_call_correctness",
+                    "threshold": 1.0
+                }
+            ],
+            "crew_success_criteria": [
+                {
+                    "metric": "delegation_loop_risk",
+                    "threshold": 0.8
+                }
+            ]
+        },
+        {
+            "task_id": "task-2",
+            "description": "Network specialist performs diagnostics and writes findings to the network namespace.",
+            "expected_outcome": "Findings reveal a ghost-data bug.",
+            "required_tools": [
+                "run_line_diagnostics"
+            ],
+            "success_criteria": [
+                {
+                    "metric": "root_cause_analysis_correctness",
+                    "threshold": 1.0
+                }
+            ]
+        },
+        {
+            "task_id": "task-3",
+            "description": "Billing agent reads network findings and applies credit.",
+            "expected_outcome": "Credit applied based on technical evidence.",
+            "expected_delegations": 1,
+            "required_tools": [
+                "apply_credit"
+            ],
+            "success_criteria": [
+                {
+                    "metric": "state_verification",
+                    "threshold": 1.0
+                }
+            ],
+            "expected_state_changes": [
+                {
+                    "path": "billing.dispute_resolved",
+                    "value": true
+                }
+            ]
+        }
+    ]
+}

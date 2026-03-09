@@ -54,6 +54,11 @@ def main():
     # --- LIST-METRICS COMMAND ---
     subparsers.add_parser("list-metrics", help="List registered evaluation metrics")
 
+    # --- SPEC-TO-EVAL COMMAND ---
+    spec_parser = subparsers.add_parser("spec-to-eval", help="Convert Markdown PRD to Scenario JSON")
+    spec_parser.add_argument("--input", required=True, help="Path to Markdown PRD")
+    spec_parser.add_argument("--output", help="Output JSON path (optional)")
+
     args = parser.parse_args()
 
     if args.command == "evaluate":
@@ -65,6 +70,8 @@ def main():
         print("\nRegistered Metrics:")
         for name in metrics.MetricRegistry._metrics.keys():
             print(f" - {name}")
+    elif args.command == "spec-to-eval":
+        handle_spec_to_eval(args)
     else:
         parser.print_help()
 
@@ -73,7 +80,8 @@ async def run_evaluate(args):
     print(f"\n[CLI] Loading scenarios from: {args.path}")
     
     try:
-        scenarios = loader.load_dataset(args.path, format_type=args.format)
+        path_obj = Path(args.path)
+        scenarios = loader.load_dataset(path_obj, format_type=args.format if args.format != "jsonl" else None)
     except Exception as e:
         print(f"[CLI] Error loading dataset: {e}")
         sys.exit(1)
@@ -88,21 +96,9 @@ async def run_evaluate(args):
         print(f"\n[{i+1}/{len(scenarios)}] Scenario: {scenario.get('title', 'Untitled')}")
         results = await engine.run_evaluation(scenario)
         all_results.extend(results)
-
-    # Save Results
-    output_path = Path(args.output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    reporter.save_results(all_results, str(output_path))
-    print(f"\n[CLI] Evaluation complete. Results saved to: {args.output}")
-
-    # Generate Summary
-    summary = reporter.generate_summary(all_results)
-    print("\n--- Evaluation Summary ---")
-    print(f"Total Tasks: {summary['total_tasks']}")
-    print(f"Passed Tasks: {summary['passed_tasks']}")
-    print(f"Success Rate: {summary['success_rate']:.2%}")
-    print("--------------------------")
+        
+        # Use the standard reporter to print results for each scenario
+        reporter.generate_report(scenario, results, export_trajectory=True)
 
 def detect_framework():
     """Simple heuristic to detect the agent framework used in the current dir."""
@@ -174,6 +170,31 @@ def handle_init(_):
         
     print(f"\n[CLI] Project initialized successfully!")
     print(f"[CLI] Created: eval_config.json, scenarios/starter_scenario.json")
+
+def handle_spec_to_eval(args):
+    """Handler for 'spec-to-eval' command."""
+    from . import spec_parser
+    input_path = Path(args.input)
+    if not input_path.exists():
+        print(f"â Œ Error: Markdown file not found at {input_path}")
+        return
+
+    with open(input_path, "r", encoding="utf-8") as f:
+        md_content = f.read()
+
+    scenario = spec_parser.parse_markdown_to_scenario(md_content)
+    
+    # Determine default output path if not provided
+    if args.output:
+        output_path = Path(args.output)
+    else:
+        # industries/[industry]/scenarios/[scenario_id].json
+        industry = scenario.get("industry", "generic")
+        scenario_id = scenario.get("scenario_id", "new_scenario")
+        output_path = Path("industries") / industry / "scenarios" / f"{scenario_id}.json"
+
+    spec_parser.save_scenario_stub(scenario, output_path)
+    print(f"âœ… Successfully converted {input_path} to {output_path}")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,43 @@
+{
+  "scenario_id": "scenario-c3ac860d",
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "title": "Identify Overcharge",
+      "description": "The agent should look up the customer's recent data usage and identify the $40 overage charge.",
+      "expected_outcome": "Agent confirms the $40 overage in the conversation.",
+      "required_tools": [
+        "get_billing_history",
+        "get_usage_data"
+      ],
+      "success_criteria": [
+        {
+          "metric": "generic_accuracy",
+          "threshold": 0.5
+        }
+      ]
+    }
+  ],
+  "title": "Billing Dispute Resolution Agent",
+  "industry": "telecom",
+  "use_case": "customer_service",
+  "core_function": "billing",
+  "description": "Evaluate an agent's ability to handle a complex billing dispute involving data overages and multi-agent coordination.",
+  "agent_topology": {
+    "billing_agent": {
+      "writes": [
+        "billing:*"
+      ],
+      "reads": [
+        "customer:*"
+      ]
+    },
+    "support_agent": {
+      "writes": [],
+      "reads": [
+        "billing:balance"
+      ]
+    }
+  }
+}

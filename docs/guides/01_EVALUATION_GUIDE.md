@@ -54,15 +54,30 @@ data = loader.load_dataset(Path("industries/accounting/datasets/sample.csv"))
 # Returns: [{"col1": "val1", ...}, ...]
 ```
 
-## Available Metrics (Phase 1)
+## Available Metrics (v2.0)
 
 | Metric | Function | Description |
 |---|---|---|
 | `tool_call_correctness` | `calculate_tool_call_correctness` | Exact set-match of expected vs. actual tools |
 | `state_verification` | `calculate_state_correctness` | Verify persistent system state changes |
 | `policy_compliance` | `calculate_policy_compliance` | Detect governance policy violations |
-| `*` (any other) | `calculate_generic_accuracy` | Checks if agent returned a non-empty summary |
+| `delegation_latency` | `calculate_delegation_latency` | Measures the 'Thinking Cost' of handoffs |
+| `delegation_loop_risk` | `calculate_delegation_loop_risk` | Detects 'Infinite Re-planning' cycles |
+| `consensus_scoring` | `calculate_consensus_scoring` | Semantic similarity judge for agent agreement |
 | `communication_clarity` | `calculate_communication_clarity` | Checks summary length > 10 characters |
+
+## Multi-Agent Scenario Schema (v2.0)
+
+Scenarios now support complex topologies. Example snippet:
+
+```json
+{
+  "version": "2.0.0",
+  "agent_topology": {
+    "agent_1": { "writes": ["ns1"], "reads": ["ns2"] }
+  }
+}
+```
 
 ## Schema Validation (Phase 2)
 

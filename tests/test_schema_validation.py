@@ -22,7 +22,7 @@ import os
 import json
 import pytest
 from pathlib import Path
-from jsonschema import validate, ValidationError
+from jsonschema import validate, ValidationError # type: ignore
 
 # Systemic path resolution (Guardrail 4.7)
 BASE_DIR = Path(__file__).parent.parent

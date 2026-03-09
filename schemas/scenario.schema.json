@@ -44,6 +44,27 @@
       "type": "string",
       "description": "Industry tag (e.g. telecom, finance)"
     },
+    "agent_topology": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "reads": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "writes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Definition of agents in the crew and their state access permissions (namespaces)"
+    },
     "tasks": {
       "type": "array",
       "description": "List of tasks the agent is expected to perform",
@@ -75,6 +96,11 @@
             },
             "description": "List of tools the agent is expected to use"
           },
+          "expected_delegations": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Expected number of agent-to-agent handoffs for this task"
+          },
           "success_criteria": {
             "type": "array",
             "items": {
@@ -95,6 +121,25 @@
               }
             },
             "description": "Criteria to determine if the task was successfully completed"
+          },
+          "crew_success_criteria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "metric",
+                "threshold"
+              ],
+              "properties": {
+                "metric": {
+                  "type": "string"
+                },
+                "threshold": {
+                  "type": "number"
+                }
+              }
+            },
+            "description": "Multi-agent specific metrics (e.g. delegation_loop_risk)"
           },
           "expected_state_changes": {
             "type": "array",

@@ -3,3 +3,5 @@ Flask
 requests
 jsonschema
 aiohttp
+sentence-transformers
+numpy

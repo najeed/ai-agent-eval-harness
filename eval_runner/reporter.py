@@ -9,8 +9,9 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
-def save_trajectory(scenario: dict, results: list, base_dir: Path = None):
+def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = None):
     """
     Saves a detailed JSON trajectory of the evaluation run.
     """
@@ -18,6 +19,7 @@ def save_trajectory(scenario: dict, results: list, base_dir: Path = None):
     if base_dir is None:
         base_dir = Path(__file__).parent.parent
     
+    # mypy fix: base_dir is now definitely Path
     report_dir = base_dir / "reports" / "trajectories"
     report_dir.mkdir(parents=True, exist_ok=True)
     
@@ -57,7 +59,9 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
     
     for entry in history:
         role = entry.get("role")
-        content = entry.get("content", {})
+        content = entry.get("content")
+        if not isinstance(content, dict):
+            content = {}
         
         node_id = f"Turn_{turn_idx}_{role}"
         

@@ -220,3 +220,57 @@ def test_load_invalid_json_file():
     with pytest.raises(Exception):
         loader.load_scenario(temp_path)
     temp_path.unlink(missing_ok=True)
+def test_shared_state_registry_permissions():
+    """Verify namespaced read/write permissions in SharedStateRegistry."""
+    from eval_runner.tool_sandbox import SharedStateRegistry
+    topology = {
+        "agent_a": {"writes": ["namespace_1"], "reads": ["namespace_2"]},
+        "agent_b": {"writes": ["namespace_2"], "reads": ["namespace_1"]}
+    }
+    registry = SharedStateRegistry(topology)
+    
+    # Agent A writes to allowed namespace
+    assert registry.write("agent_a", "namespace_1:key", "val1") is True
+    # Agent B cannot write to namespace_1
+    assert registry.write("agent_b", "namespace_1:key", "val2") is False
+    
+    # Agent B can read from namespace_1
+    assert registry.read("agent_b", "namespace_1:key") == "val1"
+    # Agent A cannot read from namespace_1 (it only reads namespace_2)
+    assert registry.read("agent_a", "namespace_1:key") is None
+
+def test_v2_schema_validation():
+    """Verify that the updated schema accepts v2 fields."""
+    v2_scenario = {
+        "scenario_id": "test-v2",
+        "title": "V2 Test",
+        "industry": "test",
+        "use_case": "test",
+        "core_function": "test",
+        "description": "test",
+        "version": "2.0.0",
+        "agent_topology": {
+            "agent_1": {"reads": ["*"], "writes": ["*"]}
+        },
+        "tasks": [
+            {
+                "task_id": "t1",
+                "description": "d",
+                "expected_outcome": "o",
+                "success_criteria": [{"metric": "m", "threshold": 0.5}],
+                "expected_delegations": 1,
+                "crew_success_criteria": [{"metric": "consensus_scoring", "threshold": 0.8}]
+            }
+        ]
+    }
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+        json.dump(v2_scenario, f)
+        f.flush()
+        temp_path = Path(f.name)
+    
+    # Should not raise ValidationError
+    scenario = loader.load_scenario(temp_path)
+    assert scenario["version"] == "2.0.0"
+    assert "agent_topology" in scenario
+    
+    temp_path.unlink(missing_ok=True)

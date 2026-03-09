@@ -163,3 +163,31 @@ def test_policy_compliance_metric():
         {"role": "agent", "content": "OK", "sandbox_response": {"status": "success"}}
     ]
     assert metrics.calculate_policy_compliance(safe_history) == 1.0
+def test_delegation_latency():
+    """Verify latency decay logic."""
+    # actual <= expected
+    assert metrics.calculate_delegation_latency(2, 1) == 1.0
+    assert metrics.calculate_delegation_latency(2, 2) == 1.0
+    # actual > expected (0.2 decay per hop)
+    assert metrics.calculate_delegation_latency(2, 3) == 0.8
+    assert metrics.calculate_delegation_latency(2, 7) == 0.0 # Floor at 0.0
+
+def test_delegation_loop_risk():
+    """Verify cycle detection in delegation sequence."""
+    assert metrics.calculate_delegation_loop_risk(["A", "B", "C"]) == 1.0
+    assert metrics.calculate_delegation_loop_risk(["A", "B", "A"]) == 0.0 # Cycle
+    assert metrics.calculate_delegation_loop_risk([]) == 1.0
+
+def test_consensus_scoring():
+    """Verify semantic consensus logic (token overlap fallback)."""
+    # Identical
+    assert metrics.calculate_consensus_scoring(["Hello world", "Hello world"]) == 1.0
+    # Overlap
+    # "Hello world" vs "Hello" -> intersection=1, union=2 -> 0.5
+    assert metrics.calculate_consensus_scoring(["Hello world", "Hello"]) == 0.5
+    # No overlap
+    assert metrics.calculate_consensus_scoring(["A", "B"]) == 0.0
+    # Multiple agents
+    # (A,B)=0, (A,A)=1, (B,A)=0 -> avg = (0+1+0)/3 = 0.33
+    score = metrics.calculate_consensus_scoring(["A", "B", "A"])
+    assert 0.33 < score < 0.34
