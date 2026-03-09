@@ -119,6 +119,9 @@ This project follows an **Open Core** model.
 | Adversarial Simulations | ❌ No | ✅ Advanced Red-Teaming |
 | Visual Dashboard | ❌ CLI Only | ✅ Web UI & Analytics |
 
+Looking for Production-Grade Reliability?
+The Enterprise Edition includes path-efficiency scoring, automated red-teaming, and real-time grounding proxies. Contact ai.eval.harness.contact+enterprise@gmail.com.
+
 ### License
 The core of this project is licensed under the **Business Source License 1.1**. 
 - **For Developers:** It is free to use for testing, research, and startups under $5M revenue.
