@@ -47,14 +47,14 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 
 | Module | File | Purpose |
 |--------|------|---------|
-| CLI | `eval-runner/cli.py` | Argument parsing, scenario discovery, orchestration, plugin extensions |
-| Loader | `eval-runner/loader.py` | Universal dataset loading (CSV/JSONL), schema validation |
-| Engine | `eval-runner/engine.py` | Multi-turn async loop with Lifecycle Hooks |
-| Plugin Manager | `eval-runner/plugins.py`| Discovery and triggering of external capability hooks |
-| Tool Sandbox | `eval-runner/tool_sandbox.py` | Stateful mock tool execution & governance policies |
-| Metrics | `eval-runner/metrics.py` | Score calculation (tools, state, policy compliance, vibing) |
-| Contexts | `eval-runner/context.py` | Typed `EvaluationContext` and `TurnContext` for stability |
-| Reporter | `eval-runner/reporter.py` | Console report & Trajectory Mermaid generation |
+| CLI | `eval_runner/cli.py` | Argument parsing, scenario discovery, orchestration, plugin extensions |
+| Loader | `eval_runner/loader.py` | Universal dataset loading (CSV/JSONL), schema validation |
+| Engine | `eval_runner/engine.py` | Multi-turn async loop with Lifecycle Hooks |
+| Plugin Manager | `eval_runner/plugins.py`| Discovery and triggering of external capability hooks |
+| Tool Sandbox | `eval_runner/tool_sandbox.py` | Stateful mock tool execution & governance policies |
+| Metrics | `eval_runner/metrics.py` | Score calculation (tools, state, policy compliance, vibing) |
+| Contexts | `eval_runner/context.py` | Typed `EvaluationContext` and `TurnContext` for stability |
+| Reporter | `eval_runner/reporter.py` | Console report & Trajectory Mermaid generation |
 
 ## Key Environment Variables
 

@@ -18,10 +18,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-# Add the eval-runner directory to the path
-sys.path.insert(0, str(Path(__file__).parent.parent / "eval-runner"))
-
-import loader
+from eval_runner import loader
 
 
 # --- Phase 1: Scenario Loading Tests ---

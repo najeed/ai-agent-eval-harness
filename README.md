@@ -29,7 +29,7 @@ The harness is organized into two main parts:
 -   `/industries`: Contains all the evaluation assets (4,400+ scenarios), categorized by 44 industries. Each industry has:
     -   `/scenarios`: Detailed JSON files describing specific tasks and goals for an agent.
     -   `/datasets`: Supporting data files (`.csv`, `.jsonl`, etc.) needed for the scenarios.
--   `/eval-runner`: A modular Python application with a plugin-based architecture.
+-   `/eval_runner`: A modular Python application with a plugin-based architecture.
     -   `engine.py` — Multi-turn conversation loop with Lifecycle Hooks (before/after/on_turn)
     -   `tool_sandbox.py` — Stateful mock tool executor with governance policy enforcement
     -   `loader.py` — Dynamic Dataset Registry (JSONL, CSV, and custom)

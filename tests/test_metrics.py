@@ -21,12 +21,8 @@ import pytest
 import sys
 from pathlib import Path
 
-# Add the eval-runner directory to the path
-sys.path.insert(0, str(Path(__file__).parent.parent / "eval-runner"))
-
-# Import the metrics module directly
-import metrics
-from metrics import MetricRegistry
+from eval_runner import metrics
+from eval_runner.metrics import MetricRegistry
 
 def test_tool_call_correctness_exact_match():
     """

@@ -1,5 +1,5 @@
 [project]
-name = "eval-runner"
+name = "eval_runner"
 version = "0.1.0"
 
 [build-system]
@@ -8,9 +8,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["eval_runner"]
-
-[tool.setuptools.package-dir]
-eval_runner = "eval-runner"
 
 [project.scripts]
 eval-harness = "eval_runner.cli:main"

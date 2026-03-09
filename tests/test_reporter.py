@@ -13,10 +13,7 @@ import sys
 from io import StringIO
 from pathlib import Path
 
-# Add the eval-runner directory to the path
-sys.path.insert(0, str(Path(__file__).parent.parent / "eval-runner"))
-
-import reporter
+from eval_runner import reporter
 
 
 def _capture_report(scenario, results):

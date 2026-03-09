@@ -33,7 +33,7 @@ Each object in the `tasks` array represents a single step and contains:
 
 Each object in the `success_criteria` array links a metric to a threshold:
 
--   `metric`: The name of the metric to calculate (must correspond to a function in `eval-runner/metrics.py`).
+-   `metric`: The name of the metric to calculate (must correspond to a function in `eval_runner/metrics.py`).
 -   `threshold`: The minimum score (from 0.0 to 1.0) required to pass this criterion.
 
 A task is only considered successful if **all** of its success criteria are met.
