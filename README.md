@@ -13,7 +13,7 @@ Welcome to the AI Agent Evaluation Harness, an open-source framework for assessi
 | Attribute | Specification |
 | :--- | :--- |
 | **Architect** | [Najeed Ahmed Khan](https://github.com/najeed) |
-| **License** | **BSL 1.1** (Converts to Apache 2.0 in 2030) |
+| **License** | **BSL 1.1** (Converts to Apache 2.0 in 2032) |
 | **Status** | Production-Ready Framework |
 | **Core Goal** | Eliminating the "Agentic Reliability Gap" |
 | **Contribution** | Individual CLA Required |
