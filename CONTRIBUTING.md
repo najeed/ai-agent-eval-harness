@@ -1,61 +1,54 @@
 
 <!-- CONTRIBUTING.md -->
 
-# Contributing to the AI Agent Evaluation Harness
+# Contributing to AI-Agent-Eval-Harness
 
-First off, thank you for considering contributing! Your help is essential for building a comprehensive and valuable resource for the AI community.
+Thank you for your interest in building the industry standard for agentic reliability. This is a high-standard project aimed at changing how the world measures AI intelligence. To maintain the integrity of the harness, we have a rigorous contribution process.
 
-## Code of Conduct
+---
+
+## ⚖️ Legal & Licensing (Required Reading)
+
+### 1. The Business Source License (BSL) 1.1
+By contributing to this repository, you acknowledge that this project is licensed under the **BSL 1.1**. While the core is open for developers and startups, it converts to Apache 2.0 on January 1, 2032. 
+
+### 2. Mandatory CLA
+This repository uses **CLA Assistant** to manage contributor agreements. You **must** sign the Individual Contributor License Agreement (CLA) before your Pull Request can be reviewed. This ensures that [Najeed Ahmed Khan] retains the right to include community improvements in both the open-source core and future enterprise modules.
+
+---
+
+## 🛠️ How to Contribute
+
+### 🏗️ Adding New Industries & Scenarios
+We have 4,400+ scenarios, but the world changes fast. If you are adding a new industry:
+1. **Schema Compliance:** All JSON files must pass the validation checks in `/schemas`.
+2. **Grounding Datasets:** If a scenario requires external data, include it in the `/datasets` folder for that industry.
+3. **Efficiency Baselines:** Every scenario should include a "Successful Path" with a recorded number of tool calls.
+
+### 💻 Improving the Eval-Runner
+The core engine must remain fast, modular, and lightweight.
+- **No Heavy Dependencies:** Prevent adding large libraries to the core `requirements.txt`.
+- **Typing:** All Python code must be fully type-hinted using `mypy` standards.
+- **Testing:** New features must include a unit test in the `/tests` directory.
+
+---
+
+## 🚀 The Pull Request Process
+
+1. **Fork and Branch:** Create a feature branch from `main`.
+2. **Sign the CLA:** The bot will prompt you once the PR is opened.
+3. **Run Local Evals:** Verify your changes by running a sample evaluation:
+   `python -m eval_runner --industry telecom --scenario [your_new_scenario].json`
+4. **Documentation:** Update the `README.md` or industry docs if your changes affect the user interface or scenario logic.
+
+---
+
+## 👑 Code of Conduct
+This is a professional project for serious architects. Be clever, be direct, and focus on technical excellence. Submissions that do not meet the architectural standards of this project will be closed with feedback. 
 
 This project and everyone participating in it is governed by our Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior. [docs/CODE_OF_CONDUCT.md](docs/CODE_OF_CONDUCT.md)[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](docs/CODE_OF_CONDUCT.md)
 
-## How Can I Contribute?
+---
 
-There are many ways to contribute, from adding new evaluation scenarios to improving the core evaluation engine.
+**Questions?** Reach out via GitHub Discussions or open an Issue.
 
-### Adding a New Scenario
-
-This is one of the most valuable ways to contribute.
-
-1.  **Choose an Industry and Use Case:** Find the relevant industry folder in `/industries`. If the use case folder (e.g., `customer_service`) doesn't exist, create it.
-2.  **Create a JSON file:** Follow the structure of existing scenarios (see `industries/telecom/scenarios/customer_service/01_billing_dispute.json` as a template).
-3.  **Define Tasks:** Break down the scenario into a sequence of clear, testable tasks.
-4.  **Define Success Criteria:** For each task, specify the metrics and thresholds that define success.
-5.  **Submit a Pull Request:** Create a PR with your new scenario file. Please include a clear description of the scenario in the PR description.
-
-### Adding a New Industry
-
-We are always looking to expand to new industries! Please follow the guide here: [docs/guides/02_ADDING_AN_INDUSTRY.md](docs/guides/02_ADDING_AN_INDUSTRY.md).
-
-### Improving the `eval-runner`
-
-If you have ideas for new metrics, reporting formats, or improvements to the evaluation logic, we'd love to see them.
-
-1.  Fork the repository.
-2.  Create a new branch for your feature (`git checkout -b feature/new-metric`).
-3.  Install the project in development mode:
-    ```bash
-    pip install -e .
-    pip install -r requirements-dev.txt
-    ```
-4.  Make your changes to the code in the `/eval-runner` directory. Key modules:
-    -   `engine.py` — Multi-turn conversation loop
-    -   `tool_sandbox.py` — Mock tool execution
-    -   `loader.py` — Scenario loading with schema validation
-    -   `metrics.py` — Score calculation
-    -   `reporter.py` — Report generation
-5.  Add tests for new functionality. If your code is async, use `@pytest.mark.asyncio`.
-6.  Run the test suite and ensure all tests pass:
-    ```bash
-    pytest tests/ -v
-    ```
-7.  Submit a Pull Request with a clear description of your changes.
-
-## Pull Request Process
-
-1.  Ensure any new code is commented and follows the existing style.
-2.  Update the README.md or other documentation if your changes require it.
-3.  Run `flake8 . --select=E9,F63,F7,F82` to check for syntax errors.
-4.  Your PR will be reviewed by a maintainer, who may ask for changes.
-
-We look forward to your contributions!
