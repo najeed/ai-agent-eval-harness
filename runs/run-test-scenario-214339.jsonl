@@ -1,0 +1,69 @@
+{"event": "run_start", "timestamp": "2026-03-11T04:38:35.885807Z", "run_id": "run-test-scenario-214339", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:38:35.886554Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:38:35.886911Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:35.887227Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:38:35.887553Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-11T04:38:35.888057Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:35.888665Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-11T04:38:35.888949Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:35.889228Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:38:35.889493Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-11T04:38:35.889784Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:38:35.890039Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:38:35.892484Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:38:35.895935Z", "run_id": "run-test-scenario-214339", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:38:35.896587Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:38:35.896873Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:35.897133Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:38:35.897717Z", "step": 1, "response": {"action": "call_multiple_tools", "tool_names": ["tool_a", "tool_b"], "summary": "Ran both tools."}}
+{"event": "tool_call", "timestamp": "2026-03-11T04:38:35.898107Z", "step": 1, "tool": "tool_a", "arguments": {}}
+{"event": "tool_call", "timestamp": "2026-03-11T04:38:35.898468Z", "step": 1, "tool": "tool_b", "arguments": {}}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:35.898739Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-11T04:38:35.898984Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:35.899228Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-11T04:38:35.900145Z", "step": 1, "tool": "tool_b", "result": {"status": "success", "message": "Executed tool_b"}}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:35.900501Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:38:35.900791Z", "step": 2, "response": {"action": "final_answer", "summary": "All done."}}
+{"event": "evaluation", "timestamp": "2026-03-11T04:38:35.901097Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:38:35.901338Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "agent", "content": {"action": "call_multiple_tools", "tool_names": ["tool_a", "tool_b"], "summary": "Ran both tools."}}, {"role": "environment", "content": [{"status": "success", "message": "Executed tool_a"}, {"status": "success", "message": "Executed tool_b"}]}, {"role": "agent", "content": {"action": "final_answer", "summary": "All done."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:38:35.903343Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:38:35.906533Z", "run_id": "run-test-scenario-214339", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:38:35.907163Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:38:35.907467Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:35.907768Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:38:35.908050Z", "step": 1, "response": {"action": "final_answer", "summary": "I already know the answer."}}
+{"event": "evaluation", "timestamp": "2026-03-11T04:38:35.908383Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:38:35.908726Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "I already know the answer."}}], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:38:35.910603Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:38:35.915350Z", "run_id": "run-test-scenario-214339", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:38:35.916161Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:38:35.916455Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:35.916692Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:38:35.917035Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {}, "summary": "Turn 0"}}
+{"event": "tool_call", "timestamp": "2026-03-11T04:38:35.917329Z", "step": 1, "tool": "tool_a", "arguments": {}}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:35.917582Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-11T04:38:35.917886Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:35.918183Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:38:35.918675Z", "step": 2, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {}, "summary": "Turn 1"}}
+{"event": "tool_call", "timestamp": "2026-03-11T04:38:35.918960Z", "step": 2, "tool": "tool_a", "arguments": {}}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:35.919272Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-11T04:38:35.919505Z", "step": 2, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "evaluation", "timestamp": "2026-03-11T04:38:35.919791Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:38:35.920090Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {}, "summary": "Turn 0"}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {}, "summary": "Turn 1"}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:38:35.921977Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:38:35.925090Z", "run_id": "run-test-scenario-214339", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:38:35.925747Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:38:35.926010Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:35.926289Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-11T04:38:35.926543Z", "message": "Agent Error: Connection Error"}
+{"event": "evaluation", "timestamp": "2026-03-11T04:38:35.926865Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:38:35.927109Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 0, "conversation_history": [], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:38:35.929073Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:38:35.932314Z", "run_id": "run-test-scenario-214339", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:38:35.932890Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:38:35.933160Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:35.933407Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-11T04:38:35.933758Z", "message": "Agent Error: "}
+{"event": "evaluation", "timestamp": "2026-03-11T04:38:35.934074Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:38:35.934321Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 0, "conversation_history": [], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:38:35.936087Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}

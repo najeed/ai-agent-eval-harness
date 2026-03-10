@@ -1,0 +1,8 @@
+{"event": "run_start", "timestamp": "2026-03-11T04:30:03.479837Z", "run_id": "run-policy-test-213827", "scenario": "policy-test", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:30:03.480707Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:30:03.481051Z", "role": "user", "content": ""}
+{"event": "turn_start", "timestamp": "2026-03-11T04:30:03.481332Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-11T04:30:03.481806Z", "message": "Agent Error: cannot assign to field 'agent_response'"}
+{"event": "evaluation", "timestamp": "2026-03-11T04:30:03.482355Z", "metric": "policy_compliance", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:30:03.482883Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [], "metrics": [{"metric": "policy_compliance", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:30:03.484156Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}

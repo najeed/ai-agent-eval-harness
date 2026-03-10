@@ -1,0 +1,54 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.0.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+tests/test_trajectory_and_parsimony.py::test_path_parsimony_calculation PASSED
+tests/test_trajectory_and_parsimony.py::test_engine_captures_state_transitions    [Coverage] Heatmap report generated: reports\coverage\test_m4_coverage.html
+   [ReportingPlugin] Applying triage logic...
+
+   [ReportingPlugin] Generating summary report...
+
+==================================================
+EVALUATION REPORT
+==================================================
+Scenario: None (test_m4)
+Industry: None
+Description: None
+--------------------------------------------------
+
+Task: t1 [SUCCESS]
+
+--------------------------------------------------
+SUMMARY
+--------------------------------------------------
+Total Tasks: 1
+Successful Tasks: 1
+Failed Tasks: 0
+Overall Success Rate: 100.00%
+==================================================
+
+
+[Reporter] Trajectory exported to: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\reports\trajectories\test_m4_20260311_044044.json
+[Reporter] HTML report generated: reports\html\report_test_m4_20260311_044044.html
+   [ReportingPlugin] Repro script generated: reports\repro\repro_test_m4.sh
+FAILED
+tests/test_trajectory_and_parsimony.py::test_mermaid_generation PASSED
+tests/test_trajectory_and_parsimony.py::test_trajectory_json_export 
+[Reporter] Trajectory exported to: C:\Users\najee\AppData\Local\Temp\pytest-of-najee\pytest-261\test_trajectory_json_export0\reports\trajectories\test_id_20260311_044044.json
+
+[DEBUG] Read 206 bytes from C:\Users\najee\AppData\Local\Temp\pytest-of-najee\pytest-261\test_trajectory_json_export0\reports\trajectories\test_id_20260311_044044.json
+PASSED
+
+================================== FAILURES ===================================
+___________________ test_engine_captures_state_transitions ____________________
+tests\test_trajectory_and_parsimony.py:68: in test_engine_captures_state_transitions
+    assert "state_before" in env_entry
+E   AssertionError: assert 'state_before' in {'content': {'status': 'success'}, 'role': 'environment'}
+=========================== short test summary info ===========================
+FAILED tests/test_trajectory_and_parsimony.py::test_engine_captures_state_transitions
+========================= 1 failed, 3 passed in 0.39s =========================

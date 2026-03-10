@@ -1,0 +1,48 @@
+{"event": "run_start", "timestamp": "2026-03-11T04:31:27.980408Z", "run_id": "run-test-scenario-213912", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:31:27.981181Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:31:27.981551Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:31:27.982213Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-11T04:31:27.982683Z", "message": "Agent Error: cannot assign to field 'agent_response'"}
+{"event": "evaluation", "timestamp": "2026-03-11T04:31:27.986336Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:31:27.986818Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:31:27.987825Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:31:28.037477Z", "run_id": "run-test-scenario-213912", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:31:28.038069Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:31:28.038402Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:31:28.038728Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-11T04:31:28.039025Z", "message": "Agent Error: cannot assign to field 'agent_response'"}
+{"event": "evaluation", "timestamp": "2026-03-11T04:31:28.039310Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:31:28.039604Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:31:28.040198Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:31:28.045978Z", "run_id": "run-test-scenario-213912", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:31:28.046598Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:31:28.046907Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:31:28.047242Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-11T04:31:28.047580Z", "message": "Agent Error: cannot assign to field 'agent_response'"}
+{"event": "evaluation", "timestamp": "2026-03-11T04:31:28.047920Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:31:28.048157Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:31:28.048889Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:31:28.060648Z", "run_id": "run-test-scenario-213912", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:31:28.061723Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:31:28.062151Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:31:28.062506Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-11T04:31:28.062962Z", "message": "Agent Error: cannot assign to field 'agent_response'"}
+{"event": "evaluation", "timestamp": "2026-03-11T04:31:28.063388Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:31:28.063747Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:31:28.064499Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:31:28.076778Z", "run_id": "run-test-scenario-213912", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:31:28.077632Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:31:28.077916Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:31:28.078222Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-11T04:31:28.078499Z", "message": "Agent Error: Connection Error"}
+{"event": "evaluation", "timestamp": "2026-03-11T04:31:28.078825Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:31:28.079145Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 0, "conversation_history": [], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:31:28.079951Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-11T04:31:28.092396Z", "run_id": "run-test-scenario-213912", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T04:31:28.093151Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:31:28.093608Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-11T04:31:28.094017Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-11T04:31:28.094412Z", "message": "Agent Error: "}
+{"event": "evaluation", "timestamp": "2026-03-11T04:31:28.094773Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T04:31:28.095038Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 0, "conversation_history": [], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T04:31:28.095761Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}

@@ -1,0 +1,17 @@
+{"event": "run_start", "timestamp": "2026-03-11T04:38:43.061523Z", "run_id": "run-test-consistency-214347", "scenario": "test-consistency", "k_attempts": 2}
+{"event": "task_start", "timestamp": "2026-03-11T04:38:43.063204Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:38:43.064486Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:43.065661Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:38:43.066094Z", "step": 1, "response": {"action": "final_answer", "summary": "Identical result"}}
+{"event": "task_end", "timestamp": "2026-03-11T04:38:43.067372Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "Identical result"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-11T04:38:43.067741Z", "task_id": "task-1", "attempt": 2}
+{"event": "agent_request", "timestamp": "2026-03-11T04:38:43.068039Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-11T04:38:43.068291Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:38:43.068970Z", "step": 1, "response": {"action": "final_answer", "summary": "Identical result"}}
+{"event": "task_end", "timestamp": "2026-03-11T04:38:43.069567Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 2, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "Identical result"}}], "metrics": []}}
+{"event": "run_end", "timestamp": "2026-03-11T04:38:43.072407Z", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:43.100837Z", "state": {}, "shared_state": {}}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:43.102670Z", "state": {}, "shared_state": {}}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:53.412918Z", "state": {}, "shared_state": {}}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:53.415323Z", "state": {}, "shared_state": {}}
+{"event": "world_state_change", "timestamp": "2026-03-11T04:38:53.418546Z", "state": {"current_plan": "Premium"}, "shared_state": {}}

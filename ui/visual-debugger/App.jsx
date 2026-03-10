@@ -74,6 +74,36 @@ const App = () => {
         setLoading(false);
     }, []);
 
+    const handleImport = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const content = event.target.result;
+            const lines = content.split('\n').filter(line => line.trim());
+            try {
+                const importedEvents = lines.map(line => JSON.parse(line));
+                setEvents(importedEvents);
+                setSelectedEvent(null);
+            } catch (err) {
+                console.error("Error parsing JSONL:", err);
+                alert("Failed to parse JSONL file. Please check the format.");
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    const handleExport = () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href",     dataStr);
+        downloadAnchorNode.setAttribute("download", "trace.json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    };
+
     return (
         <div className="flex flex-col h-screen">
             <header className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 sticky top-0 z-10">
@@ -82,8 +112,25 @@ const App = () => {
                     <h1 className="text-lg font-bold tracking-tight">Agent Visual Debugger <span className="text-xs font-normal text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full ml-2">OpenCore v0.1</span></h1>
                 </div>
                 <div className="flex gap-2">
-                    <button className="text-xs text-slate-400 hover:text-slate-200 px-3 py-1 rounded border border-slate-700">Import run.jsonl</button>
-                    <button className="btn-primary text-xs">Export Trace</button>
+                    <input
+                        type="file"
+                        id="import-jsonl"
+                        className="hidden"
+                        accept=".jsonl"
+                        onChange={handleImport}
+                    />
+                    <button 
+                        className="text-xs text-slate-400 hover:text-slate-200 px-3 py-1 rounded border border-slate-700"
+                        onClick={() => document.getElementById('import-jsonl').click()}
+                    >
+                        Import run.jsonl
+                    </button>
+                    <button 
+                        className="btn-primary text-xs"
+                        onClick={handleExport}
+                    >
+                        Export Trace
+                    </button>
                 </div>
             </header>
 

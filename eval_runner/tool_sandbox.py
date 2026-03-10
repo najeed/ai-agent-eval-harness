@@ -1,4 +1,4 @@
-﻿"""
+"""
 tool_sandbox.py
 
 Defines the environment in which the agent's tool calls are executed.
@@ -133,13 +133,18 @@ class ToolSandbox(AbstractSandbox):
                 if not success:
                     return {"status": "error", "message": f"Agent {active_agent} has no write permission for {write_path}"}
 
-        if "shared_read" in params:
-            read_path = params["shared_read"]
-            if read_path:
-                val = self.shared_state.read(active_agent, read_path)
-                # We can inject this value into the output if needed, but for now just validation
                 if val is None and read_path in self.shared_state.registry:
                     return {"status": "error", "message": f"Agent {active_agent} has no read permission for {read_path}"}
+                
+                # Notify observers of read (Enterprise requirement 5)
+                from .events import EventEmitter, CoreEvents
+                EventEmitter.emit("state_read", {"agent": active_agent, "path": read_path, "value": val})
 
         # 5. Return Output
-        return tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
+        output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
+        
+        # Notify observers of internal state changes
+        from .events import EventEmitter, CoreEvents
+        EventEmitter.emit("world_state_change", {"state": self.state, "shared_state": self.shared_state.registry})
+
+        return output

@@ -30,6 +30,12 @@ Entry point: `eval_runner/cli.py`
 - `spec-to-eval` — Convert Markdown specs into JSON scenarios
 - `import-drift` — Convert production traces into scenarios
 - `mutate` — Generate adversarial variants (typos, ambiguity, injection)
+- `doctor` — Validate environment health and dependencies
+- `quickstart` — End-to-end evaluation demo using `sample_agent`
+- `report` — Re-generate rich HTML reports from existing `.jsonl` traces
+- `scenario generate` — Interactive generator for boilerplate scenarios
+- `record` — Real-time agent interaction logger
+- `playground` — Interactive CLI REPL for agent testing
 
 ### Common CLI options
 - `--attempts`: Produce pass@k results by running multiple tries per scenario (supported by `evaluate`, and by `run` via `-k`).
@@ -44,18 +50,30 @@ Plugins can add arguments and options to commands. This is the primary extensibi
 
 Core evaluation flow is implemented in `eval_runner/engine.py`.
 
-### 🛠 Architecture (high level)
-1. Load scenario JSON
-2. Create `EvaluationContext`
-3. Emit `run_start` event (writes to `runs/run.jsonl`)
-4. For each task:
-   - Run up to `EVAL_MAX_TURNS` turns
-   - Call agent via `AgentAdapterRegistry`
-   - Execute tool calls via `ToolSandbox`
-   - Record conversation history and tool outputs
-   - Score with metrics
-5. Aggregate multi-attempt results (pass@k, consistency)
-6. Emit `run_end`
+### 🛠 Architecture (Zero-Touch Core)
+The engine is now a decoupled orchestration layer:
+1. **Runner (`runner.py`)**: Orchestrates the high-level evaluation loop, handling multi-attempt (`pass@k`) logic.
+2. **SessionManager (`session.py`)**: Manages individual evaluation attempts, conversation trajectories, and tool execution.
+3. **EventEmitter (`events.py`)**: A centralized bus that emits state transitions. Plugins subscribe to this bus for "Flight Recording" without engine modifications.
+4. **Plugins (`plugins.py`)**: Enhanced with interception capabilities (`on_tool_request`) and specific turn lifecycle hooks.
+
+#### High-Level Flow:
+1. `run_evaluation` (in `engine.py`) initializes specialized internal plugins (`FlightRecorderPlugin`, `ReportingPlugin`).
+2. `DefaultRunner.run()` initializes the `EvaluationContext`.
+3. `SessionManager` executes tasks and turns:
+   - `on_agent_turn_start` hook.
+   - Call agent via `AgentAdapterRegistry`.
+   - `on_turn_end` hook.
+   - Tool execution with `on_tool_request` interception.
+4. `EventEmitter` automatically signals `RUN_START`, `TASK_START`, `TURN_START`, `TOOL_CALL`, `TOOL_RESULT`, etc.
+5. Metrics are calculated within the session but emitted as events.
+
+### 🕯️ Run Logging & Rotation
+The engine supports configurable logging via environment variables:
+- `RUN_LOG_DIR`: Directory for traces (default: `runs`)
+- `RUN_LOG_PER_RUN`: Save individual run files (default: `true`)
+- `RUN_LOG_MASTER`: Append to master `run.jsonl` (default: `true`)
+- `RUN_LOG_ROTATE_COUNT`: Max number of per-run files to keep (default: `0` / infinite)
 
 ### 🔌 Agent Adapter
 Default: HTTP POST to `AGENT_API_URL`
@@ -81,10 +99,15 @@ AgentAdapterRegistry.register("custom", custom_adapter)
 Plugins hook into the evaluation lifecycle via `plugins.manager.trigger(...)`.
 
 ### Standard hooks
-- `extend_cli` — Add CLI args
+- `extend_cli` — Add CLI args (automated via `register_arguments`)
 - `before_evaluation` — Run before each evaluation begins
+- `on_agent_turn_start` — Called before an agent turn begins [NEW]
 - `on_turn_end` — Called after each agent turn
-- `after_evaluation` — Run after evaluation completes
+- `on_tool_request` — Intercept and potentially block tool calls [NEW/CRITICAL]
+- `on_tool_result` — Monitor state side-effects [NEW]
+- `on_error` — Handle exceptions [NEW]
+- `on_metrics_calculated` — Access results before aggregation [NEW]
+- `after_evaluation` — Run after evaluation completes (used for reporting)
 
 Plugins are discovered via **entry points** configured in `pyproject.toml`.
 
@@ -186,6 +209,35 @@ pytest tests/test_engine.py
 - Add metrics by registering them in `eval_runner/metrics.py`.
 - Add simulators via `eval_runner/simulators.py`.
 - Extend CLI via plugin hooks.
+
+---
+
+## 🧪 10) Productivity Utilities (Internal Logic)
+
+### 10.1 `doctor.py`
+Uses `aiohttp` to probe agent availability and `subprocess`/`sys` to audit the local environment.
+
+### 10.2 `quickstart.py`
+Lifecycle manager that:
+1. Spawns `sample_agent/agent_app.py` as a subprocess.
+2. Invokes `engine.run_evaluation` via Python API.
+3. Triggers `reporter.generate_html_report`.
+4. Ensures clean process termination across platforms.
+
+### 10.3 `trace_recorder.py` & `playground.py`
+These utilities provide lightweight interactive wrappers around agent communication. `record` focuses on generating valid execution events for future replaying or scenario extraction.
+
+---
+
+## 🛰 11) Event-Driven Architecture (Flight Recorder)
+
+The harness uses an `EventEmitter` to enable "Zero-Touch" observable core logic.
+
+### 11.1 EventEmitter Bus
+Located in `eval_runner/events.py`. It allows any component (Core or Plugin) to emit a `CoreEvent`.
+
+### 11.2 FlightRecorderPlugin
+A built-in plugin (`eval_runner/flight_recorder.py`) that subscribes to all core events. It handles the writing of `.jsonl` traces, moving this responsibility entirely out of the orchestration loop.
 
 ---
 

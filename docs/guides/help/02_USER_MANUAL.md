@@ -85,6 +85,12 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness run` | `-k` | Run a single scenario JSON file |
 | `eval-harness replay` | `--path` | Replay a recorded run trace |
 | `eval-harness aes validate` | `path` | Validate AES benchmark YAML |
+| `eval-harness quickstart` | (none) | Run a 60-second demo (spawns agent + runs eval) |
+| `eval-harness doctor` | (none) | Check environment and dependencies |
+| `eval-harness report` | `path` | Generate rich HTML report from a run trace |
+| `eval-harness scenario generate` | (none) | Interactively bootstrap new scenarios |
+| `eval-harness record` | `--agent` | Record real-time interactions into a trace file |
+| `eval-harness playground` | `--agent` | Interactive REPL for agent experimentation |
 | `eval-harness spec-to-eval` | `--input`, `--output` | Convert Markdown spec to scenario JSON |
 | `eval-harness import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |
 | `eval-harness mutate` | `--input`, `--type`, `--output` | Generate adversarial scenario variants |
@@ -97,16 +103,64 @@ eval-harness run scenarios/your_scenario.json -k 2
 
 Use this for rapid iteration and debugging.
 
-### 🔁 `replay` — replay a past run
+#### 📽️ Run Trace Management
 
+The harness records every event (agent messages, tool calls, metrics) into trace files for debugging and auditing.
+
+**Default Behavior:**
+- All runs are appended to `runs/run.jsonl`.
+- Each run is also saved to its own file: `runs/run-<run_id>.jsonl`.
+
+**Configuration (Environment Variables):**
+| Variable | Default | Description |
+|---|---|---|
+| `RUN_LOG_DIR` | `runs` | Directory where trace files are stored. |
+| `RUN_LOG_PER_RUN` | `true` | Save each run to a separate file. |
+| `RUN_LOG_MASTER` | `true` | Append all runs to a master `run.jsonl`. |
+| `RUN_LOG_ROTATE_COUNT` | `0` | Number of per-run files to keep. `0` means keep all. |
+
+---
+
+## 🚀 Adoption & Productivity Utilities
+
+These utilities are designed to get you from "installation" to "first eval" in seconds.
+
+### 🏃 `quickstart` — The 60-Second Demo
+Runs a complete evaluation loop using the built-in sample agent.
 ```bash
-eval-harness replay --path runs/run.jsonl
+eval-harness quickstart
+```
+It automatically spawns the agent server, runs a troubleshooting scenario, and generates a visual report.
+
+### 🔍 `doctor` — Environment Validator
+Troubleshoot your installation and connectivity.
+```bash
+eval-harness doctor
 ```
 
-Replay shows:
-- Prompts and agent responses
-- Tool calls and results
-- Evaluation metrics and success/failure
+### 🎨 `report` — Visual Reporting
+Generate a premium HTML report with interactive trajectory maps.
+```bash
+eval-harness report runs/run-<id>.jsonl
+```
+
+### ✨ `scenario generate` — Interactive Scaffolding
+Bootstrap new test cases without writing JSON by hand.
+```bash
+eval-harness scenario generate
+```
+
+### ⏺ `record` — Trace Capture
+Capture real interactions with your agent to create new eval scenarios.
+```bash
+eval-harness record --agent http://localhost:5001/execute_task
+```
+
+### 🎮 `playground` — Interactive Experimentation
+Talk to your agent directly in the CLI and see how it performs.
+```bash
+eval-harness playground --agent http://localhost:5001/execute_task
+```
 
 ---
 

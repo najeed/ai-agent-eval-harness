@@ -8,7 +8,7 @@ These objects bridge the Core with Plugins, replacing raw dictionaries.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-@dataclass
+@dataclass(frozen=True)
 class EvaluationContext:
     """Context for an entire evaluation scenario."""
     scenario_id: str
@@ -18,7 +18,7 @@ class EvaluationContext:
     plugin_data: Dict[str, Any] = field(default_factory=dict) # Bucket for plugins to store cross-task data
     grounding_hits: Dict[str, Dict[str, int]] = field(default_factory=lambda: {"policies": {}, "tools": {}})
 
-@dataclass
+@dataclass(frozen=True)
 class TurnContext:
     """Context for a single conversation turn."""
     task_id: str

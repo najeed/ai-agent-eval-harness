@@ -1,0 +1,25 @@
+{
+  "scenario_id": "gen_fintech_refund_processing_2",
+  "title": "Generated Refund Processing Scenario 2",
+  "description": "Automatically generated test case for refund_processing in fintech industry.",
+  "industry": "fintech",
+  "tasks": [
+    {
+      "task_id": "task_2",
+      "description": "User wants to perform refund_processing. Handle the request correctly.",
+      "expected_output": "Successfully handled refund_processing.",
+      "requirements": [
+        {
+          "type": "mandatory",
+          "description": "Call the appropriate refund_processing tool."
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "success_rate",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

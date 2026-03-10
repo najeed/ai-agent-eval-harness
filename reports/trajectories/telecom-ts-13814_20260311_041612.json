@@ -1,0 +1,233 @@
+{
+  "metadata": {
+    "scenario_id": "telecom-ts-13814",
+    "title": "Home Internet Troubleshooting - Slow Speed",
+    "industry": "Telecom",
+    "timestamp": "20260311_041612"
+  },
+  "results": [
+    {
+      "task_id": "task-1",
+      "attempt": 1,
+      "turns_taken": 2,
+      "conversation_history": [
+        {
+          "role": "agent",
+          "content": {
+            "action": "call_tool",
+            "summary": "Identified customer Jane Doe on plan 100 Mbps Fiber.",
+            "tool_name": "get_customer_details",
+            "tool_output": {
+              "customer_name": "Jane Doe",
+              "plan": "100 Mbps Fiber",
+              "status": "success"
+            },
+            "tool_params": {
+              "customer_id": "cust_123"
+            }
+          }
+        },
+        {
+          "role": "environment",
+          "content": {
+            "status": "success",
+            "message": "Executed get_customer_details"
+          },
+          "state_before": {},
+          "state_after": {}
+        },
+        {
+          "role": "agent",
+          "content": {
+            "action": "error",
+            "summary": "I'm sorry, I don't know how to handle that task."
+          }
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "score": 1.0,
+          "threshold": 1.0,
+          "success": true
+        },
+        {
+          "metric": "policy_compliance",
+          "score": 1.0,
+          "threshold": 0.5,
+          "success": true
+        },
+        {
+          "metric": "path_parsimony",
+          "score": 0.75,
+          "threshold": 0.5,
+          "success": true
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "attempt": 1,
+      "turns_taken": 2,
+      "conversation_history": [
+        {
+          "role": "agent",
+          "content": {
+            "action": "call_multiple_tools",
+            "summary": "Remote diagnostics complete. Modem is receiving full speed (102.5 Mbps).",
+            "tool_names": [
+              "run_line_test",
+              "run_remote_speed_test"
+            ],
+            "tool_outputs": [
+              {
+                "connection": "Stable",
+                "line_quality": "Excellent",
+                "status": "success"
+              },
+              {
+                "download_speed_mbps": 102.5,
+                "status": "success",
+                "upload_speed_mbps": 21.3
+              }
+            ]
+          }
+        },
+        {
+          "role": "environment",
+          "content": [
+            {
+              "status": "success",
+              "message": "Executed run_line_test"
+            },
+            {
+              "status": "success",
+              "message": "Executed run_remote_speed_test"
+            }
+          ],
+          "state_before": {},
+          "state_after": {}
+        },
+        {
+          "role": "agent",
+          "content": {
+            "action": "error",
+            "summary": "I'm sorry, I don't know how to handle that task."
+          }
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "tool_call_correctness",
+          "score": 1.0,
+          "threshold": 1.0,
+          "success": true
+        },
+        {
+          "metric": "policy_compliance",
+          "score": 1.0,
+          "threshold": 0.5,
+          "success": true
+        },
+        {
+          "metric": "path_parsimony",
+          "score": 0.75,
+          "threshold": 0.5,
+          "success": true
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "attempt": 1,
+      "turns_taken": 1,
+      "conversation_history": [
+        {
+          "role": "agent",
+          "content": {
+            "action": "provide_instructions",
+            "instructions": "Please connect your computer directly to the router with an Ethernet cable and run a speed test at example-speedtest.com."
+          }
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "instructional_clarity",
+          "score": 0.0,
+          "threshold": 1.0,
+          "success": false
+        },
+        {
+          "metric": "policy_compliance",
+          "score": 1.0,
+          "threshold": 0.5,
+          "success": true
+        },
+        {
+          "metric": "path_parsimony",
+          "score": 1.0,
+          "threshold": 0.5,
+          "success": true
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "attempt": 1,
+      "turns_taken": 2,
+      "conversation_history": [
+        {
+          "role": "agent",
+          "content": {
+            "action": "call_tool",
+            "summary": "The issue is likely with local Wi-Fi. I have provided a guide for optimization steps: http://example.com/wifi-help",
+            "tool_name": "provide_wifi_optimization_guide",
+            "tool_output": {
+              "guide_url": "http://example.com/wifi-help",
+              "status": "success"
+            },
+            "tool_params": {
+              "customer_id": "cust_123"
+            }
+          }
+        },
+        {
+          "role": "environment",
+          "content": {
+            "status": "success",
+            "message": "Executed provide_wifi_optimization_guide"
+          },
+          "state_before": {},
+          "state_after": {}
+        },
+        {
+          "role": "agent",
+          "content": {
+            "action": "error",
+            "summary": "I'm sorry, I don't know how to handle that task."
+          }
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "score": 0.0,
+          "threshold": 1.0,
+          "success": false
+        },
+        {
+          "metric": "policy_compliance",
+          "score": 1.0,
+          "threshold": 0.5,
+          "success": true
+        },
+        {
+          "metric": "path_parsimony",
+          "score": 0.75,
+          "threshold": 0.5,
+          "success": true
+        }
+      ]
+    }
+  ]
+}

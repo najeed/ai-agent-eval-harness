@@ -1,0 +1,12 @@
+{"event": "run_start", "timestamp": "2026-03-11T04:37:58.140803Z", "run_id": "run-test-consistency-214302", "scenario": "test-consistency", "k_attempts": 2}
+{"event": "task_start", "timestamp": "2026-03-11T04:37:58.141490Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T04:37:58.141747Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-11T04:37:58.142075Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:37:58.142381Z", "step": 1, "response": {"action": "final_answer", "summary": "Identical result"}}
+{"event": "task_end", "timestamp": "2026-03-11T04:37:58.144646Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "Identical result"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-11T04:37:58.145074Z", "task_id": "task-1", "attempt": 2}
+{"event": "agent_request", "timestamp": "2026-03-11T04:37:58.145571Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-11T04:37:58.146301Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T04:37:58.146670Z", "step": 1, "response": {"action": "final_answer", "summary": "Identical result"}}
+{"event": "task_end", "timestamp": "2026-03-11T04:37:58.147044Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 2, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "Identical result"}}], "metrics": []}}
+{"event": "run_end", "timestamp": "2026-03-11T04:37:58.153721Z", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2}
