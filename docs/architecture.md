@@ -6,13 +6,13 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                             CLI (eval_runner/cli.py)                         │
+│                             CLI (eval_runner/cli.py)                        │
 │  • evaluate / import-drift / aes validate / replay                          │
 └──────────────┬───────────────────┬────────────────────────┬─────────────────┘
                │                   │                        │
                ▼                   ▼                        ▼
 ┌───────────────────────────┐  ┌──────────────────────┐  ┌───────────────────────┐
-│     Loader (loader.py)    │  │  AES Spec (/spec)    │  │  Drift (drift_imp...)  │
+│     Loader (loader.py)    │  │  AES Spec (/spec)    │  │  Drift (drift_imp...) │
 │ • Universal Registry      │  │ • Schema Validation  │  │ • Production Traces   │
 │ • JSON v2 / CSV / JSONL   │  │ • Portable Benchmarks│  │ • Scenario Conversion │
 └──────────────┬────────────┘  └──────────┬───────────┘  └──────────┬────────────┘
@@ -28,7 +28,7 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 │  └───────────────────────────────────┬────────────────────────────────────┘ │
 │                                      │                                      │
 │  ┌───────────────────────────┐       ▼        ┌──────────────────────────┐  │
-│  │ Metrics (metrics.py)      │◀──────────────▶│ Tool Sandbox (sandbox.py)│  │
+│  │ Metrics (metrics.py)      │◀─────────────▶│ Tool Sandbox (sandbox.py)│  │
 │  │ • Pluggable Logic         │                │ • Governance Policies    │  │
 │  │ • Path Efficiency         │                │ • SharedStateRegistry    │  │
 │  └───────────────────────────┘                └──────────────────────────┘  │
@@ -38,7 +38,7 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                          Persistence & Reporting                            │
 │                                                                             │
-│  • run.jsonl (Flight Recorder): Deterministic, streamable execution logs     │
+│  • run.jsonl (Flight Recorder): Deterministic, streamable execution logs    │
 │  • trajectories/: Mermaid visual flows for debugging                        │
 │  • triage.py: Heuristic failure tagging (CONNECTION_ERROR, etc.)            │
 │  • coverage/: HTML grounding heatmaps                                       │
