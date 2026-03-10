@@ -40,8 +40,16 @@ The harness is organized into the following key components:
 
 ### Prerequisites
 
--   Python 3.8+
--   pip
+-   **Python 3.8+**
+-   **pip**
+-   **Ollama (for Local LLM Evaluation)**:
+    -   Download from [ollama.com](https://ollama.com).
+    -   Install and run the Ollama server.
+    -   Pull the default model (Llama3):
+        ```bash
+        ollama pull llama3
+        ```
+    -   (Optional) Set `OLLAMA_HOST` if running on a non-standard port or remote machine.
 
 ### Running an Evaluation
 

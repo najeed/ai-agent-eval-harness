@@ -3456,3 +3456,729 @@
 {"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T19:01:37.693782Z"}
 {"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "timestamp": "2026-03-10T19:01:37.694112Z"}
 {"event": "run_end", "status": "success", "total_steps": 2, "timestamp": "2026-03-10T19:01:37.695305Z"}
+{"event": "run_start", "run_id": "run-test-k-180710", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:18:06.231913Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:18:06.233585Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:06.234037Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:18:06.234433Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:06.234834Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:06.235143Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:06.235372Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:18:06.235634Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:06.235861Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:18:06.236115Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:06.236449Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:06.236694Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:06.236903Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:06.237278Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:06.237579Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:18:06.238717Z"}
+{"event": "run_start", "run_id": "run-test-consistency-180710", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:18:06.317789Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:18:06.318255Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:06.318490Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:18:06.318725Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:06.318960Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:06.319136Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:18:06.319324Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:06.319472Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:18:06.319661Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:06.319991Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:06.320227Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:06.320481Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:06.320685Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:18:06.321590Z"}
+{"event": "run_start", "run_id": "run-test-k-180729", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:18:25.437132Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:18:25.452395Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:25.453070Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:18:25.453580Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:25.454053Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:25.454421Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:25.454852Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:18:25.455553Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:25.456028Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:18:25.456549Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:25.457192Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:25.457679Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:25.458170Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:25.458736Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:25.458966Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:18:25.460101Z"}
+{"event": "run_start", "run_id": "run-test-consistency-180729", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:18:25.549224Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:18:25.551817Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:25.552793Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:18:25.553849Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:25.554747Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:25.556495Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:18:25.557195Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:25.557935Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:18:25.558956Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:25.559877Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:25.560416Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:25.560921Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:25.561366Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:18:25.563107Z"}
+{"event": "run_start", "run_id": "run-test-k-180749", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:18:45.456160Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:18:45.465029Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:45.465504Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:18:45.465900Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:45.466353Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:45.466648Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:45.466852Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:18:45.467077Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:45.467354Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:18:45.467602Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:45.467869Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:45.468060Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:45.468285Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:45.468566Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:45.468785Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:18:45.469636Z"}
+{"event": "run_start", "run_id": "run-test-consistency-180749", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:18:45.538005Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:18:45.538488Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:45.538834Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:18:45.539078Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:45.539391Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:18:45.539644Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:18:45.539872Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:18:45.540136Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:18:45.540365Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:45.540686Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:18:45.540898Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:45.541200Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:18:45.541432Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:18:45.542313Z"}
+{"event": "run_start", "run_id": "run-test-k-180780", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:19:16.622023Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:19:16.623677Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:19:16.624694Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:19:16.625252Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:19:16.625848Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:19:16.626264Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:19:16.626666Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:19:16.627297Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:19:16.627722Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:19:16.639314Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:19:16.640019Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:19:16.640597Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:19:16.641238Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:19:16.642308Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:19:16.642754Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:19:16.644524Z"}
+{"event": "run_start", "run_id": "run-test-k-180805", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:19:41.279188Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:19:41.281303Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:19:41.281626Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:19:41.281975Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:19:41.282394Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:19:41.282671Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:19:41.283074Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:19:41.283475Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:19:41.283729Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:19:41.284084Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:19:41.284479Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:19:41.284787Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:19:41.285101Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:19:41.285479Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:19:41.285702Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:19:41.286727Z"}
+{"event": "run_start", "run_id": "run-test-consistency-180805", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:19:41.375756Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:19:41.376582Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:19:41.377199Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:19:41.377665Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:19:41.378030Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:19:41.378430Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:19:41.378806Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:19:41.379133Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:19:41.379520Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:19:41.379900Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:19:41.380235Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:19:41.380738Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:19:41.381115Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:19:41.382418Z"}
+{"event": "run_start", "run_id": "run-test-k-180848", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:20:24.089261Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:20:24.098697Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:20:24.099595Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:20:24.100115Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:20:24.100539Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:20:24.101139Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:20:24.101554Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:20:24.102056Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:20:24.102637Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:20:24.103281Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:20:24.103781Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:20:24.104088Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:20:24.104346Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:20:24.104760Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:20:24.105086Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:20:24.106124Z"}
+{"event": "run_start", "run_id": "run-test-consistency-180850", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:20:26.067649Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:20:26.068802Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:20:26.078028Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:20:26.078446Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:20:26.078843Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:20:26.079178Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:20:26.079657Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:20:26.079999Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:20:26.080325Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:20:26.080691Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:20:26.080958Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:20:26.081296Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:20:26.081587Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:20:26.083110Z"}
+{"event": "run_start", "run_id": "run-test-k-180868", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:20:43.971235Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:20:43.981916Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:20:43.982506Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:20:43.983032Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:20:43.983465Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:20:43.983803Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:20:43.984052Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:20:43.984414Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:20:43.985533Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:20:43.986502Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:20:43.987337Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:20:43.987762Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:20:43.988039Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:20:43.988463Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:20:43.988722Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:20:43.989997Z"}
+{"event": "run_start", "run_id": "run-test-k-180889", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:21:05.542750Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:21:05.550446Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:21:05.551030Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:21:05.551564Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:21:05.551936Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:21:05.552193Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:21:05.552395Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:21:05.552707Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:21:05.552894Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:21:05.553110Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:21:05.553428Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:21:05.553681Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:21:05.553858Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:21:05.554168Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:21:05.554372Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:21:05.555280Z"}
+{"event": "run_start", "run_id": "run-test-consistency-180932", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:21:48.220352Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:21:48.221624Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:21:48.231878Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:21:48.232458Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:21:48.233243Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:21:48.233738Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:21:48.234383Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:21:48.234996Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:21:48.235557Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:21:48.236355Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:21:48.236982Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:21:48.237519Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:21:48.237793Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:21:48.238947Z"}
+{"event": "run_start", "run_id": "run-test-k-180984", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:22:40.180065Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:22:40.181493Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:22:40.181961Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:22:40.182349Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:22:40.182695Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:22:40.182929Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:22:40.183183Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:22:40.183378Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:22:40.183607Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:22:40.184627Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:22:40.185176Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:22:40.185554Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:22:40.185895Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:22:40.186313Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:22:40.186551Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:22:40.187486Z"}
+{"event": "run_start", "run_id": "run-test-k-181082", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:24:18.467921Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:24:18.470652Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:24:18.471205Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:24:18.471607Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:24:18.472015Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:24:18.472308Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:24:18.472584Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:24:18.472863Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:24:18.473082Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:24:18.473310Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:24:18.473680Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:24:18.473928Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:24:18.474130Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:24:18.474464Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:24:18.474713Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:24:18.475749Z"}
+{"event": "run_start", "run_id": "run-test-consistency-181082", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:24:18.580787Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:24:18.581714Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:24:18.582335Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:24:18.582875Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:24:18.583490Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:24:18.583882Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:24:18.584448Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:24:18.585114Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:24:18.585817Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:24:18.586507Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:24:18.587181Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:24:18.587691Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:24:18.588015Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:24:18.589880Z"}
+{"event": "run_start", "run_id": "run-test-k-181261", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:27:17.131352Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:27:17.132795Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:27:17.143494Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:27:17.144069Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:27:17.144751Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:27:17.145214Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:27:17.145768Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:27:17.146560Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:27:17.146901Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:27:17.147328Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:27:17.147836Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:27:17.148151Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:27:17.148446Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:27:17.148914Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:27:17.149226Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:27:17.152498Z"}
+{"event": "run_start", "run_id": "run-test-k-181323", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:28:19.649470Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:28:19.650333Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:28:19.650799Z"}
+{"event": "agent_response", "step": 1, "content": "Success", "timestamp": "2026-03-10T19:28:19.651189Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:28:19.651536Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:28:19.651889Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:28:19.652100Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:28:19.652311Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:28:19.652701Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'final_answer', 'summary': ''}", "timestamp": "2026-03-10T19:28:19.660568Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:28:19.661461Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:28:19.661960Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:28:19.662280Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:28:19.662597Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:28:19.662868Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:28:19.663961Z"}
+{"event": "run_start", "run_id": "run-test-k-181465", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:30:41.782642Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:30:41.783962Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:30:41.784252Z"}
+{"event": "error", "message": "test_pass_at_k_protocol.<locals>.mock_agent_call() missing 1 required positional argument: 'payload'", "timestamp": "2026-03-10T19:30:41.786983Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T19:30:41.787337Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:30:41.787669Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:30:41.787883Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:30:41.788303Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:30:41.788543Z"}
+{"event": "error", "message": "test_pass_at_k_protocol.<locals>.mock_agent_call() missing 1 required positional argument: 'payload'", "timestamp": "2026-03-10T19:30:41.791406Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 2, "timestamp": "2026-03-10T19:30:41.791803Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:30:41.792048Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:30:41.792236Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 2, "timestamp": "2026-03-10T19:30:41.793711Z"}
+{"event": "run_start", "run_id": "run-test-consistency-181466", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:30:41.877186Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:30:41.877704Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:30:41.878100Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:30:41.878400Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:30:41.878708Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:30:41.878969Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:30:41.879236Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:30:41.879500Z"}
+{"event": "agent_response", "step": 1, "content": "Identical result", "timestamp": "2026-03-10T19:30:41.879716Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:30:41.880124Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:30:41.880370Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:30:41.880621Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:30:41.880821Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:30:41.881723Z"}
+{"event": "run_start", "run_id": "run-test-k-181490", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:31:06.318444Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:31:06.319744Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:31:06.320047Z"}
+{"event": "error", "message": "test_pass_at_k_protocol.<locals>.mock_agent_call() missing 1 required positional argument: 'payload'", "timestamp": "2026-03-10T19:31:06.322177Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T19:31:06.322513Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:31:06.322930Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:31:06.323223Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:31:06.323853Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:31:06.324198Z"}
+{"event": "error", "message": "test_pass_at_k_protocol.<locals>.mock_agent_call() missing 1 required positional argument: 'payload'", "timestamp": "2026-03-10T19:31:06.336347Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 2, "timestamp": "2026-03-10T19:31:06.336849Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:31:06.337080Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:31:06.337285Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 2, "timestamp": "2026-03-10T19:31:06.338294Z"}
+{"event": "run_start", "run_id": "run-test-k-181713", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:34:49.321560Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:34:49.322729Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:34:49.323059Z"}
+{"event": "error", "message": "test_pass_at_k_protocol.<locals>.mock_agent_call() missing 1 required positional argument: 'payload'", "timestamp": "2026-03-10T19:34:49.324970Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T19:34:49.325322Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:34:49.325555Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:34:49.325753Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:34:49.325937Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:34:49.326180Z"}
+{"event": "error", "message": "test_pass_at_k_protocol.<locals>.mock_agent_call() missing 1 required positional argument: 'payload'", "timestamp": "2026-03-10T19:34:49.326899Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 2, "timestamp": "2026-03-10T19:34:49.327185Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:34:49.327387Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:34:49.327559Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 2, "timestamp": "2026-03-10T19:34:49.328377Z"}
+{"event": "run_start", "run_id": "run-test-k-181740", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:35:15.847862Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:35:15.849910Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:35:15.850814Z"}
+{"event": "error", "message": "test_pass_at_k_protocol.<locals>.mock_agent_call() missing 1 required positional argument: 'payload'", "timestamp": "2026-03-10T19:35:15.856135Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T19:35:15.857031Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:35:15.857463Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:35:15.857796Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:35:15.860031Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:35:15.861169Z"}
+{"event": "error", "message": "test_pass_at_k_protocol.<locals>.mock_agent_call() missing 1 required positional argument: 'payload'", "timestamp": "2026-03-10T19:35:15.863459Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 2, "timestamp": "2026-03-10T19:35:15.863968Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:35:15.864257Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:35:15.864547Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 2, "timestamp": "2026-03-10T19:35:15.866486Z"}
+{"event": "run_start", "run_id": "run-test-k-181803", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:36:18.867713Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:36:18.869230Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:36:18.870118Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T19:36:18.870495Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:18.870926Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:18.871190Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:18.871421Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:36:18.871643Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:36:18.871896Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T19:36:18.872435Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:18.873028Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:18.873298Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:18.873511Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:36:18.873821Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:36:18.874058Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:36:18.875288Z"}
+{"event": "run_start", "run_id": "run-test-consistency-181803", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:36:18.969753Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:36:18.970378Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:36:18.970700Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T19:36:18.971020Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:18.971313Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:18.971546Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:36:18.971822Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:36:18.972022Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T19:36:18.972298Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:18.972563Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:18.972813Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:36:18.973116Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:36:18.973317Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:36:18.974280Z"}
+{"event": "run_start", "run_id": "run-test-k-181825", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T19:36:41.236735Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:36:41.237999Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:36:41.247767Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T19:36:41.248492Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:41.249142Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:41.249901Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:41.250369Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:36:41.250746Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:36:41.250985Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T19:36:41.251311Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:41.251702Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:41.252052Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:41.252341Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:36:41.252724Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T19:36:41.252991Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:36:41.254132Z"}
+{"event": "run_start", "run_id": "run-test-consistency-181825", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T19:36:41.331616Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T19:36:41.332404Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:36:41.332744Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T19:36:41.333083Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:41.333466Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T19:36:41.333811Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T19:36:41.334173Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T19:36:41.334418Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T19:36:41.334664Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:41.334962Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T19:36:41.335233Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:36:41.335572Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T19:36:41.335831Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T19:36:41.336991Z"}
+{"event": "run_start", "run_id": "run-test-k-193699", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T22:54:35.654699Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:35.656159Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:54:35.657371Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:35.657798Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:35.658300Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:35.658582Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:35.658877Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T22:54:35.659224Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:54:35.659497Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:35.659820Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 2, "timestamp": "2026-03-10T22:54:35.660251Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:54:35.660597Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:54:35.660891Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T22:54:35.661240Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T22:54:35.661501Z"}
+{"event": "run_end", "pass_at_k": 0.5, "successful_attempts": 1, "total_attempts": 2, "timestamp": "2026-03-10T22:54:35.662888Z"}
+{"event": "run_start", "run_id": "run-test-consistency-193699", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T22:54:35.671916Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:35.673516Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:54:35.674371Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:35.674809Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:35.675188Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:35.675469Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T22:54:35.675739Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:54:35.675922Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:35.676165Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:54:35.676399Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:54:35.676584Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T22:54:35.676950Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T22:54:35.677177Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T22:54:35.678574Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193715", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:54:50.971284Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:50.972768Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:54:50.973202Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:50.973536Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}, "timestamp": "2026-03-10T22:54:50.973801Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T22:54:50.975212Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:54:50.975561Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:50.975911Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:50.976160Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:54:50.976449Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:54:50.977296Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193715", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:54:51.085880Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.086411Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:54:51.086750Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.087087Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_a", "arguments": {}, "timestamp": "2026-03-10T22:54:51.087384Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_b", "arguments": {}, "timestamp": "2026-03-10T22:54:51.087614Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T22:54:51.087815Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_b", "result": {"status": "success", "message": "Executed tool_b"}, "timestamp": "2026-03-10T22:54:51.087976Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:54:51.088176Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.088471Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.088715Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:54:51.088909Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:54:51.089708Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193715", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:54:51.099115Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.099553Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:54:51.099780Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.100036Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.100318Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.100509Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.100669Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:54:51.101361Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193715", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:54:51.126881Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.127319Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:54:51.127551Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.127814Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_a", "arguments": {}, "timestamp": "2026-03-10T22:54:51.128027Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T22:54:51.128261Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:54:51.128492Z"}
+{"event": "tool_call", "step": 2, "tool": "tool_a", "arguments": {}, "timestamp": "2026-03-10T22:54:51.128678Z"}
+{"event": "tool_result", "step": 2, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T22:54:51.128861Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.129118Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.129333Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.129502Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:54:51.130239Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193715", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:54:51.139697Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.140262Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:54:51.140585Z"}
+{"event": "error", "message": "Connection Error", "timestamp": "2026-03-10T22:54:51.140953Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.141274Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.141520Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.141749Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:54:51.142740Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193715", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:54:51.151325Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.151917Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:54:51.152251Z"}
+{"event": "error", "message": "", "timestamp": "2026-03-10T22:54:51.152673Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.153054Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.153408Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.153732Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:54:51.154879Z"}
+{"event": "run_start", "run_id": "run-accuracy-test-193715", "scenario": "accuracy-test", "k_attempts": 1, "timestamp": "2026-03-10T22:54:51.163129Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.163502Z"}
+{"event": "prompt", "role": "user", "content": "Retrieve info.", "timestamp": "2026-03-10T22:54:51.163714Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.163924Z"}
+{"event": "evaluation", "metric": "information_retrieval_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.164162Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.164363Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.164520Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:54:51.165225Z"}
+{"event": "run_start", "run_id": "run-clarity-test-193715", "scenario": "clarity-test", "k_attempts": 1, "timestamp": "2026-03-10T22:54:51.174448Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.174832Z"}
+{"event": "prompt", "role": "user", "content": "Explain the issue.", "timestamp": "2026-03-10T22:54:51.175054Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.175442Z"}
+{"event": "evaluation", "metric": "communication_clarity", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.175871Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.176112Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.176316Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:54:51.177109Z"}
+{"event": "run_start", "run_id": "run-policy-test-193715", "scenario": "policy-test", "k_attempts": 1, "timestamp": "2026-03-10T22:54:51.185027Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.185571Z"}
+{"event": "prompt", "role": "user", "content": "", "timestamp": "2026-03-10T22:54:51.185869Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.186137Z"}
+{"event": "tool_call", "step": 1, "tool": "apply_refund", "arguments": {"amount": 100}, "timestamp": "2026-03-10T22:54:51.186387Z"}
+{"event": "tool_result", "step": 1, "tool": "apply_refund", "result": {"status": "policy_violation", "violation": "Amount 100 exceeds limit of 50"}, "timestamp": "2026-03-10T22:54:51.186616Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:54:51.186833Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.187095Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:54:51.187291Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:54:51.188072Z"}
+{"event": "run_start", "run_id": "run-state-test-193715", "scenario": "state-test", "k_attempts": 1, "timestamp": "2026-03-10T22:54:51.196524Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.196921Z"}
+{"event": "prompt", "role": "user", "content": "", "timestamp": "2026-03-10T22:54:51.197138Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.197351Z"}
+{"event": "tool_call", "step": 1, "tool": "update_plan", "arguments": {"current_plan": "Premium"}, "timestamp": "2026-03-10T22:54:51.197557Z"}
+{"event": "tool_result", "step": 1, "tool": "update_plan", "result": {"status": "success"}, "timestamp": "2026-03-10T22:54:51.197819Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:54:51.198057Z"}
+{"event": "evaluation", "metric": "state_verification", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.198313Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.198498Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:54:51.198664Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:54:51.199379Z"}
+{"event": "run_start", "run_id": "run-test-k-193715", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T22:54:51.386118Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.386556Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:54:51.386797Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.387050Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.387327Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.387530Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.387696Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T22:54:51.387885Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:54:51.388034Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.388212Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 2, "timestamp": "2026-03-10T22:54:51.388427Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:54:51.388912Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:54:51.389499Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T22:54:51.389862Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T22:54:51.390084Z"}
+{"event": "run_end", "pass_at_k": 0.5, "successful_attempts": 1, "total_attempts": 2, "timestamp": "2026-03-10T22:54:51.390936Z"}
+{"event": "run_start", "run_id": "run-test-consistency-193715", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T22:54:51.395757Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:54:51.396193Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:54:51.396396Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.396616Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.396846Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:54:51.397047Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T22:54:51.397243Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:54:51.397416Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:54:51.397600Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:54:51.397789Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:54:51.397951Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T22:54:51.398166Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T22:54:51.398343Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T22:54:51.399083Z"}
+{"event": "run_start", "run_id": "run-test_m4-193728", "scenario": "test_m4", "k_attempts": 1, "timestamp": "2026-03-10T22:55:04.746596Z"}
+{"event": "task_start", "task_id": "t1", "attempt": 1, "timestamp": "2026-03-10T22:55:04.747150Z"}
+{"event": "prompt", "role": "user", "content": "Call update_status", "timestamp": "2026-03-10T22:55:04.747422Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:04.747757Z"}
+{"event": "tool_call", "step": 1, "tool": "update_status", "arguments": {"status": "active"}, "timestamp": "2026-03-10T22:55:04.748057Z"}
+{"event": "tool_result", "step": 1, "tool": "update_status", "result": {"status": "success"}, "timestamp": "2026-03-10T22:55:04.748313Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:55:04.748599Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:04.748978Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:55:04.749260Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:55:04.750210Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193743", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.591321Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.592723Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:55:19.593222Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.593662Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}, "timestamp": "2026-03-10T22:55:19.594152Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T22:55:19.596060Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:55:19.596616Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.597075Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.597404Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:55:19.597672Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.598877Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193743", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.684008Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.684394Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:55:19.684610Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.684828Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_a", "arguments": {}, "timestamp": "2026-03-10T22:55:19.685157Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_b", "arguments": {}, "timestamp": "2026-03-10T22:55:19.685557Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T22:55:19.685878Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_b", "result": {"status": "success", "message": "Executed tool_b"}, "timestamp": "2026-03-10T22:55:19.686130Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:55:19.686419Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.686679Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.686909Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:55:19.687081Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.687864Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193743", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.694542Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.694943Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:55:19.695177Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.695420Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.695676Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.695859Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.696018Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.696685Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193743", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.703597Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.704242Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:55:19.704505Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.704756Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_a", "arguments": {}, "timestamp": "2026-03-10T22:55:19.704994Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T22:55:19.705197Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:55:19.705404Z"}
+{"event": "tool_call", "step": 2, "tool": "tool_a", "arguments": {}, "timestamp": "2026-03-10T22:55:19.705590Z"}
+{"event": "tool_result", "step": 2, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T22:55:19.705849Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.706097Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.706280Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.706448Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.707211Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193743", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.713944Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.714320Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:55:19.714577Z"}
+{"event": "error", "message": "Connection Error", "timestamp": "2026-03-10T22:55:19.714869Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.715109Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.715318Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.715499Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.716218Z"}
+{"event": "run_start", "run_id": "run-test-scenario-193743", "scenario": "test-scenario", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.724071Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.724492Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T22:55:19.724752Z"}
+{"event": "error", "message": "", "timestamp": "2026-03-10T22:55:19.725006Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.725211Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.725386Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.725625Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.726468Z"}
+{"event": "run_start", "run_id": "run-accuracy-test-193743", "scenario": "accuracy-test", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.732827Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.733290Z"}
+{"event": "prompt", "role": "user", "content": "Retrieve info.", "timestamp": "2026-03-10T22:55:19.733592Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.733926Z"}
+{"event": "evaluation", "metric": "information_retrieval_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.734274Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.734517Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.734746Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.736216Z"}
+{"event": "run_start", "run_id": "run-clarity-test-193743", "scenario": "clarity-test", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.744188Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.744590Z"}
+{"event": "prompt", "role": "user", "content": "Explain the issue.", "timestamp": "2026-03-10T22:55:19.744832Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.745098Z"}
+{"event": "evaluation", "metric": "communication_clarity", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.745391Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.745699Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.745932Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.746784Z"}
+{"event": "run_start", "run_id": "run-policy-test-193743", "scenario": "policy-test", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.767289Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.767665Z"}
+{"event": "prompt", "role": "user", "content": "", "timestamp": "2026-03-10T22:55:19.767923Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.768192Z"}
+{"event": "tool_call", "step": 1, "tool": "apply_refund", "arguments": {"amount": 100}, "timestamp": "2026-03-10T22:55:19.768692Z"}
+{"event": "tool_result", "step": 1, "tool": "apply_refund", "result": {"status": "policy_violation", "violation": "Amount 100 exceeds limit of 50"}, "timestamp": "2026-03-10T22:55:19.769057Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:55:19.769409Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 0.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.769982Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:55:19.770296Z"}
+{"event": "run_end", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.771475Z"}
+{"event": "run_start", "run_id": "run-state-test-193743", "scenario": "state-test", "k_attempts": 1, "timestamp": "2026-03-10T22:55:19.778649Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.779032Z"}
+{"event": "prompt", "role": "user", "content": "", "timestamp": "2026-03-10T22:55:19.779295Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.779520Z"}
+{"event": "tool_call", "step": 1, "tool": "update_plan", "arguments": {"current_plan": "Premium"}, "timestamp": "2026-03-10T22:55:19.779731Z"}
+{"event": "tool_result", "step": 1, "tool": "update_plan", "result": {"status": "success"}, "timestamp": "2026-03-10T22:55:19.779902Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:55:19.780086Z"}
+{"event": "evaluation", "metric": "state_verification", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.780328Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.780496Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:55:19.780650Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:55:19.781362Z"}
+{"event": "run_start", "run_id": "run-test-k-193744", "scenario": "test-k", "k_attempts": 2, "timestamp": "2026-03-10T22:55:19.937039Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.938743Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:55:19.939309Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.939862Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.940436Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.940847Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.941185Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T22:55:19.941572Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:55:19.941909Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.942303Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "attempt": 2, "timestamp": "2026-03-10T22:55:19.943054Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:55:19.943581Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:55:19.944331Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T22:55:19.945233Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 0.0, "task_id": "task-1", "timestamp": "2026-03-10T22:55:19.945665Z"}
+{"event": "run_end", "pass_at_k": 0.5, "successful_attempts": 1, "total_attempts": 2, "timestamp": "2026-03-10T22:55:19.947122Z"}
+{"event": "run_start", "run_id": "run-test-consistency-193744", "scenario": "test-consistency", "k_attempts": 2, "timestamp": "2026-03-10T22:55:19.973741Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 1, "timestamp": "2026-03-10T22:55:19.974929Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:55:19.975636Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.976439Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.976983Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:19.977376Z"}
+{"event": "task_start", "task_id": "task-1", "attempt": 2, "timestamp": "2026-03-10T22:55:19.977773Z"}
+{"event": "prompt", "role": "user", "content": "Do something", "timestamp": "2026-03-10T22:55:19.978122Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:19.978540Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:55:19.978952Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "attempt": 2, "timestamp": "2026-03-10T22:55:19.979248Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T22:55:19.979651Z"}
+{"event": "evaluation", "metric": "consistency_score", "value": 1.0, "task_id": "task-1", "timestamp": "2026-03-10T22:55:19.979932Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2, "timestamp": "2026-03-10T22:55:19.981216Z"}
+{"event": "run_start", "run_id": "run-test_m4-193758", "scenario": "test_m4", "k_attempts": 1, "timestamp": "2026-03-10T22:55:34.288924Z"}
+{"event": "task_start", "task_id": "t1", "attempt": 1, "timestamp": "2026-03-10T22:55:34.289696Z"}
+{"event": "prompt", "role": "user", "content": "Call update_status", "timestamp": "2026-03-10T22:55:34.290094Z"}
+{"event": "agent_response", "step": 1, "timestamp": "2026-03-10T22:55:34.290541Z"}
+{"event": "tool_call", "step": 1, "tool": "update_status", "arguments": {"status": "active"}, "timestamp": "2026-03-10T22:55:34.290936Z"}
+{"event": "tool_result", "step": 1, "tool": "update_status", "result": {"status": "success"}, "timestamp": "2026-03-10T22:55:34.291249Z"}
+{"event": "agent_response", "step": 2, "timestamp": "2026-03-10T22:55:34.291601Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "attempt": 1, "timestamp": "2026-03-10T22:55:34.291964Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "attempt": 1, "timestamp": "2026-03-10T22:55:34.292290Z"}
+{"event": "run_end", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1, "timestamp": "2026-03-10T22:55:34.293499Z"}

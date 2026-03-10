@@ -69,6 +69,12 @@ def main():
     drift_parser.add_argument("--industry", required=True, help="Industry category")
     drift_parser.add_argument("--output-dir", help="Directory to save scenarios")
 
+    # --- RUN COMMAND ---
+    run_parser = subparsers.add_parser("run", help="Run an individual scenario evaluation.")
+    run_parser.add_argument("scenario", help="Path to the scenario JSON file.")
+    run_parser.add_argument("--attempts", "-k", type=int, default=1, help="Number of attempts per scenario (pass@k).")
+    run_parser.set_defaults(func=run_scenario)
+
     # --- MUTATE COMMAND ---
     mutate_parser = subparsers.add_parser("mutate", help="Generate adversarial variants of a scenario")
     mutate_parser.add_argument("--input", required=True, help="Path to scenario.json")
@@ -182,6 +188,32 @@ def handle_replay(args):
             elif ev_type == "run_end":
                 status = event.get("status")
                 print(f"--- Run Finished: {status} ---")
+
+async def run_scenario(args):
+    """Loads a scenario and executes the evaluation."""
+    scenario_path = Path(args.scenario)
+    if not scenario_path.exists():
+        print(f"Error: Scenario file {scenario_path} not found.")
+        return
+
+    try:
+        scenario = loader.load_scenario(scenario_path)
+        results = await engine.run_evaluation(scenario, attempts=args.attempts)
+        
+        # Determine aggregate success for pass@k
+        # For now, we still report based on the last attempt or success of at least one if we strictly followed pass@k
+        # But for CLI output, let's keep it simple.
+        
+        print(f"\n   [CLI] Evaluation complete for {scenario_path.name}")
+        # Flatten results for the reporter (backwards compatibility)
+        # If results is a list of lists (k attempts), the reporter needs to handle it.
+        # Temp fix: pass the last attempt to the reporter
+        last_attempt = results[-1]
+        reporter.report_results(last_attempt)
+    except Exception as e:
+        print(f"Error during evaluation: {e}")
+        import traceback
+        traceback.print_exc()
 
 async def run_evaluate(args):
     """Execution logic for the 'evaluate' command."""

@@ -6,7 +6,7 @@ Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 """
 
 import json
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 from abc import ABC, abstractmethod
 
 class SharedStateRegistry:

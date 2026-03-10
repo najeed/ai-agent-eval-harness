@@ -216,17 +216,59 @@ def calculate_refusal_calibration(criterion: dict, agent_summary: str) -> float:
 
 
 @MetricRegistry.register("luna_judge_score")
-def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> float:
+async def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> float:
     """
-    Plugin-ready hook for LLM-based evaluation (using local small models).
-    Defaults to Jaccard similarity if no local judge is configured.
+    LLM-based evaluation using local 'Ollama'.
+    Defaults to Jaccard similarity if Ollama is unavailable or no expected outcome is provided.
     """
     expected_outcome = criterion.get("expected_outcome", "")
     if not expected_outcome:
         return 1.0
         
-    # Placeholder for Ollama/MLX call
-    # For now, reuse consensus logic
+    import aiohttp
+    import json
+    import os
+
+    # Configuration
+    OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
+
+    prompt = f"""
+    You are an objective judge. Rate the similarity between the 'Expected Outcome' and the 'Agent Summary' on a scale of 0.0 to 1.0.
+    1.0 means they are semantically equivalent.
+    0.0 means they are completely different.
+    
+    Expected Outcome: {expected_outcome}
+    Agent Summary: {agent_summary}
+    
+    Return ONLY a single float between 0.0 and 1.0.
+    """
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{OLLAMA_HOST}/api/generate",
+                json={
+                    "model": OLLAMA_MODEL,
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {"temperature": 0.0}
+                },
+                timeout=aiohttp.ClientTimeout(total=5)
+            ) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    response_text = data.get("response", "").strip()
+                    try:
+                        score = float(response_text)
+                        print(f"      [Metrics] [Luna-Judge] Ollama ({OLLAMA_MODEL}) score: {score:.2f}")
+                        return max(0.0, min(1.0, score))
+                    except ValueError:
+                        print(f"      [Metrics] [Luna-Judge] Ollama returned non-float: '{response_text}'")
+    except Exception as e:
+        print(f"      [Metrics] [Luna-Judge] Ollama connection failed: {e}")
+
+    # Fallback to Jaccard Similarity
     def get_tokens(text):
         return set(str(text).lower().split())
 
@@ -237,5 +279,34 @@ def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> float:
     union = len(set_a.union(set_b))
     
     score = intersection / union if union > 0 else 0.0
-    print(f"      [Metrics] [Luna-Judge] Semantic similarity score: {score:.2f}")
+    print(f"      [Metrics] [Luna-Judge] Fallback similarity score: {score:.2f}")
+    return score
+@MetricRegistry.register("consistency_score")
+def calculate_consistency_score(summaries: list) -> float:
+    """
+    Measures the 'Outcome Stability' across multiple runs.
+    Calculates the average pairwise Jaccard similarity between all summaries.
+    """
+    if len(summaries) < 2:
+        return 1.0
+    
+    def get_tokens(text):
+        return set(str(text).lower().split())
+
+    total_sim = 0.0
+    count = 0
+    for i in range(len(summaries)):
+        for j in range(i + 1, len(summaries)):
+            tokens_i = get_tokens(summaries[i])
+            tokens_j = get_tokens(summaries[j])
+            
+            intersection = len(tokens_i.intersection(tokens_j))
+            union = len(tokens_i.union(tokens_j))
+            
+            sim = intersection / union if union > 0 else 1.0
+            total_sim += sim
+            count += 1
+            
+    score = total_sim / count if count > 0 else 1.0
+    print(f"      [Metrics] Consistency score: {score:.2f} across {len(summaries)} attempts.")
     return score

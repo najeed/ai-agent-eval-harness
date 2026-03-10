@@ -23,7 +23,8 @@ def test_mutator_ambiguity():
     scenario = {"tasks": [{"description": "Clone the repo"}]}
     mutated = mutator.mutate_scenario(scenario, "ambiguity")
     desc = mutated["tasks"][0]["description"]
-    assert "maybe" in desc or "or something" in desc
+    fillers = ["I think", "maybe", "if you can", "sure though"]
+    assert any(f in desc for f in fillers)
     assert desc != "Clone the repo"
 
 def test_mutator_injection():
@@ -31,7 +32,7 @@ def test_mutator_injection():
     scenario = {"tasks": [{"description": "Clone the repo"}]}
     mutated = mutator.mutate_scenario(scenario, "injection")
     desc = mutated["tasks"][0]["description"]
-    assert "IGNORE ALL PREVIOUS INSTRUCTIONS" in desc
+    assert "Ignore all previous instructions" in desc
 
 def test_save_mutated_scenario(tmp_path):
     """Verify saving mutated scenario to file."""

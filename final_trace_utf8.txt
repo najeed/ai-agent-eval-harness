@@ -1,0 +1,54 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.0.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+tests/test_phase3.py::test_pass_at_k_protocol FAILED                     [ 25%]
+tests/test_phase3.py::test_consistency_score_integration PASSED          [ 50%]
+tests/test_phase3.py::test_luna_judge_ollama_mock FAILED                 [ 75%]
+tests/test_phase3.py::test_luna_judge_fallback PASSED                    [100%]
+
+================================== FAILURES ===================================
+___________________________ test_pass_at_k_protocol ___________________________
+tests\test_phase3.py:42: in test_pass_at_k_protocol
+    assert successes == 1
+E   assert 2 == 1
+---------------------------- Captured stdout call -----------------------------
+   [Enterprise Gateway] initializing session and tracing...
+   [Observability] initialized OTEL for eval-harness-enterprise
+   [Engine] Starting evaluation for scenario ID: test-k (k=2)
+      [Engine] Attempt 1/2...
+      [Engine] Attempt 2/2...
+   [Engine] Calculating cross-attempt metrics...
+      [Metrics] Consistency score: 0.00 across 2 attempts.
+   [Coverage] Heatmap report generated: reports\coverage\test-k_coverage.html
+   [Enterprise Gateway] Running post-eval services...
+   [Plugins] Error in plugin hook after_evaluation: 'list' object has no attribute 'get'
+_________________________ test_luna_judge_ollama_mock _________________________
+tests\test_phase3.py:92: in test_luna_judge_ollama_mock
+    assert score == 0.9
+E   assert 0.16666666666666666 == 0.9
+---------------------------- Captured stdout call -----------------------------
+      [Metrics] [Luna-Judge] Ollama connection failed: 'coroutine' object does not support the asynchronous context manager protocol (missed __aexit__ method)
+      [Metrics] [Luna-Judge] Fallback similarity score: 0.17
+============================== warnings summary ===============================
+tests/test_phase3.py::test_pass_at_k_protocol
+tests/test_phase3.py::test_pass_at_k_protocol
+  C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\engine.py:221: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    if asyncio.iscoroutinefunction(metric_func):
+
+tests/test_phase3.py::test_luna_judge_ollama_mock
+  C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\metrics.py:249: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    async with session.post(
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_phase3.py::test_pass_at_k_protocol - assert 2 == 1
+FAILED tests/test_phase3.py::test_luna_judge_ollama_mock - assert 0.166666666...
+=================== 2 failed, 2 passed, 3 warnings in 0.61s ===================
