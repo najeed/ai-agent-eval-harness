@@ -53,7 +53,7 @@ def scenario_schema():
         and returns it as a Python dictionary for use in validation tests.
     """
     with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+        return json.loads(f.read())
 
 def load_all_scenario_files():
     """
@@ -107,17 +107,20 @@ def test_all_scenarios_are_valid(scenario_schema):
     """
     errors = []
     count = 0
-    for path in load_all_scenario_files():
+    for path_str in load_all_scenario_files():
         count += 1
-        with open(path, "r") as f:
-            try:
-                scenario = json.load(f)
-                validate(instance=scenario, schema=scenario_schema)
-            except ValidationError as e:
-                errors.append((path, str(e)))
+        path = Path(path_str)
+        try:
+            scenario = json.loads(path.read_text(encoding="utf-8"))
+            validate(instance=scenario, schema=scenario_schema)
+        except ValidationError as e:
+            errors.append((path_str, str(e)))
+        except Exception as e:
+            errors.append((path_str, f"Unexpected error: {str(e)}"))
+            
     print(f"\n[DEBUG] Validated {count} scenario files.")
     if errors:
-        for path, err in errors:
-            print(f"Validation error in {path}: {err}")
+        for p, err in errors:
+            print(f"Validation error in {p}: {err}")
         pytest.fail(f"{len(errors)} scenario file(s) failed schema validation")
     assert count > 0, "No scenario files were found for validation!"

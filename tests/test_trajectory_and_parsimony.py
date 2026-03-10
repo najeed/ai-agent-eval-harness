@@ -95,7 +95,19 @@ def test_trajectory_json_export(tmp_path):
     export_files = list(tmp_path.glob("reports/trajectories/test_id_*.json"))
     assert len(export_files) == 1
     
-    with open(export_files[0], "r") as f:
-        data = json.load(f)
-        assert data["metadata"]["scenario_id"] == "test_id"
-        assert "results" in data
+    import traceback
+    try:
+        with open(export_files[0], "r") as f:
+            content = f.read()
+            print(f"\n[DEBUG] Read {len(content)} bytes from {export_files[0]}")
+            data = json.loads(content)
+            assert data["metadata"]["scenario_id"] == "test_id"
+            assert "results" in data
+    except ValueError as e:
+        print(f"\n[CRITICAL] ValueError at {export_files[0]}: {e}")
+        traceback.print_exc()
+        raise
+    except Exception as e:
+        print(f"\n[ERROR] Unexpected error at {export_files[0]}: {e}")
+        traceback.print_exc()
+        raise

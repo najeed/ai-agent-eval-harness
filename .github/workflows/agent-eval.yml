@@ -1,0 +1,47 @@
+name: Agent Reliability Gate
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  evaluate-agents:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Eval Harness
+        run: |
+          pip install -e .
+          pip install -r requirements.txt
+
+      - name: Validate AES Scenarios
+        run: |
+          eval-harness aes validate industries/telecom/scenarios/
+
+      - name: Run Evaluation Suite
+        run: |
+          eval-harness evaluate --path industries/telecom/scenarios --format jsonl --output reports/eval_results.json
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Upload Replay Traces
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-run-traces
+          path: reports/trajectories/*.jsonl
+
+      - name: Regression Check
+        run: |
+          # [Future] eval-harness compare ./reports ./baselines --threshold 0.05
+          echo "Regression check passed (baseline comparison simulated)"

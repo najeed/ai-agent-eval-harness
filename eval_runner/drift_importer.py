@@ -17,7 +17,7 @@ def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) 
         raise FileNotFoundError(f"Trace file not found: {trace_path}")
 
     with open(trace_path, "r") as f:
-        trace_data = json.load(f)
+        trace_data = json.loads(f.read())
 
     if isinstance(trace_data, dict):
         history = trace_data.get("history", [])

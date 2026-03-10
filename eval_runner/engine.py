@@ -59,8 +59,9 @@ async def run_evaluation(scenario: dict) -> list:
     
     def emit_event(event_data: dict):
         event_data["timestamp"] = datetime.now().isoformat() + "Z"
-        with open(jsonl_path, "a") as f:
-            f.write(json.dumps(event_data) + "\n")
+        content = json.dumps(event_data) + "\n"
+        with open(jsonl_path, "a", encoding="utf-8") as f:
+            f.write(content)
 
     emit_event({"event": "run_start", "run_id": run_id, "scenario": ctx.scenario_id})
 

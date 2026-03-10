@@ -1,0 +1,41 @@
+{
+  "scenario_id": "drift-58d5da25",
+  "version": "2.0.0",
+  "title": "Imported Drift: sample_drift.json",
+  "industry": "telecom",
+  "use_case": "production_replay",
+  "core_function": "drift_management",
+  "description": "Automatically imported from production trace: sample_drift.json",
+  "tasks": [
+    {
+      "task_id": "imported_task_1",
+      "description": "Replay production trace and verify outcome.",
+      "expected_outcome": "Outcome matches production ground truth (if provided).",
+      "required_tools": [],
+      "success_criteria": [
+        {
+          "metric": "generic_accuracy",
+          "threshold": 0.5
+        }
+      ]
+    }
+  ],
+  "ground_truth_history": [
+    {
+      "role": "user",
+      "content": "My internet is down and I need a credit for the downtime."
+    },
+    {
+      "role": "assistant",
+      "content": "I'm sorry to hear that. I see your service was out for 4 hours. Let me check the credit policy."
+    },
+    {
+      "role": "user",
+      "content": "It was actually 6 hours."
+    },
+    {
+      "role": "assistant",
+      "content": "I've processed a $10 credit for the 6-hour outage. Is there anything else?"
+    }
+  ]
+}

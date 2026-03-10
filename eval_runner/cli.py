@@ -55,9 +55,16 @@ def main():
     validate_parser = aes_subparsers.add_parser("validate", help="Validate an AES benchmark file")
     validate_parser.add_argument("path", help="Path to .aes.yaml file or directory")
 
-    # --- REPLAY COMMAND ---
-    replay_parser = subparsers.add_parser("replay", help="Replay an agent execution from run.jsonl")
-    replay_parser.add_argument("path", help="Path to run.jsonl file")
+    # --- SPEC-TO-EVAL COMMAND ---
+    spec_parser = subparsers.add_parser("spec-to-eval", help="Convert Markdown PRD/Spec to Scenario JSON")
+    spec_parser.add_argument("--input", required=True, help="Path to .md file")
+    spec_parser.add_argument("--output", help="Path to save generated .json")
+
+    # --- IMPORT-DRIFT COMMAND ---
+    drift_parser = subparsers.add_parser("import-drift", help="Import production traces as scenarios")
+    drift_parser.add_argument("--input", required=True, help="Path to trace file")
+    drift_parser.add_argument("--industry", required=True, help="Industry category")
+    drift_parser.add_argument("--output-dir", help="Directory to save scenarios")
 
     args = parser.parse_args()
 
@@ -94,7 +101,7 @@ def handle_aes_validate(args):
         return
 
     with open(schema_path, "r") as f:
-        schema = json.load(f)
+        schema = json.loads(f.read())
 
     path = Path(args.path)
     files = []

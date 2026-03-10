@@ -1,0 +1,448 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.0.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 5 items
+
+tests/test_trajectory_and_parsimony.py::test_path_parsimony_calculation PASSED [ 20%]
+tests/test_trajectory_and_parsimony.py::test_engine_captures_state_transitions PASSED [ 40%]
+tests/test_trajectory_and_parsimony.py::test_mermaid_generation PASSED   [ 60%]
+tests/test_trajectory_and_parsimony.py::test_trajectory_json_export PASSED [ 80%]
+tests/test_schema_validation.py::test_all_scenarios_are_valid FAILED     [100%]
+
+================================== FAILURES ===================================
+________________________ test_all_scenarios_are_valid _________________________
+
+scenario_schema = {'$schema': 'http://json-schema.org/draft-07/schema#', 'definitions': {'state_change': {'properties': {'path': {'descr...string'}, ...}, 'required': ['scenario_id', 'title', 'description', 'use_case', 'core_function', 'industry', ...], ...}
+
+    def test_all_scenarios_are_valid(scenario_schema):
+        """
+        Test that all scenario files conform to the defined JSON schema.
+    
+        This test validates every JSON file in the industries directory
+        against the scenario schema. It collects all validation errors
+        and reports them comprehensively, ensuring that the entire
+        scenario corpus maintains data integrity and consistency.
+    
+        Args:
+            scenario_schema: pytest fixture providing the loaded JSON schema
+    
+        Returns:
+            None
+    
+        Raises:
+            pytest.fail: If any scenario files fail schema validation
+    
+        Example:
+            The test validates files like:
+            - industries/accounting/scenarios/accounts_payable/*.json
+            - industries/aerospace/scenarios/aircraft_manufacturing/*.json
+            - All other scenario files in the industries directory
+    
+            If validation fails, it reports specific errors for each file.
+        """
+        errors = []
+        count = 0
+        for path_str in load_all_scenario_files():
+            count += 1
+            path = Path(path_str)
+            try:
+                scenario = json.loads(path.read_text(encoding="utf-8"))
+                validate(instance=scenario, schema=scenario_schema)
+            except ValidationError as e:
+                errors.append((path_str, str(e)))
+            except Exception as e:
+                errors.append((path_str, f"Unexpected error: {str(e)}"))
+    
+        print(f"\n[DEBUG] Validated {count} scenario files.")
+        if errors:
+            for p, err in errors:
+                print(f"Validation error in {p}: {err}")
+>           pytest.fail(f"{len(errors)} scenario file(s) failed schema validation")
+E           Failed: 1 scenario file(s) failed schema validation
+
+tests\test_schema_validation.py:125: Failed
+---------------------------- Captured stdout call -----------------------------
+{
+    "name": "turn:1",
+    "context": {
+        "trace_id": "0xd6f5a53ee992340582be7972bccd3a11",
+        "span_id": "0xb8094884f3409fa9",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-10T03:47:55.314640Z",
+    "end_time": "2026-03-10T03:47:55.314672Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "turn.number": 1,
+        "task_id": "t1"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "eval-harness-enterprise"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "turn:2",
+    "context": {
+        "trace_id": "0x25f50b160b43dcb1fce1f856ec5ba712",
+        "span_id": "0x6c20ffca23902318",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-10T03:47:55.315173Z",
+    "end_time": "2026-03-10T03:47:55.315193Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "turn.number": 2,
+        "task_id": "t1"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "eval-harness-enterprise"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:detect_failure_spikes",
+    "context": {
+        "trace_id": "0x80e58e9e8e358c5e202292de98eb55ab",
+        "span_id": "0x3a7412ff4bdf4fc2",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xef1eccad72fd63d8",
+    "start_time": "2026-03-10T03:47:55.316008Z",
+    "end_time": "2026-03-10T03:47:55.316042Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "detect_failure_spikes",
+        "arg.0": "[{'task_id': 't1', 'turns_taken': 2, 'conversation_history': [{'role': 'agent', 'content': {'action': 'call_tool', 'tool_name': 'update_status', 'tool_params': {'status': 'active'}}}, {'role': 'environment', 'content': {'status': 'success'}, 'state_before': {'status': 'idle'}, 'state_after': {'status': 'active'}}, {'role': 'agent', 'content': {'action': 'final_answer', 'summary': 'Done'}}], 'metrics': [{'metric': 'policy_compliance', 'score': 1.0, 'threshold': 0.5, 'success': True}, {'metric': 'path_parsimony', 'score': 0.75, 'threshold': 0.5, 'success': True}]}]"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "eval-harness-enterprise"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "post_evaluation_analysis",
+    "context": {
+        "trace_id": "0x80e58e9e8e358c5e202292de98eb55ab",
+        "span_id": "0xef1eccad72fd63d8",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-10T03:47:55.315896Z",
+    "end_time": "2026-03-10T03:47:55.316051Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {},
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "eval-harness-enterprise"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "evaluation_run",
+    "context": {
+        "trace_id": "0xa967cd8b226ba240acd1f7b86f252416",
+        "span_id": "0xf624ce8a5ceb46b0",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-10T03:47:55.314111Z",
+    "end_time": "2026-03-10T03:47:55.316056Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "scenario_id": "test_m4"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "eval-harness-enterprise"
+        },
+        "schema_url": ""
+    }
+}
+
+
+[DEBUG] Validated 4633 scenario files.
+Validation error in C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\industries\telecom\scenarios\drift-44360adb.json: 'use_case' is a required property
+
+Failed validating 'required' in schema:
+    {'$schema': 'http://json-schema.org/draft-07/schema#',
+     'title': 'AI Agent Evaluation Scenario',
+     'type': 'object',
+     'required': ['scenario_id',
+                  'title',
+                  'description',
+                  'use_case',
+                  'core_function',
+                  'industry',
+                  'tasks'],
+     'properties': {'scenario_id': {'type': 'string',
+                                    'description': 'Unique identifier for '
+                                                   'the scenario'},
+                    'title': {'type': 'string',
+                              'description': 'Title of the scenario'},
+                    'description': {'type': 'string',
+                                    'description': 'Background context for '
+                                                   'the scenario'},
+                    'instructions': {'type': 'string',
+                                     'description': 'Prompt or '
+                                                    'instructions to be '
+                                                    'sent to the agent'},
+                    'expected_response': {'type': 'string',
+                                          'description': 'Ideal or '
+                                                         'expected '
+                                                         'response from '
+                                                         'the agent'},
+                    'use_case': {'type': 'string',
+                                 'description': 'The use case for which '
+                                                'the agent is being '
+                                                'evaluated (e.g., customer '
+                                                'support, data analysis)'},
+                    'core_function': {'type': 'string',
+                                      'description': 'The core function in '
+                                                     'the industry that '
+                                                     'the use case belongs '
+                                                     'to (e.g., customer '
+                                                     'service, sales, '
+                                                     'technical support)'},
+                    'industry': {'type': 'string',
+                                 'description': 'Industry tag (e.g. '
+                                                'telecom, finance)'},
+                    'agent_topology': {'type': 'object',
+                                       'additionalProperties': {'type': 'object',
+                                                                'properties': {'reads': {'type': 'array',
+                                                                                         'items': {'type': 'string'}},
+                                                                               'writes': {'type': 'array',
+                                                                                          'items': {'type': 'string'}}}},
+                                       'description': 'Definition of '
+                                                      'agents in the crew '
+                                                      'and their state '
+                                                      'access permissions '
+                                                      '(namespaces)'},
+                    'tasks': {'type': 'array',
+                              'description': 'List of tasks the agent is '
+                                             'expected to perform',
+                              'items': {'type': 'object',
+                                        'required': ['task_id',
+                                                     'description',
+                                                     'expected_outcome',
+                                                     'success_criteria'],
+                                        'properties': {'task_id': {'type': 'string',
+                                                                   'description': 'Unique '
+                                                                                  'identifier '
+                                                                                  'for '
+                                                                                  'the '
+                                                                                  'task'},
+                                                       'description': {'type': 'string',
+                                                                       'description': 'Background '
+                                                                                      'context '
+                                                                                      'for '
+                                                                                      'the '
+                                                                                      'task'},
+                                                       'expected_outcome': {'type': 'string',
+                                                                            'description': 'Ideal '
+                                                                                           'or '
+                                                                                           'expected '
+                                                                                           'response '
+                                                                                           'from '
+                                                                                           'the '
+                                                                                           'agent'},
+                                                       'required_tools': {'type': 'array',
+                                                                          'items': {'type': 'string'},
+                                                                          'description': 'List '
+                                                                                         'of '
+                                                                                         'tools '
+                                                                                         'the '
+                                                                                         'agent '
+                                                                                         'is '
+                                                                                         'expected '
+                                                                                         'to '
+                                                                                         'use'},
+                                                       'expected_delegations': {'type': 'integer',
+                                                                                'minimum': 0,
+                                                                                'description': 'Expected '
+                                                                                               'number '
+                                                                                               'of '
+                                                                                               'agent-to-agent '
+                                                                                               'handoffs '
+                                                                                               'for '
+                                                                                               'this '
+                                                                                               'task'},
+                                                       'success_criteria': {'type': 'array',
+                                                                            'items': {'type': 'object',
+                                                                                      'required': ['metric',
+                                                                                                   'threshold'],
+                                                                                      'properties': {'metric': {'type': 'string',
+                                                                                                                'description': 'The '
+                                                                                                                               'metric '
+                                                                                                                               'to '
+                                                                                                                               'be '
+                                                                                                                               'tested '
+                                                                                                                               'for '
+                                                                                                                               'the '
+                                                                                                                               'task'},
+                                                                                                     'threshold': {'type': 'number',
+                                                                                                                   'description': 'The '
+                                                                                                                                  'threshold '
+                                                                                                                                  'for '
+                                                                                                                                  'the '
+                                                                                                                                  'metric '
+                                                                                                                                  'to '
+                                                                                                                                  'be '
+                                                                                                                                  'considered '
+                                                                                                                                  'successful'}}},
+                                                                            'description': 'Criteria '
+                                                                                           'to '
+                                                                                           'determine '
+                                                                                           'if '
+                                                                                           'the '
+                                                                                           'task '
+                                                                                           'was '
+                                                                                           'successfully '
+                                                                                           'completed'},
+                                                       'crew_success_criteria': {'type': 'array',
+                                                                                 'items': {'type': 'object',
+                                                                                           'required': ['metric',
+                                                                                                        'threshold'],
+                                                                                           'properties': {'metric': {'type': 'string'},
+                                                                                                          'threshold': {'type': 'number'}}},
+                                                                                 'description': 'Multi-agent '
+                                                                                                'specific '
+                                                                                                'metrics '
+                                                                                                '(e.g. '
+                                                                                                'delegation_loop_risk)'},
+                                                       'expected_state_changes': {'type': 'array',
+                                                                                  'items': {'$ref': '#/definitions/state_change'},
+                                                                                  'description': 'Verified '
+                                                                                                 'changes '
+                                                                                                 'to '
+                                                                                                 'the '
+                                                                                                 'sandbox '
+                                                                                                 'state '
+                                                                                                 'after '
+                                                                                                 'task '
+                                                                                                 'execution'}}}},
+                    'tools_required': {'type': 'array',
+                                       'items': {'type': 'string'},
+                                       'description': 'List of tools the '
+                                                      'agent is expected '
+                                                      'to use'},
+                    'complexity_level': {'type': 'string',
+                                         'enum': ['low', 'medium', 'high'],
+                                         'description': 'Relative '
+                                                        'difficulty of the '
+                                                        'scenario'},
+                    'author': {'type': 'string',
+                               'description': 'Contributor of the '
+                                              'scenario'},
+                    'version': {'type': 'string',
+                                'pattern': '^\\d+\\.\\d+(\\.\\d+)?$',
+                                'description': 'Semantic version (e.g., '
+                                               '1.0 or 2.1.3)'},
+                    'initial_state': {'type': 'object',
+                                      'description': 'The starting state '
+                                                     'of the sandbox '
+                                                     '(e.g., database '
+                                                     'records, file '
+                                                     'contents)'},
+                    'policies': {'type': 'object',
+                                 'description': 'Governance policies to be '
+                                                'enforced during execution '
+                                                '(e.g., spending limits, '
+                                                'tool constraints)'}},
+     'definitions': {'state_change': {'type': 'object',
+                                      'required': ['path', 'value'],
+                                      'properties': {'path': {'type': 'string',
+                                                              'description': 'JSON '
+                                                                             'path '
+                                                                             'or '
+                                                                             'key '
+                                                                             'to '
+                                                                             'the '
+                                                                             'state '
+                                                                             'variable'},
+                                                     'value': {'description': 'The '
+                                                                              'expected '
+                                                                              'value '
+                                                                              'after '
+                                                                              'task '
+                                                                              'completion'}}}}}
+
+On instance:
+    {'scenario_id': 'drift-44360adb',
+     'version': '2.0.0',
+     'title': 'Imported Drift: sample_trace.json',
+     'industry': 'telecom',
+     'description': 'Automatically imported from production trace: '
+                    'sample_trace.json',
+     'tasks': [{'task_id': 'imported_task_1',
+                'description': 'Replay production trace and verify '
+                               'outcome.',
+                'expected_outcome': 'Outcome matches production ground '
+                                    'truth (if provided).',
+                'required_tools': [],
+                'success_criteria': [{'metric': 'generic_accuracy',
+                                      'threshold': 0.5}]}],
+     'ground_truth_history': [{'role': 'user',
+                               'content': 'I want to dispute a charge of '
+                                          '$40.'},
+                              {'role': 'agent',
+                               'content': {'action': 'get_usage_data',
+                                           'input': {'customer_id': 'cust_123'}}},
+                              {'role': 'environment',
+                               'content': {'status': 'success',
+                                           'data': {'overages': 40}}},
+                              {'role': 'agent',
+                               'content': 'I see the $40 overage. I will '
+                                          'apply a credit.'},
+                              {'role': 'agent',
+                               'content': {'action': 'apply_credit',
+                                           'input': {'amount': 40}}},
+                              {'role': 'environment',
+                               'content': {'status': 'policy_violation',
+                                           'message': 'Credit exceeds '
+                                                      'limit'}}]}
+=========================== short test summary info ===========================
+FAILED tests/test_schema_validation.py::test_all_scenarios_are_valid - Failed...
+========================= 1 failed, 4 passed in 9.60s =========================

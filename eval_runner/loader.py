@@ -21,7 +21,7 @@ def _get_schema() -> dict:
     global _SCENARIO_SCHEMA
     if _SCENARIO_SCHEMA is None:
         with open(_SCHEMA_PATH, "r") as f:
-            _SCENARIO_SCHEMA = json.load(f)
+            _SCENARIO_SCHEMA = json.loads(f.read())
     return _SCENARIO_SCHEMA
 
 
@@ -76,7 +76,7 @@ def load_scenario(file_path: Path) -> dict:
 
     with open(file_path, "r") as f:
         try:
-            scenario_data = json.load(f)
+            scenario_data = json.loads(f.read())
         except json.JSONDecodeError as e:
             raise json.JSONDecodeError(
                 f"Error decoding JSON from {file_path}: {e.msg}", e.doc, e.pos

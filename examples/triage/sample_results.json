@@ -1,0 +1,46 @@
+[
+    {
+        "task_id": "service_credit",
+        "metrics": [
+            {
+                "name": "success",
+                "value": false
+            }
+        ],
+        "conversation_history": [
+            {
+                "role": "user",
+                "content": "Apply a credit of $50."
+            },
+            {
+                "role": "system",
+                "content": {
+                    "status": "error",
+                    "message": "Connection refused: backend-billing-api"
+                }
+            }
+        ]
+    },
+    {
+        "task_id": "cancel_service",
+        "metrics": [
+            {
+                "name": "success",
+                "value": false
+            }
+        ],
+        "conversation_history": [
+            {
+                "role": "user",
+                "content": "Cancel my service immediately."
+            },
+            {
+                "role": "environment",
+                "content": {
+                    "status": "policy_violation",
+                    "reason": "Cancellation fee must be disclosed before proceeding."
+                }
+            }
+        ]
+    }
+]
