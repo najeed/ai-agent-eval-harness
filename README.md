@@ -45,7 +45,7 @@ The harness is organized into the following key components:
 -   **Ollama (for Local LLM Evaluation)**:
     -   Download from [ollama.com](https://ollama.com).
     -   Install and run the Ollama server.
-    -   Pull the default model (Llama3):
+    -   Pull the default model (Llama3) or your preferred model:
         ```bash
         ollama pull llama3
         ```
