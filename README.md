@@ -8,7 +8,7 @@
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-orange.svg)](LICENSE)
 [![Contributors](https://img.shields.io/github/contributors/najeed/ai-agent-eval-harness)](https://github.com/najeed/ai-agent-eval-harness/graphs/contributors)
 
-Welcome to the AI Agent Evaluation Harness, an open-source framework for assessing the capabilities of AI agents across a wide range of industries and use cases.
+Welcome to the AI Agent Evaluation Harness, the open-source reliability framework for AI agents: evaluation, replay debugging, drift detection, and failure datasets across a wide range of industries and use cases.
 
 | Attribute | Specification |
 | :--- | :--- |

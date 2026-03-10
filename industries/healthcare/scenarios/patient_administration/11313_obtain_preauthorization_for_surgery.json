@@ -7,6 +7,20 @@
   "industry": "Healthcare",
   "tasks": [
     {
+      "task_id": "task-0",
+      "description": "Verify clinician access and patient identity.",
+      "expected_outcome": "Identity verified/authorized",
+      "required_tools": [
+        "verify_clinician_access"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
       "task_id": "task-1",
       "description": "Identify the patient, their insurance, and the CPT code for the planned surgery.",
       "expected_outcome": "Agent gathers all necessary information for the authorization request.",

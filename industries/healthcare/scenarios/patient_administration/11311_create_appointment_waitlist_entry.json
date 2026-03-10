@@ -7,6 +7,20 @@
   "industry": "Healthcare",
   "tasks": [
     {
+      "task_id": "task-0",
+      "description": "Verify clinician access and patient identity.",
+      "expected_outcome": "Identity verified/authorized",
+      "required_tools": [
+        "verify_clinician_access"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
       "task_id": "task-1",
       "description": "Identify the patient and the type of appointment they need.",
       "expected_outcome": "Agent confirms the patient's details and the desired appointment.",

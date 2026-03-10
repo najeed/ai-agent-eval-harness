@@ -44,7 +44,8 @@
       "success_criteria": [
         {
           "metric": "problem_resolution_effectiveness",
-          "threshold": 0.85
+          "threshold": 0.85,
+          "requires_llm_judge": true
         }
       ]
     }

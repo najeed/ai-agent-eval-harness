@@ -14,7 +14,8 @@
       "success_criteria": [
         {
           "metric": "instructional_clarity",
-          "threshold": 1.0
+          "threshold": 1.0,
+          "requires_llm_judge": true
         }
       ]
     },
@@ -28,7 +29,8 @@
       "success_criteria": [
         {
           "metric": "instructional_clarity",
-          "threshold": 1.0
+          "threshold": 1.0,
+          "requires_llm_judge": true
         }
       ]
     },
@@ -40,7 +42,8 @@
       "success_criteria": [
         {
           "metric": "communication_clarity",
-          "threshold": 1.0
+          "threshold": 1.0,
+          "requires_llm_judge": true
         }
       ]
     }

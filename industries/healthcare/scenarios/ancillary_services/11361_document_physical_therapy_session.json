@@ -7,6 +7,20 @@
   "industry": "Healthcare",
   "tasks": [
     {
+      "task_id": "task-0",
+      "description": "Verify clinician access and patient identity.",
+      "expected_outcome": "Identity verified/authorized",
+      "required_tools": [
+        "verify_clinician_access"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
       "task_id": "task-1",
       "description": "Open the patient's chart and create a new therapy note.",
       "expected_outcome": "Therapist accesses the correct patient and note template.",

@@ -46,7 +46,8 @@
         },
         {
           "metric": "communication_clarity",
-          "threshold": 0.9
+          "threshold": 0.9,
+          "requires_llm_judge": true
         }
       ]
     }

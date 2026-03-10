@@ -32,6 +32,7 @@ jobs:
         run: |
           eval-harness evaluate --path industries/telecom/scenarios --format jsonl --output reports/eval_results.json
         env:
+          OTEL_SDK_DISABLED: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 

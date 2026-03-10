@@ -30,7 +30,9 @@
       "success_criteria": [
         {
           "metric": "forecast_accuracy_mae",
-          "threshold": 0.1
+          "threshold": 0.1,
+          "threshold_unit": "kWh",
+          "threshold_type": "min"
         }
       ]
     },

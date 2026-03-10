@@ -16,7 +16,8 @@
       "success_criteria": [
         {
           "metric": "writing_quality",
-          "threshold": 0.98
+          "threshold": 0.98,
+          "requires_llm_judge": true
         }
       ]
     },
@@ -30,7 +31,8 @@
       "success_criteria": [
         {
           "metric": "writing_quality",
-          "threshold": 0.95
+          "threshold": 0.95,
+          "requires_llm_judge": true
         }
       ]
     },

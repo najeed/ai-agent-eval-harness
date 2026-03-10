@@ -41,7 +41,8 @@
           "metric": "verification_accuracy",
           "threshold": 1.0
         }
-      ]
+      ],
+      "required_tools": []
     }
   ]
 }

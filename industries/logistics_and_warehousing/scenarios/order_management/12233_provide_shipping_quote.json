@@ -40,7 +40,8 @@
       "success_criteria": [
         {
           "metric": "communication_clarity",
-          "threshold": 1.0
+          "threshold": 1.0,
+          "requires_llm_judge": true
         }
       ]
     }

@@ -30,7 +30,8 @@
       "success_criteria": [
         {
           "metric": "writing_quality",
-          "threshold": 0.9
+          "threshold": 0.9,
+          "requires_llm_judge": true
         }
       ]
     },

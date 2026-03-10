@@ -44,7 +44,8 @@
       "success_criteria": [
         {
           "metric": "planning_quality",
-          "threshold": 0.98
+          "threshold": 0.98,
+          "requires_llm_judge": true
         }
       ]
     }

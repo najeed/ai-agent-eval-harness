@@ -7,6 +7,20 @@
   "industry": "Healthcare",
   "tasks": [
     {
+      "task_id": "task-0",
+      "description": "Verify clinician access and patient identity.",
+      "expected_outcome": "Identity verified/authorized",
+      "required_tools": [
+        "verify_clinician_access"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
       "task_id": "task-1",
       "description": "Open the patient's record in the care management platform.",
       "expected_outcome": "Care manager finds the correct patient.",
@@ -28,7 +42,8 @@
       "success_criteria": [
         {
           "metric": "communication_clarity",
-          "threshold": 1.0
+          "threshold": 1.0,
+          "requires_llm_judge": true
         }
       ]
     },

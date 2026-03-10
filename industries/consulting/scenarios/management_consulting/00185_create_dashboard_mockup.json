@@ -28,7 +28,8 @@
       "success_criteria": [
         {
           "metric": "content_relevance",
-          "threshold": 0.9
+          "threshold": 0.9,
+          "requires_llm_judge": true
         }
       ]
     },
@@ -40,7 +41,8 @@
       "success_criteria": [
         {
           "metric": "communication_clarity",
-          "threshold": 0.9
+          "threshold": 0.9,
+          "requires_llm_judge": true
         }
       ]
     }

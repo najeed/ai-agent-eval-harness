@@ -61,5 +61,7 @@
         "message": "Credit exceeds limit"
       }
     }
-  ]
+  ],
+  "use_case": "Scenarios Use Case",
+  "core_function": "General Core Function"
 }

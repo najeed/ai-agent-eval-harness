@@ -15,28 +15,45 @@ def mutate_text_with_typos(text: str, probability: float = 0.1) -> str:
     
     chars = list(text)
     result = []
+    mutated = False
     for char in chars:
         if random.random() < probability:
             choice = random.choice(["swap", "repeat", "delete"])
             if choice == "swap" and result:
-                # swap with previous
                 prev = result.pop()
                 result.append(char)
                 result.append(prev)
+                mutated = True
             elif choice == "repeat":
                 result.append(char)
                 result.append(char)
+                mutated = True
             elif choice == "delete":
-                pass # Skip adding
+                mutated = True # Skip adding
+            else:
+                result.append(char)
         else:
             result.append(char)
+            
+    # Guarantee at least one mutation if none occurred
+    if not mutated and chars and probability > 0:
+        idx = random.randint(0, len(chars) - 1)
+        # Simple swap or delete
+        if idx > 0:
+            chars[idx-1], chars[idx] = chars[idx], chars[idx-1]
+        elif len(chars) > 1:
+            chars[idx], chars[idx+1] = chars[idx+1], chars[idx]
+        else:
+            return "" # Delete the only char
+        return "".join(chars)
+        
     return "".join(result)
 
 def mutate_scenario(scenario: dict, mutation_type: str = "typos") -> dict:
     """Applies a specific mutation to a scenario."""
     new_scenario = json.loads(json.dumps(scenario)) # Deep copy
     
-    if mutation_type == "typos":
+    if mutation_type in ["typos", "typo"]:
         for task in new_scenario.get("tasks", []):
             task["description"] = mutate_text_with_typos(task["description"])
     elif mutation_type == "ambiguity":

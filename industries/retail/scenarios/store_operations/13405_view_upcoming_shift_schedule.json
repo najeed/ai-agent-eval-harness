@@ -43,7 +43,8 @@
           "metric": "information_retrieval_accuracy",
           "threshold": 1.0
         }
-      ]
+      ],
+      "required_tools": []
     }
   ]
 }

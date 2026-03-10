@@ -9,6 +9,9 @@ def test_load_dataset_single_json(tmp_path):
         "scenario_id": "test-123",
         "version": "2.0.0",
         "title": "Test",
+        "description": "Test description",
+        "use_case": "Test use case",
+        "core_function": "Test core function",
         "industry": "test",
         "tasks": []
     }
@@ -22,10 +25,10 @@ def test_load_dataset_single_json(tmp_path):
 
 def test_load_dataset_directory(tmp_path):
     (tmp_path / "s1.json").write_text(json.dumps({
-        "scenario_id": "s1", "version": "2.0.0", "title": "S1", "industry": "i1", "tasks": []
+        "scenario_id": "s1", "version": "2.0.0", "title": "S1", "industry": "i1", "description": "d1", "use_case": "u1", "core_function": "c1", "tasks": []
     }))
     (tmp_path / "s2.json").write_text(json.dumps({
-        "scenario_id": "s2", "version": "2.0.0", "title": "S2", "industry": "i2", "tasks": []
+        "scenario_id": "s2", "version": "2.0.0", "title": "S2", "industry": "i2", "description": "d2", "use_case": "u2", "core_function": "c2", "tasks": []
     }))
     (tmp_path / "other.txt").write_text("not a json")
     
