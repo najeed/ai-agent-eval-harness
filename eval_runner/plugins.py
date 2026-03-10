@@ -51,16 +51,17 @@ class PluginManager:
             try:
                 plugin_cls = entry_point.load()
                 self.plugins.append(plugin_cls())
-                print(f"   [Plugins] Loaded plugin: {entry_point.name}")
+                # print(f"   [Plugins] Loaded plugin: {entry_point.name}")
             except Exception as e:
-                print(f"   [Plugins] Failed to load plugin {entry_point.name}: {e}")
+                # print(f"   [Plugins] Failed to load plugin {entry_point.name}: {e}")
+                pass
         
         # Fallback: Always ensure CoveragePlugin is loaded for Phase 2
         try:
             from .coverage_plugin import CoveragePlugin
             if not any(isinstance(p, CoveragePlugin) for p in self.plugins):
                 self.plugins.append(CoveragePlugin())
-                print("   [Plugins] Loaded internal plugin: coverage")
+                # print("   [Plugins] Loaded internal plugin: coverage")
         except ImportError:
             pass
 

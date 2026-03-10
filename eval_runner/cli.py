@@ -77,28 +77,33 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "evaluate":
-        asyncio.run(run_evaluate(args))
-    elif args.command == "init":
-        handle_init(args)
-    elif args.command == "list-metrics":
-        from . import metrics
-        print("\nRegistered Metrics:")
-        for name in metrics.MetricRegistry._metrics.keys():
-            print(f" - {name}")
-    elif args.command == "spec-to-eval":
-        handle_spec_to_eval(args)
-    elif args.command == "import-drift":
-        handle_import_drift(args)
-    elif args.command == "aes":
-        if args.aes_command == "validate":
-            handle_aes_validate(args)
-    elif args.command == "replay":
-        handle_replay(args)
-    elif args.command == "mutate":
-        handle_mutate(args)
-    else:
-        parser.print_help()
+    try:
+        if args.command == "evaluate":
+            asyncio.run(run_evaluate(args))
+        elif args.command == "init":
+            handle_init(args)
+        elif args.command == "list-metrics":
+            from . import metrics
+            print("\nRegistered Metrics:")
+            for name in metrics.MetricRegistry._metrics.keys():
+                print(f" - {name}")
+        elif args.command == "spec-to-eval":
+            handle_spec_to_eval(args)
+        elif args.command == "import-drift":
+            handle_import_drift(args)
+        elif args.command == "aes":
+            if args.aes_command == "validate":
+                handle_aes_validate(args)
+        elif args.command == "replay":
+            handle_replay(args)
+        elif args.command == "mutate":
+            handle_mutate(args)
+        else:
+            parser.print_help()
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
 def handle_aes_validate(args):
     """Handler for 'aes validate' command."""
@@ -108,7 +113,7 @@ def handle_aes_validate(args):
 
     schema_path = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
     if not schema_path.exists():
-        print(f"❌ Error: AES schema not found at {schema_path}")
+        print(f"[ERROR] AES schema not found at {schema_path}")
         return
 
     with open(schema_path, "r") as f:
@@ -122,7 +127,7 @@ def handle_aes_validate(args):
         files = [path]
 
     if not files:
-        print(f"❌ No .aes.yaml files found at {path}")
+        print(f"[FAIL] No .aes.yaml files found at {path}")
         return
 
     for file_path in files:
@@ -131,12 +136,12 @@ def handle_aes_validate(args):
                 data = yaml.safe_load(f)
             
             jsonschema.validate(instance=data, schema=schema)
-            print(f"✅ {file_path.name}: Valid")
+            print(f"[OK] {file_path.name}: Valid")
         except jsonschema.exceptions.ValidationError as e:
-            print(f"❌ {file_path.name}: Invalid")
+            print(f"[FAIL] {file_path.name}: Invalid")
             print(f"   Reason: {e.message}")
         except Exception as e:
-            print(f"❌ {file_path.name}: Error: {e}")
+            print(f"[ERROR] {file_path.name}: {e}")
 
 def handle_replay(args):
     """Handler for 'replay' command."""
@@ -225,16 +230,21 @@ async def run_evaluate(args):
             from . import metrics
             summaries = []
             for tries in scenario_tries:
+                if not tries: continue
                 # Get the summary from the last task's last agent response
-                if tries and tries[-1].get("conversation_history"):
-                    last_msg = tries[-1]["conversation_history"][-1]
+                history = tries[-1].get("conversation_history", [])
+                if history:
+                    last_msg = history[-1]
                     if last_msg.get("role") == "agent":
                         content = last_msg.get("content", {})
-                        summaries.append(content.get("summary") or content.get("content") or str(content))
+                        if isinstance(content, dict):
+                            summaries.append(content.get("summary") or content.get("content") or str(content))
+                        else:
+                            summaries.append(str(content))
             
             semantic_consistency = metrics.calculate_consensus_scoring(summaries) if len(summaries) > 1 else 1.0
             
-            print(f"\n📊 [Research] Scenario {scenario.get('scenario_id')}:")
+            print(f"\n[Research] Scenario {scenario.get('scenario_id')}:")
             print(f"   - pass@{attempts}: {pass_at_k:.2f} ({successes}/{attempts} successes)")
             print(f"   - Success Consistency: {success_consistency:.2f}")
             print(f"   - Semantic Stability: {semantic_consistency:.2f}")
@@ -317,7 +327,7 @@ def handle_spec_to_eval(args):
     from . import spec_parser
     input_path = Path(args.input)
     if not input_path.exists():
-        print(f"â Œ Error: Markdown file not found at {input_path}")
+        print(f"[FAIL] Error: Markdown file not found at {input_path}")
         return
 
     with open(input_path, "r", encoding="utf-8") as f:
@@ -335,7 +345,7 @@ def handle_spec_to_eval(args):
         output_path = Path("industries") / industry / "scenarios" / f"{scenario_id}.json"
 
     spec_parser.save_scenario_stub(scenario, output_path)
-    print(f"âœ… Successfully converted {input_path} to {output_path}")
+    print(f"[OK] Successfully converted {input_path} to {output_path}")
 
 def handle_import_drift(args):
     """Handler for 'import-drift' command."""
@@ -346,16 +356,16 @@ def handle_import_drift(args):
     
     try:
         output_file = drift_importer.import_trace_as_scenario(input_path, industry, output_dir)
-        print(f"âœ… Successfully imported drift from {input_path} to {output_file}")
+        print(f"[OK] Successfully imported drift from {input_path} to {output_file}")
     except Exception as e:
-        print(f"â Œ Error importing drift: {e}")
+        print(f"[FAIL] Error importing drift: {e}")
 
 def handle_mutate(args):
     """Handler for 'mutate' command."""
     from . import mutator
     input_path = Path(args.input)
     if not input_path.exists():
-        print(f"â Œ Error: Input scenario not found at {input_path}")
+        print(f"[FAIL] Error: Input scenario not found at {input_path}")
         return
         
     with open(input_path, "r", encoding="utf-8") as f:
@@ -369,7 +379,7 @@ def handle_mutate(args):
         output_path = input_path.parent / f"{input_path.stem}_{args.type}.json"
         
     mutator.save_mutated_scenario(mutated, output_path)
-    print(f"âœ… Mutated scenario saved to {output_path}")
+    print(f"[OK] Mutated scenario saved to {output_path}")
 
 if __name__ == "__main__":
     main()

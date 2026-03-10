@@ -210,7 +210,9 @@ async def run_evaluation(scenario: dict) -> list:
                     score = metric_func(criterion, turns_taken, MAX_TURNS)
                 elif metric_func is not None:
                     # Safely handle potential missing agent_response if communication failed
-                    summary = agent_response.get("summary", "") if 'agent_response' in locals() and agent_response else ""
+                    summary = ""
+                    if 'agent_response' in locals() and agent_response:
+                        summary = agent_response.get("summary") or agent_response.get("content") or str(agent_response)
                     score = metric_func(criterion, summary)
 
                 task_results["metrics"].append({
