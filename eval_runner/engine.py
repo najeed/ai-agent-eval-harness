@@ -9,6 +9,7 @@ import os
 import json
 import aiohttp
 import asyncio
+import inspect
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Callable
@@ -223,7 +224,7 @@ async def run_evaluation(scenario: dict, attempts: int = 1) -> list:
                             else:
                                 summary = str(last_content)
                         
-                        if asyncio.iscoroutinefunction(metric_func):
+                        if inspect.iscoroutinefunction(metric_func):
                             score = await metric_func(criterion, summary)
                         else:
                             score = metric_func(criterion, summary)
@@ -281,13 +282,13 @@ async def run_evaluation(scenario: dict, attempts: int = 1) -> list:
     
     # Calculate pass@k
     successful_attempts = 0
-    for attempt in all_attempt_results:
-        # Check success of regular metrics (excluding consistency_score per attempt)
-        if all(all(m["success"] for m in tr["metrics"] if m["metric"] != "consistency_score") for tr in attempt):
+    for attempt_res in all_attempt_results:
+        # attempt_res is a list of task_results
+        if all(all(m["success"] for m in tr["metrics"] if m["metric"] != "consistency_score") for tr in attempt_res):
             successful_attempts += 1
             
     pass_at_k = successful_attempts / attempts if attempts > 0 else 0.0
     
     emit_event({"event": "run_end", "pass_at_k": pass_at_k, "successful_attempts": successful_attempts, "total_attempts": attempts})
     
-    return all_attempt_results
+    return all_attempt_results[0] if attempts == 1 else all_attempt_results

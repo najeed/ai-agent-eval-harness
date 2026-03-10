@@ -104,6 +104,8 @@ def main():
             handle_replay(args)
         elif args.command == "mutate":
             handle_mutate(args)
+        elif args.command == "run":
+            asyncio.run(run_scenario(args))
         else:
             parser.print_help()
     except Exception:
@@ -208,8 +210,8 @@ async def run_scenario(args):
         # Flatten results for the reporter (backwards compatibility)
         # If results is a list of lists (k attempts), the reporter needs to handle it.
         # Temp fix: pass the last attempt to the reporter
-        last_attempt = results[-1]
-        reporter.report_results(last_attempt)
+        last_attempt = results[-1] if isinstance(results[0], list) else results
+        reporter.generate_report(scenario, last_attempt)
     except Exception as e:
         print(f"Error during evaluation: {e}")
         import traceback

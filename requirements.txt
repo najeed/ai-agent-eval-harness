@@ -5,3 +5,4 @@ jsonschema
 aiohttp
 sentence-transformers
 numpy
+datasets

@@ -214,13 +214,14 @@ def test_refusal_calibration():
     # No refusal, NOT expected -> 1.0
     assert metrics.calculate_refusal_calibration({"expect_refusal": False}, "Here is the weather.") == 1.0
 
-def test_luna_judge_score():
+@pytest.mark.asyncio
+async def test_luna_judge_score():
     """Verify local judge fallback (Jaccard)."""
     criterion = {"expected_outcome": "The repo is cloned"}
     # High overlap
-    assert metrics.calculate_luna_judge_score(criterion, "The repo is cloned") == 1.0
+    assert await metrics.calculate_luna_judge_score(criterion, "The repo is cloned") == 1.0
     # Partial overlap
     # tokens: {the, repo, is, cloned} (4) vs {repo, cloned} (2) -> intersection=2, union=4 -> 0.5
-    assert metrics.calculate_luna_judge_score(criterion, "repo cloned") == 0.5
+    assert await metrics.calculate_luna_judge_score(criterion, "repo cloned") == 0.5
     # No overlap
-    assert metrics.calculate_luna_judge_score(criterion, "something else") == 0.0
+    assert await metrics.calculate_luna_judge_score(criterion, "something else") == 0.0
