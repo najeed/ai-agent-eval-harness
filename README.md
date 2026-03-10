@@ -42,57 +42,53 @@ The harness is organized into the following key components:
 
 -   **Python 3.8+**
 -   **pip**
--   **Ollama (for Local LLM Evaluation)**:
+-   **Ollama (optional, for Local LLM Evaluation)**:
     -   Download from [ollama.com](https://ollama.com).
-    -   Install and run the Ollama server.
-    -   Pull the default model (Llama3) or your preferred model:
-        ```bash
-        ollama pull llama3
-        ```
-    -   (Optional) Set `OLLAMA_HOST` if running on a non-standard port or remote machine.
 
-### Running an Evaluation
+### 🚀 60-Second Quickstart
 
-1.  **Clone and install locally**:
-    ```bash
-    git clone https://github.com/najeed/ai-agent-eval-harness.git
-    cd ai-agent-eval-harness
-    pip install -e .
-    pip install -r requirements.txt
-    ```
+The fastest way to see the harness in action:
 
-2.  **OR Run via Docker (Instant Lab)**:
-    Start the entire lab (harness, agent, and dashboard):
-    ```bash
-    docker-compose up -d
-    ```
+```bash
+# 1. Clone and install locally
+git clone https://github.com/najeed/ai-agent-eval-harness.git
+cd ai-agent-eval-harness
+pip install -e .
 
-3.  **Run evaluations inside the Lab**:
-    ```bash
-    docker-compose exec harness eval-harness run --industry telecom --export
-    ```
+# 2. Run the Quickstart Demo
+eval-harness quickstart
+```
 
-4.  **Visualize results**:
-    Open the dashboard at [http://localhost:8501](http://localhost:8501) to explore trajectories and metrics.
-    The `--export` flag will generate a detailed JSON trajectory in the `reports/trajectories/` directory.
+**What it does:** Spawns a sample agent, runs a troubleshooting evaluation, and generates a rich visual report in `reports/`.
 
-### Advanced Features
-- **AES Specification (Foundational)**: Industry-standard format for shareable benchmarks (AES v0.1).
-- **Universal Plugin Architecture**: Extend the engine without touching the core. Register custom Metrics, Loaders, or Agent Adapters via `entry_points`.
-- **Lifecycle Hooks**: Inject logic at key stages: `before_evaluation`, `on_turn_end`, and `after_evaluation`.
-- **Path Parsimony**: Evaluations automatically score agents on efficiency (fewer turns = higher score).
-- **Trajectory Visualization**: Failed tasks include a Mermaid decision tree in the report to help debug "wrong turns."
-- **Edge-Case Triage**: Automatically categorize failures (e.g., `CONNECTION_ERROR`, `POLICY_VIOLATION`) using the built-in Triage Library.
-- **Drift Management**: Import production traces directly as regression test cases using `import-drift`.
-- **Simulation Lab**: State-of-the-art simulation shims for Git and API environments, enabling complex multi-turn evaluations without external dependencies.
-- **Research-Grade Metrics**: Native support for `pass@k`, `Success Consistency`, `Semantic Stability`, and `Safety Guardrails` (PII, Refusal).
-- **Adversarial Mutation**: Automatically generate typo, ambiguity, and injection variants of benchmarks to test agent robustness.
+### 🛠 Manual Evaluation
+
+1.  **Start your Agent**: Ensure your agent is running (e.g., `python sample_agent/agent_app.py`).
+2.  **Set Endpoint**: `set AGENT_API_URL=http://localhost:5001/execute_task`.
+3.  **Run Batch**: `eval-harness evaluate --path industries/telecom`.
+
+---
+
+## 🏗 Zero-Touch Core Architecture
+
+The harness is built on a decoupled, event-driven architecture that allows Enterprise integrations to be hot-swapped without core modifications.
+
+- **EventEmitter Bus**: Passive observation of every turn, tool call, and state change.
+- **Pluggable Runners**: Strategy-based orchestration for multi-attempt (`pass@k`) or interactive evaluations.
+- **Interception Hooks**: Plugins can now intercept and block tool calls (`on_tool_request`) for safety or HITL.
+- **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
+
+### 🌟 Productivity Utilities
+- `doctor`: Environment health checker.
+- `report`: Rich HTML reporting with interactive Mermaid trajectories.
+- `record` & `playground`: Interaction capture and REPL experimentation.
+- `spec-to-eval`: Convert Markdown PRDs/Specs into executable JSON scenarios.
+- `scenario generate`: Interactive scaffolding for authoring tests.
 
 ### Running Tests
 
 ```bash
-pip install -r requirements-dev.txt
-pytest
+pytest tests/ -v -p no:plugin_gateway
 ```
 
 ### Environment Variables

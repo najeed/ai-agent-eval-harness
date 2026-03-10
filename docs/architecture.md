@@ -51,13 +51,15 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 |--------|------|---------|
 | CLI | `eval_runner/cli.py` | Universal entry-point (`replay`, `aes`, `import-drift`) |
 | Loader | `eval_runner/loader.py` | Multi-format dataset ingestion and v2.0 schema validation |
-| Engine | `eval_runner/engine.py` | Async evaluation loop with `run.jsonl` Flight Recorder emission |
-| Plugin Manager | `eval_runner/plugins.py`| Lifecycle hooks for Enterprise and Research metrics |
-| Tool Sandbox | `eval_runner/tool_sandbox.py`| Stateful mock executor with policy guardrails |
-| Drift Importer| `eval_runner/drift_importer.py`| Conversion of production traces into regression scenarios |
-| Triage Engine | `eval_runner/triage.py` | Automated failure categorization (Heuristic tagging) |
-| AES Core | `/spec/aes/` | JSON Schema and Documentation for agent benchmarks |
-| Metrics | `eval_runner/metrics.py` | Research-grade scoring: pass@k, Consensus, PII, and Refusal |
+| Engine | `eval_runner/engine.py` | Minimal entry point for initializing the evaluation context |
+| Runner | `eval_runner/runner.py` | Pluggable orchestration strategies (e.g., `DefaultRunner` for pass@k) |
+| Session | `eval_runner/session.py`| Handles immutable turn-contexts and conversation state management |
+| Event Hub | `eval_runner/events.py` | Centralized `EventEmitter` for decoupled, non-blocking observation |
+| Plugin Manager | `eval_runner/plugins.py`| Robust lifecycle hooks and interception for Enterprise extensions |
+| Tool Sandbox | `eval_runner/tool_sandbox.py`| Stateful mock executor with policy guardrails and observer signals |
+| Reporting | `eval_runner/reporting_plugin.py`| Decoupled report generation (HTML/Console) and triage automation |
+| Flight Recorder | `eval_runner/flight_recorder.py`| Passive event logger subscribing to the core event bus |
+| Metrics | `eval_runner/metrics.py` | Research-grade scoring: Consenus, PII, and Consistency Scoring |
 | Simulators | `eval_runner/simulators.py`| Deterministic tool shims (Git, API) for dependency-free testing |
 | Mutator | `eval_runner/mutator.py` | Adversarial Mutation Engine for robustness red-teaming |
 | Reporter | `eval_runner/reporter.py` | Consolidated console and HTML reporting with Triage integration |

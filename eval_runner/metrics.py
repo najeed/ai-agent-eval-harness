@@ -1,4 +1,5 @@
-﻿"""
+from __future__ import annotations
+"""
 metrics.py
 
 This module defines evaluation metrics for the AI Agent Evaluation Harness.

@@ -1,4 +1,5 @@
-﻿"""
+from __future__ import annotations
+"""
 loader.py
 
 This module provides utilities for loading scenario and dataset files for the AI Agent Evaluation Harness.

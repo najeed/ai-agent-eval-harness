@@ -1,24 +1,32 @@
 # AI Agent Evaluation Harness — Documentation
 
-Welcome to the docs. Start here and follow the links below.
+Welcome to the official documentation. Start with the Quick Start guide and explore the detailed manuals below.
 
-## Guides
-
-| Guide | Description |
-|-------|-------------|
-| [Evaluation Guide](guides/01_EVALUATION_GUIDE.md) | Scenario structure, metrics, async execution, schema validation |
-| [Adding an Industry](guides/02_ADDING_AN_INDUSTRY.md) | Step-by-step for contributing new industries |
-| [Core Functions Guide](guides/03_CORE_FUNCTIONS_GUIDE.md) | Reference for all 44 industries and their core functions |
-
-## Reference
+## 🏁 Getting Started
 
 | Document | Description |
-|----------|-------------|
-| [Agent API Spec](agent_api.md) | Full request/response contract for the agent endpoint |
-| [Architecture](architecture.md) | System overview, data flow, module diagram |
+|-------|-------------|
+| [Quick Start](guides/help/01_QUICK_START.md) | 60-second demo and basic setup |
+| [Comprehensive Guide](guides/help/00_COMPREHENSIVE_GUIDE.md) | Table of contents for all advanced docs |
+| [User Manual](guides/help/02_USER_MANUAL.md) | Full CLI reference and scenario guide |
+
+## 🛠 For Developers
+
+| Document | Description |
+|-------|-------------|
+| [Developer Guide](guides/help/03_DEVELOPER_GUIDE.md) | Architecture, Plugins, and Hook reference |
+| [Architecture](architecture.md) | High-level data flow and system design |
+| [Agent API Spec](agent_api.md) | Contract for agent communication |
+
+## 🏭 Industry Guides
+
+| Document | Description |
+|-------|-------------|
+| [Evaluation Guide](guides/01_EVALUATION_GUIDE.md) | Metrics and validation details |
+| [Adding an Industry](guides/02_ADDING_AN_INDUSTRY.md) | Contribution guide for new domains |
 
 ## Project Links
 
-- [README](../README.md) — Quick start
-- [CONTRIBUTING](../CONTRIBUTING.md) — How to contribute
-- [Code of Conduct](CODE_OF_CONDUCT.md) — Community guidelines
+- [Root README](../README.md)
+- [CONTRIBUTING](../CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)

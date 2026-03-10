@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 plugins.py
 
@@ -7,7 +8,7 @@ Updated to support typed contexts.
 """
 
 import importlib.metadata
-from typing import List
+from typing import List, Any
 from .context import EvaluationContext, TurnContext
 
 class BaseEvalPlugin:

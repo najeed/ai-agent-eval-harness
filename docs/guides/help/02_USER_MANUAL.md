@@ -87,10 +87,10 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness aes validate` | `path` | Validate AES benchmark YAML |
 | `eval-harness quickstart` | (none) | Run a 60-second demo (spawns agent + runs eval) |
 | `eval-harness doctor` | (none) | Check environment and dependencies |
-| `eval-harness report` | `path` | Generate rich HTML report from a run trace |
+| `eval-harness report` | `path` | Generate rich HTML report with interactive trajectory maps |
 | `eval-harness scenario generate` | (none) | Interactively bootstrap new scenarios |
-| `eval-harness record` | `--agent` | Record real-time interactions into a trace file |
-| `eval-harness playground` | `--agent` | Interactive REPL for agent experimentation |
+| `eval-harness record` | `--agent` | Capture real interactions into an executable trace |
+| `eval-harness playground` | `--agent` | Interactive REPL for rapid agent experimentation |
 | `eval-harness spec-to-eval` | `--input`, `--output` | Convert Markdown spec to scenario JSON |
 | `eval-harness import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |
 | `eval-harness mutate` | `--input`, `--type`, `--output` | Generate adversarial scenario variants |

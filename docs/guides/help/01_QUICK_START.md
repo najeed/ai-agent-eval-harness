@@ -1,59 +1,65 @@
-# 🚀 Quick Start — AI Agent Evaluation Harness
+# 🏁 Quick Start — AI Agent Evaluation Harness
 
-> Get up and running in under 5 minutes. This guide is for people who want to run an evaluation with minimal setup.
-
----
-
-## ✅ 1) Prerequisites
-
-- **Python 3.8+**
-- **pip**
-- (Optional) **Docker & docker-compose** for the full lab experience
+> Get up and running in under 60 seconds. This guide is for people who want to run an evaluation with minimal setup.
 
 ---
 
-## 🧩 2) Install & Run
+## 🚀 The 60-Second Demo
 
-### 2.1 Clone + Install
+The fastest way to see the harness in action is the `quickstart` command. It automatically handles agent setup, scenario execution, and report generation.
 
 ```bash
-git clone https://github.com/najeed/ai-agent-eval-harness.git
-cd ai-agent-eval-harness
+# 1. Install the harness
 pip install -e .
-pip install -r requirements.txt
+
+# 2. Run the Quickstart
+eval-harness quickstart
 ```
 
-### 2.2 (Optional) Start the Full Lab with Docker
-
-This spins up the harness, a sample agent, and the dashboard.
-
-```bash
-docker-compose up -d
-```
-
-### 2.3 Run a Quick Evaluation
-
-Use a built-in industry scenario set (e.g., `telecom`):
-
-```bash
-eval-harness evaluate --path industries/telecom --export
-```
-
-> ✅ Output is generated under `reports/` (JSON, trajectories, heatmaps).
+**What happens:**
+1. Spawns a sample agent server in the background.
+2. Executes a telecom troubleshooting evaluation.
+3. Generates a visual HTML report in `reports/`.
+4. Shuts down the agent automatically.
 
 ---
 
-## 🧪 3) Run a Single Scenario (Fast Feedback)
+## 🛠 Manual Setup (The "Standard" Way)
 
-Run one scenario file and get immediate output:
+If you're ready to integrate your own agent, follow these steps.
 
+### 1. Start your Agent
+Ensure your agent is running and accessible via an HTTP endpoint.
 ```bash
-eval-harness run scenarios/starter_scenario.json
+# Example (starting the sample agent)
+python sample_agent/agent_app.py
+```
+
+### 2. Configure Environment
+Set the `AGENT_API_URL` to point to your agent.
+```bash
+# Windows
+set AGENT_API_URL=http://localhost:5001/execute_task
+```
+
+### 3. Run an Evaluation
+```bash
+eval-harness evaluate --path industries/telecom
 ```
 
 ---
 
-## 🔍 4) Replay a Run Trace
+## 📊 Viewing Results
+
+After the run, you'll see a summary in the console and detailed logs in:
+- `reports/latest_results.json`
+- `runs/run.jsonl` (Flight Recorder)
+- `reports/trajectories/` (Visual flows)
+- `reports/report_<id>.html` (Rich Visual Report)
+
+---
+
+## 🔍 Replay a Run Trace
 
 Inspect exactly what happened during an evaluation (agent prompts, tool calls, metrics):
 
@@ -63,12 +69,13 @@ eval-harness replay --path runs/run.jsonl
 
 ---
 
-## ⚙️ 5) Useful Environment Variables
+## ⚙️ Useful Environment Variables
 
 | Variable | Default | Purpose |
 |---|---|---|
 | `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint URL |
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
+| `RUN_LOG_DIR` | `runs` | Directory for execution traces |
 
 ---
 

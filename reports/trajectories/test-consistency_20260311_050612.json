@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "scenario_id": "test-consistency",
+    "title": null,
+    "industry": null,
+    "timestamp": "20260311_050612"
+  },
+  "results": [
+    {
+      "task_id": "task-1",
+      "attempt": 1,
+      "turns_taken": 1,
+      "conversation_history": [
+        {
+          "role": "agent",
+          "content": {
+            "action": "final_answer",
+            "summary": "Identical result"
+          }
+        }
+      ],
+      "metrics": [],
+      "triage_tag": "SUCCESS"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """
 spec_parser.py
 
