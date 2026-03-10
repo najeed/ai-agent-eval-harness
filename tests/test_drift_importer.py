@@ -22,7 +22,7 @@ def test_import_trace_as_scenario(tmp_path):
     # Verify output
     assert scenario_path.exists()
     with open(scenario_path, "r") as f:
-        scenario = json.load(f)
+        scenario = json.loads(f.read())
     
     assert scenario["version"] == "2.0.0"
     assert scenario["industry"] == "telecom"

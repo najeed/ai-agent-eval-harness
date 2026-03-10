@@ -53,7 +53,7 @@ selected_file = st.sidebar.selectbox("Select Evaluation Run", files, format_func
 
 # Load data
 with open(selected_file, "r") as f:
-    data = json.load(f)
+    data = json.loads(f.read())
 
 metadata = data.get("metadata", {})
 results = data.get("results", [])

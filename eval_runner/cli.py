@@ -43,6 +43,9 @@ def main():
     eval_parser.add_argument(
         "--limit", type=int, help="Limit the number of scenarios to run"
     )
+    eval_parser.add_argument(
+        "--attempts", type=int, default=1, help="Number of attempts per scenario (for pass@k)"
+    )
     
     # Plugin Argument Groups: Provide a dedicated space for plugins to add their args
     # We pass the eval_parser to plugins so they can add their own argument groups
@@ -66,6 +69,12 @@ def main():
     drift_parser.add_argument("--industry", required=True, help="Industry category")
     drift_parser.add_argument("--output-dir", help="Directory to save scenarios")
 
+    # --- MUTATE COMMAND ---
+    mutate_parser = subparsers.add_parser("mutate", help="Generate adversarial variants of a scenario")
+    mutate_parser.add_argument("--input", required=True, help="Path to scenario.json")
+    mutate_parser.add_argument("--type", choices=["typos", "ambiguity", "injection"], default="typos", help="Mutation type")
+    mutate_parser.add_argument("--output", help="Output path for mutated scenario")
+
     args = parser.parse_args()
 
     if args.command == "evaluate":
@@ -86,6 +95,8 @@ def main():
             handle_aes_validate(args)
     elif args.command == "replay":
         handle_replay(args)
+    elif args.command == "mutate":
+        handle_mutate(args)
     else:
         parser.print_help()
 
@@ -185,16 +196,50 @@ async def run_evaluate(args):
     
     all_results = []
     for i, scenario in enumerate(scenarios):
-        print(f"\n[{i+1}/{len(scenarios)}] Scenario: {scenario.get('title', 'Untitled')}")
-        results = await engine.run_evaluation(scenario)
-        all_results.extend(results)
+        attempts = getattr(args, "attempts", 1)
+        scenario_tries = []
         
-        # Apply Triage to results
-        from . import triage
-        triage.TriageEngine.apply_triage(results)
+        for attempt in range(attempts):
+            print(f"\n[{i+1}/{len(scenarios)}] Attempt {attempt+1}/{attempts} - Scenario: {scenario.get('title', 'Untitled')}")
+            results = await engine.run_evaluation(scenario)
+            scenario_tries.append(results)
+            
+            # Apply Triage to results
+            from . import triage
+            triage.TriageEngine.apply_triage(results)
+            
+            # Use the standard reporter to print results for each attempt
+            reporter.generate_report(scenario, results, export_trajectory=True)
         
-        # Use the standard reporter to print results for each scenario
-        reporter.generate_report(scenario, results, export_trajectory=True)
+        # Calculate pass@k and Consistency if multiple attempts
+        if attempts > 1:
+            success_flags = [all(all(m["success"] for m in tr["metrics"]) for tr in tries) for tries in scenario_tries]
+            successes = sum(1 for f in success_flags if f)
+            pass_at_k = 1.0 if successes > 0 else 0.0
+            
+            # Outcome Stability (Consistency)
+            # 1. Success Consistency: are the results stable (all pass or all fail)?
+            success_consistency = successes / attempts if successes > attempts / 2 else (attempts - successes) / attempts
+            
+            # 2. Semantic Consistency: do the summaries agree?
+            from . import metrics
+            summaries = []
+            for tries in scenario_tries:
+                # Get the summary from the last task's last agent response
+                if tries and tries[-1].get("conversation_history"):
+                    last_msg = tries[-1]["conversation_history"][-1]
+                    if last_msg.get("role") == "agent":
+                        content = last_msg.get("content", {})
+                        summaries.append(content.get("summary") or content.get("content") or str(content))
+            
+            semantic_consistency = metrics.calculate_consensus_scoring(summaries) if len(summaries) > 1 else 1.0
+            
+            print(f"\n📊 [Research] Scenario {scenario.get('scenario_id')}:")
+            print(f"   - pass@{attempts}: {pass_at_k:.2f} ({successes}/{attempts} successes)")
+            print(f"   - Success Consistency: {success_consistency:.2f}")
+            print(f"   - Semantic Stability: {semantic_consistency:.2f}")
+            
+        all_results.extend([res for tries in scenario_tries for res in tries])
 
 def detect_framework():
     """Simple heuristic to detect the agent framework used in the current dir."""
@@ -304,6 +349,27 @@ def handle_import_drift(args):
         print(f"âœ… Successfully imported drift from {input_path} to {output_file}")
     except Exception as e:
         print(f"â Œ Error importing drift: {e}")
+
+def handle_mutate(args):
+    """Handler for 'mutate' command."""
+    from . import mutator
+    input_path = Path(args.input)
+    if not input_path.exists():
+        print(f"â Œ Error: Input scenario not found at {input_path}")
+        return
+        
+    with open(input_path, "r", encoding="utf-8") as f:
+        scenario = json.loads(f.read())
+        
+    mutated = mutator.mutate_scenario(scenario, args.type)
+    
+    if args.output:
+        output_path = Path(args.output)
+    else:
+        output_path = input_path.parent / f"{input_path.stem}_{args.type}.json"
+        
+    mutator.save_mutated_scenario(mutated, output_path)
+    print(f"âœ… Mutated scenario saved to {output_path}")
 
 if __name__ == "__main__":
     main()

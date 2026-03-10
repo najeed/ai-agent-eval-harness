@@ -93,6 +93,13 @@ class ToolSandbox(AbstractSandbox):
         all_tool_defs = self.scenario.get("tools", {})
         tool_def = all_tool_defs.get(tool_name, {})
         
+        # 2. Check for Built-in Simulators (v3)
+        if not tool_def:
+            from . import simulators
+            for sim_name, simulator in simulators.SIMULATOR_REGISTRY.items():
+                if tool_name.startswith(f"{sim_name}_"):
+                    return simulator.execute(tool_name, params)
+
         # Record hit for Tool/KB access
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
 
