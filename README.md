@@ -34,12 +34,15 @@ The harness is organized into two main parts:
     -   `tool_sandbox.py` — Stateful mock tool executor with governance policy enforcement
     -   `loader.py` — Universal Dataset Loader (JSONL, CSV, JSON v2)
     -   `spec_parser.py` — Markdown PRD to Scenario parser
+    -   `drift_importer.py` — Production trace to scenario converter
+    -   `triage.py` — Heuristic-based failure categorization
     -   `metrics.py` — Pluggable Metric Registry for easy extension
     -   `plugins.py` — Plugin Manager for Lifecycle Hooks
     -   `coverage_reporter.py` — HTML Heatmap generation
     -   `context.py` — Typed `EvaluationContext` and `TurnContext`
-    -   `reporter.py` — Console and Trajectory report generation
+    -   `reporter.py` — Console, Trajectory, and Triage report generation
 -   `/sample_agent`: A rule-based Flask agent for the telecom scenario.
+-   `/spec/aes`: **Agent Eval Specification (Foundational)**
 -   `/schemas`: JSON Schema definitions for scenario validation.
 -   `/tests`: Comprehensive test suite including stateful execution and governance policies.
 -   `/docs`: Architecture, API specs, and evaluation guides.
@@ -77,10 +80,13 @@ The harness is organized into two main parts:
     The `--export` flag will generate a detailed JSON trajectory in the `reports/trajectories/` directory.
 
 ### Advanced Features
+- **AES Specification (Foundational)**: Industry-standard format for shareable benchmarks (AES v0.1).
 - **Universal Plugin Architecture**: Extend the engine without touching the core. Register custom Metrics, Loaders, or Agent Adapters via `entry_points`.
 - **Lifecycle Hooks**: Inject logic at key stages: `before_evaluation`, `on_turn_end`, and `after_evaluation`.
 - **Path Parsimony**: Evaluations automatically score agents on efficiency (fewer turns = higher score).
 - **Trajectory Visualization**: Failed tasks include a Mermaid decision tree in the report to help debug "wrong turns."
+- **Edge-Case Triage**: Automatically categorize failures (e.g., `CONNECTION_ERROR`, `POLICY_VIOLATION`) using the built-in Triage Library.
+- **Drift Management**: Import production traces directly as regression test cases using `import-drift`.
 
 ### Running Tests
 

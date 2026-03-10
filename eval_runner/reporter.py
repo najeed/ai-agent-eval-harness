@@ -112,7 +112,7 @@ def generate_report(scenario: dict, results: list, export_trajectory: bool = Fal
             status = "SUCCESS"
             successful_tasks += 1
         else:
-            status = "FAILURE"
+            status = f"FAILURE [{task_result.get('triage_tag', 'UNKNOWN')}]"
 
         print(f"\nTask: {task_id} [{status}]")
 

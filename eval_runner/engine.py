@@ -9,6 +9,8 @@ import os
 import json
 import aiohttp
 import asyncio
+from pathlib import Path
+from datetime import datetime
 from typing import Dict, Any, List, Optional, Callable
 from . import plugins
 from . import metrics
@@ -49,6 +51,19 @@ async def run_evaluation(scenario: dict) -> list:
         scenario_data=scenario
     )
 
+    # Flight Recorder setup
+    run_id = f"run-{ctx.scenario_id}-{int(asyncio.get_event_loop().time())}"
+    report_dir = Path("runs")
+    report_dir.mkdir(parents=True, exist_ok=True)
+    jsonl_path = report_dir / "run.jsonl"
+    
+    def emit_event(event_data: dict):
+        event_data["timestamp"] = datetime.now().isoformat() + "Z"
+        with open(jsonl_path, "a") as f:
+            f.write(json.dumps(event_data) + "\n")
+
+    emit_event({"event": "run_start", "run_id": run_id, "scenario": ctx.scenario_id})
+
     # Lifecycle Hook: before_evaluation
     plugins.manager.trigger("before_evaluation", ctx)
     
@@ -65,6 +80,11 @@ async def run_evaluation(scenario: dict) -> list:
             current_message = task.get("description") or ""
             turns_taken = 0
             agent_actions: Dict[str, Any] = {"used_tools": []}
+
+            # Emit initial prompts
+            if "system_prompt" in scenario.get("task", {}):
+                 emit_event({"event": "prompt", "role": "system", "content": scenario["task"]["system_prompt"]})
+            emit_event({"event": "prompt", "role": "user", "content": current_message})
 
             for turn in range(1, MAX_TURNS + 1):
                 # Build Turn Context
@@ -84,8 +104,16 @@ async def run_evaluation(scenario: dict) -> list:
                     agent_response = await AgentAdapterRegistry.call_agent(payload)
                     turns_taken += 1
                     turn_ctx.agent_response = agent_response
+                    
+                    emit_event({
+                        "event": "agent_response", 
+                        "step": turn, 
+                        "content": agent_response.get("content") or agent_response.get("summary") or str(agent_response)
+                    })
                 except Exception as e:
                     print(f"         [Engine] Communication error: {e}")
+                    conversation_history.append({"role": "system", "content": {"status": "error", "message": f"Communication Error: {str(e)}"}})
+                    emit_event({"event": "error", "message": str(e)})
                     break
 
                 # Lifecycle Hook: on_turn_end
@@ -97,10 +125,15 @@ async def run_evaluation(scenario: dict) -> list:
                 if action == "call_tool" and "tool_name" in agent_response:
                     tool_name = agent_response["tool_name"]
                     tool_params = agent_response.get("tool_params", {})
+                    
+                    emit_event({"event": "tool_call", "step": turn, "tool": tool_name, "arguments": tool_params})
+                    
                     agent_actions["used_tools"].append(tool_name)
                     state_before = sandbox.state.copy()
                     tool_result = sandbox.execute(tool_name, tool_params)
                     state_after = sandbox.state.copy()
+
+                    emit_event({"event": "tool_result", "step": turn, "tool": tool_name, "result": tool_result})
 
                     if tool_result.get("status") == "policy_violation":
                         violation_msg = tool_result.get("violation", "Unknown policy violation")
@@ -120,9 +153,17 @@ async def run_evaluation(scenario: dict) -> list:
                 elif action == "call_multiple_tools" and "tool_names" in agent_response:
                     tool_names = agent_response["tool_names"]
                     agent_actions["used_tools"].extend(tool_names)
+                    
+                    for tn in tool_names:
+                        emit_event({"event": "tool_call", "step": turn, "tool": tn, "arguments": {}})
+                    
                     state_before = sandbox.state.copy()
                     all_tool_results = [sandbox.execute(tn, {}) for tn in tool_names]
                     state_after = sandbox.state.copy()
+                    
+                    for i, tn in enumerate(tool_names):
+                        emit_event({"event": "tool_result", "step": turn, "tool": tn, "result": all_tool_results[i]})
+
                     conversation_history.append({
                         "role": "environment", "content": all_tool_results,
                         "state_before": state_before, "state_after": state_after
@@ -174,6 +215,8 @@ async def run_evaluation(scenario: dict) -> list:
                 task_results["metrics"].append({
                     "metric": m_name, "score": score, "threshold": threshold, "success": score >= threshold
                 })
+                
+                emit_event({"event": "evaluation", "metric": m_name, "value": score})
 
             all_task_results.append(task_results)
 
@@ -183,4 +226,8 @@ async def run_evaluation(scenario: dict) -> list:
 
     # Lifecycle Hook: after_evaluation
     plugins.manager.trigger("after_evaluation", ctx, all_task_results)
+    
+    overall_status = "success" if all(all(m["success"] for m in tr["metrics"]) for tr in all_task_results) else "failure"
+    emit_event({"event": "run_end", "status": overall_status, "total_steps": sum(tr["turns_taken"] for tr in all_task_results)})
+    
     return all_task_results

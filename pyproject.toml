@@ -3,6 +3,7 @@ name = "eval_runner"
 version = "0.1.0"
 dependencies = [
     "jsonschema",
+    "PyYAML",
     "sentence-transformers",
     "numpy"
 ]

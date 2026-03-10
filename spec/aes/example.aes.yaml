@@ -1,0 +1,18 @@
+aes_version: "0.1"
+metadata:
+  name: "Standard Customer Support Benchmark"
+  description: "A suite of tasks to evaluate basic customer support capabilities."
+  author: "OpenCore Contributors"
+  tags: ["support", "multi-turn", "retail"]
+
+scenarios:
+  - scenario_id: "refund_request_001"
+    title: "Simple Refund Policy Check"
+    tasks:
+      - task_id: "check_policy"
+        description: "The user wants to know the refund policy for electronics."
+        success_criteria:
+          - metric: "generic_accuracy"
+            threshold: 0.8
+          - metric: "policy_compliance"
+            threshold: 1.0

@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "scenario_id": "drift-e2b982bb",
+    "title": "Imported Drift: sample_trace.json",
+    "industry": "telecom",
+    "timestamp": "20260310_083927"
+  },
+  "results": [
+    {
+      "task_id": "imported_task_1",
+      "turns_taken": 0,
+      "conversation_history": [
+        {
+          "role": "system",
+          "content": {
+            "status": "error",
+            "message": "Communication Error: Cannot connect to host localhost:5001 ssl:default [The remote computer refused the network connection]"
+          }
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "generic_accuracy",
+          "score": 0.0,
+          "threshold": 0.5,
+          "success": false
+        },
+        {
+          "metric": "policy_compliance",
+          "score": 1.0,
+          "threshold": 0.5,
+          "success": true
+        },
+        {
+          "metric": "path_parsimony",
+          "score": 1.0,
+          "threshold": 0.5,
+          "success": true
+        }
+      ],
+      "triage_tag": "CONNECTION_ERROR"
+    }
+  ]
+}

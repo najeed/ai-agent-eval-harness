@@ -1,0 +1,245 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Agent Eval Specification v0.1 (Refined)",
+    "type": "object",
+    "required": [
+        "aes_version",
+        "metadata",
+        "task",
+        "evaluation"
+    ],
+    "properties": {
+        "aes_version": {
+            "type": "number"
+        },
+        "metadata": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "difficulty": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "environment": {
+            "type": "object",
+            "properties": {
+                "simulator": {
+                    "type": "string"
+                },
+                "max_steps": {
+                    "type": "integer"
+                },
+                "timeout_seconds": {
+                    "type": "integer"
+                },
+                "hooks": {
+                    "type": "object",
+                    "properties": {
+                        "pre_eval": {
+                            "type": "string"
+                        },
+                        "post_eval": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "agent": {
+            "type": "object",
+            "properties": {
+                "entrypoint": {
+                    "type": "string"
+                },
+                "framework": {
+                    "type": "string"
+                },
+                "tools": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "name"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "parameters": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "task": {
+            "type": "object",
+            "properties": {
+                "system_prompt": {
+                    "type": "string"
+                },
+                "user_prompt": {
+                    "type": "string"
+                }
+            }
+        },
+        "expected_outcome": {
+            "type": "object"
+        },
+        "expected_state": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "path",
+                    "assertion"
+                ],
+                "properties": {
+                    "path": {
+                        "type": "string"
+                    },
+                    "assertion": {
+                        "type": "string"
+                    },
+                    "filter": {
+                        "type": "object"
+                    }
+                }
+            }
+        },
+        "evaluation": {
+            "type": "object",
+            "properties": {
+                "success_criteria": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "type"
+                        ],
+                        "properties": {
+                            "type": {
+                                "type": "string"
+                            },
+                            "metric": {
+                                "type": "string"
+                            },
+                            "threshold": {
+                                "type": "number"
+                            },
+                            "tool": {
+                                "type": "string"
+                            },
+                            "text": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "metrics": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "params": {
+                        "type": "object"
+                    },
+                    "weight": {
+                        "type": "number"
+                    }
+                }
+            }
+        },
+        "policies": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "description"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "severity": {
+                        "type": "string",
+                        "enum": [
+                            "LOW",
+                            "MEDIUM",
+                            "HIGH",
+                            "CRITICAL"
+                        ]
+                    }
+                }
+            }
+        },
+        "reference_trajectory": {
+            "type": "array",
+            "items": {
+                "type": "object"
+            }
+        },
+        "mutations": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "variants": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "reporting": {
+            "type": "object",
+            "properties": {
+                "save_run_trace": {
+                    "type": "boolean"
+                },
+                "emit_run_jsonl": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,104 @@
+{"event": "run_start", "run_id": "run-drift-e2b982bb-142585", "scenario": "drift-e2b982bb", "timestamp": "2026-03-10T08:42:41.605240Z"}
+{"event": "prompt", "role": "user", "content": "Replay production trace and verify outcome.", "timestamp": "2026-03-10T08:42:41.606328Z"}
+{"event": "error", "message": "Cannot connect to host localhost:5001 ssl:default [The remote computer refused the network connection]", "timestamp": "2026-03-10T08:42:43.916900Z"}
+{"event": "evaluation", "metric": "generic_accuracy", "value": 0.0, "timestamp": "2026-03-10T08:42:43.917638Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:42:43.917910Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "timestamp": "2026-03-10T08:42:43.921324Z"}
+{"event": "run_end", "status": "failure", "total_steps": 0, "timestamp": "2026-03-10T08:42:43.922823Z"}
+{"event": "run_start", "run_id": "run-test-scenario-143043", "scenario": "test-scenario", "timestamp": "2026-03-10T08:50:19.597575Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T08:50:19.598823Z"}
+{"event": "agent_response", "step": 1, "content": "Called tool_a.", "timestamp": "2026-03-10T08:50:19.599131Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}, "timestamp": "2026-03-10T08:50:19.599431Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T08:50:19.599597Z"}
+{"event": "agent_response", "step": 2, "content": "Task complete.", "timestamp": "2026-03-10T08:50:19.599771Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 1.0, "timestamp": "2026-03-10T08:50:19.600019Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:19.600191Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "timestamp": "2026-03-10T08:50:19.600399Z"}
+{"event": "run_end", "status": "success", "total_steps": 2, "timestamp": "2026-03-10T08:50:19.601258Z"}
+{"event": "run_start", "run_id": "run-test-scenario-143043", "scenario": "test-scenario", "timestamp": "2026-03-10T08:50:19.604720Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T08:50:19.605226Z"}
+{"event": "agent_response", "step": 1, "content": "Ran both tools.", "timestamp": "2026-03-10T08:50:19.605625Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_a", "arguments": {}, "timestamp": "2026-03-10T08:50:19.605883Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_b", "arguments": {}, "timestamp": "2026-03-10T08:50:19.606035Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T08:50:19.606168Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_b", "result": {"status": "success", "message": "Executed tool_b"}, "timestamp": "2026-03-10T08:50:19.606313Z"}
+{"event": "agent_response", "step": 2, "content": "All done.", "timestamp": "2026-03-10T08:50:19.606454Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 1.0, "timestamp": "2026-03-10T08:50:19.606699Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:19.606851Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "timestamp": "2026-03-10T08:50:19.606984Z"}
+{"event": "run_end", "status": "success", "total_steps": 2, "timestamp": "2026-03-10T08:50:19.607802Z"}
+{"event": "run_start", "run_id": "run-test-scenario-143043", "scenario": "test-scenario", "timestamp": "2026-03-10T08:50:19.611952Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T08:50:19.612367Z"}
+{"event": "agent_response", "step": 1, "content": "I already know the answer.", "timestamp": "2026-03-10T08:50:19.612600Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 0.0, "timestamp": "2026-03-10T08:50:19.612867Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:19.613023Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "timestamp": "2026-03-10T08:50:19.613179Z"}
+{"event": "run_end", "status": "failure", "total_steps": 1, "timestamp": "2026-03-10T08:50:19.613856Z"}
+{"event": "run_start", "run_id": "run-test-scenario-143043", "scenario": "test-scenario", "timestamp": "2026-03-10T08:50:19.616951Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T08:50:19.617356Z"}
+{"event": "agent_response", "step": 1, "content": "Turn 0", "timestamp": "2026-03-10T08:50:19.617588Z"}
+{"event": "tool_call", "step": 1, "tool": "tool_a", "arguments": {}, "timestamp": "2026-03-10T08:50:19.617808Z"}
+{"event": "tool_result", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T08:50:19.617954Z"}
+{"event": "agent_response", "step": 2, "content": "Turn 1", "timestamp": "2026-03-10T08:50:19.618105Z"}
+{"event": "tool_call", "step": 2, "tool": "tool_a", "arguments": {}, "timestamp": "2026-03-10T08:50:19.618299Z"}
+{"event": "tool_result", "step": 2, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}, "timestamp": "2026-03-10T08:50:19.618439Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 1.0, "timestamp": "2026-03-10T08:50:19.618607Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:19.618740Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.0, "timestamp": "2026-03-10T08:50:19.618888Z"}
+{"event": "run_end", "status": "failure", "total_steps": 2, "timestamp": "2026-03-10T08:50:19.619517Z"}
+{"event": "run_start", "run_id": "run-test-scenario-143043", "scenario": "test-scenario", "timestamp": "2026-03-10T08:50:19.623010Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T08:50:19.623437Z"}
+{"event": "error", "message": "Connection Error", "timestamp": "2026-03-10T08:50:19.623709Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 0.0, "timestamp": "2026-03-10T08:50:19.623887Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:19.624026Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "timestamp": "2026-03-10T08:50:19.624147Z"}
+{"event": "run_end", "status": "failure", "total_steps": 0, "timestamp": "2026-03-10T08:50:19.624782Z"}
+{"event": "run_start", "run_id": "run-test-scenario-143043", "scenario": "test-scenario", "timestamp": "2026-03-10T08:50:19.628098Z"}
+{"event": "prompt", "role": "user", "content": "Do the thing.", "timestamp": "2026-03-10T08:50:19.628508Z"}
+{"event": "error", "message": "", "timestamp": "2026-03-10T08:50:19.628781Z"}
+{"event": "evaluation", "metric": "tool_call_correctness", "value": 0.0, "timestamp": "2026-03-10T08:50:19.630305Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:19.630709Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "timestamp": "2026-03-10T08:50:19.630882Z"}
+{"event": "run_end", "status": "failure", "total_steps": 0, "timestamp": "2026-03-10T08:50:19.631844Z"}
+{"event": "run_start", "run_id": "run-accuracy-test-143043", "scenario": "accuracy-test", "timestamp": "2026-03-10T08:50:19.635710Z"}
+{"event": "prompt", "role": "user", "content": "Retrieve info.", "timestamp": "2026-03-10T08:50:19.636143Z"}
+{"event": "agent_response", "step": 1, "content": "The customer is on the 100 Mbps plan.", "timestamp": "2026-03-10T08:50:19.636366Z"}
+{"event": "evaluation", "metric": "information_retrieval_accuracy", "value": 1.0, "timestamp": "2026-03-10T08:50:19.636614Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:19.636781Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "timestamp": "2026-03-10T08:50:19.636905Z"}
+{"event": "run_end", "status": "success", "total_steps": 1, "timestamp": "2026-03-10T08:50:19.638096Z"}
+{"event": "run_start", "run_id": "run-clarity-test-143043", "scenario": "clarity-test", "timestamp": "2026-03-10T08:50:19.655865Z"}
+{"event": "prompt", "role": "user", "content": "Explain the issue.", "timestamp": "2026-03-10T08:50:19.656341Z"}
+{"event": "agent_response", "step": 1, "content": "The issue is with the customer's local Wi-Fi network.", "timestamp": "2026-03-10T08:50:19.656568Z"}
+{"event": "evaluation", "metric": "communication_clarity", "value": 1.0, "timestamp": "2026-03-10T08:50:19.656826Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:19.656983Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 1.0, "timestamp": "2026-03-10T08:50:19.657112Z"}
+{"event": "run_end", "status": "success", "total_steps": 1, "timestamp": "2026-03-10T08:50:19.658093Z"}
+{"event": "run_start", "run_id": "run-policy-test-143043", "scenario": "policy-test", "timestamp": "2026-03-10T08:50:19.673328Z"}
+{"event": "prompt", "role": "user", "content": "", "timestamp": "2026-03-10T08:50:19.673841Z"}
+{"event": "agent_response", "step": 1, "content": "Trying refund.", "timestamp": "2026-03-10T08:50:19.674114Z"}
+{"event": "tool_call", "step": 1, "tool": "apply_refund", "arguments": {"amount": 100}, "timestamp": "2026-03-10T08:50:19.674445Z"}
+{"event": "tool_result", "step": 1, "tool": "apply_refund", "result": {"status": "policy_violation", "violation": "Amount 100 exceeds limit of 50"}, "timestamp": "2026-03-10T08:50:19.674642Z"}
+{"event": "agent_response", "step": 2, "content": "Limited the refund to 50.", "timestamp": "2026-03-10T08:50:19.674822Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 0.0, "timestamp": "2026-03-10T08:50:19.675077Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "timestamp": "2026-03-10T08:50:19.675230Z"}
+{"event": "run_end", "status": "failure", "total_steps": 2, "timestamp": "2026-03-10T08:50:19.675987Z"}
+{"event": "run_start", "run_id": "run-state-test-143044", "scenario": "state-test", "timestamp": "2026-03-10T08:50:19.679547Z"}
+{"event": "prompt", "role": "user", "content": "", "timestamp": "2026-03-10T08:50:19.679957Z"}
+{"event": "agent_response", "step": 1, "content": "Updating plan.", "timestamp": "2026-03-10T08:50:19.680223Z"}
+{"event": "tool_call", "step": 1, "tool": "update_plan", "arguments": {"current_plan": "Premium"}, "timestamp": "2026-03-10T08:50:19.680456Z"}
+{"event": "tool_result", "step": 1, "tool": "update_plan", "result": {"status": "success"}, "timestamp": "2026-03-10T08:50:19.680606Z"}
+{"event": "agent_response", "step": 2, "content": "Plan updated.", "timestamp": "2026-03-10T08:50:19.680752Z"}
+{"event": "evaluation", "metric": "state_verification", "value": 1.0, "timestamp": "2026-03-10T08:50:19.680979Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:19.681123Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "timestamp": "2026-03-10T08:50:19.681239Z"}
+{"event": "run_end", "status": "success", "total_steps": 2, "timestamp": "2026-03-10T08:50:19.681934Z"}
+{"event": "run_start", "run_id": "run-test_m4-143053", "scenario": "test_m4", "timestamp": "2026-03-10T08:50:28.869682Z"}
+{"event": "prompt", "role": "user", "content": "Call update_status", "timestamp": "2026-03-10T08:50:28.870136Z"}
+{"event": "agent_response", "step": 1, "content": "{'action': 'call_tool', 'tool_name': 'update_status', 'tool_params': {'status': 'active'}}", "timestamp": "2026-03-10T08:50:28.870365Z"}
+{"event": "tool_call", "step": 1, "tool": "update_status", "arguments": {"status": "active"}, "timestamp": "2026-03-10T08:50:28.870608Z"}
+{"event": "tool_result", "step": 1, "tool": "update_status", "result": {"status": "success"}, "timestamp": "2026-03-10T08:50:28.870774Z"}
+{"event": "agent_response", "step": 2, "content": "Done", "timestamp": "2026-03-10T08:50:28.870937Z"}
+{"event": "evaluation", "metric": "policy_compliance", "value": 1.0, "timestamp": "2026-03-10T08:50:28.871133Z"}
+{"event": "evaluation", "metric": "path_parsimony", "value": 0.75, "timestamp": "2026-03-10T08:50:28.871292Z"}
+{"event": "run_end", "status": "success", "total_steps": 2, "timestamp": "2026-03-10T08:50:28.872005Z"}

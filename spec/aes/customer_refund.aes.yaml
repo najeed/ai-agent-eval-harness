@@ -1,0 +1,94 @@
+aes_version: 0.1
+
+metadata:
+  name: airline_refund_scenario
+  description: Evaluate agent ability to process airline refunds
+  author: eval-harness
+  tags:
+    - customer-support
+    - refunds
+    - tool-use
+  difficulty: medium
+
+environment:
+  simulator: airline_support_env:v1
+  max_steps: 10
+  timeout_seconds: 60
+  hooks:
+    pre_eval: "scripts/db_reset.sh --seed airline_data"
+    post_eval: "scripts/cleanup.py"
+
+agent:
+  entrypoint: agents/refund_agent.py
+  framework: langchain
+  tools:
+    - name: refund_api
+      description: Processes a refund for a given flight.
+      parameters:
+        type: object
+        properties:
+          flight_number: { type: string }
+          reason: { type: string }
+    - name: flight_db
+      description: Query flight status.
+    - name: policy_search
+      description: Search company refund policies.
+
+task:
+  system_prompt: |
+    You are a helpful airline support agent.
+    Resolve the user's request according to company policy.
+
+  user_prompt: |
+    My flight UA483 was cancelled and I want a refund.
+
+expected_outcome:
+  refund_processed: true
+  policy_reference: required
+
+expected_state:
+  - path: "sql://refunds"
+    assertion: "exists"
+    filter: { flight: "UA483" }
+
+evaluation:
+  success_criteria:
+    - type: tool_called
+      tool: refund_api
+
+    - type: factual_reference
+      source: policy_search
+
+    - type: output_contains
+      text: "refund has been issued"
+
+metrics:
+  - name: success_rate
+    weight: 2.0
+  - name: trajectory_efficiency
+    weight: 1.0
+  - name: tool_rationality
+    params:
+      strict_mode: true
+  - name: latency
+  - name: token_cost
+
+policies:
+  - id: p1
+    description: "Never disclose customer PII to unauthorized roles."
+    severity: CRITICAL
+
+reference_trajectory:
+  - { event: "agent_response", content: "Checking flight status..." }
+  - { event: "tool_call", tool: "flight_db", arguments: { flight: "UA483" } }
+
+mutations:
+  enabled: true
+  variants:
+    - angry_user
+    - ambiguous_request
+    - typo_in_flight_number
+
+reporting:
+  save_run_trace: true
+  emit_run_jsonl: true

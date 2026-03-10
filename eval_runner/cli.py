@@ -48,16 +48,16 @@ def main():
     # We pass the eval_parser to plugins so they can add their own argument groups
     plugins.manager.trigger("extend_cli", eval_parser)
     
-    # --- INIT COMMAND ---
-    subparsers.add_parser("init", help="Initialize a new evaluation project")
+    # --- AES COMMAND ---
+    aes_parser = subparsers.add_parser("aes", help="Agent Eval Specification (AES) utilities")
+    aes_subparsers = aes_parser.add_subparsers(dest="aes_command", help="AES subcommands")
     
-    # --- LIST-METRICS COMMAND ---
-    subparsers.add_parser("list-metrics", help="List registered evaluation metrics")
+    validate_parser = aes_subparsers.add_parser("validate", help="Validate an AES benchmark file")
+    validate_parser.add_argument("path", help="Path to .aes.yaml file or directory")
 
-    # --- SPEC-TO-EVAL COMMAND ---
-    spec_parser = subparsers.add_parser("spec-to-eval", help="Convert Markdown PRD to Scenario JSON")
-    spec_parser.add_argument("--input", required=True, help="Path to Markdown PRD")
-    spec_parser.add_argument("--output", help="Output JSON path (optional)")
+    # --- REPLAY COMMAND ---
+    replay_parser = subparsers.add_parser("replay", help="Replay an agent execution from run.jsonl")
+    replay_parser.add_argument("path", help="Path to run.jsonl file")
 
     args = parser.parse_args()
 
@@ -72,8 +72,93 @@ def main():
             print(f" - {name}")
     elif args.command == "spec-to-eval":
         handle_spec_to_eval(args)
+    elif args.command == "import-drift":
+        handle_import_drift(args)
+    elif args.command == "aes":
+        if args.aes_command == "validate":
+            handle_aes_validate(args)
+    elif args.command == "replay":
+        handle_replay(args)
     else:
         parser.print_help()
+
+def handle_aes_validate(args):
+    """Handler for 'aes validate' command."""
+    import yaml
+    import jsonschema
+    from pathlib import Path
+
+    schema_path = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
+    if not schema_path.exists():
+        print(f"❌ Error: AES schema not found at {schema_path}")
+        return
+
+    with open(schema_path, "r") as f:
+        schema = json.load(f)
+
+    path = Path(args.path)
+    files = []
+    if path.is_dir():
+        files = list(path.glob("*.aes.yaml"))
+    else:
+        files = [path]
+
+    if not files:
+        print(f"❌ No .aes.yaml files found at {path}")
+        return
+
+    for file_path in files:
+        try:
+            with open(file_path, "r") as f:
+                data = yaml.safe_load(f)
+            
+            jsonschema.validate(instance=data, schema=schema)
+            print(f"✅ {file_path.name}: Valid")
+        except jsonschema.exceptions.ValidationError as e:
+            print(f"❌ {file_path.name}: Invalid")
+            print(f"   Reason: {e.message}")
+        except Exception as e:
+            print(f"❌ {file_path.name}: Error: {e}")
+
+def handle_replay(args):
+    """Handler for 'replay' command."""
+    print(f"\n[Replay] Reconstructing execution from: {args.path}")
+    path = Path(args.path)
+    if not path.exists():
+        print(f"❌ Error: Replay file not found at {path}")
+        return
+
+    with open(path, "r") as f:
+        for line in f:
+            event = json.loads(line)
+            ev_type = event.get("event", "unknown")
+            timestamp = event.get("timestamp", "")
+            
+            if ev_type == "run_start":
+                print(f"--- Run Started: {event.get('run_id')} ({event.get('scenario')}) ---")
+            elif ev_type == "prompt":
+                role = event.get("role", "user")
+                content = event.get("content", "")
+                print(f"[{role.upper()}]: {content}")
+            elif ev_type == "agent_response":
+                step = event.get("step")
+                content = event.get("content", "")
+                print(f"Agent (Step {step}): {content}")
+            elif ev_type == "tool_call":
+                tool = event.get("tool")
+                args_val = event.get("arguments")
+                print(f"🔧 Tool Call: {tool}({args_val})")
+            elif ev_type == "tool_result":
+                tool = event.get("tool")
+                result = event.get("result")
+                print(f"📥 Tool Result ({tool}): {result}")
+            elif ev_type == "evaluation":
+                metric = event.get("metric")
+                value = event.get("value")
+                print(f"📊 Metric: {metric} = {value}")
+            elif ev_type == "run_end":
+                status = event.get("status")
+                print(f"--- Run Finished: {status} ---")
 
 async def run_evaluate(args):
     """Execution logic for the 'evaluate' command."""
@@ -96,6 +181,10 @@ async def run_evaluate(args):
         print(f"\n[{i+1}/{len(scenarios)}] Scenario: {scenario.get('title', 'Untitled')}")
         results = await engine.run_evaluation(scenario)
         all_results.extend(results)
+        
+        # Apply Triage to results
+        from . import triage
+        triage.TriageEngine.apply_triage(results)
         
         # Use the standard reporter to print results for each scenario
         reporter.generate_report(scenario, results, export_trajectory=True)
@@ -195,6 +284,19 @@ def handle_spec_to_eval(args):
 
     spec_parser.save_scenario_stub(scenario, output_path)
     print(f"âœ… Successfully converted {input_path} to {output_path}")
+
+def handle_import_drift(args):
+    """Handler for 'import-drift' command."""
+    from . import drift_importer
+    input_path = Path(args.input)
+    industry = args.industry
+    output_dir = Path(args.output_dir) if args.output_dir else Path("industries") / industry / "scenarios"
+    
+    try:
+        output_file = drift_importer.import_trace_as_scenario(input_path, industry, output_dir)
+        print(f"âœ… Successfully imported drift from {input_path} to {output_file}")
+    except Exception as e:
+        print(f"â Œ Error importing drift: {e}")
 
 if __name__ == "__main__":
     main()

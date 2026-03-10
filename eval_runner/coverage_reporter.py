@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Dict, Any, List
 from .context import EvaluationContext
 
-HTML_TEMPLATE = \"\"\"
+HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -49,7 +49,7 @@ HTML_TEMPLATE = \"\"\"
     </div>
 </body>
 </html>
-\"\"\"
+"""
 
 def generate_coverage_report(context: EvaluationContext, output_path: Path):
     """Generates an HTML report showing metrics coverage."""
