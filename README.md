@@ -22,30 +22,19 @@ Welcome to the AI Agent Evaluation Harness, an open-source framework for assessi
 
 Our goal is to create a standardized, community-driven benchmark for AI agent performance. By providing a rich set of industry-specific scenarios and a flexible evaluation runner, we aim to help developers, researchers, and businesses measure and improve their agent-based systems.
 
-## Project Structure
+The harness is organized into the following key components:
 
-The harness is organized into two main parts:
-
--   `/industries`: Contains all the evaluation assets (4,400+ scenarios), categorized by 44 industries. Each industry has:
-    -   `/scenarios`: Detailed JSON files describing specific tasks and goals for an agent.
-    -   `/datasets`: Supporting data files (`.csv`, `.jsonl`, etc.) needed for the scenarios.
--   `/eval_runner`: A modular Python application with a plugin-based architecture.
-    -   `engine.py` — Multi-turn conversation loop with Lifecycle Hooks (before/after/on_turn)
-    -   `tool_sandbox.py` — Stateful mock tool executor with governance policy enforcement
-    -   `loader.py` — Universal Dataset Loader (JSONL, CSV, JSON v2)
-    -   `spec_parser.py` — Markdown PRD to Scenario parser
-    -   `drift_importer.py` — Production trace to scenario converter
-    -   `triage.py` — Heuristic-based failure categorization
-    -   `metrics.py` — Pluggable Metric Registry for easy extension
-    -   `plugins.py` — Plugin Manager for Lifecycle Hooks
-    -   `coverage_reporter.py` — HTML Heatmap generation
-    -   `context.py` — Typed `EvaluationContext` and `TurnContext`
-    -   `reporter.py` — Console, Trajectory, and Triage report generation
--   `/sample_agent`: A rule-based Flask agent for the telecom scenario.
--   `/spec/aes`: **Agent Eval Specification (Foundational)**
--   `/schemas`: JSON Schema definitions for scenario validation.
--   `/tests`: Comprehensive test suite including stateful execution and governance policies.
--   `/docs`: Architecture, API specs, and evaluation guides.
+-   `/industries`: Evaluation assets (4,400+ scenarios) categorized by 44 industries.
+-   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
+-   `/ui` & `/dashboard`: Frontend visualization tools for agent traces and analytical insights.
+-   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
+-   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
+-   `/runs`: Local execution history (Flight Recorder logs).
+-   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard.
+-   `/schemas`: JSON Schema definitions for cross-platform scenario validation.
+-   `/docs`: Deep-dive guides, architecture, and API specifications.
+-   `/tests`: Comprehensive test suite (Unit, Integration, and Red-Teaming).
+-   `/sample_agent`: Reference implementation for benchmark testing.
 
 ## Getting Started
 
@@ -87,6 +76,9 @@ The harness is organized into two main parts:
 - **Trajectory Visualization**: Failed tasks include a Mermaid decision tree in the report to help debug "wrong turns."
 - **Edge-Case Triage**: Automatically categorize failures (e.g., `CONNECTION_ERROR`, `POLICY_VIOLATION`) using the built-in Triage Library.
 - **Drift Management**: Import production traces directly as regression test cases using `import-drift`.
+- **Simulation Lab**: State-of-the-art simulation shims for Git and API environments, enabling complex multi-turn evaluations without external dependencies.
+- **Research-Grade Metrics**: Native support for `pass@k`, `Success Consistency`, `Semantic Stability`, and `Safety Guardrails` (PII, Refusal).
+- **Adversarial Mutation**: Automatically generate typo, ambiguity, and injection variants of benchmarks to test agent robustness.
 
 ### Running Tests
 

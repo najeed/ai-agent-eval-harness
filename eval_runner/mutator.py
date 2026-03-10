@@ -14,17 +14,23 @@ def mutate_text_with_typos(text: str, probability: float = 0.1) -> str:
         return text
     
     chars = list(text)
-    for i in range(len(chars)):
+    result = []
+    for char in chars:
         if random.random() < probability:
             choice = random.choice(["swap", "repeat", "delete"])
-            if choice == "swap" and i < len(chars) - 1:
-                chars[i], chars[i+1] = chars[i+1], chars[i]
+            if choice == "swap" and result:
+                # swap with previous
+                prev = result.pop()
+                result.append(char)
+                result.append(prev)
             elif choice == "repeat":
-                chars.insert(i, chars[i])
-            elif choice == "delete" and len(chars) > 1:
-                chars.pop(i)
-                break # Avoid index errors
-    return "".join(chars)
+                result.append(char)
+                result.append(char)
+            elif choice == "delete":
+                pass # Skip adding
+        else:
+            result.append(char)
+    return "".join(result)
 
 def mutate_scenario(scenario: dict, mutation_type: str = "typos") -> dict:
     """Applies a specific mutation to a scenario."""
@@ -43,8 +49,10 @@ def mutate_scenario(scenario: dict, mutation_type: str = "typos") -> dict:
             task["description"] += injection
             
     # Update title and ID
-    new_scenario["scenario_id"] += f"_mutated_{mutation_type}"
-    new_scenario["title"] += f" (Mutated: {mutation_type})"
+    if "scenario_id" in new_scenario:
+        new_scenario["scenario_id"] += f"_mutated_{mutation_type}"
+    if "title" in new_scenario:
+        new_scenario["title"] += f" (Mutated: {mutation_type})"
     
     return new_scenario
 

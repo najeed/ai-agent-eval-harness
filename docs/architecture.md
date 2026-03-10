@@ -57,7 +57,9 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 | Drift Importer| `eval_runner/drift_importer.py`| Conversion of production traces into regression scenarios |
 | Triage Engine | `eval_runner/triage.py` | Automated failure categorization (Heuristic tagging) |
 | AES Core | `/spec/aes/` | JSON Schema and Documentation for agent benchmarks |
-| Metrics | `eval_runner/metrics.py` | Efficiency, Consensus, and Policy compliance scoring |
+| Metrics | `eval_runner/metrics.py` | Research-grade scoring: pass@k, Consensus, PII, and Refusal |
+| Simulators | `eval_runner/simulators.py`| Deterministic tool shims (Git, API) for dependency-free testing |
+| Mutator | `eval_runner/mutator.py` | Adversarial Mutation Engine for robustness red-teaming |
 | Reporter | `eval_runner/reporter.py` | Consolidated console and HTML reporting with Triage integration |
 
 ## Foundational Core: AES & Flight Recorder
@@ -73,6 +75,10 @@ Phase 2 focuses on operationalizing evaluation data:
 - **Drift Management**: The `import-drift` command creates a "Semantic Bridge" between production behavior and evaluation rigor, allowing developers to quickly capture and fix real-world edge cases.
 - **Edge-Case Triage**: A library of heuristics that automatically tags failed runs (e.g., `POLICY_VIOLATION`, `CONNECTION_ERROR`), drastically reducing manual debugging time.
 - **Grounding Coverage**: Tracks the utilization of domain-specific tools and knowledge bases during execution, visualizeable via an HTML heatmap.
+- **Phase 3: Simulation Lab & Research metrics**:
+    - **Simulation Shims**: State-aware mocks (Git Simulator) that enable testing complex agentic tasks (clone -> hack -> commit) without real infrastructure.
+    - **Research Metrics**: Native support for `pass@k` (robustness across attempts) and `Success Consistency`.
+    - **Adversarial Red-Teaming**: The `mutator` engine injects typos, prompt-injection, and ambiguity into scenarios to test agent edge-resistance.
 
 ## Key Environment Variables
 
