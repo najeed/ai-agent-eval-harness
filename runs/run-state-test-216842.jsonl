@@ -1,0 +1,13 @@
+{"event": "run_start", "timestamp": "2026-03-11T05:20:18.385129Z", "run_id": "run-state-test-216842", "scenario": "state-test", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T05:20:18.386602Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T05:20:18.387389Z", "role": "user", "content": ""}
+{"event": "turn_start", "timestamp": "2026-03-11T05:20:18.387706Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T05:20:18.388102Z", "step": 1, "response": {"action": "call_tool", "tool_name": "update_plan", "tool_params": {"current_plan": "Premium"}, "summary": "Updating plan."}}
+{"event": "tool_call", "timestamp": "2026-03-11T05:20:18.389054Z", "step": 1, "tool": "update_plan", "arguments": {"current_plan": "Premium"}}
+{"event": "world_state_change", "timestamp": "2026-03-11T05:20:18.389529Z", "state": {"current_plan": "Premium"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-11T05:20:18.389789Z", "step": 1, "tool": "update_plan", "result": {"status": "success"}}
+{"event": "turn_start", "timestamp": "2026-03-11T05:20:18.390042Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T05:20:18.390343Z", "step": 2, "response": {"action": "final_answer", "summary": "Plan updated."}}
+{"event": "evaluation", "timestamp": "2026-03-11T05:20:18.390733Z", "metric": "state_verification", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T05:20:18.391091Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "agent", "content": {"action": "call_tool", "tool_name": "update_plan", "tool_params": {"current_plan": "Premium"}, "summary": "Updating plan."}}, {"role": "environment", "content": {"status": "success"}, "state_before": {"current_plan": "Basic"}, "state_after": {"current_plan": "Premium"}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Plan updated."}}], "metrics": [{"metric": "state_verification", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-11T05:20:18.393210Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}

@@ -35,7 +35,11 @@ class BaseEvalPlugin:
         pass
 
     def on_error(self, context: Any, exception: Exception):
-        """Called when an error occurs (context can be Eval or Turn)."""
+        """Called when an unhandled exception occurs in the engine."""
+        pass
+
+    def on_discover_adapters(self, registry: dict):
+        """Allows plugins to register custom agent adapters."""
         pass
 
     def on_metrics_calculated(self, context: EvaluationContext, results: list):

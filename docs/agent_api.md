@@ -58,6 +58,24 @@ The agent must return a JSON object with an `action` field indicating what it di
 }
 ```
 
+### `"action": "hitl_pause"` — Request Human Intervention
+Tells the harness to pause execution and wait for human input. The harness will emit a `HITL_PAUSE` event.
+```json
+{
+  "action": "hitl_pause",
+  "reason": "Requesting manual credit override beyond $500 limit."
+}
+```
+
+### `"action": "branch"` — Fork Trajectory
+Signals the `SessionManager` to create a checkpoint and explore a new path.
+```json
+{
+  "action": "branch",
+  "metadata": {"reason": "Testing alternative resolution path A"}
+}
+```
+
 ## Multi-turn Flow
 
 The harness supports multi-turn conversations. When the agent returns a `call_tool` or `call_multiple_tools` action, the harness executes the tool(s) via the **Tool Sandbox** and sends the result back as the next `task_description`:

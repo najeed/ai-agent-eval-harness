@@ -134,11 +134,15 @@ class ToolSandbox(AbstractSandbox):
                 if not success:
                     return {"status": "error", "message": f"Agent {active_agent} has no write permission for {write_path}"}
 
+        if "shared_read" in params:
+            read_path = params["shared_read"].get("path")
+            if read_path:
+                val = self.shared_state.read(active_agent, read_path)
                 if val is None and read_path in self.shared_state.registry:
                     return {"status": "error", "message": f"Agent {active_agent} has no read permission for {read_path}"}
                 
                 # Notify observers of read (Enterprise requirement 5)
-                from .events import EventEmitter, CoreEvents
+                from .events import EventEmitter
                 EventEmitter.emit("state_read", {"agent": active_agent, "path": read_path, "value": val})
 
         # 5. Return Output

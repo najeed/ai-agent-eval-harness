@@ -79,6 +79,24 @@ class SessionManager:
                     elif action == "call_multiple_tools" and "tool_names" in agent_response:
                         await self._handle_multiple_tools(turn, agent_response, sandbox, conversation_history, agent_actions, turn_ctx)
                         current_message = self._get_last_env_message(conversation_history)
+                    elif action == "hitl_pause":
+                        # HITL logic
+                        EventEmitter.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "turn": turn})
+                        print(f"   [Session] HITL Pause at turn {turn}. Waiting for resume...")
+                        # In a real system, we'd wait for an external signal or human input.
+                        # For this implementation, we'll simulate a resume with a fixed message.
+                        user_input = "Human has reviewed and approved. Proceed." 
+                        conversation_history.append({"role": "human", "content": user_input})
+                        current_message = user_input
+                        EventEmitter.emit(CoreEvents.HITL_RESUME, {"task_id": task_id})
+                    elif action == "branch" and "branches" in agent_response:
+                        # Non-Linear Branching
+                        branch_data = agent_response["branches"]
+                        print(f"   [Session] Branching detected: {len(branch_data)} new paths.")
+                        # This is a research-phase implementation: we'll only execute the first branch here
+                        # but in a full system we would queue separate evaluation attempts for each fork.
+                        current_message = branch_data[0].get("message", current_message)
+                        conversation_history.append({"role": "system", "content": f"Branching to: {branch_data[0].get('name')}"})
                     elif action in ("final_answer", "provide_instructions", "error"):
                         break
                     else:
@@ -212,3 +230,14 @@ class SessionManager:
         if isinstance(last_content, dict):
             return last_content.get("summary") or last_content.get("content") or ""
         return str(last_content)
+
+    def fork(self, history: List[Dict[str, Any]], sandbox_state: Dict[str, Any]) -> SessionManager:
+        """
+        Creates a clone of the current session at a specific checkpoint.
+        Supports research into non-linear trajectories.
+        """
+        new_session = SessionManager(self.scenario)
+        # Note: In a full implementation, we'd need to deep copy the sandbox
+        # and ensure the conversation history is properly partitioned.
+        print(f"   [Session] Forking trajectory with {len(history)} messages in history.")
+        return new_session

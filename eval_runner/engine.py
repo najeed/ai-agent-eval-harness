@@ -53,13 +53,34 @@ def rotate_logs(log_dir: Path, max_files: int):
 # Dynamic Adapter Registry for Agent Communication
 class AgentAdapterRegistry:
     _adapters: Dict[str, Callable] = {}
+    _discovered: bool = False
     
     @classmethod
     def register(cls, protocol: str, adapter_func):
         cls._adapters[protocol] = adapter_func
+
+    @classmethod
+    def _discover(cls):
+        """Triggers plugin-based discovery of adapters."""
+        if cls._discovered:
+            return
+        plugins.manager.trigger("on_discover_adapters", cls._adapters)
+        
+        # Register default human adapter if not already registered
+        if "human" not in cls._adapters:
+            cls._adapters["human"] = cls._human_adapter
+            
+        cls._discovered = True
+        
+    @classmethod
+    async def _human_adapter(cls, payload: dict):
+        """Placeholder for Human-In-The-Loop intervention."""
+        # This will be handled by the session execution loop
+        return {"action": "hitl_pause", "message": "Waiting for human intervention."}
         
     @classmethod
     async def call_agent(cls, payload: dict, protocol="http"):
+        cls._discover()
         adapter = cls._adapters.get(protocol)
         if adapter:
             return await adapter(payload)

@@ -60,4 +60,6 @@ class CoreEvents:
     TOOL_CALL = "tool_call"
     TOOL_RESULT = "tool_result"
     EVALUATION = "evaluation"
+    HITL_PAUSE = "hitl_pause"
+    HITL_RESUME = "hitl_resume"
     ERROR = "error"

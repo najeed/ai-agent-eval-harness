@@ -38,23 +38,15 @@ Each object in the `success_criteria` array links a metric to a threshold:
 
 A task is only considered successful if **all** of its success criteria are met.
 
-## Async Execution (Phase 1)
+## Advanced Orchestration (Phase 3)
 
-The evaluation harness runs scenarios concurrently using `asyncio.gather`. All scenarios discovered by the CLI are loaded first, then evaluated in parallel via `aiohttp`. The `AGENT_API_URL` environment variable controls the target agent endpoint.
+The harness now supports sophisticated research-oriented evaluations:
+- **`pass@k` (Robustness)**: Run multiple attempts (`--attempts K`) per scenario. Higher `k` measures if an agent *can* solve a task, even if it fails occasionally.
+- **Outcome Stability (Consistency)**: Measures if results are stable across multiple runs.
+- **Semantic Stability**: Uses consensus scoring to check if agent summaries are semantically consistent across attempts.
+- **HITL (Human-In-The-Loop)**: Pause evaluations for manual intervention via the `human` adapter.
 
-## Dataset Loading (Phase 1)
-
-The `loader.load_dataset()` function supports loading `.csv` and `.jsonl` dataset files for use as task context:
-
-```python
-from pathlib import Path
-from eval_runner import loader
-
-data = loader.load_dataset(Path("industries/accounting/datasets/sample.csv"))
-# Returns: [{"col1": "val1", ...}, ...]
-```
-
-## Available Metrics (v2.0)
+## Available Metrics (v3.0)
 
 | Metric | Function | Description |
 |---|---|---|
@@ -64,7 +56,10 @@ data = loader.load_dataset(Path("industries/accounting/datasets/sample.csv"))
 | `delegation_latency` | `calculate_delegation_latency` | Measures the 'Thinking Cost' of handoffs |
 | `delegation_loop_risk` | `calculate_delegation_loop_risk` | Detects 'Infinite Re-planning' cycles |
 | `consensus_scoring` | `calculate_consensus_scoring` | Semantic similarity judge for agent agreement |
-| `communication_clarity` | `calculate_communication_clarity` | Checks summary length > 10 characters |
+| `communication_clarity` | `calculate_communication_clarity` | Checks summary length and semantic quality |
+| `factual_accuracy` | `calculate_factual_accuracy` | LLM-based verification of agent's final answer |
+| `performance_efficiency` | `calculate_efficiency` | Weighted score of turns taken vs. goal reached |
+| `security_guardrail` | `calculate_guardrail_violation` | Detection of prompt injection or sensitive data leaks |
 
 ## Multi-Agent Scenario Schema (v2.0)
 

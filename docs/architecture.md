@@ -51,6 +51,26 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 |--------|------|---------|
 | CLI | `eval_runner/cli.py` | Universal entry-point (`replay`, `aes`, `import-drift`) |
 | Loader | `eval_runner/loader.py` | Multi-format dataset ingestion and v2.0 schema validation |
+### `EventEmitter` Bus: Passive Observation
+The core engine is built around a central `EventEmitter` (see `eval_runner/events.py`). Every state transition in the harness—from the start of a run to a tool call or an agent response—is emitted as an event. This allows plugins to observe the system's behavior without modifying the core logic.
+
+#### Key Event Types:
+- `RUN_START` / `RUN_END`: lifecycle of the entire evaluation.
+- `TASK_START` / `TASK_END`: cycle for a specific scenario task.
+- `PROMPT`: when the harness sends a request to the agent.
+- `AGENT_RESPONSE`: when the agent returns an action.
+- `TOOL_CALL` / `TOOL_RESULT`: execution of a sandbox tool.
+- `HITL_PAUSE` / `HITL_RESUME`: Human-In-The-Loop events.
+
+### Plugin Lifecycle
+Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the evaluation loop. The `PluginManager` triggers these hooks synchronously, ensuring a deterministic execution order.
+
+| Hook | Trigger Point | Use Case |
+|---|---|---|
+| `on_run_start` | Before the evaluation starts | Setup monitoring or telemetry |
+| `on_tool_request` | When an agent requests a tool | Interception, blocking, or masking |
+| `on_discover_adapters` | During agent initialization | Register custom agent protocols |
+| `on_eval_complete` | After metrics are calculated | Custom reporting or triage |
 | Engine | `eval_runner/engine.py` | Minimal entry point for initializing the evaluation context |
 | Runner | `eval_runner/runner.py` | Pluggable orchestration strategies (e.g., `DefaultRunner` for pass@k) |
 | Session | `eval_runner/session.py`| Handles immutable turn-contexts and conversation state management |
@@ -77,6 +97,13 @@ Phase 2 focuses on operationalizing evaluation data:
 - **Drift Management**: The `import-drift` command creates a "Semantic Bridge" between production behavior and evaluation rigor, allowing developers to quickly capture and fix real-world edge cases.
 - **Edge-Case Triage**: A library of heuristics that automatically tags failed runs (e.g., `POLICY_VIOLATION`, `CONNECTION_ERROR`), drastically reducing manual debugging time.
 - **Grounding Coverage**: Tracks the utilization of domain-specific tools and knowledge bases during execution, visualizeable via an HTML heatmap.
+
+## Advanced Orchestration: HITL & Branching
+
+Phase 3 introduces advanced orchestration capabilities for research and complex production replay:
+- **Native HITL (Human-In-The-Loop)**: The `human` adapter allows scenarios to pause and wait for human intervention. This is integrated directly into the `SessionManager` loop, emitting `HITL_PAUSE` and `HITL_RESUME` events.
+- **Non-Linear Trajectories**: `SessionManager.fork()` enables creators to explore multiple agent paths from a single checkpoint. This is essential for studying agent decision-making under ambiguity.
+- **Advanced Adapter Discovery**: The `AgentAdapterRegistry` now supports plugin-driven discovery. External plugins can register custom protocols (e.g., `mock_proto`, `proprietary_rpc`) using the `on_discover_adapters` hook.
 
 ## Simulation Lab & Research metrics
 

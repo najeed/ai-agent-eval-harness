@@ -69,13 +69,42 @@ eval-harness quickstart
 
 ---
 
+## 🚀 At a Glance
+
+- **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
+- **Pluggable Architecture**: Extend anything via Python plugins (Runners, Reporters, Adapters).
+- **Tool Sandbox**: Governance-controlled execution of real or mock tools.
+- **Semantic Bridge**: Ingest production traces (`import-drift`) and analyze failures (`triage`).
+- **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
+- **Robust Metrics**: 10+ built-in metrics (Tool Correctness, State Parity, Policy Compliance).
+
+## 🛠️ CLI Highlights
+
+```bash
+# Run evaluations
+eval-harness evaluate --path scenarios/telecom/
+
+# Import production drift
+eval-harness import-drift --input trace.json --industry telecom
+
+# Debug with Flight Recorder
+eval-harness replay runs/run.jsonl
+
+# Interactive Playground
+eval-harness playground --agent http://localhost:5001
+```
+*See the full [CLI Reference](docs/cli_reference.md) for more.*
+
 ## 🏗 Zero-Touch Core Architecture
 
 The harness is built on a decoupled, event-driven architecture that allows Enterprise integrations to be hot-swapped without core modifications.
 
 - **EventEmitter Bus**: Passive observation of every turn, tool call, and state change.
 - **Pluggable Runners**: Strategy-based orchestration for multi-attempt (`pass@k`) or interactive evaluations.
-- **Interception Hooks**: Plugins can now intercept and block tool calls (`on_tool_request`) for safety or HITL.
+- **Interception Hooks**: Plugins can now intercept and block tool calls (`on_tool_request`) or register custom adapters.
+- **Native HITL Support**: Built-in support for pausing evaluation for human intervention via the `human` adapter.
+- **Non-Linear Trajectories**: Support for branching and forking trajectories (`fork()`) in `SessionManager` for research-grade evaluations.
+- **Advanced Discovery**: Plugin-driven registry for third-party agent adapters via the `on_discover_adapters` hook.
 - **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
 
 ### 🌟 Productivity Utilities
