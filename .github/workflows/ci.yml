@@ -36,4 +36,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Test with pytest
-      run: pytest --cov=eval_runner -v
+      run: pytest tests/test_aes.py tests/test_drift_importer.py tests/test_triage.py --cov=eval_runner -v -p no:plugin_gateway

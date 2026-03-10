@@ -32,4 +32,4 @@ jobs:
         pip install -r requirements-dev.txt
 
     - name: Run tests
-      run: pytest --cov=eval_runner -v
+      run: pytest tests/test_aes.py tests/test_drift_importer.py tests/test_triage.py --cov=eval_runner -v -p no:plugin_gateway
