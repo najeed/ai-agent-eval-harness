@@ -5,9 +5,10 @@
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-orange.svg)](LICENSE)
-[![Contributors](https://img.shields.io/github/contributors/najeed/ai-agent-eval-harness)](https://github.com/najeed/ai-agent-eval-harness/graphs/contributors)
+[![Security Audit](https://img.shields.io/badge/Security-Audit--Compliant-green.svg)](docs/architecture.md#security-guardrails)
+[![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
 
-Welcome to the AI Agent Evaluation Harness, the open-source reliability framework for AI agents: evaluation, replay debugging, drift detection, and failure datasets across a wide range of industries and use cases.
+**AI Agent Evaluation Harness** is the enterprise-grade reliability framework for AI agents. It bridges the "Agentic Reliability Gap" through rigorous evaluation, deep-trace replay debugging, and industry-standard benchmark datasets.
 
 | Attribute | Specification |
 | :--- | :--- |
@@ -15,7 +16,7 @@ Welcome to the AI Agent Evaluation Harness, the open-source reliability framewor
 | **License** | **BSL 1.1** (Converts to Apache 2.0 in 2032) |
 | **Status** | Production-Ready Framework |
 | **Core Goal** | Eliminating the "Agentic Reliability Gap" |
-| **Contribution** | Individual CLA Required |
+| **Quick Links** | [Quickstart](#-60-second-quickstart) • [Visionary Update](#-the-visionary-update-v11) • [Architecture](#-zero-touch-core-architecture) • [Security](#-security--governance-audit-ready) • [Editions](#licensing--editions) |
 
 ## Mission
 
@@ -98,34 +99,24 @@ eval-harness quickstart
 - **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
 - **Robust Metrics**: 10+ built-in metrics (Tool Correctness, State Parity, Policy Compliance).
 
-## 🛠️ CLI Highlights
+## ✨ The Visionary Update (v1.1)
 
-```bash
-# Run evaluations
-eval-harness evaluate --path scenarios/telecom/
+The latest release introduces a new suite of high-level automation and visual tools designed for 10x developer productivity.
 
-# Import production drift
-eval-harness import-drift --input trace.json --industry telecom
+#### 🛠️ Visionary CLI Suite
+- **`install <pack>`**: Rapid deployment of curated, industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
+- **`analyze <url>`**: Proactive agent repo scanning; auto-generates AES stubs by identifying tools and endpoints.
+- **`ci generate`**: One-click scaffolding of GitHub Actions workflows for evaluation-on-PR.
+- **`failures search`**: Intelligence-driven retrieval of edge cases from the global failure corpus.
+- **`explain <run.jsonl>`**: AI-powered trace diagnostics identifying root causes (loops, timeouts, PII leaks).
+- **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 
-# Debug with Flight Recorder
-eval-harness replay runs/run.jsonl
+#### 🎨 Visionary UX Tools
+- **Scenario Editor**: A drag-and-drop React Native interface for constructing complex AES logic without writing JSON.
+- **VS Code Extension**: Run evaluations and visualize timelines directly within your IDE.
+- **Visual Debugger**: Real-time trajectory playback with interactive state inspection.
 
-# Launch Admin Console GUI
-eval-harness console --port 5000
-
-# Install scenario packs
-eval-harness install telecom-pack
-
-# Analyze agent repository
-eval-harness analyze https://github.com/agent-repo
-
-# Diagnose failures
-eval-harness explain runs/run.jsonl
-
-# Generate CI workflow
-eval-harness ci generate
-```
-*See the full [CLI Reference](docs/cli_reference.md) for more.*
+---
 
 ## 🏗 Zero-Touch Core Architecture
 
@@ -139,18 +130,17 @@ The harness is built on a decoupled, event-driven architecture that allows Enter
 - **Advanced Discovery**: Plugin-driven registry for third-party agent adapters via the `on_discover_adapters` hook.
 - **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
 
-### 🌟 Productivity Utilities
-- `console`: React Native GUI for Visual Scenario Execution, Debugging, and **Scenario Editing**.
-- `install`: Rapid deployment of industry-specific scenario bundles.
-- `analyze`: Proactive agent codebase scanning and AES scaffolding.
-- `ci generate`: Instant GitHub Actions integration.
-- `failures search`: Discovery of edge cases from the global failure corpus.
-- `explain`: Automated trace diagnostics for root cause analysis.
-- `doctor`: Environment health checker.
-- `report`: Rich HTML reporting with interactive Mermaid trajectories.
-- `record` & `playground`: Interaction capture and REPL experimentation.
-- `spec-to-eval`: Convert Markdown PRDs/Specs into executable JSON scenarios.
-- `scenario generate`: Interactive scaffolding for authoring tests.
+- **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
+
+### 🌟 Advanced Utilities
+Beyond the Visionary suite, the harness provides a robust toolkit for professional evaluation:
+- **`doctor`**: Environment health checker.
+- **`report`**: Rich HTML reporting with interactive Mermaid trajectories.
+- **`record` & `playground`**: Interaction capture and REPL experimentation for rapid prototyping.
+- **`spec-to-eval`**: Convert Markdown PRDs/Specs into executable JSON scenarios.
+- **`scenario generate`**: Interactive scaffolding for manual test authoring.
+- **`mutate`**: Adversarial scenario generator (typos, injections, ambiguity).
+- **`import-drift`**: Convert production logs into regression test cases.
 
 ## 🖥️ Web Admin Console (Native GUI)
 
@@ -183,8 +173,17 @@ pytest tests/ -v -p no:plugin_gateway
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
 | `OPENAI_API_KEY` | *(None)* | Required if using LLM-as-a-Judge metrics |
 
+### 🛡️ Security & Governance (Audit-Ready)
+The platform is built with a **Secure-by-Design** philosophy, complying with enterprise-grade audit standards.
+
+- **PII/Secret Redaction**: Automatic, recursive scanning and redaction of JWTs, AWS keys, and PII from all event logs.
+- **Secure Handoff Architecture**: JWT-based authentication for between the core console and enterprise plugins.
+- **Tool Sandboxing**: Path traversal protection and shell-character neutralization for all tool executions.
+- **WORM Logs**: Write-Once-Read-Many immutable flight recorder traces (`run.jsonl`).
+- **Audit Points**: 100% compliance with the 8-point Enterprise Security Audit (DoS caps, Fork Bomb prevention, RCE guards).
+
 ### 🚨 Run Trace Warning
-All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory.
+All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory via `eval-harness cleanup-runs --days 7`.
 
 ### 🐛 Troubleshooting
 
@@ -220,7 +219,7 @@ Thanks to all our contributors! 🙌
 
 ## Licensing & Editions
 
-This project follows an **Open Core** model.The open-source capabilities provide a robust evaluation foundation, while the Enterprise Edition delivers the necessary security, governance, and audit-grade intelligence required for regulated deployments.
+This project follows an **Open Core** model. The open-source capabilities provide a robust evaluation foundation, while the Enterprise Edition delivers the necessary security, governance, and audit-grade intelligence required for regulated deployments.
 
 | Feature Module | Community Edition (OSS) | Enterprise Edition |
 | :--- | :--- | :--- |
