@@ -18,13 +18,29 @@
 | **Core Goal** | Eliminating the "Agentic Reliability Gap" |
 | **Quick Links** | [Quickstart](#-60-second-quickstart) • [Visionary Update](#-the-visionary-update-v11) • [Architecture](#-zero-touch-core-architecture) • [Security](#-security--governance-audit-ready) • [Editions](#licensing--editions) |
 
+## 📖 Table of Contents
+- [Mission](#mission)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [60-Second Quickstart](#-60-second-quickstart)
+    - [Manual Evaluation](#-manual-evaluation-running-the-sample-agent)
+- [At a Glance (v1.0 RC)](#-at-a-glance-v10-rc)
+- [The Visionary Update (v1.1)](#-the-visionary-update-v11)
+- [Zero-Touch Core Architecture](#-zero-touch-core-architecture)
+    - [Advanced Utilities](#-advanced-utilities)
+- [Web Admin Console (Native GUI)](#-web-admin-console-native-gui)
+- [Security & Governance](#-security--governance-audit-ready)
+- [Troubleshooting](#-troubleshooting)
+- [How to Contribute](#how-to-contribute)
+- [Licensing & Editions](#licensing--editions)
+
 ## Mission
 
 Our goal is to create a standardized, community-driven benchmark for AI agent performance. By providing a rich set of industry-specific scenarios and a flexible evaluation runner, we aim to help developers, researchers, and businesses measure and improve their agent-based systems.
 
 The harness is organized into the following key components:
 
--   `/industries`: Evaluation assets (4,400+ scenarios) categorized by 44 industries.
+-   `/industries`: Evaluation assets (4,600+ scenarios) categorized by 44 industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
 -   `/eval_runner/console`: Flask-based REST API for the Admin Console.
 -   `/admin-console`: React Native (Expo) Frontend for visual management.
@@ -46,28 +62,28 @@ The harness is organized into the following key components:
 -   **Ollama (optional, for Local LLM Evaluation)**:
     -   Download from [ollama.com](https://ollama.com).
 
-### 🚀 60-Second Quickstart
-
-The fastest way to see the harness in action:
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/najeed/ai-agent-eval-harness.git
-cd ai-agent-eval-harness
-
-# 2. Set up a virtual environment (Recommended)
-python -m venv venv
-venv\Scripts\activate  # On Windows
-# source venv/bin/activate  # On macOS/Linux
-
-# 3. Install the package in editable mode
-pip install -e .
-
-# 4. Run the Quickstart Demo (CLI)
-eval-harness quickstart
-```
-
-**What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich legacy HTML report in `reports/`.
+> [!IMPORTANT]
+> ### 🚀 60-Second Quickstart (Get Running Now)
+> The fastest way to see the harness in action:
+>
+> ```bash
+> # 1. Clone the repository
+> git clone https://github.com/najeed/ai-agent-eval-harness.git
+> cd ai-agent-eval-harness
+>
+> # 2. Set up a virtual environment (Recommended)
+> python -m venv venv
+> venv\Scripts\activate  # On Windows
+> # source venv/bin/activate  # On macOS/Linux
+>
+> # 3. Install the package in editable mode
+> pip install -e .
+>
+> # 4. Run the Quickstart Demo (CLI)
+> eval-harness quickstart
+> ```
+>
+> **What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich legacy HTML report in `reports/`.
 
 > [!TIP]
 > **Prefer a visual experience?** After running the quickstart, launch the **Admin Console** to replay the trace interactively: `eval-harness console`.
