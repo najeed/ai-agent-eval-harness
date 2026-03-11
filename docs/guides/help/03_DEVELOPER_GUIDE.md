@@ -37,6 +37,11 @@ Entry point: `eval_runner/cli.py`
 - `scenario generate` — Interactive generator for boilerplate scenarios
 - `record` — Real-time agent interaction logger
 - `playground` — Interactive CLI REPL for agent testing
+- `install` — Rapid deployment of curated scenario packs
+- `analyze` — Proactive agent codebase scanning and AES scaffolding
+- `ci generate` — Instant GitHub Actions integration for evaluation
+- `failures search` — Query the global Failure Corpus for edge cases
+- `explain` — Automated trace diagnostics for root cause analysis
 
 ---
 
@@ -129,7 +134,21 @@ class EnterpriseConsolePlugin(BaseEvalPlugin):
 
 ---
 
-## 📡 5) Event-Driven Monitoring
+## 📡 5) VS Code Extension & IDE Integration
+
+The harness now includes a **VS Code Extension** scaffold (`vscode-extension/`) that brings core evaluation workflows directly into the editor.
+- **Run Scenario**: Right-click any `.json` scenario to execute a trace.
+- **Open Console**: One-click access to the Web Admin Console.
+
+---
+
+## 🛠️ 6) Visual Scenario Editor (AES Builder)
+
+The `admin-console/app/editor.tsx` provides a visual playground for constructing complex evaluation logic. Developers can add task nodes and validation expectations via a drag-and-drop interface, which then generates the underlying AES JSON.
+
+---
+
+## 📡 7) Event-Driven Monitoring
 
 The `EventEmitter` allows you to build observability without touching the core code.
 

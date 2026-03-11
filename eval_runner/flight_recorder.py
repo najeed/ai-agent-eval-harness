@@ -21,6 +21,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self.run_id = "unknown"
         self.master_log_path = self.log_dir / "run.jsonl"
         self.per_run_log_path = None
+        self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
 
         # Subscribe to the event bus
         EventEmitter.subscribe(self.handle_event)
@@ -34,6 +35,10 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             self.run_id = data.get("run_id", "unknown")
             self.per_run_log_path = self.log_dir / f"{self.run_id}.jsonl"
             self.log_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Perform rotation if configured
+            if self.log_rotate_count > 0:
+                self.rotate_logs()
 
         # Serialize and write
         content = json.dumps(data) + "\n"
@@ -45,6 +50,25 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         if self.master:
             with open(self.master_log_path, "a", encoding="utf-8") as f:
                 f.write(content)
+
+    def rotate_logs(self):
+        """Keeps only the latest N run-<id>.jsonl files."""
+        run_files = sorted(
+            self.log_dir.glob("*.jsonl"),
+            key=lambda x: x.stat().st_mtime,
+            reverse=True
+        )
+        
+        # Exclude the master log if it exists
+        run_files = [f for f in run_files if f.name != "run.jsonl"]
+        
+        if len(run_files) > self.log_rotate_count:
+            for old_file in run_files[self.log_rotate_count:]:
+                try:
+                    old_file.unlink()
+                    print(f"      [FlightRecorder] Rotated old log: {old_file.name}")
+                except Exception as e:
+                    print(f"      [FlightRecorder] Error rotating log {old_file}: {e}")
 
     # Note: methods like before_evaluation are still available if needed
     # but handle_event covers most needs for the Flight Recorder.

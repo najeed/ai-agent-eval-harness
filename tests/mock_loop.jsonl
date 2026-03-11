@@ -1,0 +1,24 @@
+{"event": "run_start", "run_id": "test_loop", "scenario": "loop_scenario", "timestamp": "2026-03-12T01:40:00Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:01Z"}
+{"event": "agent_response", "step": 1, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:02Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:03Z"}
+{"event": "agent_response", "step": 2, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:04Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:05Z"}
+{"event": "agent_response", "step": 3, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:06Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:07Z"}
+{"event": "agent_response", "step": 4, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:08Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:09Z"}
+{"event": "agent_response", "step": 5, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:10Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:11Z"}
+{"event": "agent_response", "step": 6, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:12Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:13Z"}
+{"event": "agent_response", "step": 7, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:14Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:15Z"}
+{"event": "agent_response", "step": 8, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:16Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:17Z"}
+{"event": "agent_response", "step": 9, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:18Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:19Z"}
+{"event": "agent_response", "step": 10, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:20Z"}
+{"event": "prompt", "role": "user", "content": "Hello", "timestamp": "2026-03-12T01:40:21Z"}
+{"event": "agent_response", "step": 11, "content": "I am repeating myself.", "timestamp": "2026-03-12T01:40:22Z"}
+{"event": "run_end", "status": "failure", "timestamp": "2026-03-12T01:40:23Z"}

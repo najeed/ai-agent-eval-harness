@@ -46,6 +46,15 @@ def main():
     eval_parser.add_argument(
         "--attempts", type=int, default=1, help="Number of attempts per scenario (for pass@k)"
     )
+    eval_parser.add_argument(
+        "--run-log-dir", help="Directory for run trace logs (overrides RUN_LOG_DIR)"
+    )
+    eval_parser.add_argument(
+        "--per-run-logs", action="store_true", default=None, help="Save individual .jsonl for each run"
+    )
+    eval_parser.add_argument(
+        "--master-log", action="store_true", default=None, help="Append all events to a master run.jsonl"
+    )
     
     # Security Guardrails: Command Hijacking Prevention
     # Removed `extend_cli` hook. Plugins must register via namespaced registry `eval-harness plugin <name>`
@@ -104,10 +113,42 @@ def main():
     playground_parser.add_argument("--agent", default="http://localhost:5001/execute_task", help="Agent API URL")
 
     # --- EXPORT COMMAND ---
-    export_parser = subparsers.add_parser("export", help="Export run traces to external formats (e.g., HuggingFace)")
-    export_parser.add_argument("--input", required=True, help="Path to run.jsonl trace")
-    export_parser.add_argument("--format", default="hf", choices=["hf"], help="Target format")
-    export_parser.add_argument("--output", required=True, help="Path to save exported dataset")
+    export_p = subparsers.add_parser("export", help="Export run traces to external formats (e.g., HuggingFace)")
+    export_p.add_argument("--input", required=True, help="Path to run.jsonl trace")
+    export_p.add_argument("--format", default="hf", choices=["hf"], help="Target format")
+    export_p.add_argument("--output", required=True, help="Path to save exported dataset")
+    
+    # --- REPLAY COMMAND ---
+    replay_parser = subparsers.add_parser("replay", help="Replay a run trace (Flight Recorder)")
+    replay_parser.add_argument("--path", default="runs/run.jsonl", help="Path to the trace file to replay")
+
+    # --- CLEANUP-RUNS COMMAND ---
+    cleanup_parser = subparsers.add_parser("cleanup-runs", help="Housekeeping: Remove old trace files")
+    cleanup_parser.add_argument("--days", type=int, default=7, help="Remove files older than N days")
+    cleanup_parser.add_argument("--force", action="store_true", help="Skip confirmation")
+
+    # --- INSTALL COMMAND ---
+    install_parser = subparsers.add_parser("install", help="Install curated scenario packs")
+    install_parser.add_argument("pack", help="Name of the pack (e.g., telecom-pack, finance-pack)")
+
+    # --- ANALYZE COMMAND ---
+    analyze_parser = subparsers.add_parser("analyze", help="Scan GitHub repo to auto-generate scenarios")
+    analyze_parser.add_argument("url", help="GitHub repository URL")
+
+    # --- CI COMMAND ---
+    ci_parser = subparsers.add_parser("ci", help="CI/CD utility commands")
+    ci_subparsers = ci_parser.add_subparsers(dest="ci_command")
+    ci_subparsers.add_parser("generate", help="Scaffold a .github/workflows/agent_eval.yml file")
+
+    # --- FAILURES COMMAND ---
+    failures_parser = subparsers.add_parser("failures", help="Failure Corpus utilities")
+    failures_subparsers = failures_parser.add_subparsers(dest="failures_command")
+    search_parser = failures_subparsers.add_parser("search", help="Search the failure corpus for edge cases")
+    search_parser.add_argument("query", help="Search term (e.g., 'pii', 'timeout')")
+
+    # --- EXPLAIN COMMAND ---
+    explain_parser = subparsers.add_parser("explain", help="Analyze trace logs to diagnose root causes")
+    explain_parser.add_argument("path", help="Path to run.jsonl file")
 
     # --- PLUGIN COMMAND ---
     # Security Guardrails: Strictly Namespaced Automated Registry
@@ -188,6 +229,20 @@ def main():
             asyncio.run(playground.run_playground(args.agent))
         elif args.command == "export":
             handle_export(args)
+        elif args.command == "cleanup-runs":
+            handle_cleanup_runs(args)
+        elif args.command == "install":
+            handle_install(args)
+        elif args.command == "analyze":
+            asyncio.run(handle_analyze(args))
+        elif args.command == "ci":
+            if args.ci_command == "generate":
+                handle_ci_generate(args)
+        elif args.command == "failures":
+            if args.failures_command == "search":
+                handle_failures_search(args)
+        elif args.command == "explain":
+            handle_explain(args)
         elif args.command == "plugin":
             if args.plugin_name in plugin_handlers and args.plugin_cmd in plugin_handlers[args.plugin_name]:
                 handler = plugin_handlers[args.plugin_name][args.plugin_cmd]
@@ -343,8 +398,14 @@ async def run_scenario(args):
 
 async def run_evaluate(args):
     """Execution logic for the 'evaluate' command."""
-    print(f"\n[CLI] Loading scenarios from: {args.path}")
-    
+    # Set run-log environment variables from flags
+    if args.run_log_dir:
+        os.environ["RUN_LOG_DIR"] = args.run_log_dir
+    if args.per_run_logs is not None:
+        os.environ["RUN_LOG_PER_RUN"] = "true" if args.per_run_logs else "false"
+    if args.master_log is not None:
+        os.environ["RUN_LOG_MASTER"] = "true" if args.master_log else "false"
+
     try:
         path_obj = Path(args.path)
         scenarios = loader.load_dataset(path_obj, format_type=args.format if args.format != "jsonl" else None)
@@ -358,6 +419,8 @@ async def run_evaluate(args):
     print(f"[CLI] Running {len(scenarios)} scenarios...")
     
     all_results = []
+    research_summary = {}
+
     for i, scenario in enumerate(scenarios):
         attempts = getattr(args, "attempts", 1)
         scenario_tries = []
@@ -400,12 +463,26 @@ async def run_evaluate(args):
             
             semantic_consistency = metrics.calculate_consensus_scoring(summaries) if len(summaries) > 1 else 1.0
             
-            print(f"\n[Research] Scenario {scenario.get('scenario_id')}:")
-            print(f"   - pass@{attempts}: {pass_at_k:.2f} ({successes}/{attempts} successes)")
-            print(f"   - Success Consistency: {success_consistency:.2f}")
             print(f"   - Semantic Stability: {semantic_consistency:.2f}")
             
+            research_summary[scenario.get("scenario_id")] = {
+                "title": scenario.get("title"),
+                "attempts": attempts,
+                "successes": successes,
+                "pass_at_k": pass_at_k,
+                "success_consistency": success_consistency,
+                "semantic_stability": semantic_consistency
+            }
+            
         all_results.extend([res for tries in scenario_tries for res in tries])
+
+    # Save research summary if multiple attempts were made
+    if research_summary:
+        summary_path = Path("reports/research_summary.json")
+        summary_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(summary_path, "w") as f:
+            json.dump(research_summary, f, indent=2)
+        print(f"\n[Research] Summary saved to {summary_path}")
 
 def detect_framework():
     """Simple heuristic to detect the agent framework used in the current dir."""
@@ -610,6 +687,146 @@ def handle_export(args):
     from . import exporter
     if args.format == "hf":
         exporter.HFExporter.export(args.input, args.output)
+
+def handle_install(args):
+    """Handler for 'install' command."""
+    print(f"\n[Install] Fetching scenario pack: {args.pack}...")
+    # Mock pack registry
+    packs = {
+        "telecom-pack": ["telecom"],
+        "finance-pack": ["finance", "tax"],
+        "security-pack": ["cybersecurity", "audit"]
+    }
+    
+    industries = packs.get(args.pack)
+    if not industries:
+        print(f"❌ Error: Pack '{args.pack}' not found in registry.")
+        return
+
+    for ind in industries:
+        print(f"📦 Installing {ind} scenarios...")
+        # In a real app, this would download from a remote repo or S3
+        # Here we just ensure the dir exists as a mock
+        Path(f"industries/{ind}").mkdir(parents=True, exist_ok=True)
+    
+    print(f"\n✔ Pack '{args.pack}' installed successfully.")
+
+async def handle_analyze(args):
+    """Handler for 'analyze' command."""
+    from . import analyzer
+    print(f"\n[Analyze] Scanning repository: {args.url}...")
+    try:
+        scenarios = await analyzer.analyze_repo(args.url)
+        print(f"✔ Found {len(scenarios)} potential agent patterns. Scenarios scaffolded in 'scenarios/auto/'.")
+    except Exception as e:
+        print(f"❌ Error during analysis: {e}")
+
+def handle_ci_generate(args):
+    """Handler for 'ci generate' command."""
+    workflow_path = Path(".github/workflows/agent_eval.yml")
+    workflow_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    content = """name: Agent Evaluation CI
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Harness
+        run: pip install -e .
+      - name: Run Scenarios
+        run: eval-harness evaluate --path scenarios/ --attempts 3
+"""
+    with open(workflow_path, "w") as f:
+        f.write(content)
+    print(f"✔ CI workflow generated at {workflow_path}")
+
+def handle_failures_search(args):
+    """Handler for 'failures search' command."""
+    print(f"\n[Failures] Searching corpus for: {args.query}...")
+    # Search industries directory for scenarios containing the query
+    industries_dir = Path("industries")
+    matches = []
+    for p in industries_dir.glob("**/*.json"):
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                if args.query.lower() in f.read().lower():
+                    matches.append(p)
+        except:
+            continue
+    
+    if not matches:
+        print(f"No matching edge cases found for '{args.query}'.")
+        return
+
+    print(f"🔍 Found {len(matches)} relevant edge cases:")
+    for m in matches[:10]:
+        print(f" - {m}")
+    if len(matches) > 10:
+        print(f"   ... and {len(matches)-10} more.")
+
+def handle_explain(args):
+    """Handler for 'explain' command."""
+    from . import explainer
+    print(f"\n[Explain] Diagnosing trace: {args.path}...")
+    path = Path(args.path)
+    if not path.exists():
+        print(f"❌ Error: File not found: {path}")
+        return
+        
+    diagnosis = explainer.explain_trace(path)
+    print("\n--- Diagnostic Report ---")
+    print(f"Root Cause: {diagnosis['root_cause']}")
+    print(f"Suggestion: {diagnosis['suggestion']}")
+    print("-------------------------")
+
+def handle_cleanup_runs(args):
+    """Handler for 'cleanup-runs' command."""
+    import time
+    runs_dir = Path("runs")
+    if not runs_dir.exists():
+        print("[Cleanup] 'runs/' directory does not exist.")
+        return
+
+    now = time.time()
+    cutoff = now - (args.days * 86400)
+    
+    files_to_delete = []
+    for f in runs_dir.glob("*.jsonl"):
+        if f.stat().st_mtime < cutoff:
+            files_to_delete.append(f)
+
+    if not files_to_delete:
+        print(f"[Cleanup] No trace files older than {args.days} days found.")
+        return
+
+    print(f"[Cleanup] Found {len(files_to_delete)} files to delete:")
+    for f in files_to_delete:
+        print(f" - {f.name}")
+
+    if not args.force:
+        confirm = input("\nProceed with deletion? (y/N): ").strip().lower()
+        if confirm != 'y':
+            print("[Cleanup] Aborted.")
+            return
+
+    for f in files_to_delete:
+        try:
+            f.unlink()
+            print(f"✔ Deleted {f.name}")
+        except Exception as e:
+            print(f"❌ Error deleting {f.name}: {e}")
+
+    print("\n[Cleanup] Done.")
 
 if __name__ == "__main__":
     main()

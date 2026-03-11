@@ -87,6 +87,8 @@ Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the eval
 | Exporter | `eval_runner/exporter.py`| Conversion from internal `run.jsonl` to external formats (e.g., HuggingFace) |
 | Benchmarks | `eval_runner/benchmarks/`| Native integrations for community datasets (GAIA, AssistantBench) |
 | Adapters | `eval_runner/adapters/`| Native plugin shims for external frameworks (LangGraph, CrewAI) |
+| Analyzer | `eval_runner/analyzer.py`| Proactive GitHub repo scanning and AES scenario scaffolding |
+| Explainer | `eval_runner/explainer.py`| Heuristic-based trace diagnostics and root cause analysis |
 
 ## Foundational Core: AES & Flight Recorder
 
@@ -94,6 +96,8 @@ Phase 1 establishes the "Standardized Evaluation" layer:
 - **AES (Agent Eval Specification)**: A framework-agnostic YAML format defining agent tasks, expected states, and safety policies. It enables benchmark sharing across repositories.
 - **`run.jsonl` (Flight Recorder)**: Every evaluation emits an append-only, deterministic log. This serves as the "source of truth" for replaying and debugging agent behavior without re-running the actual models.
 - **Agent Crash Replayer**: The `replay` CLI command reconstructs the agent's timeline from a `run.jsonl` file, enabling step-by-step inspection.
+- **Scenario Editor**: A visual drag-and-drop tool integrated into the Admin Console for authoring and modifying AES logic without writing JSON.
+- **Failures Explainer**: The `explain` command analyzes `run.jsonl` to provide human-readable diagnostics for complex agent failures.
 
 ## Semantic Bridge & Drift Management
 

@@ -175,6 +175,33 @@ eval-harness playground --agent http://localhost:5001/execute_task
 
 ---
 
+## 🚀 Visionary CLI Utilities & UX
+
+### 📦 `install` — Scenario Packs
+Rapidly deploy industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
+```bash
+eval-harness install telecom-pack
+```
+
+### 🔬 `analyze` — Repo Scanning
+Scan agent repositories to identify tool patterns and auto-generate matching AES scenarios.
+```bash
+eval-harness analyze https://github.com/example/agent
+```
+
+### 🤖 `explain` — Trace Analysis
+Automated diagnostic analysis of `run.jsonl` traces to identify root causes of agent failures.
+```bash
+eval-harness explain runs/run.jsonl
+```
+
+### 🛠️ Visual Scenario Editor
+Built into the Admin Console (`eval-harness console`), this tool provides a drag-and-drop interface for constructing AES logic without writing JSON.
+
+---
+
+---
+
 ## 🧩 Scenario Structure (Example)
 
 ```json

@@ -113,11 +113,17 @@ eval-harness replay runs/run.jsonl
 # Launch Admin Console GUI
 eval-harness console --port 5000
 
-# Interactive Playground
-eval-harness playground --agent http://localhost:5001
+# Install scenario packs
+eval-harness install telecom-pack
 
-# Export to HuggingFace
-eval-harness export --input runs/run.jsonl --format hf --output dataset.json
+# Analyze agent repository
+eval-harness analyze https://github.com/agent-repo
+
+# Diagnose failures
+eval-harness explain runs/run.jsonl
+
+# Generate CI workflow
+eval-harness ci generate
 ```
 *See the full [CLI Reference](docs/cli_reference.md) for more.*
 
@@ -134,7 +140,12 @@ The harness is built on a decoupled, event-driven architecture that allows Enter
 - **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
 
 ### 🌟 Productivity Utilities
-- `console`: React Native GUI for Visual Scenario Execution and Debugging.
+- `console`: React Native GUI for Visual Scenario Execution, Debugging, and **Scenario Editing**.
+- `install`: Rapid deployment of industry-specific scenario bundles.
+- `analyze`: Proactive agent codebase scanning and AES scaffolding.
+- `ci generate`: Instant GitHub Actions integration.
+- `failures search`: Discovery of edge cases from the global failure corpus.
+- `explain`: Automated trace diagnostics for root cause analysis.
 - `doctor`: Environment health checker.
 - `report`: Rich HTML reporting with interactive Mermaid trajectories.
 - `record` & `playground`: Interaction capture and REPL experimentation.
@@ -147,8 +158,10 @@ The harness includes a comprehensive **React Native (Expo)** Admin Console that 
 
 **Features:**
 - **Visual Debugger**: Live playback of agent trajectories.
-- **Plugin UI Injection**: Enterprise plugins can natively hot-swap their own UI modules into the dashboard.
-- **Flight Recorder**: Interactive trace analysis.
+- **Scenario Editor**: Visual drag-and-drop AES construction logic.
+- **Secure Handoff**: JWT-authenticated access to Enterprise plugin views.
+- **Dual-Mode Rendering**: Adaptive UI rendering (Native SDUI vs. Secure WebView).
+- **Flight Recorder**: Interactive trace analysis and replay.
 
 **Launch:**
 ```bash

@@ -137,6 +137,13 @@ class SentimentMetricPlugin(BaseEvalPlugin):
         results["passed"] = results["passed"] and (sentiment_score == 1.0)
 ```
 
+## Visionary Platform Utilities
+
+Phase 6 and 7 introduced high-level automation tools that leverage the plugin system and event bus:
+- **`explain <run.jsonl>`**: Uses heuristic pattern matching (expandable via plugins) to diagnose agent failures.
+- **`analyze <url>`**: Scans agent codebases; plugins can register new "Tool Signature" detectors to improve scanning accuracy.
+- **Visual Scenario Editor**: A drag-and-drop React Native UI for building AES logic, accessible via the Admin Console.
+
 ## Registering Plugins
 
 Plugins are automatically discovered if they are registered as entry points under the `eval_runner.plugins` group:

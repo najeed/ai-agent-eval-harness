@@ -26,6 +26,20 @@ Scaffold a new benchmark directory with starter scenarios for a specific industr
 eval-harness init --dir <directory_name> --industry <industry_name>
 ```
 
+### `install`
+Install curated scenario packs (e.g., `telecom-pack`, `rag-agent-pack`).
+```bash
+eval-harness install <pack-name>
+```
+**Example:** `eval-harness install telecom-pack` downloads and registers a bundle of 100+ telecom-specific agent scenarios.
+
+### `analyze`
+Scan an agent's GitHub repository to identify tool patterns and auto-generate matching AES scenarios.
+```bash
+eval-harness analyze <github_url>
+```
+**Example:** `eval-harness analyze https://github.com/my-org/my-agent` scaffolds scenarios in `scenarios/auto/` based on detected tool definitions.
+
 ## Specification & Validation
 
 ### `aes validate`
@@ -44,6 +58,12 @@ eval-harness spec-to-eval --input <prd.md> [--output <scenario.json>]
 ### `auto-translate`
 Translate raw, unstructured documents (TXT, MD, PDF, DOCX) into structured Scenario JSON files using a local LLM.
 **Requirement:** `Ollama` must be running locally.
+
+### `ci generate`
+Scaffold a `.github/workflows/agent_eval.yml` file to run evaluations automatically on Pull Requests.
+```bash
+eval-harness ci generate
+```
 ```bash
 eval-harness auto-translate --input <document.pdf> --model <model_name> --industry <industry>
 ```
@@ -68,6 +88,13 @@ Convert internal execution traces (`run.jsonl`) into externally shareable datase
 eval-harness export --input <run.jsonl> --format hf --output <dataset.json>
 ```
 
+### `failures search`
+Query the global Failure Corpus to retrieve known failing edge cases for specific topics (e.g., PII, timeouts).
+```bash
+eval-harness failures search <query>
+```
+**Example:** `eval-harness failures search "pii leaks"` discovers and imports 5 realistic failing scenarios from the corpus.
+
 ## Debugging & Exploration
 
 ### `replay`
@@ -75,6 +102,13 @@ Re-execute a `run.jsonl` flight recorder log to debug "wrong turns".
 ```bash
 eval-harness replay <path/to/run.jsonl>
 ```
+
+### `explain`
+Automatically analyze a `run.jsonl` trace to diagnose root causes and suggest technical fixes.
+```bash
+eval-harness explain <path/to/run.jsonl>
+```
+**Heuristics:** Detects infinite loops, tool-call hallucinations, policy violations, and PII exposure with targeted remediation advice.
 
 ### `playground`
 Launch an interactive REPL to talk to an agent directly in the terminal.

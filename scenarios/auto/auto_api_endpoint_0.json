@@ -1,0 +1,15 @@
+{
+  "scenario_id": "auto_api_endpoint_0",
+  "title": "Auto-generated for /api/v1/billing",
+  "description": "Verification of api_endpoint discovered in app/billing.py",
+  "tasks": [
+    {
+      "task_id": "t1",
+      "description": "Interact with /api/v1/billing and verify its output."
+    }
+  ],
+  "metadata": {
+    "source_file": "app/billing.py",
+    "pattern": "/api/v1/billing"
+  }
+}

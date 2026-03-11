@@ -18,10 +18,11 @@ const ICON_MAP: Record<string, any> = {
   'github': Github,
   'shield': Shield,
   'box': Box,
+  'edit': FileText,
 };
 
 export default function Layout() {
-  const [navItems, setNavItems] = useState([]);
+  const [navItems, setNavItems] = useState([] as any[]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,14 +53,14 @@ export default function Layout() {
         <DrawerItemList {...props} />
         
         {/* Render Dynamic / External / Plugin links */}
-        {navItems.filter(item => item.type !== 'internal').map((item) => {
+        {navItems.filter((item: any) => item.type !== 'internal').map((item: any) => {
           const Icon = ICON_MAP[item.icon] || ExternalLink;
           return (
             <DrawerItem
               key={item.id}
               label={item.title}
               inactiveTintColor="#AAA"
-              icon={({ color, size }) => <Icon color={color} size={size} />}
+              icon={({ color, size }: any) => <Icon color={color} size={size} />}
               onPress={async () => {
                 if (item.type === 'external') {
                   Linking.openURL(item.path);
@@ -86,7 +87,7 @@ export default function Layout() {
 
   return (
     <Drawer 
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      drawerContent={(props: any) => <CustomDrawerContent {...props} />}
       screenOptions={{ 
         headerStyle: { backgroundColor: '#1A1A1A' }, 
         headerTintColor: '#fff',
@@ -100,7 +101,7 @@ export default function Layout() {
         options={{
           drawerLabel: 'Dashboard',
           title: 'Dashboard',
-          drawerIcon: ({ color, size }) => <Home color={color} size={size} />
+          drawerIcon: ({ color, size }: any) => <Home color={color} size={size} />
         }}
       />
       <Drawer.Screen
@@ -108,7 +109,7 @@ export default function Layout() {
         options={{
           drawerLabel: 'Scenarios',
           title: 'Scenarios',
-          drawerIcon: ({ color, size }) => <FileText color={color} size={size} />
+          drawerIcon: ({ color, size }: any) => <FileText color={color} size={size} />
         }}
       />
       <Drawer.Screen
@@ -116,7 +117,7 @@ export default function Layout() {
         options={{
           drawerLabel: 'Reports & Traces',
           title: 'Reports & Traces',
-          drawerIcon: ({ color, size }) => <BarChart2 color={color} size={size} />
+          drawerIcon: ({ color, size }: any) => <BarChart2 color={color} size={size} />
         }}
       />
       <Drawer.Screen
@@ -124,7 +125,7 @@ export default function Layout() {
         options={{
           drawerLabel: 'Visual Debugger',
           title: 'Visual Debugger',
-          drawerIcon: ({ color, size }) => <Activity color={color} size={size} />
+          drawerIcon: ({ color, size }: any) => <Activity color={color} size={size} />
         }}
       />
       <Drawer.Screen
@@ -132,7 +133,15 @@ export default function Layout() {
         options={{
           drawerLabel: 'Documentation',
           title: 'Documentation',
-          drawerIcon: ({ color, size }) => <Book color={color} size={size} />
+          drawerIcon: ({ color, size }: any) => <Book color={color} size={size} />
+        }}
+      />
+      <Drawer.Screen
+        name="editor"
+        options={{
+          drawerLabel: 'Scenario Editor',
+          title: 'Visual AES Builder',
+          drawerIcon: ({ color, size }: any) => <FileText color={color} size={size} />
         }}
       />
       {/* Hide community from internal list as it is handled by custom drawer item */}

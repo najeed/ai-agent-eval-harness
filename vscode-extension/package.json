@@ -1,0 +1,37 @@
+{
+  "name": "ai-agent-eval-harness",
+  "displayName": "AI Agent Eval Harness",
+  "description": "VS Code extension for the AI Agent Evaluation Harness",
+  "version": "0.1.0",
+  "publisher": "opencore",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Testing",
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "eval-harness.runScenario",
+        "title": "Eval: Run Scenario"
+      },
+      {
+        "command": "eval-harness.openConsole",
+        "title": "Eval: Open Admin Console"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "eslint": "^8.41.0"
+  }
+}
