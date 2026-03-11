@@ -178,13 +178,13 @@ eval-harness replay --path runs/run.jsonl
 
 ### ✅ View in the Visual Dashboard
 
-Instead of terminal replay, inspect the results natively:
+Instead of terminal replay, inspect the results natively using the **Admin Console**. The console consists of a Flask backend (`eval_runner/console`) and a React Native frontend (`admin-console/`).
 
 ```bash
 eval-harness console
 ```
 
-Open `http://localhost:5000` or use `npm run web` inside `admin-console/` to interactively debug the run in the React Native Expo dashboard.
+Open `http://localhost:5000` to interactively debug the run. Note that the `quickstart` command provides a sample run in the CLI but does not launch this visual GUI automatically.
 
 ---
 

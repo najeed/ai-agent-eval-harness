@@ -21,7 +21,10 @@ pip install -e .
 eval-harness quickstart
 ```
 
-**What it does:** Spawns a sample agent, runs a troubleshooting evaluation, and generates a rich visual report in `reports/`.
+**What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich legacy HTML report in `reports/`. 
+
+> [!TIP]
+> **Quickstart is CLI-only.** To access the visual suite, you must separately launch the **Admin Console** via `eval-harness console`.
 
 ### 1.2 Useful CLI Commands
 - `eval-harness console`: Launch the React Native (Expo) Admin Console GUI for visual management.

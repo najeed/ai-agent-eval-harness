@@ -26,7 +26,8 @@ The harness is organized into the following key components:
 
 -   `/industries`: Evaluation assets (4,400+ scenarios) categorized by 44 industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
--   `/ui` & `/dashboard`: Frontend visualization tools for agent traces and analytical insights.
+-   `/eval_runner/console`: Flask-based REST API for the Admin Console.
+-   `/admin-console`: React Native (Expo) Frontend for visual management.
 -   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
 -   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
 -   `/runs`: Local execution history (Flight Recorder logs).
@@ -62,11 +63,14 @@ venv\Scripts\activate  # On Windows
 # 3. Install the package in editable mode
 pip install -e .
 
-# 4. Run the Quickstart Demo
+# 4. Run the Quickstart Demo (CLI)
 eval-harness quickstart
 ```
 
-**What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich HTML report in `reports/`.
+**What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich legacy HTML report in `reports/`.
+
+> [!TIP]
+> **Prefer a visual experience?** After running the quickstart, launch the **Admin Console** to replay the trace interactively: `eval-harness console`.
 
 *(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker-compose up --build`.
 
