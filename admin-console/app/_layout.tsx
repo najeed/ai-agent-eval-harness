@@ -1,7 +1,13 @@
 import { Drawer } from 'expo-router/drawer';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
-import { Home, FileText, BarChart2, Activity, Book, Github } from 'lucide-react-native';
+import { ActivityIndicator, View, StyleSheet, Linking } from 'react-native';
+import { 
+  DrawerContentScrollView, 
+  DrawerItemList, 
+  DrawerItem 
+} from '@react-navigation/drawer';
+import { Home, FileText, BarChart2, Activity, Book, Github, Shield, Box, ExternalLink } from 'lucide-react-native';
 
 const ICON_MAP: Record<string, any> = {
   'home': Home,
@@ -9,7 +15,9 @@ const ICON_MAP: Record<string, any> = {
   'bar-chart-2': BarChart2,
   'activity': Activity,
   'book': Book,
-  'github': Github, // Social media icon request
+  'github': Github,
+  'shield': Shield,
+  'box': Box,
 };
 
 export default function Layout() {
@@ -37,14 +45,56 @@ export default function Layout() {
     );
   }
 
+  function CustomDrawerContent(props: any) {
+    return (
+      <DrawerContentScrollView {...props}>
+        {/* Render internal screens managed by Expo Router */}
+        <DrawerItemList {...props} />
+        
+        {/* Render Dynamic / External / Plugin links */}
+        {navItems.filter(item => item.type !== 'internal').map((item) => {
+          const Icon = ICON_MAP[item.icon] || ExternalLink;
+          return (
+            <DrawerItem
+              key={item.id}
+              label={item.title}
+              inactiveTintColor="#AAA"
+              icon={({ color, size }) => <Icon color={color} size={size} />}
+              onPress={async () => {
+                if (item.type === 'external') {
+                  Linking.openURL(item.path);
+                } else if (item.type === 'plugin') {
+                  // Secure Handoff: Get token before navigating
+                  try {
+                    const res = await fetch('http://127.0.0.1:5000/api/auth/handoff');
+                    const { token } = await res.json();
+                    router.push({
+                      pathname: `/plugin/${item.id}`,
+                      params: { path: item.path, token, title: item.title }
+                    });
+                  } catch (err) {
+                    console.error('Handoff failed', err);
+                  }
+                }
+              }}
+            />
+          );
+        })}
+      </DrawerContentScrollView>
+    );
+  }
+
   return (
-    <Drawer screenOptions={{ 
-      headerStyle: { backgroundColor: '#1A1A1A' }, 
-      headerTintColor: '#fff',
-      drawerStyle: { backgroundColor: '#222' },
-      drawerActiveTintColor: '#007BFF',
-      drawerInactiveTintColor: '#AAA',
-    }}>
+    <Drawer 
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      screenOptions={{ 
+        headerStyle: { backgroundColor: '#1A1A1A' }, 
+        headerTintColor: '#fff',
+        drawerStyle: { backgroundColor: '#222' },
+        drawerActiveTintColor: '#007BFF',
+        drawerInactiveTintColor: '#AAA',
+      }}
+    >
       <Drawer.Screen
         name="index"
         options={{
@@ -85,12 +135,19 @@ export default function Layout() {
           drawerIcon: ({ color, size }) => <Book color={color} size={size} />
         }}
       />
+      {/* Hide community from internal list as it is handled by custom drawer item */}
       <Drawer.Screen
         name="community"
         options={{
-          drawerLabel: 'Community',
-          title: 'Community',
-          drawerIcon: ({ color, size }) => <Github color={color} size={size} />
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+      {/* Dynamic Plugin Route */}
+      <Drawer.Screen
+        name="plugin/[id]"
+        options={{
+          drawerItemStyle: { display: 'none' },
+          title: 'Plugin'
         }}
       />
     </Drawer>

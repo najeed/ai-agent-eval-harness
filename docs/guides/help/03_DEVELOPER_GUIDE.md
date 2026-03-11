@@ -84,27 +84,45 @@ def on_tool_request(self, context: TurnContext, tool_name: str, args: dict) -> b
     return True
 ```
 
-### 4.3 Extending the Web Admin Console (Native UI)
-Enterprise plugins can inject their own user interfaces natively into the new `eval-harness console` Expo application. Utilizing the `on_register_console_routes` hook, you can register a backend Flask Blueprint and dynamically push navigation links to the frontend drawer for hot-swappable Enterprise SSO tools or analytical views.
+### 4.3 Extending the Web Admin Console (Native GUI)
+Enterprise plugins can inject their own user interfaces natively into the `eval-harness console` Expo application using a **Secure Handoff** architecture.
+
+#### Secure Handoff Workflow:
+1. **JWT Issuance**: The frontend requests a short-lived (60s) handoff token from `/api/auth/handoff`.
+2. **Authentication**: The plugin route must be decorated with `@handoff_required` to verify this token.
+3. **Dual Rendering Modes**:
+   - **Mode A (Native SDUI)**: If the endpoint returns `application/json` with a UI spec, the console renders it using native React Native components.
+   - **Mode B (Secure WebView)**: If it returns HTML, the console renders an authenticated WebView.
 
 ```python
 from flask import Blueprint, jsonify
+from eval_runner.console.auth import handoff_required
 
 class EnterpriseConsolePlugin(BaseEvalPlugin):
     def on_register_console_routes(self, app, nav_registry):
-        # 1. Add Navigation to Expo Sidebar (Lucide icon supported)
+        # 1. Register link with 'type' metadata ('internal' | 'external' | 'plugin')
         nav_registry.append({
-            "id": "enterprise_ui", 
-            "title": "Enterprise SSO", 
-            "path": "/enterprise/sso", 
-            "icon": "shield"
+            "id": "compliance_audit", 
+            "title": "Compliance Audit", 
+            "path": "/api/enterprise/audit", 
+            "icon": "shield",
+            "type": "plugin"
         })
         
-        # 2. Register REST API Blueprint
+        # 2. Register Secure Blueprint
         bp = Blueprint("enterprise", __name__)
-        @bp.route("/api/enterprise/status")
-        def status():
-            return jsonify({"status": "Enterprise SSO Active"})
+        
+        @bp.route("/api/enterprise/audit")
+        @handoff_required
+        def audit_view():
+            # Mode A: Server-Driven UI (Native)
+            return jsonify({
+                "title": "Enterprise Audit",
+                "items": [
+                    {"label": "PII Leakage", "value": "0 Detected"},
+                    {"label": "Sanitization", "value": "100% Pass"}
+                ]
+            })
             
         app.register_blueprint(bp)
 ```

@@ -76,28 +76,42 @@ class MyReportPlugin(BaseEvalPlugin):
 
 Usage: `eval-harness plugin myreport generate --format html`
 
-## Extending the Admin Console GUI (React Native / Flask)
+## Extending the Admin Console GUI (Native SDUI & Secure WebView)
 
-Plugins can also inject their own UI natively into the new `eval-harness console` Expo application. Use the `on_register_console_routes` hook to register a backend Flask Blueprint and push a navigation link to the frontend drawer.
+Plugins can inject high-fidelity UIs into the `eval-harness console` using the **Secure Handoff Architecture**. This ensures Enterprise-grade security while maintaining a "Zero-Touch" core.
+
+### 1. Registering the Navigation Link
+You must specify the `type: "plugin"` in the `nav_registry` to trigger the secure JWT handoff.
+
+### 2. Implementation Modes
+- **Mode A (Native)**: Return JSON to let the console render it with premium native components.
+- **Mode B (Web)**: Return HTML/JS to render inside a secure WebView.
 
 ```python
 from flask import Blueprint, jsonify
+from eval_runner.console.auth import handoff_required
 
-class EnterpriseConsolePlugin(BaseEvalPlugin):
+class AuditPlugin(BaseEvalPlugin):
     def on_register_console_routes(self, app, nav_registry):
-        # 1. Add Navigation to Expo Sidebar (Lucide icon supported)
+        # 1. metadata must include type="plugin"
         nav_registry.append({
-            "id": "enterprise_ui", 
-            "title": "Enterprise SSO Tools", 
-            "path": "/enterprise/sso", 
-            "icon": "shield"
+            "id": "audit_log", 
+            "title": "Security Audit", 
+            "path": "/api/plugin/audit", 
+            "icon": "shield",
+            "type": "plugin"
         })
         
-        # 2. Register REST API Blueprint
-        bp = Blueprint("enterprise", __name__)
-        @bp.route("/api/enterprise/status")
-        def status():
-            return jsonify({"status": "Active"})
+        bp = Blueprint("audit", __name__)
+        
+        @bp.route("/api/plugin/audit")
+        @handoff_required # Mandatory for Enterprise security
+        def get_audit():
+            # Returning JSON triggers Mode A (Native Rendering)
+            return jsonify({
+                "title": "Audit Dashboard",
+                "items": [{"label": "Status", "value": "Secure"}]
+            })
             
         app.register_blueprint(bp)
 ```

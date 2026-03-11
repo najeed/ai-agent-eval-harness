@@ -150,4 +150,16 @@ The following mitigations are enforced at the core level:
 | 6 | Fork Bomb | `MAX_FORK_DEPTH = 3`, `MAX_FORK_BREADTH = 5` enforced in `SessionManager` | `session.py` |
 | 7 | RCE via Repro Scripts | Scripts output as inert `.txt`; `os.system`/`subprocess` strings stripped | `reporting_plugin.py` |
 | 8 | Prototype Pollution | `EvaluationContext`/`TurnContext` are `frozen` dataclasses; nested dicts wrapped in `MappingProxyType`; history stored as `tuple` | `context.py` |
+| 9 | Plugin GUI Hijacking | JWT-based **Secure Handoff** (60s tokens) for all Enterprise routes | `auth.py`, `_layout.tsx` |
+
+## Secure GUI Handoff Architecture
+
+The Admin Console uses a **Token-Exchange Protocol** to ensure Enterprise features are never exposed to unauthorized web requests:
+
+1. **Discovery**: The Flask backend exposes core and plugin routes via `/api/nav` with metadata (`type: internal | external | plugin`).
+2. **Handoff**: When a `plugin` link is clicked, the Expo app fetches a single-use JWT from `/api/auth/handoff`.
+3. **Validation**: The plugin route verifies the JWT via the `@handoff_required` decorator.
+4. **Adaptive Rendering**: 
+   - **Mode A (Native)**: Renders JSON specs using the console's premium Design System.
+   - **Mode B (WebView)**: Renders custom HTML inside an authenticated container.
 

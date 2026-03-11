@@ -6,14 +6,14 @@ import json
 core_bp = Blueprint("core", __name__, url_prefix="/api")
 
 def register_core_routes(app, nav_registry):
-    # Add core navigation items
+    # Add core navigation items with metadata for dynamic rendering
     nav_registry.extend([
-        {"id": "dashboard", "title": "Dashboard", "path": "/", "icon": "home"},
-        {"id": "scenarios", "title": "Scenarios", "path": "/scenarios", "icon": "file-text"},
-        {"id": "reports", "title": "Reports & Traces", "path": "/reports", "icon": "bar-chart-2"},
-        {"id": "debugger", "title": "Visual Debugger", "path": "/debugger", "icon": "activity"},
-        {"id": "docs", "title": "Documentation", "path": "/docs", "icon": "book"},
-        {"id": "community", "title": "Community", "path": "https://github.com", "icon": "github"}
+        {"id": "dashboard", "title": "Dashboard", "path": "/", "icon": "home", "type": "internal"},
+        {"id": "scenarios", "title": "Scenarios", "path": "/scenarios", "icon": "file-text", "type": "internal"},
+        {"id": "reports", "title": "Reports & Traces", "path": "/reports", "icon": "bar-chart-2", "type": "internal"},
+        {"id": "debugger", "title": "Visual Debugger", "path": "/debugger", "icon": "activity", "type": "internal"},
+        {"id": "docs", "title": "Documentation", "path": "/docs", "icon": "book", "type": "internal"},
+        {"id": "community", "title": "Community", "path": "https://github.com/najeed/ai-agent-eval-harness", "icon": "github", "type": "external"}
     ])
     
     app.register_blueprint(core_bp)

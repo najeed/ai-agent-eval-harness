@@ -7,3 +7,4 @@ PyYAML>=6.0
 sentence-transformers
 numpy
 datasets
+PyJWT>=2.0.0

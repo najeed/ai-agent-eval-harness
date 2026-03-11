@@ -1,11 +1,14 @@
 from flask import Flask
 from flask_cors import CORS
 from .routes import register_core_routes
+from .auth import auth_bp
 from eval_runner.plugins import manager
 
 def create_app():
     app = Flask(__name__)
     CORS(app)
+    app.register_blueprint(auth_bp)
+    
     
     # Core navigation registry
     nav_registry = []

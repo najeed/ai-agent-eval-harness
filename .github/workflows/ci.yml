@@ -46,3 +46,9 @@ jobs:
       env:
         OTEL_SDK_DISABLED: true
 
+    - name: Console handoff tests
+      run: pytest tests/test_console_handoff.py -v
+      env:
+        OTEL_SDK_DISABLED: true
+
+

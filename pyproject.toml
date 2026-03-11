@@ -10,6 +10,7 @@ dependencies = [
     "PyYAML>=6.0",
     "sentence-transformers",
     "numpy",
+    "PyJWT>=2.0.0",
 ]
 
 [build-system]
