@@ -1,0 +1,35 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 110 items
+
+tests\test_aes.py ..                                                     [  1%]
+tests\test_agents.py ...                                                 [  4%]
+tests\test_architectural_improvements.py ...                             [  7%]
+tests\test_architecture.py ...                                           [ 10%]
+tests\test_cli.py ....                                                   [ 13%]
+tests\test_coverage.py ..                                                [ 15%]
+tests\test_drift_importer.py ..                                          [ 17%]
+tests\test_engine.py ..........                                          [ 26%]
+tests\test_eval_runner.py ................                               [ 40%]
+tests\test_events.py ...                                                 [ 43%]
+tests\test_loader.py ...                                                 [ 46%]
+tests\test_loader_v2.py ..                                               [ 48%]
+tests\test_metrics.py ..................                                 [ 64%]
+tests\test_mutator.py ....                                               [ 68%]
+tests\test_p4_ecosystem.py ...                                           [ 70%]
+tests\test_phase3.py ....                                                [ 74%]
+tests\test_policy_guardrails.py ..                                       [ 76%]
+tests\test_reporter.py .....                                             [ 80%]
+tests\test_schema_validation.py .                                        [ 81%]
+tests\test_spec_parser.py ..                                             [ 83%]
+tests\test_tool_sandbox.py .....                                         [ 88%]
+tests\test_trajectory_and_parsimony.py ....                              [ 91%]
+tests\test_triage.py ....                                                [ 95%]
+tests\test_utilities.py .....                                            [100%]
+
+============================ 110 passed in 17.23s =============================
+

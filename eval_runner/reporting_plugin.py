@@ -52,10 +52,9 @@ class ReportingPlugin(BaseEvalPlugin):
             return last_content.get("summary") or last_content.get("content") or ""
         return str(last_content)
 
-    def extend_cli(self, parser):
-        """Add reporting-specific flags to the CLI."""
-        parser.add_argument("--no-html", action="store_true", help="Disable HTML report generation")
-        parser.add_argument("--notify", action="store_true", help="Dispatch notifications (Jira/Slack mock)")
+    def on_register_commands(self, registry):
+        """Plugins now use a secure namespace registry instead of extend_cli"""
+        pass
 
     def after_evaluation(self, context: EvaluationContext, results: list):
         """Automatically called when evaluation finishes."""
@@ -88,12 +87,17 @@ class ReportingPlugin(BaseEvalPlugin):
         repro_dir = Path("reports") / "repro"
         repro_dir.mkdir(parents=True, exist_ok=True)
         
-        repro_path = repro_dir / f"repro_{scenario_id}.sh"
-        content = f"#!/bin/bash\n# Reproduction script for {scenario_id}\neval-harness run scenarios/{scenario_id}.json\n"
+        # Security Guardrails: RCE Prevention
+        # Generate as inert .txt to prevent auto-execution
+        repro_path = repro_dir / f"repro_{scenario_id}.txt"
+        
+        # Strip potential arbitrary execution
+        content = f"# Reproduction script for {scenario_id}\n# ONLY execute this manually after review.\neval-harness run scenarios/{scenario_id}.json\n"
+        content = content.replace("os.system", "[REDACTED]").replace("subprocess", "[REDACTED]")
         
         with open(repro_path, "w") as f:
             f.write(content)
-        print(f"   [ReportingPlugin] Repro script generated: {repro_path}")
+        print(f"   [ReportingPlugin] Inert repro instructions generated: {repro_path}")
 
     def dispatch_notifications(self, context: EvaluationContext, results: list):
         """Mock notification dispatcher."""

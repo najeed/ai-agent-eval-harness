@@ -25,6 +25,9 @@ AGENT_API_URL = os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")
 # Maximum number of conversation turns per task before forcing completion
 MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "5"))
 
+# Security Guardrails
+MAX_ENGINE_ATTEMPTS = 50
+
 # Run Log Configuration
 RUN_LOG_DIR = Path(os.getenv("RUN_LOG_DIR", "runs"))
 RUN_LOG_PER_RUN = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
@@ -95,6 +98,10 @@ class AgentAdapterRegistry:
 async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[dict] = None) -> list:
     """Entry point for evaluation. Delegates to the Runner strategy."""
     from .runner import DefaultRunner
+    
+    if attempts > MAX_ENGINE_ATTEMPTS:
+        print(f"[Engine] Security WARNING: requested attempts ({attempts}) exceeds MAX_ENGINE_ATTEMPTS ({MAX_ENGINE_ATTEMPTS}). Capping.")
+        attempts = MAX_ENGINE_ATTEMPTS
     
     # Load internal plugins if not already loaded (like FlightRecorder and ReportingPlugin)
     from .flight_recorder import FlightRecorderPlugin

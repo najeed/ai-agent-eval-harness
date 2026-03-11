@@ -99,3 +99,14 @@ Interactively workspace to generate new test scenarios via a terminal wizard.
 ```bash
 eval-harness scenario generate
 ```
+
+## Plugin Commands
+
+### `plugin <name> <command>`
+Execute plugin-specific subcommands. Plugins register their own commands under a secure namespace to prevent command hijacking.
+```bash
+eval-harness plugin <plugin_name> <command> [options]
+```
+
+> **Security Note:** All plugin commands are namespaced under `eval-harness plugin <name>` to prevent command hijacking. The legacy `extend_cli` hook has been removed.
+

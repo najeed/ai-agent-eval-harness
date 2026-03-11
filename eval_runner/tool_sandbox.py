@@ -150,6 +150,43 @@ class ToolSandbox(AbstractSandbox):
         
         # Notify observers of internal state changes
         from .events import EventEmitter, CoreEvents
-        EventEmitter.emit("world_state_change", {"state": self.state, "shared_state": self.shared_state.registry})
+        
+        # Sandbox Escape Prevention: Chroot/Virtualize paths before emitting
+        # Security: Sanitize both keys AND values; strip shell meta-characters (Audit Point #5)
+        safe_state = {}
+        for k, v in self.state.items():
+            safe_key = self._sanitize_path(k)
+            safe_val = self._sanitize_value(v)
+            safe_state[safe_key] = safe_val
+            
+        EventEmitter.emit("world_state_change", {"state": safe_state, "shared_state": self.shared_state.registry})
 
         return output
+
+    @staticmethod
+    def _sanitize_path(path: str) -> str:
+        """Chroot/Virtualize a filesystem path, stripping traversals."""
+        import re
+        # Remove all forms of directory traversal
+        safe = re.sub(r'\.\.[\\/]+', '', path)
+        safe = safe.replace("../", "").replace("..\\", "")
+        if "/" in safe or "\\" in safe:
+            safe = "vfs:/" + safe.replace("\\", "/").split("/")[-1]
+        return safe
+
+    @staticmethod
+    def _sanitize_value(value):
+        """Strip shell meta-characters and path traversals from emitted values."""
+        import re
+        if isinstance(value, str):
+            # Strip path traversals
+            value = re.sub(r'\.\.[\\/]+', '', value)
+            value = value.replace("../", "").replace("..\\", "")
+            # Strip shell meta-characters
+            for char in [";", "|", "&&", "`"]:
+                value = value.replace(char, "")
+        elif isinstance(value, dict):
+            return {k: ToolSandbox._sanitize_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [ToolSandbox._sanitize_value(v) for v in value]
+        return value

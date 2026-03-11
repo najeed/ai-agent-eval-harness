@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "scenario_id": "accuracy-test",
+    "title": null,
+    "industry": null,
+    "timestamp": "20260311_233140"
+  },
+  "results": [
+    {
+      "task_id": "task-1",
+      "attempt": 1,
+      "turns_taken": 1,
+      "conversation_history": [
+        {
+          "role": "agent",
+          "content": {
+            "action": "final_answer",
+            "summary": "The customer is on the 100 Mbps plan."
+          }
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "information_retrieval_accuracy",
+          "score": 1.0,
+          "threshold": 0.8,
+          "success": true
+        }
+      ],
+      "triage_tag": "SUCCESS"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# Reproduction script for test-k
+# ONLY execute this manually after review.
+eval-harness run scenarios/test-k.json

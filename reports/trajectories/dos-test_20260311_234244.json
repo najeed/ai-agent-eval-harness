@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "scenario_id": "dos-test",
+    "title": null,
+    "industry": null,
+    "timestamp": "20260311_234244"
+  },
+  "results": [
+    {
+      "task_id": "t1",
+      "attempt": 1,
+      "turns_taken": 1,
+      "conversation_history": [
+        {
+          "role": "agent",
+          "content": {
+            "action": "final_answer",
+            "summary": "ok"
+          }
+        }
+      ],
+      "metrics": [],
+      "triage_tag": "SUCCESS"
+    }
+  ]
+}

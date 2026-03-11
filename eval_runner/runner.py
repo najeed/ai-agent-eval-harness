@@ -28,11 +28,12 @@ class DefaultRunner(BaseRunner):
         from .engine import AgentAdapterRegistry  # Avoid circular import
         from .tool_sandbox import ToolSandbox
         from .session import SessionManager
+        import copy
         
         ctx = EvaluationContext(
             scenario_id=scenario.get("scenario_id", "unknown"),
-            scenario_data=scenario,
-            metadata=metadata or {}
+            scenario_data=copy.deepcopy(scenario),
+            metadata=copy.deepcopy(metadata) if metadata else {}
         )
         
         run_id = f"run-{ctx.scenario_id}-{int(asyncio.get_event_loop().time())}"

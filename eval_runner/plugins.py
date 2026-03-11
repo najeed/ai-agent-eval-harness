@@ -8,8 +8,22 @@ Updated to support typed contexts.
 """
 
 import importlib.metadata
+import concurrent.futures
 from typing import List, Any
 from .context import EvaluationContext, TurnContext
+
+# Security Guardrails: Halt Execution Mitigation
+PLUGIN_TIMEOUT = 5.0
+
+def _invoke_with_timeout(method, *args, **kwargs):
+    """Wraps synchronous plugin hooks in a strict timeout."""
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(method, *args, **kwargs)
+        try:
+            return future.result(timeout=PLUGIN_TIMEOUT)
+        except concurrent.futures.TimeoutError:
+            print(f"   [Plugins] Timeout executing {method.__name__} after {PLUGIN_TIMEOUT}s")
+            raise
 
 class BaseEvalPlugin:
     """Base class for evaluation plugins."""
@@ -50,8 +64,8 @@ class BaseEvalPlugin:
         """Called after the evaluation is finished."""
         pass
     
-    def extend_cli(self, parser):
-        """Called to allow plugins to add CLI arguments."""
+    def on_register_commands(self, registry: Any):
+        """Allows plugins to register custom CLI subcommands under their namespace."""
         pass
 
 class PluginManager:
@@ -126,7 +140,7 @@ class PluginManager:
             method = getattr(plugin, hook_name, None)
             if method and callable(method):
                 try:
-                    method(*args, **kwargs)
+                    _invoke_with_timeout(method, *args, **kwargs)
                 except Exception as e:
                     print(f"   [Plugins] Error in plugin hook {hook_name}: {e}")
 
@@ -136,18 +150,14 @@ class PluginManager:
             method = getattr(plugin, hook_name, None)
             if method and callable(method):
                 try:
-                    if method(*args, **kwargs) is False:
+                    res = _invoke_with_timeout(method, *args, **kwargs)
+                    if res is False:
                         return False
                 except Exception as e:
-                    print(f"   [Plugins] Error in interceptor hook {hook_name}: {e}")
+                    print(f"   [Plugins] Error or Timeout in interceptor hook {hook_name}: {e}. Defaulting to True.")
         return True
 
-    def register_arguments(self, parser):
-        """Allows all plugins to add their own arguments."""
-        from argparse import _ArgumentGroup
-        group = parser.add_argument_group("Plugin Arguments")
-        for plugin in self.plugins:
-            plugin.extend_cli(group)
+
 
 # Global plugin manager instance
 manager = PluginManager()

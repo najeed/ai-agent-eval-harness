@@ -1,0 +1,12 @@
+{"event": "run_start", "timestamp": "2026-03-11T23:32:08.380274Z", "run_id": "run-test_m4-55719", "scenario": "test_m4", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-11T23:32:08.382381Z", "task_id": "t1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T23:32:08.382915Z", "role": "user", "content": "Call update_status"}
+{"event": "turn_start", "timestamp": "2026-03-11T23:32:08.383257Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-11T23:32:08.384365Z", "step": 1, "response": {"action": "call_tool", "tool_name": "update_status", "tool_params": {"status": "active"}}}
+{"event": "tool_call", "timestamp": "2026-03-11T23:32:08.389291Z", "step": 1, "tool": "update_status", "arguments": {"status": "active"}}
+{"event": "world_state_change", "timestamp": "2026-03-11T23:32:08.389691Z", "state": {"status": "active"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-11T23:32:08.389956Z", "step": 1, "tool": "update_status", "result": {"status": "success"}}
+{"event": "turn_start", "timestamp": "2026-03-11T23:32:08.392309Z", "turn": 2, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-11T23:32:08.393602Z", "step": 2, "response": {"action": "final_answer", "summary": "Done"}}
+{"event": "task_end", "timestamp": "2026-03-11T23:32:08.394151Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "agent", "content": {"action": "call_tool", "tool_name": "update_status", "tool_params": {"status": "active"}}}, {"role": "environment", "content": {"status": "success"}, "state_before": {"status": "idle"}, "state_after": {"status": "active"}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Done"}}], "metrics": []}}
+{"event": "run_end", "timestamp": "2026-03-11T23:32:08.400453Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}

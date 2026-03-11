@@ -34,9 +34,11 @@ The core engine must remain fast, modular, and lightweight.
 ### 3. Extending via Plugins
 The Zero-Touch Core is designed to be extended without core PRs.
 - **Lifecycle Hooks**: Subscribe to `before_evaluation`, `on_agent_turn_start`, `on_turn_end`, `on_metrics_calculated`, and `after_evaluation`.
-- **Interception**: Use `on_tool_request` to enforce safety or HITL proxies.
-- **Event Bus**: Use `@EventEmitter.on(...)` for passive monitoring.
+- **Interception**: Use `on_tool_request` to enforce safety or HITL proxies. Return `False` to block a tool call.
+- **CLI Commands**: Use `on_register_commands` to register namespaced CLI subcommands (under `eval-harness plugin <name>`).
+- **Event Bus**: Use `EventEmitter.subscribe(callback)` for passive monitoring.
 - **Entry Points**: Register your plugins in your `pyproject.toml` under `eval_runner.plugins`.
+- **Timeouts**: All plugin hooks are subject to a 5-second timeout to prevent hang conditions.
 
 ---
 

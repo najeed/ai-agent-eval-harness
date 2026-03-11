@@ -47,9 +47,8 @@ def main():
         "--attempts", type=int, default=1, help="Number of attempts per scenario (for pass@k)"
     )
     
-    # Plugin Argument Groups: Provide a dedicated space for plugins to add their args
-    # We pass the eval_parser to plugins so they can add their own argument groups
-    plugins.manager.trigger("extend_cli", eval_parser)
+    # Security Guardrails: Command Hijacking Prevention
+    # Removed `extend_cli` hook. Plugins must register via namespaced registry `eval-harness plugin <name>`
     
     # --- AES COMMAND ---
     aes_parser = subparsers.add_parser("aes", help="Agent Eval Specification (AES) utilities")
@@ -98,8 +97,33 @@ def main():
     export_parser.add_argument("--format", default="hf", choices=["hf"], help="Target format")
     export_parser.add_argument("--output", required=True, help="Path to save exported dataset")
 
-    # Plugin-driven argument registration
-    plugins.manager.register_arguments(parser)
+    # --- PLUGIN COMMAND ---
+    # Security Guardrails: Strictly Namespaced Automated Registry
+    plugin_parser = subparsers.add_parser("plugin", help="Execute plugin-specific subcommands")
+    plugin_subparsers = plugin_parser.add_subparsers(dest="plugin_name", help="Plugin namespace")
+
+    class CommandRegistry:
+        def __init__(self, parser):
+            self.parser = parser
+            self.handlers = {}
+            
+        def register_command(self, name: str, handler, help_text: str = ""):
+            sub = self.parser.add_parser(name, help=help_text)
+            self.handlers[name] = handler
+            return sub
+
+    plugin_handlers = {}
+    for plugin in plugins.manager.plugins:
+        if hasattr(plugin, "on_register_commands"):
+            plugin_id = plugin.__class__.__name__.lower().replace("plugin", "")
+            p_subparser = plugin_subparsers.add_parser(plugin_id, help=f"Commands for {plugin_id}")
+            cmd_subparsers = p_subparser.add_subparsers(dest="plugin_cmd")
+            registry = CommandRegistry(cmd_subparsers)
+            
+            plugin.on_register_commands(registry)
+            
+            if registry.handlers:
+                plugin_handlers[plugin_id] = registry.handlers
 
     args = parser.parse_args()
 
@@ -146,6 +170,12 @@ def main():
             asyncio.run(playground.run_playground(args.agent))
         elif args.command == "export":
             handle_export(args)
+        elif args.command == "plugin":
+            if args.plugin_name in plugin_handlers and args.plugin_cmd in plugin_handlers[args.plugin_name]:
+                handler = plugin_handlers[args.plugin_name][args.plugin_cmd]
+                handler(args)
+            else:
+                print("Invalid or missing plugin command.")
         else:
             parser.print_help()
     except Exception:

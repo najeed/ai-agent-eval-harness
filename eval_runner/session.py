@@ -8,12 +8,17 @@ Handles conversation history, tool results, and plugin interception.
 
 import json
 import asyncio
+import copy
 from typing import List, Dict, Any, Optional
 from dataclasses import replace
 from .context import TurnContext
 from .events import EventEmitter, CoreEvents
 from . import plugins
 from . import metrics
+
+# Security Guardrails: Fork Bomb Prevention
+MAX_FORK_DEPTH = 3
+MAX_FORK_BREADTH = 5
 
 class SessionManager:
     """Manages a single evaluation attempt's lifecycle."""
@@ -22,6 +27,7 @@ class SessionManager:
         from .engine import MAX_TURNS
         self.scenario = scenario
         self.max_turns = int(scenario.get("max_turns", MAX_TURNS))
+        self.fork_depth = scenario.get("_fork_depth", 0)
 
     async def execute_tasks(self, attempt_number: int) -> List[Dict[str, Any]]:
         from .engine import AgentAdapterRegistry  # Avoid circular import
@@ -48,7 +54,7 @@ class SessionManager:
                         task_id=task_id,
                         turn_number=turn,
                         current_message=current_message,
-                        history=conversation_history
+                        history=copy.deepcopy(conversation_history)
                     )
 
                     EventEmitter.emit(CoreEvents.TURN_START, {"turn": turn, "task_id": task_id})
@@ -92,6 +98,12 @@ class SessionManager:
                     elif action == "branch" and "branches" in agent_response:
                         # Non-Linear Branching
                         branch_data = agent_response["branches"]
+                        if len(branch_data) > MAX_FORK_BREADTH:
+                            EventEmitter.emit(CoreEvents.ERROR, {"message": f"Fork Bomb Prevention: Breadth ({len(branch_data)}) exceeds max ({MAX_FORK_BREADTH})."})
+                            break
+                        if getattr(self, "fork_depth", 0) >= MAX_FORK_DEPTH:
+                            EventEmitter.emit(CoreEvents.ERROR, {"message": f"Fork Bomb Prevention: Depth ({self.fork_depth}) exceeds max ({MAX_FORK_DEPTH})."})
+                            break
                         print(f"   [Session] Branching detected: {len(branch_data)} new paths.")
                         # This is a research-phase implementation: we'll only execute the first branch here
                         # but in a full system we would queue separate evaluation attempts for each fork.
@@ -236,7 +248,11 @@ class SessionManager:
         Creates a clone of the current session at a specific checkpoint.
         Supports research into non-linear trajectories.
         """
-        new_session = SessionManager(self.scenario)
+        if getattr(self, "fork_depth", 0) >= MAX_FORK_DEPTH:
+            raise RuntimeError(f"Fork Bomb Prevention: Maximum depth ({MAX_FORK_DEPTH}) reached.")
+        scenario_copy = copy.deepcopy(self.scenario)
+        scenario_copy["_fork_depth"] = getattr(self, "fork_depth", 0) + 1
+        new_session = SessionManager(scenario_copy)
         # Note: In a full implementation, we'd need to deep copy the sandbox
         # and ensure the conversation history is properly partitioned.
         print(f"   [Session] Forking trajectory with {len(history)} messages in history.")

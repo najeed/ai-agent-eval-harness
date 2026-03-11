@@ -2,10 +2,13 @@
 name = "eval_runner"
 version = "0.1.0"
 dependencies = [
-    "jsonschema",
-    "PyYAML",
+    "aiohttp>=3.8.0",
+    "Flask>=2.0.0",
+    "requests>=2.0.0",
+    "jsonschema>=4.0.0",
+    "PyYAML>=6.0",
     "sentence-transformers",
-    "numpy"
+    "numpy",
 ]
 
 [build-system]

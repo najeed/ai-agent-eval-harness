@@ -134,3 +134,19 @@ Phase 4 elevates the Harness from an isolated tool to an integrated participant 
 ```bash
 python -m pytest tests/ -v -p no:plugin_gateway
 ```
+
+## Security Guardrails (Enterprise Audit)
+
+The following mitigations are enforced at the core level:
+
+| # | Threat | Mitigation | Location |
+|---|---|---|---|
+| 1 | DoS / CPU Exhaustion | `MAX_ENGINE_ATTEMPTS = 50` hard cap | `engine.py` |
+| 2 | PII / Token Leakage | `sanitize_payload()` redacts JWT, AWS, GitHub, Bearer tokens and neutralizes format-string injection | `events.py` |
+| 3 | CLI Command Hijacking | `extend_cli` removed; plugins use namespaced `on_register_commands` under `eval-harness plugin <name>` | `cli.py`, `plugins.py` |
+| 4 | Plugin Halt (Hang) | All hooks wrapped in `PLUGIN_TIMEOUT = 5.0s` via `_invoke_with_timeout()` | `plugins.py` |
+| 5 | Sandbox Escape | Chroot on emitted state keys **and** values; shell meta-characters (`;`, `\|`, `&&`, `` ` ``) stripped | `tool_sandbox.py` |
+| 6 | Fork Bomb | `MAX_FORK_DEPTH = 3`, `MAX_FORK_BREADTH = 5` enforced in `SessionManager` | `session.py` |
+| 7 | RCE via Repro Scripts | Scripts output as inert `.txt`; `os.system`/`subprocess` strings stripped | `reporting_plugin.py` |
+| 8 | Prototype Pollution | `EvaluationContext`/`TurnContext` are `frozen` dataclasses; nested dicts wrapped in `MappingProxyType`; history stored as `tuple` | `context.py` |
+

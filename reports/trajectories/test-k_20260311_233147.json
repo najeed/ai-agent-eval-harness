@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "scenario_id": "test-k",
+    "title": null,
+    "industry": null,
+    "timestamp": "20260311_233147"
+  },
+  "results": [
+    {
+      "task_id": "task-1",
+      "attempt": 1,
+      "turns_taken": 1,
+      "conversation_history": [
+        {
+          "role": "agent",
+          "content": {
+            "action": "final_answer",
+            "summary": "Success"
+          }
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "generic_accuracy",
+          "score": 1.0,
+          "threshold": 0.5,
+          "success": true
+        }
+      ],
+      "triage_tag": "SUCCESS"
+    }
+  ]
+}

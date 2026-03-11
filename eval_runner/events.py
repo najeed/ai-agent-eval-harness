@@ -8,9 +8,42 @@ state transitions without modifying the main engine loop.
 """
 
 import json
+import re
 from datetime import datetime
 from typing import Dict, Any, List, Callable
 from abc import ABC, abstractmethod
+
+def sanitize_payload(data: dict) -> dict:
+    """Redacts PII and Secrets from event payload before broadcast.
+    
+    Security: Intercepts all outgoing bus payloads with regex-based
+    redaction for common secret patterns (Audit Point #2).
+    """
+    def redact_string(s: str) -> str:
+        # JWT tokens
+        s = re.sub(r"ey[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+", "[REDACTED_JWT]", s)
+        # OpenAI / Stripe style keys
+        s = re.sub(r"sk-[a-zA-Z0-9]{32,}", "[REDACTED_KEY]", s)
+        # AWS Access Key IDs
+        s = re.sub(r"AKIA[0-9A-Z]{16}", "[REDACTED_AWS_KEY]", s)
+        # GitHub Personal Access Tokens & OAuth tokens
+        s = re.sub(r"gh[po]_[a-zA-Z0-9]{36,}", "[REDACTED_GITHUB_TOKEN]", s)
+        # Bearer authorization headers
+        s = re.sub(r"Bearer\s+\S+", "Bearer [REDACTED]", s)
+        # Format-string injection prevention
+        s = s.replace("{", "{{").replace("}", "}}")
+        return s
+        
+    def recursive_sanitize(obj):
+        if isinstance(obj, str):
+            return redact_string(obj)
+        elif isinstance(obj, dict):
+            return {k: recursive_sanitize(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [recursive_sanitize(v) for v in obj]
+        return obj
+        
+    return recursive_sanitize(data)
 
 class Event:
     """Base event structure."""
@@ -39,7 +72,8 @@ class EventEmitter:
     @classmethod
     def emit(cls, name: str, data: Dict[str, Any]):
         """Emit an event to all subscribers."""
-        event = Event(name, data)
+        sanitized_data = sanitize_payload(data)
+        event = Event(name, sanitized_data)
         for sub in cls._subscribers:
             try:
                 sub(event)

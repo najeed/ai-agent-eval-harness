@@ -10,40 +10,60 @@ Plugins are Python classes that inherit from `eval_runner.plugins.BaseEvalPlugin
 from eval_runner.plugins import BaseEvalPlugin
 
 class MyCustomPlugin(BaseEvalPlugin):
-    def on_run_start(self, run_id, metadata):
-        print(f"Starting run {run_id}!")
+    def before_evaluation(self, context):
+        print(f"Starting evaluation for {context.scenario_id}!")
 
-    def on_tool_request(self, tool_name, params, context):
+    def on_tool_request(self, context, tool_name, args):
         if tool_name == "sensitive_tool":
-            return {"status": "blocked", "reason": "Security policy"}
-        return None
+            return False  # Block the tool call
+        return True
 ```
 
 ## Lifecycle Hooks
 
 | Hook | Arguments | Description |
 |---|---|---|
-| `on_run_start` | `run_id`, `metadata` | Triggered before the evaluation begins. |
-| `on_run_end` | `results` | Triggered after all scenarios are completed. |
-| `on_task_start` | `task_id`, `context` | Triggered before a specific task within a scenario. |
-| `on_prompt` | `payload` | Allows modification of the request sent to the agent. |
-| `on_agent_response` | `response` | Observe or log the agent's raw output. |
-| `on_tool_request` | `name`, `params`, `context` | **Interception Point**. Return a result to bypass real execution. |
-| `on_tool_result` | `result`, `context` | Observe the output of a tool call. |
+| `before_evaluation` | `context: EvaluationContext` | Triggered before the evaluation starts. |
+| `on_agent_turn_start` | `context: TurnContext` | Triggered before each agent turn. |
+| `on_turn_end` | `context: TurnContext` | Triggered after each turn. |
+| `on_tool_request` | `context`, `tool_name`, `args` | **Interception Point**. Return `False` to block. |
+| `on_tool_result` | `context`, `tool_name`, `result` | Observe the output of a tool call. |
+| `on_error` | `context`, `exception` | Called on unhandled exceptions. |
 | `on_discover_adapters` | `registry` | Register custom agent protocols (e.g., `grpc://`). |
-| `on_eval_complete` | `task_results` | Last chance to modify scores or add triage tags. |
-| `extend_cli` | `parser` | Add custom arguments to the `evaluate` command. |
+| `on_metrics_calculated` | `context`, `results` | Post-metric hook for cross-attempt aggregation. |
+| `after_evaluation` | `context`, `results` | Final hook after evaluation completes. |
+| `on_register_commands` | `registry: CommandRegistry` | Register CLI subcommands under the plugin namespace. |
+
+> **⚠️ Security Note:** The legacy `extend_cli` hook has been **removed** to prevent command hijacking. All plugins must use `on_register_commands` which isolates commands under `eval-harness plugin <plugin_name>`.
+
+## Plugin Timeout Enforcement
+
+All plugin hooks are subject to a **5-second timeout** (`PLUGIN_TIMEOUT = 5.0`). If a plugin hook hangs (e.g., due to a network request), the engine will terminate it and continue execution. This prevents a single misbehaving plugin from freezing the entire evaluation loop.
+
+## Registering Commands (Secure Namespace)
+
+Plugins register CLI subcommands via the `on_register_commands` hook. Commands are automatically scoped under `eval-harness plugin <plugin_name>`:
+
+```python
+class MyReportPlugin(BaseEvalPlugin):
+    def on_register_commands(self, registry):
+        sub = registry.register_command("generate", self.handle_generate, help_text="Generate a report")
+        sub.add_argument("--format", default="html")
+
+    def handle_generate(self, args):
+        print(f"Generating {args.format} report...")
+```
+
+Usage: `eval-harness plugin myreport generate --format html`
 
 ## Registering Plugins
 
-Plugins are automatically discovered if they are present in the `plugins/` directory of your project, or if they are explicitly registered in your `eval_config.json`.
+Plugins are automatically discovered if they are registered as entry points under the `eval_runner.plugins` group:
 
-```json
-{
-  "plugins": [
-    "my_custom_module.MyCustomPlugin"
-  ]
-}
+```toml
+# pyproject.toml
+[project.entry-points."eval_runner.plugins"]
+my_plugin = "my_package.plugin:MyPlugin"
 ```
 
 ## Framework Adapters (Advanced)
@@ -55,11 +75,11 @@ from eval_runner.plugins import BaseEvalPlugin
 
 class LangGraphAdapterPlugin(BaseEvalPlugin):
     def on_discover_adapters(self, registry):
-        # Register the 'langgraph' protocol pointing to our handler func
-        registry.register("langgraph", self.execute_langgraph_node)
+        registry["langgraph"] = self.execute_langgraph_node
 
-    async def execute_langgraph_node(self, node_id: str, input_data: dict) -> dict:
+    async def execute_langgraph_node(self, payload: dict) -> dict:
         """Custom execution logic specific to LangGraph."""
         return {"action": "final_answer", "summary": "LangGraph Execution Complete."}
 ```
-If this plugin is active, scenarios can now specify an agent URL like `langgraph://my_agent_node`, and the engine will seamlessly route the task to this adapter bypasssing standard HTTP mechanisms.
+If this plugin is active, scenarios can now specify an agent URL like `langgraph://my_agent_node`, and the engine will seamlessly route the task to this adapter bypassing standard HTTP mechanisms.
+

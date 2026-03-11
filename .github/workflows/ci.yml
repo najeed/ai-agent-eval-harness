@@ -28,6 +28,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -e .
+        pip install -r requirements.txt
         pip install -r requirements-dev.txt
 
     - name: Lint with flake8
@@ -39,3 +40,9 @@ jobs:
       run: pytest tests/ --cov=eval_runner -v -p no:plugin_gateway
       env:
         OTEL_SDK_DISABLED: true
+
+    - name: Security audit tests
+      run: pytest tests/test_security_audit.py -v
+      env:
+        OTEL_SDK_DISABLED: true
+
