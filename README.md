@@ -268,6 +268,10 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Integrity Checks** | ❌ No | ✅ AES Scenario Merkle Sync |
 | **Admin Console & GUI** | ✅ Local React Native App | ✅ Hot-Swappable SSO & Enterprise Plugins |
 | **Reproduction Workflow** | ❌ JSONL Only | ✅ Interactive Flight Recorder & Jupyter Export |
+| **Parallel Engine** | ❌ Sequential only | ✅ Ray Integration for Distributed Runs |
+| **Interactive Triage** | ❌ Heuristic only | ✅ Human Annotation & Trace Tagging |
+| **Advanced Sandbox** | ✅ Basic Path/Shell Gating| ✅ Docker Containerization & Red-Team Probes |
+| **Auth & Governance** | ❌ None | ✅ OIDC SSO, RBAC, Managed Leaderboards |
 
 **Looking for Production-Grade Reliability?**
 The Enterprise Edition guarantees that you can safely evaluate agents over sensitive datasets without exposing credentials or executing dangerous code, backed by mathematical proof of non-repudiation. Contact `ai.eval.harness.contact+enterprise@gmail.com`.
