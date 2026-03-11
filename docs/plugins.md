@@ -163,11 +163,14 @@ from eval_runner.plugins import BaseEvalPlugin
 
 class LangGraphAdapterPlugin(BaseEvalPlugin):
     def on_discover_adapters(self, registry):
-        registry["langgraph"] = self.execute_langgraph_node
+        registry.register("langgraph", self.execute_langgraph_node)
 
     async def execute_langgraph_node(self, payload: dict) -> dict:
         """Custom execution logic specific to LangGraph."""
         return {"action": "final_answer", "summary": "LangGraph Execution Complete."}
 ```
 If this plugin is active, scenarios can now specify an agent URL like `langgraph://my_agent_node`, and the engine will seamlessly route the task to this adapter bypassing standard HTTP mechanisms.
+
+### Ecosystem Provider Adapters
+Providers like **OpenAI**, **Gemini**, and **Claude** are also implemented using this hook. While framework adapters (like LangGraph) often wrap complex logic, provider adapters typically translate AES tasks into specific LLM API calls.
 

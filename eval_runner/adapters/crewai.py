@@ -2,6 +2,7 @@
 from typing import Any, Dict
 from ..plugins import BaseEvalPlugin
 
+
 class CrewAIAdapterPlugin(BaseEvalPlugin):
     """
     Architectural Adapter: Registers CrewAI support via Plugin hooks.

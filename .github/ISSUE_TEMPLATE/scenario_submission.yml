@@ -1,0 +1,21 @@
+name: 🎯 New Scenario Submission
+description: Propose a new industry-specific evaluation scenario.
+labels: ["scenario", "contribution"]
+body:
+  - type: input
+    id: industry
+    attributes:
+      label: Target Industry
+      placeholder: e.g., Telecom, Healthcare, Finance
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Scenario Description
+      description: What is the agent trying to achieve?
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Key Tasks & Metrics
+      placeholder: List the main tasks and expected success criteria.

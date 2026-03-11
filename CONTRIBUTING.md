@@ -12,8 +12,13 @@ Thank you for your interest in building the industry standard for agentic reliab
 ### 1. The Business Source License (BSL) 1.1
 By contributing to this repository, you acknowledge that this project is licensed under the **BSL 1.1**. While the core is open for developers and startups, it converts to Apache 2.0 on January 1, 2032. 
 
-### 2. Mandatory CLA
-This repository uses **CLA Assistant** to manage contributor agreements. You **must** sign the Individual Contributor License Agreement (CLA) before your Pull Request can be reviewed.
+### 2. Developer Certificate of Origin (DCO)
+To simplify contributions, we use the **DCO** (Developer Certificate of Origin) model instead of a proprietary CLA. By adding a `Signed-off-by` line to your commit messages, you certify that you have the right to submit the work under the project's license.
+
+To sign a commit:
+```bash
+git commit -s -m "Your commit message"
+```
 
 ---
 
@@ -22,7 +27,8 @@ This repository uses **CLA Assistant** to manage contributor agreements. You **m
 ### 1. Adding New Industries & Scenarios
 - **Schema Compliance**: All JSON files must pass the validation checks via `eval-harness aes validate <path>`.
 - **Scaffolding**: Use `eval-harness init --dir <name> --industry <ind>` to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.
-- **Verification**: Ensure your scenario runs correctly with `eval-harness evaluate --path industries/<ind>`.
+- **Quality Verification**: All scenarios must pass the quality linter (`eval-harness lint <path>`). We target a score of **90+** for all official industry libraries.
+- **Execution**: Ensure your scenario runs correctly with `eval-harness evaluate --path industries/<ind>`.
 
 ### 2. The Zero-Touch Core Philosophy
 We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests that modify the core orchestration (`eval_runner/runner.py`, `eval_runner/metrics.py`) to handle edge cases or custom platforms will generally be rejected.
@@ -46,7 +52,7 @@ The Zero-Touch Core is designed to be extended without core PRs.
 ## 🚀 The Pull Request Process
 
 1. **Fork and Branch**: Create a feature branch from `main`.
-2. **Sign the CLA**: The bot will prompt you once the PR is opened.
+2. **Sign the DCO**: Ensure every commit is signed with `git commit -s`.
 3. **Run Local Evals**: Verify your changes by running a sample evaluation.
 4. **Documentation**: Update the `README.md` or industry docs if your changes affect the user interface or scenario logic.
 

@@ -58,9 +58,34 @@ The core has been refactored into a decoupled, event-driven architecture to supp
 ### 3.2 Immutability
 `EvaluationContext` and `TurnContext` are **frozen** dataclasses. You cannot modify them directly inside hooks; instead, use `dataclasses.replace` if you need to pass a modified state upstream.
 
-### 3.3 Agent Adapter
-Default: HTTP POST to `AGENT_API_URL`
-You can register custom adapters (e.g., for local processes or SDKs) in `AgentAdapterRegistry`.
+### 3.3 Agent Adapter (Ecosystem Hub)
+Default: HTTP POST to `AGENT_API_URL`.
+The harness uses an **Adapter Pattern** to support diverse providers and frameworks. Using the `on_discover_adapters` hook, you can register custom protocols (e.g., `openai://`, `gemini://`, `custom://`).
+
+#### 🛠️ Tutorial: Building a Custom Adapter
+To add a new provider, create a plugin that implements the `on_discover_adapters` hook.
+
+```python
+from eval_runner.plugins import BaseEvalPlugin
+import aiohttp
+
+class MyProviderPlugin(BaseEvalPlugin):
+    def on_discover_adapters(self, registry):
+        # Register the protocol scheme
+        registry.register("myproto", self.execute_task)
+
+    async def execute_task(self, payload: dict) -> dict:
+        # payload contains: task, messages, tools, etc.
+        async with aiohttp.ClientSession() as session:
+            # Implement your API call logic here
+            return {
+                "status": "success",
+                "output": "Agent response text",
+                "metadata": {"model": "my-model-v1"}
+            }
+```
+
+Register this plugin in your `pyproject.toml` or load it via the `PluginManager` to enable `myproto://` URLs in AES scenarios.
 
 ---
 

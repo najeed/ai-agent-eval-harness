@@ -98,6 +98,8 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness auto-translate` | `--input`, `--model`, `--industry` | Translate raw documents (PDF, DOCX) into scenario JSON via a local LLM |
 | `eval-harness import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |
 | `eval-harness mutate` | `--input`, `--type`, `--output` | Generate adversarial scenario variants |
+| `eval-harness list` | `--search`, `--industry`, `--difficulty` | Search and explore the scenario catalog |
+| `eval-harness lint` | `path` | Score and validate scenario quality/compliance |
 | `eval-harness plugin` | `<plugin_name> <cmd>` | Secure namespace for executing 3rd-party plugin commands |
 
 ### 🧩 `run` — single scenario
@@ -142,6 +144,12 @@ eval-harness quickstart
 
 ### 🖥️ `console` — React Native Admin Console GUI
 Launch a high-fidelity visual dashboard to run scenarios, inspect trace lines chronologically, and review system documentation locally.
+
+#### Key Features:
+- **Scenario Explorer**: Browse the catalog with faceted filters (industry, difficulty, tags). View real-time **Lint Scores** and quality status badges (Pass, Warning, Fail).
+- **Execution Tracing**: Interactive chronological view of agent thought, tool calls, and results.
+- **API Reference**: Integrated technical documentation drawer for one-click access to guides.
+
 ```bash
 eval-harness console --port 5000
 ```
@@ -175,6 +183,21 @@ Talk to your agent directly in the CLI and see how it performs.
 ```bash
 eval-harness playground --agent http://localhost:5001/execute_task
 ```
+
+### 🔍 `list` — Scenario Catalog Search
+Discover scenarios across the built-in and downloaded libraries.
+```bash
+eval-harness list --search "telecom" --difficulty 3
+```
+
+### 🧹 `lint` — Quality Scoring
+Check your scenarios for AES compliance and technical quality.
+```bash
+eval-harness lint industries/telecom/scenarios/troubleshooting_v1.json
+```
+- **90-100**: High quality, CI-ready.
+- **70-89**: Warning (Missing metadata or low complexity).
+- **<70**: Fail (Structural errors or zero tasks).
 
 ---
 

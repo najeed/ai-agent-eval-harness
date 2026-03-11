@@ -13,6 +13,7 @@ def register_core_routes(app, nav_registry):
         {"id": "reports", "title": "Reports & Traces", "path": "/reports", "icon": "bar-chart-2", "type": "internal"},
         {"id": "debugger", "title": "Visual Debugger", "path": "/debugger", "icon": "activity", "type": "internal"},
         {"id": "docs", "title": "Documentation", "path": "/docs", "icon": "book", "type": "internal"},
+        {"id": "api_docs", "title": "API Reference", "path": "/docs/api", "icon": "box", "type": "internal"},
         {"id": "community", "title": "Community", "path": "https://github.com/najeed/ai-agent-eval-harness", "icon": "github", "type": "external"}
     ])
     
@@ -20,27 +21,29 @@ def register_core_routes(app, nav_registry):
 
 @core_bp.route("/scenarios", methods=["GET"])
 def list_scenarios():
-    """Returns a list of all scenarios in the industries directory."""
-    scenarios = []
-    industries_dir = Path("industries")
-    if industries_dir.exists():
-        for industry_dir in industries_dir.iterdir():
-            if industry_dir.is_dir():
-                scen_dir = industry_dir / "scenarios"
-                if scen_dir.exists():
-                    for scen_file in scen_dir.glob("*.json"):
-                        try:
-                            with open(scen_file, "r", encoding="utf-8") as f:
-                                data = json.load(f)
-                                scenarios.append({
-                                    "scenario_id": data.get("scenario_id", scen_file.stem),
-                                    "title": data.get("title", scen_file.stem),
-                                    "industry": industry_dir.name,
-                                    "file_path": str(scen_file)
-                                })
-                        except Exception:
-                            pass
-    return jsonify({"scenarios": scenarios})
+    """Returns a faceted list of all scenarios."""
+    from ..catalog import ScenarioCatalog
+    from ..linter import ScenarioLinter
+    
+    query = request.args.get("q")
+    industry = request.args.get("industry")
+    difficulty = request.args.get("difficulty")
+    
+    catalog = ScenarioCatalog()
+    catalog.load_index()
+    
+    results = catalog.search(query=query, industry=industry, difficulty=difficulty)
+    
+    # Enrich with real-time lint score for the explorer UI
+    linter = ScenarioLinter()
+    enriched = []
+    for s in results[:100]: # Limit enrichment for performance
+        lint_res = linter.lint(s["path"])
+        s["lint_score"] = lint_res["score"]
+        s["status"] = lint_res["status"]
+        enriched.append(s)
+        
+    return jsonify({"scenarios": enriched})
 
 @core_bp.route("/runs", methods=["GET"])
 def list_runs():
@@ -86,11 +89,22 @@ def get_debugger_state():
 
 @core_bp.route("/docs", methods=["GET"])
 def list_docs():
-    """Retrieve available documentation guides."""
+    """Retrieve available documentation guides and API reference."""
     docs = []
     base = Path("docs")
+    
+    # Standard Markdown Guides
     for file in base.rglob("*.md"):
-        docs.append({"id": str(file.relative_to(base)), "title": file.stem})
+        # Exclude internal or template folders if necessary
+        if ".github" in str(file): continue
+        docs.append({"id": str(file.relative_to(base)), "title": file.stem, "category": "Guide"})
+        
+    # Check for auto-generated API docs (e.g., in docs/api/)
+    api_base = base / "api"
+    if api_base.exists() and api_base.is_dir():
+        for file in api_base.rglob("*.md"):
+            docs.append({"id": str(file.relative_to(base)), "title": f"API: {file.stem}", "category": "API Reference"})
+            
     return jsonify({"docs": docs})
 
 @core_bp.route("/docs/<path:doc_path>", methods=["GET"])

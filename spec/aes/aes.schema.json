@@ -28,13 +28,33 @@
                     "type": "string"
                 },
                 "difficulty": {
-                    "type": "string"
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
                 },
                 "tags": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "industry": {
+                    "type": "string"
+                },
+                "estimated_runtime": {
+                    "type": "integer"
+                },
+                "deterministic_seed": {
+                    "type": "integer"
+                },
+                "human_authored": {
+                    "type": "boolean"
+                },
+                "provenance": {
+                    "type": "string"
+                },
+                "validation_score": {
+                    "type": "number"
                 }
             }
         },

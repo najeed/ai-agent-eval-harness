@@ -20,6 +20,23 @@ Execute a single scenario file.
 eval-harness run --scenario <path>
 ```
 
+### `list`
+Search the scenario catalog with keyword and faceted filtering.
+```bash
+eval-harness list [--search <query>] [--industry <name>] [--difficulty <level>]
+```
+- `--search`: Keyword search across titles, IDs, and descriptions.
+- `--industry`: Filter by industry (e.g., `telecom`, `finance`).
+- `--difficulty`: Filter by difficulty level (1-5).
+
+### `lint`
+Verify scenario quality and AES specification compliance.
+```bash
+eval-harness lint <path_to_scenario_or_dir>
+```
+- Runs automated checks for metadata quality, valid structure, and duplicate detection.
+- Provides a quality score (0-100) and detailed warning/error report.
+
 ### `init`
 Scaffold a new benchmark directory with starter scenarios for a specific industry. Automatically links the scenario to realistic synthetic CSV datasets.
 ```bash
@@ -57,15 +74,15 @@ eval-harness spec-to-eval --input <prd.md> [--output <scenario.json>]
 
 ### `auto-translate`
 Translate raw, unstructured documents (TXT, MD, PDF, DOCX) into structured Scenario JSON files using a local LLM.
+```bash
+eval-harness auto-translate --input <document.pdf> --model <model_name> --industry <industry>
+```
 **Requirement:** `Ollama` must be running locally.
 
 ### `ci generate`
 Scaffold a `.github/workflows/agent_eval.yml` file to run evaluations automatically on Pull Requests.
 ```bash
 eval-harness ci generate
-```
-```bash
-eval-harness auto-translate --input <document.pdf> --model <model_name> --industry <industry>
 ```
 
 ## Drift & Research

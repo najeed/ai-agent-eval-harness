@@ -29,7 +29,8 @@ eval-harness quickstart
 ### 1.2 Useful CLI Commands
 - `eval-harness console`: Launch the React Native (Expo) Admin Console GUI for visual management.
 - `eval-harness doctor`: Check your environment health.
-- `eval-harness init --dir <name> --industry <ind>`: Scaffold a new benchmark project.
+- `eval-harness list --search <query>`: Search the scenario catalog (supports faceted filtering).
+- `eval-harness lint <path>`: Verify scenario quality and AES specification compliance.
 - `eval-harness auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
 - `eval-harness report <path>`: Re-generate HTML report from a `.jsonl` trace.
 - `eval-harness replay --path <path>`: View the step-by-step history of a run in terminal.
@@ -69,6 +70,7 @@ The harness uses a decoupled, event-driven design:
 - **Interception**: Use `on_tool_request` to block or proxy tool calls.
 - **Observability**: Subscribe to `CoreEvents` via the `EventEmitter` for non-blocking logging.
 - **Secure Namespaces**: Legacy `extend_cli` is removed. Use `on_register_commands` to register commands under the `eval-harness plugin <name>` sub-command.
+- **Ecosystem Adapters**: Official, zero-touch support for **LangChain**, **Ollama**, **OpenAI**, **Gemini**, and **Claude**. 
 - **Immutability**: TurnContext and EvaluationContext are frozen to prevent accidental side-effects.
 
 ---

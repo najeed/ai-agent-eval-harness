@@ -104,6 +104,29 @@ Turn 2: Harness → Agent: "GOVERNANCE ERROR: Amount 100 exceeds maximum allowed
 
 ---
 
+## 🔗 Ecosystem Hub Payloads
+When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harness transparently maps the AES scenario into specific provider payloads. The return object follows the same `action` structure as the standard POST request.
+
+### Example: Gemini Adapter Payload
+```json
+{
+  "task": "Process user request...",
+  "messages": [{"role": "user", "content": "..."}],
+  "model": "gemini-1.5-pro",
+  "temperature": 0.7
+}
+```
+
+### Example: Claude Adapter Payload
+```json
+{
+  "task": "Process user request...",
+  "messages": [{"role": "user", "content": "..."}],
+  "model": "claude-3-5-sonnet-20240620",
+  "system_prompt": "You are a helpful assistant..."
+}
+```
+
 ## Admin Console Integration
 The **Admin Console** (`eval-harness console`) utilizes this REST API as its backbone. Enterprise plugins can extend this contract via the `on_register_console_routes` hook to inject custom monitoring or debugging endpoints into the React Native dashboard.
 

@@ -1,0 +1,31 @@
+{
+  "benchmark_name": "Industry-V1",
+  "version": "1.0",
+  "last_updated": "2026-03-12",
+  "leaderboard": [
+    {
+      "agent_name": "OpenSource-Base-Agent",
+      "framework": "Ollama/Llama3",
+      "score": 68.5,
+      "scenarios_passed": 1420,
+      "avg_latency_s": 2.4
+    },
+    {
+      "agent_name": "Enterprise-Alpha",
+      "framework": "Proprietary",
+      "score": 92.1,
+      "scenarios_passed": 1820,
+      "avg_latency_s": 1.8
+    }
+  ],
+  "baselines": {
+    "telecom": {
+      "pass_threshold": 0.85,
+      "critical_scenarios": ["telecom-auth-leak", "sim-swap-v3"]
+    },
+    "finance": {
+      "pass_threshold": 0.92,
+      "critical_scenarios": ["ledger-integrity", "double-spend-v1"]
+    }
+  }
+}

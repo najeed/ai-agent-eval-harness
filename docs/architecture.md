@@ -42,6 +42,8 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 │  • trajectories/: Mermaid visual flows for debugging                        │
 │  • triage.py: Heuristic failure tagging (CONNECTION_ERROR, etc.)            │
 │  • coverage/: HTML grounding heatmaps                                       │
+│  • catalog/: Optimized scenario indexing and faceted search                 │
+│  • linter/: AES compliance and quality scoring logic                        │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -112,6 +114,8 @@ Phase 3 introduces advanced orchestration capabilities for research and complex 
 - **Native HITL (Human-In-The-Loop)**: The `human` adapter allows scenarios to pause and wait for human intervention. This is integrated directly into the `SessionManager` loop, emitting `HITL_PAUSE` and `HITL_RESUME` events.
 - **Non-Linear Trajectories**: `SessionManager.fork()` enables creators to explore multiple agent paths from a single checkpoint. This is essential for studying agent decision-making under ambiguity.
 - **Advanced Adapter Discovery**: The `AgentAdapterRegistry` now supports plugin-driven discovery. External plugins can register custom protocols (e.g., `mock_proto`, `proprietary_rpc`) using the `on_discover_adapters` hook.
+- **Scenario Catalog & Intelligence**: A centralized indexer (`catalog.py`) enables high-performance discovery across thousands of scenarios. It supports faceted search (industry, difficulty, tags) and powers the Admin Console "Scenario Explorer".
+- **AES Quality Linter**: The `linter.py` module implements automated quality scoring, ensuring scenarios have required metadata, balanced task counts, and no duplicates.
 
 ## Simulation Lab & Research metrics
 
@@ -125,6 +129,7 @@ Phase 4 elevates the Harness from an isolated tool to an integrated participant 
 - **Community Benchmark Integration**: The harness natively supports downloading and structuring data from major AI benchmarks. Passing URIs like `gaia://...` to the loader transparently fetches and wraps the datasets into executable `Scenario` objects with compatible metrics.
 - **HuggingFace Distribution**: The `HFExporter` enables a one-click CLI flow (`eval-harness export --format hf`) to transform deterministic internal `run.jsonl` flight logs into normalized datasets ready for HuggingFace publication and leaderboards.
 - **Framework Adapters via Plugins**: Supporting frameworks like `LangGraph` and `CrewAI` without "polluting" the core engine. These are implemented as modular `BaseEvalPlugin` classes that hook into the `on_discover_adapters` lifecycle to register their custom `langgraph://` or `crewai://` execution protocols.
+- **Ecosystem Hub**: A unified registry for LLM providers (**OpenAI**, **Gemini**, **Claude**, **Ollama**) and orchestration frameworks. The Ecosystem Hub ensures the core evaluator remains "Zero-Touch"—swapping a provider requires zero core code changes.
 
 ## Key Environment Variables
 

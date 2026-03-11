@@ -67,7 +67,7 @@ class AgentAdapterRegistry:
         """Triggers plugin-based discovery of adapters."""
         if cls._discovered:
             return
-        plugins.manager.trigger("on_discover_adapters", cls._adapters)
+        plugins.manager.trigger("on_discover_adapters", cls)
         
         # Register default human adapter if not already registered
         if "human" not in cls._adapters:

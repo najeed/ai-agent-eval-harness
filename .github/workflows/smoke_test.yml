@@ -1,0 +1,28 @@
+name: Smoke Test CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: Run Unit Tests
+        run: |
+          python -m pytest tests/test_catalog.py tests/test_linter.py tests/test_adapters_discovery.py
+      - name: Run Deterministic Smoke Test
+        run: |
+          eval-harness quickstart
+        # quickstart uses a mock agent and deterministic scenario

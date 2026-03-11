@@ -22,7 +22,10 @@ Defines the benchmark identity.
 metadata:
   name: billing_support_rigor
   difficulty: high
+  industry: telecom
   tags: ["fintech", "compliance"]
+  runtime: "python:3.11"
+  provenance: "curated"
 ```
 
 ### Dataset Linkage

@@ -15,6 +15,8 @@ from . import loader
 from . import engine
 from . import reporter
 from . import plugins
+from . import catalog
+from . import linter
 
 def main():
     """Main CLI entry point."""
@@ -55,6 +57,19 @@ def main():
     eval_parser.add_argument(
         "--master-log", action="store_true", default=None, help="Append all events to a master run.jsonl"
     )
+    
+    # --- LIST COMMAND ---
+    list_parser = subparsers.add_parser("list", help="List and search available scenarios")
+    list_parser.add_argument(
+        "--search", help="Search query for filtering scenarios"
+    )
+    list_parser.add_argument(
+        "--refresh", action="store_true", help="Rebuild the scenario index"
+    )
+
+    # --- LINT COMMAND ---
+    lint_parser = subparsers.add_parser("lint", help="Verify scenario quality and AES compliance")
+    lint_parser.add_argument("path", help="Path to scenario file or directory")
     
     # Security Guardrails: Command Hijacking Prevention
     # Removed `extend_cli` hook. Plugins must register via namespaced registry `eval-harness plugin <name>`
@@ -183,6 +198,10 @@ def main():
     try:
         if args.command == "evaluate":
             asyncio.run(run_evaluate(args))
+        elif args.command == "list":
+            handle_list(args)
+        elif args.command == "lint":
+            handle_lint(args)
         elif args.command == "init":
             handle_init(args)
         elif args.command == "list-metrics":
@@ -255,6 +274,21 @@ def main():
         import traceback
         traceback.print_exc()
         sys.exit(1)
+
+def handle_list(args):
+    """Handler for 'list' command."""
+    cat = catalog.ScenarioCatalog()
+    if args.refresh:
+        print("[Catalog] Rebuilding index...")
+        cat.build_index()
+    else:
+        cat.load_index()
+    
+    catalog.list_scenarios(args.search)
+
+def handle_lint(args):
+    """Handler for 'lint' command."""
+    linter.run_lint(args.path)
 
 def handle_report(args):
     """Handler for 'report' command."""

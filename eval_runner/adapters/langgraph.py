@@ -2,6 +2,7 @@
 from typing import Any, Dict
 from ..plugins import BaseEvalPlugin
 
+
 class LangGraphAdapterPlugin(BaseEvalPlugin):
     """
     Architectural Adapter: Registers LangGraph support via Plugin hooks.

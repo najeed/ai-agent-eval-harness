@@ -34,6 +34,15 @@
 - [How to Contribute](#how-to-contribute)
 - [Licensing & Editions](#licensing--editions)
 
+## 🚀 TL;DR: Impact in 60s
+Get from zero to evaluated in seconds:
+```bash
+pip install -e .
+eval-harness quickstart
+```
+*   **Result**: Launches mock agent, executes a telecom scenario, and builds a report.
+*   **Next Step**: `eval-harness console` for the visual dashboard.
+
 ## Mission
 
 Our goal is to create a standardized, community-driven benchmark for AI agent performance. By providing a rich set of industry-specific scenarios and a flexible evaluation runner, we aim to help developers, researchers, and businesses measure and improve their agent-based systems.
@@ -124,6 +133,8 @@ The harness is organized into the following key components:
 The latest release introduces a new suite of high-level automation and visual tools designed for 10x developer productivity.
 
 #### 🛠️ Visionary CLI Suite
+- **`list`**: Faceted search filtering across 4,600+ industry scenarios.
+- **`lint`**: Automated quality scoring and AES compliance verification.
 - **`install <pack>`**: Rapid deployment of curated, industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
 - **`analyze <url>`**: Proactive agent repo scanning; auto-generates AES stubs by identifying tools and endpoints.
 - **`ci generate`**: One-click scaffolding of GitHub Actions workflows for evaluation-on-PR.
@@ -167,7 +178,7 @@ Beyond the Visionary suite, the harness provides a robust toolkit for profession
 The harness includes a comprehensive **React Native (Expo)** Admin Console that simplifies management of scenarios, runs, and visual debugging.
 
 **Features:**
-- **Visual Debugger**: Live playback of agent trajectories.
+- **Scenario Explorer**: Browse the catalog with faceted filters and view real-time **Quality Badges** (Lint scores).
 - **Scenario Editor**: Visual drag-and-drop AES construction logic.
 - **Secure Handoff**: JWT-authenticated access to Enterprise plugin views.
 - **Dual-Mode Rendering**: Adaptive UI rendering (Native SDUI vs. Secure WebView).
@@ -227,6 +238,7 @@ Here are ways to get involved:
 ### 🔨 Code Contributions
 - 🆕 [Good first issues](https://github.com/najeed/ai-agent-eval-harness/labels/good%20first%20issue)
 - 🧪 Add test scenarios
+- ⚖️ **Zero-CLA**: We use the DCO (Developer Certificate of Origin). Just `git commit -s`.
 - 🏭 [Contribute new industries](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=industry_request.md)
 - 🎯 [Create evaluation scenarios](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=scenario_contribution.md)
 

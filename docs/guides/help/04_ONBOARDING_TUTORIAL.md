@@ -52,10 +52,21 @@ eval-harness --help
 > ✅ Expected output snippet:
 >
 > ```text
-> usage: eval-harness [-h] {evaluate,aes,spec-to-eval,import-drift,run,replay,mutate} ...
+> usage: eval-harness [-h] {evaluate,aes,spec-to-eval,import-drift,run,replay,mutate,list,lint} ...
 > 
 > AI Agent Evaluation Harness (OpenCore)
 > ```
+
+### ✅ Step 3: Explore the Scenario Catalog
+
+Before running an evaluation, discover what's available:
+
+```bash
+# List all telecom scenarios
+eval-harness list --search "telecom"
+```
+
+> ✅ Expected output: A table of matching scenarios with IDs, industries, and difficulty levels.
 
 ---
 
@@ -63,7 +74,7 @@ eval-harness --help
 
 ### ✅ Step 1: Pick a built-in industry scenario
 
-The harness includes industry scenarios under `industries/`. We'll use `telecom` as a common example.
+The harness includes industry scenarios under `industries/`. You can use the `list` command above or browse the file system.
 
 ### ✅ Step 2: Run the evaluation
 
@@ -71,25 +82,11 @@ The harness includes industry scenarios under `industries/`. We'll use `telecom`
 eval-harness evaluate --path industries/telecom --export
 ```
 
-> ✅ Expected console output (trimmed):
->
-> ```text
-> [CLI] Loading scenarios from: industries/telecom
-> [CLI] Running 12 scenarios...
-> 
-> [1/12] Attempt 1/1 - Scenario: Telecom Password Reset
->    [Engine] Starting evaluation for scenario ID: telecom_password_reset (k=1)
->    [Engine] ...
-> [Research] Scenario telecomm_password_reset:
->    - pass@1: 1.00 (1/1 successes)
->    - Success Consistency: 1.00
->    - Semantic Stability: 1.00
-> ```
-
 ---
 
 ## 3) Add your own industry / scenario
-Instead of manually typing out JSON, the easiest way to start a new industry benchmark is the `init` command. It will scaffold the directories, create a valid `starter_scenario.json`, and automatically generate a synthetic `.csv` dataset for grounding the evaluation.
+
+Instead of manually typing out JSON, the easiest way to start a new industry benchmark is the `init` command.
 
 1. Scaffold the environment:
 
@@ -97,67 +94,25 @@ Instead of manually typing out JSON, the easiest way to start a new industry ben
 eval-harness init --dir industries/retail --industry retail
 ```
 
-> ✅ Expected Console Output:
-> ```text
-> 🏗️ Initializing new benchmark directory at industries/retail...
-> ✅ Created directory structure.
-> ✅ Generated synthetic dataset for retail at industries/retail/datasets/retail_records.csv
-> ✅ Created starter scenario...
-> ```
-
 2. Run the newly generated scenario:
 
 ```bash
 eval-harness run industries/retail/scenarios/starter_scenario.json
 ```
 
-4. (Optional) Run all scenarios in the industry:
+---
+
+## 4) Validate Scenario Quality
+
+Before sharing or running complex benchmarks, ensure your scenarios meet the AES standard:
 
 ```bash
-eval-harness evaluate --path industries/<your_industry>
+eval-harness lint industries/retail/scenarios/starter_scenario.json
 ```
 
 ---
 
-## 4) Inspect the Output
-
-### ✅ Look at the report directory
-
-After an evaluation, results are written under `reports/`.
-
-```bash
-ls -la reports/
-```
-
-> ✅ Example expected output:
->
-> ```text
-> -rw-r--r--  1 user  staff  12345 Mar 11 12:34 latest_results.json
-> -rw-r--r--  1 user  staff  56789 Mar 11 12:34 trajectories_telecom.json
-> ```
-
-### ✅ Read the main report (JSON)
-
-```bash
-cat reports/latest_results.json | head -n 40
-```
-
-> ✅ Expected snippet:
->
-> ```json
-> {
->   "scenario_id": "telecom_password_reset",
->   "tasks": [
->     {
->       "task_id": "t1",
->       "metrics": [
->         {"metric": "policy_compliance", "score": 1.0, "success": true},
->         {"metric": "path_parsimony", "score": 0.8, "success": true}
->       ]
->     }
->   ]
-> }
-> ```
+## 5) Inspect the Output
 
 ### ✅ Replay the run trace
 
@@ -165,51 +120,23 @@ cat reports/latest_results.json | head -n 40
 eval-harness replay --path runs/run.jsonl
 ```
 
-> ✅ Expected output snippet:
->
-> ```text
-> --- Run Started: run-telecom_password_reset-... (telecom_password_reset) ---
-> [USER]: Reset my password
-> Agent (Step 1): {"action": "call_tool", "tool_name": "send_email", "tool_params": {"to": "user@example.com"}}
-> 🔧 Tool Call: send_email({'to': 'user@example.com'})
-> 📥 Tool Result (send_email): {"status": "success", "message": "Email sent"}
-> --- Run Finished: success ---
-> ```
-
 ### ✅ View in the Visual Dashboard
-
-Instead of terminal replay, inspect the results natively using the **Admin Console**. The console consists of a Flask backend (`eval_runner/console`) and a React Native frontend (`admin-console/`).
+Inspect results natively using the **Admin Console**.
 
 ```bash
 eval-harness console
 ```
 
-Open `http://localhost:5000` to interactively debug the run. Note that the `quickstart` command provides a sample run in the CLI but does not launch this visual GUI automatically.
+Open `http://localhost:5000` to interactively debug runs and browse the **Scenario Explorer**.
+*   **Faceted Search**: Use the sidebar to filter by industry (e.g., Telecom) or difficulty.
+*   **Quality Badges**: Look for the "Lint Score" on each scenario. Scenarios with a score of **90+** are considered high-fidelity benchmarks.
+*   **Documentation Drawer**: Click the "API Reference" icon to see these guides directly within the app.
 
 ---
 
-## 5) Make a Small Scenario Change & Re-run
+## 6) Next Steps
 
-### ✅ Step 1: Edit a scenario (example)
+- ✅ Read the **User Manual** (`docs/guides/help/02_USER_MANUAL.md`).
+- 🧠 Read the **Developer Guide** (`docs/guides/help/03_DEVELOPER_GUIDE.md`) for adapters and plugins.
 
-Open a scenario file in an editor (`industries/telecom/scenarios/telecom_password_reset.json`) and change the prompt (e.g., add a requirement such as "include a security warning").
-
-### ✅ Step 2: Re-run the single scenario
-
-```bash
-eval-harness run industries/telecom/scenarios/telecom_password_reset.json -k 2
-```
-
-> ✅ Expected: the harness will re-run and update `reports/` and `runs/` with new trace data.
-
----
-
-## 6) Next Steps (Where to Explore)
-
-- ✅ Read the **User Manual** (`docs/guides/help/02_USER_MANUAL.md`) for scenario structure and metric definitions.
-- 🧠 Read the **Developer Guide** (`docs/guides/help/03_DEVELOPER_GUIDE.md`) for extending metrics, plugins, and the engine.
-- ✨ Try `eval-harness mutate --type typos --input <scenario>.json` to see adversarial scenario variants.
-
----
-
-Happy evaluating! If you get stuck, start by replaying `runs/run.jsonl` to see exactly what the agent did.
+Happy evaluating!

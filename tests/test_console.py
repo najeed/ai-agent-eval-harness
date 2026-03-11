@@ -53,17 +53,25 @@ def test_nav_registry_loads_core_and_plugins(client):
     # Check plugin route
     assert "mock_plugin" in nav_ids
 
-def test_docs_route_exists(client):
-    """Test that the docs listing API returns a 200 OK and JSON structure."""
+def test_docs_with_categories(client):
+    """Test that docs are categorized."""
     response = client.get("/api/docs")
     assert response.status_code == 200
-    
     data = response.get_json()
     assert "docs" in data
+    if data["docs"]:
+        assert "category" in data["docs"][0]
+        assert data["docs"][0]["category"] in ["Guide", "API Reference"]
 
 def test_scenario_lists_exist(client):
-    """Test that the scenarios endpoint does not crash."""
+    """Test that the scenarios endpoint does not crash and supports filtering."""
     response = client.get("/api/scenarios")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert "scenarios" in data
+    
+    # Test faceted query
+    response = client.get("/api/scenarios?industry=telecom")
     assert response.status_code == 200
     assert "scenarios" in response.get_json()
 
