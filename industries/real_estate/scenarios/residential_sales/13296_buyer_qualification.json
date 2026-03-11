@@ -49,7 +49,7 @@
           "requires_llm_judge": true
         },
         {
-          "metric": "process_adherence",
+          "metric": "policy_compliance",
           "threshold": 1.0
         }
       ]

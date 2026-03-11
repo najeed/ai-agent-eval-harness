@@ -14,6 +14,16 @@
         {
           "metric": "generic_accuracy",
           "threshold": 0.5
+        },
+        {
+          "metric": "state_verification",
+          "threshold": 1.0
+        }
+      ],
+      "expected_state_changes": [
+        {
+          "path": "task_completed",
+          "value": true
         }
       ]
     }
@@ -63,5 +73,14 @@
     }
   ],
   "use_case": "Scenarios Use Case",
-  "core_function": "General Core Function"
+  "core_function": "General Core Function",
+  "initial_state": {
+    "session_active": true,
+    "user_authenticated": true,
+    "system_status": "nominal"
+  },
+  "policies": {
+    "max_spend_limit": 500,
+    "requires_approval_for_destructive_actions": true
+  }
 }

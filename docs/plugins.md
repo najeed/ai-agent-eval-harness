@@ -46,14 +46,20 @@ Plugins are automatically discovered if they are present in the `plugins/` direc
 }
 ```
 
-## Interceptor Example
+## Framework Adapters (Advanced)
 
-The `on_tool_request` hook is powerful for creating "Human-In-The-Loop" workflows or masking sensitive data:
+Phase 4 introduced built-in support for extending agent communication protocols without touching the core engine. Using the `on_discover_adapters` hook, a plugin can register custom protocol schemes (e.g., `langgraph://`).
 
 ```python
-def on_tool_request(self, name, params, context):
-    if params.get("amount", 0) > 1000:
-        # Require human approval for large refunds
-        return {"status": "hitl_required", "message": "Manual approval needed"}
-    return None
+from eval_runner.plugins import BaseEvalPlugin
+
+class LangGraphAdapterPlugin(BaseEvalPlugin):
+    def on_discover_adapters(self, registry):
+        # Register the 'langgraph' protocol pointing to our handler func
+        registry.register("langgraph", self.execute_langgraph_node)
+
+    async def execute_langgraph_node(self, node_id: str, input_data: dict) -> dict:
+        """Custom execution logic specific to LangGraph."""
+        return {"action": "final_answer", "summary": "LangGraph Execution Complete."}
 ```
+If this plugin is active, scenarios can now specify an agent URL like `langgraph://my_agent_node`, and the engine will seamlessly route the task to this adapter bypasssing standard HTTP mechanisms.

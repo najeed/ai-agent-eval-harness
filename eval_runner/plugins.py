@@ -90,6 +90,36 @@ class PluginManager:
         except ImportError:
             pass
 
+        # Phase 4: Discovery of built-in adapters as plugins
+        self._load_internal_adapters()
+
+    def _load_internal_adapters(self):
+        """Discovers internal adapters and loads them as plugins."""
+        import os
+        from pathlib import Path
+        adapter_dir = Path(__file__).parent / "adapters"
+        if not adapter_dir.exists():
+            return
+
+        for file in adapter_dir.glob("*.py"):
+            if file.name == "__init__.py":
+                continue
+            
+            try:
+                module_name = f".adapters.{file.stem}"
+                module = importlib.import_module(module_name, package="eval_runner")
+                # Look for classes inheriting from BaseEvalPlugin
+                for attr_name in dir(module):
+                    attr = getattr(module, attr_name)
+                    if (isinstance(attr, type) and issubclass(attr, BaseEvalPlugin) 
+                        and attr is not BaseEvalPlugin):
+                        if not any(isinstance(p, attr) for p in self.plugins):
+                            self.plugins.append(attr())
+                            # print(f"   [Plugins] Loaded internal adapter: {attr_name}")
+            except Exception as e:
+                # print(f"   [Plugins] Failed to load adapter {file.name}: {e}")
+                pass
+
     def trigger(self, hook_name: str, *args, **kwargs):
         """Triggers a lifecycle hook on all loaded plugins."""
         for plugin in self.plugins:

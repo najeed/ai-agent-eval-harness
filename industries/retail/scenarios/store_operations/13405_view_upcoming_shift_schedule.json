@@ -40,7 +40,7 @@
       "expected_outcome": "The system displays the associate's assigned shifts, including dates, times, and roles.",
       "success_criteria": [
         {
-          "metric": "information_retrieval_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 1.0
         }
       ],

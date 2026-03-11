@@ -26,7 +26,7 @@
       "required_tools": [],
       "success_criteria": [
         {
-          "metric": "data_analysis_accuracy",
+          "metric": "factual_accuracy",
           "threshold": 1.0
         }
       ]

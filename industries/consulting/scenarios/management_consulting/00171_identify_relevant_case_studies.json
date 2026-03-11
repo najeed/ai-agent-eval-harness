@@ -27,7 +27,7 @@
       "required_tools": [],
       "success_criteria": [
         {
-          "metric": "information_retrieval_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 0.9
         }
       ]

@@ -13,7 +13,7 @@
       "required_tools": [],
       "success_criteria": [
         {
-          "metric": "data_entry_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 1.0
         }
       ]
@@ -27,7 +27,7 @@
       ],
       "success_criteria": [
         {
-          "metric": "data_entry_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 1.0
         }
       ]
@@ -55,7 +55,7 @@
       ],
       "success_criteria": [
         {
-          "metric": "data_analysis_accuracy",
+          "metric": "factual_accuracy",
           "threshold": 1.0
         }
       ]

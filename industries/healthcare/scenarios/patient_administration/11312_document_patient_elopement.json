@@ -15,8 +15,18 @@
       ],
       "success_criteria": [
         {
-          "metric": "process_adherence",
+          "metric": "policy_compliance",
           "threshold": 1.0
+        },
+        {
+          "metric": "state_verification",
+          "threshold": 1.0
+        }
+      ],
+      "expected_state_changes": [
+        {
+          "path": "task_completed",
+          "value": true
         }
       ]
     },
@@ -29,8 +39,18 @@
       ],
       "success_criteria": [
         {
-          "metric": "information_retrieval_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 1.0
+        },
+        {
+          "metric": "state_verification",
+          "threshold": 1.0
+        }
+      ],
+      "expected_state_changes": [
+        {
+          "path": "task_completed",
+          "value": true
         }
       ]
     },
@@ -43,10 +63,29 @@
       ],
       "success_criteria": [
         {
-          "metric": "data_entry_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 1.0
+        },
+        {
+          "metric": "state_verification",
+          "threshold": 1.0
+        }
+      ],
+      "expected_state_changes": [
+        {
+          "path": "task_completed",
+          "value": true
         }
       ]
     }
-  ]
+  ],
+  "initial_state": {
+    "session_active": true,
+    "user_authenticated": true,
+    "system_status": "nominal"
+  },
+  "policies": {
+    "max_spend_limit": 500,
+    "requires_approval_for_destructive_actions": true
+  }
 }

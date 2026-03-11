@@ -1,0 +1,33 @@
+{
+  "metadata": {
+    "scenario_id": "clarity-test",
+    "title": null,
+    "industry": null,
+    "timestamp": "20260311_055122"
+  },
+  "results": [
+    {
+      "task_id": "task-1",
+      "attempt": 1,
+      "turns_taken": 1,
+      "conversation_history": [
+        {
+          "role": "agent",
+          "content": {
+            "action": "final_answer",
+            "summary": "The issue is with the customer's local Wi-Fi network."
+          }
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "communication_clarity",
+          "score": 1.0,
+          "threshold": 1.0,
+          "success": true
+        }
+      ],
+      "triage_tag": "SUCCESS"
+    }
+  ]
+}

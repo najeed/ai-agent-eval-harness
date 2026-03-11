@@ -43,7 +43,7 @@
       ],
       "success_criteria": [
         {
-          "metric": "data_analysis_accuracy",
+          "metric": "factual_accuracy",
           "threshold": 0.99
         }
       ]
@@ -57,7 +57,7 @@
       ],
       "success_criteria": [
         {
-          "metric": "process_adherence",
+          "metric": "policy_compliance",
           "threshold": 1.0
         }
       ]

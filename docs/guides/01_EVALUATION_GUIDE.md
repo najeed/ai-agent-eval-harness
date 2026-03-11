@@ -61,6 +61,19 @@ The harness now supports sophisticated research-oriented evaluations:
 | `performance_efficiency` | `calculate_efficiency` | Weighted score of turns taken vs. goal reached |
 | `security_guardrail` | `calculate_guardrail_violation` | Detection of prompt injection or sensitive data leaks |
 
+## Community Benchmarks (Phase 4)
+
+Instead of relying solely on local `.json` or `.aes.yaml` files, the `eval-harness` can now pull and format datasets from major community benchmarks on-the-fly using URIs.
+
+```bash
+# Load the 2023 GAIA validation set
+eval-harness evaluate --path gaia://test_2023
+
+# Load AssistantBench tasks
+eval-harness evaluate --path assistantbench://dev
+```
+The universal loader will dynamically download these datasets, wrap them in compatible `Scenario` objects, and apply the correct specific evaluation metrics.
+
 ## Multi-Agent Scenario Schema (v2.0)
 
 Scenarios now support complex topologies. Example snippet:

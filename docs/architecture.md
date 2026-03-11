@@ -52,7 +52,7 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 | CLI | `eval_runner/cli.py` | Universal entry-point (`replay`, `aes`, `import-drift`) |
 | Loader | `eval_runner/loader.py` | Multi-format dataset ingestion and v2.0 schema validation |
 ### `EventEmitter` Bus: Passive Observation
-The core engine is built around a central `EventEmitter` (see `eval_runner/events.py`). Every state transition in the harness—from the start of a run to a tool call or an agent response—is emitted as an event. This allows plugins to observe the system's behavior without modifying the core logic.
+The core engine is built around a central `EventEmitter` (see `eval_runner/events.py`). Every state transition in the harness - from the start of a run to a tool call or an agent response - is emitted as an event. This allows plugins to observe the system's behavior without modifying the core logic.
 
 #### Key Event Types:
 - `RUN_START` / `RUN_END`: lifecycle of the entire evaluation.
@@ -82,7 +82,10 @@ Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the eval
 | Metrics | `eval_runner/metrics.py` | Research-grade scoring: Consenus, PII, and Consistency Scoring |
 | Simulators | `eval_runner/simulators.py`| Deterministic tool shims (Git, API) for dependency-free testing |
 | Mutator | `eval_runner/mutator.py` | Adversarial Mutation Engine for robustness red-teaming |
-| Reporter | `eval_runner/reporter.py` | Consolidated console and HTML reporting with Triage integration |
+| Triage | `eval_runner/triage.py`| Heuristic failure pattern matching and tagging |
+| Exporter | `eval_runner/exporter.py`| Conversion from internal `run.jsonl` to external formats (e.g., HuggingFace) |
+| Benchmarks | `eval_runner/benchmarks/`| Native integrations for community datasets (GAIA, AssistantBench) |
+| Adapters | `eval_runner/adapters/`| Native plugin shims for external frameworks (LangGraph, CrewAI) |
 
 ## Foundational Core: AES & Flight Recorder
 
@@ -110,6 +113,13 @@ Phase 3 introduces advanced orchestration capabilities for research and complex 
 - **Simulation Shims**: State-aware mocks (Git Simulator) that enable testing complex agentic tasks (clone -> hack -> commit) without real infrastructure.
 - **Research Metrics**: Native support for `pass@k` (robustness across attempts) and `Success Consistency`.
 - **Adversarial Red-Teaming**: The `mutator` engine injects typos, prompt-injection, and ambiguity into scenarios to test agent edge-resistance.
+
+## Ecosystem, Benchmarks & Distribution
+
+Phase 4 elevates the Harness from an isolated tool to an integrated participant in the open AI evaluation ecosystem:
+- **Community Benchmark Integration**: The harness natively supports downloading and structuring data from major AI benchmarks. Passing URIs like `gaia://...` to the loader transparently fetches and wraps the datasets into executable `Scenario` objects with compatible metrics.
+- **HuggingFace Distribution**: The `HFExporter` enables a one-click CLI flow (`eval-harness export --format hf`) to transform deterministic internal `run.jsonl` flight logs into normalized datasets ready for HuggingFace publication and leaderboards.
+- **Framework Adapters via Plugins**: Supporting frameworks like `LangGraph` and `CrewAI` without "polluting" the core engine. These are implemented as modular `BaseEvalPlugin` classes that hook into the `on_discover_adapters` lifecycle to register their custom `langgraph://` or `crewai://` execution protocols.
 
 ## Key Environment Variables
 

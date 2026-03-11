@@ -15,10 +15,17 @@
       ],
       "success_criteria": [
         {
-          "metric": "information_retrieval_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 1.0
         }
-      ]
+      ],
+      "crew_success_criteria": [
+        {
+          "metric": "delegation_loop_risk",
+          "threshold": 0.0
+        }
+      ],
+      "expected_delegations": 1
     },
     {
       "task_id": "task-2",
@@ -32,7 +39,14 @@
           "metric": "tool_call_correctness",
           "threshold": 1.0
         }
-      ]
+      ],
+      "crew_success_criteria": [
+        {
+          "metric": "delegation_loop_risk",
+          "threshold": 0.0
+        }
+      ],
+      "expected_delegations": 1
     },
     {
       "task_id": "task-3",
@@ -44,7 +58,14 @@
           "metric": "decision_making_accuracy",
           "threshold": 1.0
         }
-      ]
+      ],
+      "crew_success_criteria": [
+        {
+          "metric": "delegation_loop_risk",
+          "threshold": 0.0
+        }
+      ],
+      "expected_delegations": 1
     },
     {
       "task_id": "task-4",
@@ -55,10 +76,28 @@
       ],
       "success_criteria": [
         {
-          "metric": "process_adherence",
+          "metric": "policy_compliance",
           "threshold": 1.0
         }
+      ],
+      "crew_success_criteria": [
+        {
+          "metric": "delegation_loop_risk",
+          "threshold": 0.0
+        }
+      ],
+      "expected_delegations": 1
+    }
+  ],
+  "version": "2.0.0",
+  "agent_topology": {
+    "primary_agent": {
+      "reads": [
+        "*"
+      ],
+      "writes": [
+        "*"
       ]
     }
-  ]
+  }
 }

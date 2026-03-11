@@ -15,6 +15,16 @@
         {
           "metric": "generic_accuracy",
           "threshold": 0.5
+        },
+        {
+          "metric": "state_verification",
+          "threshold": 1.0
+        }
+      ],
+      "expected_state_changes": [
+        {
+          "path": "task_completed",
+          "value": true
         }
       ]
     }
@@ -39,5 +49,14 @@
         "billing:balance"
       ]
     }
+  },
+  "initial_state": {
+    "session_active": true,
+    "user_authenticated": true,
+    "system_status": "nominal"
+  },
+  "policies": {
+    "max_spend_limit": 500,
+    "requires_approval_for_destructive_actions": true
   }
 }

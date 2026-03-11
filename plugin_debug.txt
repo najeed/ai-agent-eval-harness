@@ -1,0 +1,4 @@
+DEBUG: Task 0 consistency: 0.0
+DEBUG: Task 0 consistency: 1.0
+DEBUG: Task 0 consistency: 0.0
+DEBUG: Task 0 consistency: 1.0

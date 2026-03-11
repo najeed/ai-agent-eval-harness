@@ -69,12 +69,13 @@ eval-harness quickstart
 
 ---
 
-## 🚀 At a Glance
+## 🚀 At a Glance (v1.0 RC)
 
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
-- **Pluggable Architecture**: Extend anything via Python plugins (Runners, Reporters, Adapters).
+- **Benchmark Ecosystem**: Native loaders and adapters for community benchmarks like GAIA and AssistantBench.
+- **Pluggable Architecture**: Extend anything via Python plugins, with out-of-the-box framework adapters for LangGraph and CrewAI.
 - **Tool Sandbox**: Governance-controlled execution of real or mock tools.
-- **Semantic Bridge**: Ingest production traces (`import-drift`) and analyze failures (`triage`).
+- **Semantic Bridge & Distribution**: Ingest production traces (`import-drift`), analyze failures (`triage`), and export datasets to HuggingFace (`export`).
 - **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
 - **Robust Metrics**: 10+ built-in metrics (Tool Correctness, State Parity, Policy Compliance).
 
@@ -92,6 +93,9 @@ eval-harness replay runs/run.jsonl
 
 # Interactive Playground
 eval-harness playground --agent http://localhost:5001
+
+# Export to HuggingFace
+eval-harness export --input runs/run.jsonl --format hf --output dataset.json
 ```
 *See the full [CLI Reference](docs/cli_reference.md) for more.*
 

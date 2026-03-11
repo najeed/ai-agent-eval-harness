@@ -48,6 +48,12 @@ Generate adversarial variants of a scenario (e.g., adding typos, prompt injectio
 eval-harness mutate --input <scenario.json> --type <mutation_type>
 ```
 
+### `export`
+Convert internal execution traces (`run.jsonl`) into externally shareable dataset formats (like HuggingFace Datasets).
+```bash
+eval-harness export --input <run.jsonl> --format hf --output <dataset.json>
+```
+
 ## Debugging & Exploration
 
 ### `replay`

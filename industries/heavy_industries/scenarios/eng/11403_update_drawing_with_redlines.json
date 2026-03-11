@@ -29,7 +29,7 @@
       ],
       "success_criteria": [
         {
-          "metric": "process_adherence",
+          "metric": "policy_compliance",
           "threshold": 1.0
         }
       ]
@@ -44,7 +44,7 @@
       ],
       "success_criteria": [
         {
-          "metric": "data_entry_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 1.0
         }
       ]

@@ -45,7 +45,7 @@
       ],
       "success_criteria": [
         {
-          "metric": "communication_accuracy",
+          "metric": "communication_clarity",
           "threshold": 1.0
         }
       ]

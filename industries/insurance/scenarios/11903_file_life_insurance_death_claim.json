@@ -20,7 +20,7 @@
           "requires_llm_judge": true
         },
         {
-          "metric": "information_retrieval_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 1.0
         }
       ]
@@ -34,7 +34,7 @@
       ],
       "success_criteria": [
         {
-          "metric": "information_retrieval_accuracy",
+          "metric": "tool_call_correctness",
           "threshold": 1.0
         }
       ]

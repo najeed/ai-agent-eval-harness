@@ -92,6 +92,12 @@ def main():
     playground_parser = subparsers.add_parser("playground", help="Interactive REPL to experiment with an agent")
     playground_parser.add_argument("--agent", default="http://localhost:5001/execute_task", help="Agent API URL")
 
+    # --- EXPORT COMMAND ---
+    export_parser = subparsers.add_parser("export", help="Export run traces to external formats (e.g., HuggingFace)")
+    export_parser.add_argument("--input", required=True, help="Path to run.jsonl trace")
+    export_parser.add_argument("--format", default="hf", choices=["hf"], help="Target format")
+    export_parser.add_argument("--output", required=True, help="Path to save exported dataset")
+
     # Plugin-driven argument registration
     plugins.manager.register_arguments(parser)
 
@@ -138,6 +144,8 @@ def main():
         elif args.command == "playground":
             from . import playground
             asyncio.run(playground.run_playground(args.agent))
+        elif args.command == "export":
+            handle_export(args)
         else:
             parser.print_help()
     except Exception:
@@ -507,6 +515,12 @@ def handle_mutate(args):
         
     mutator.save_mutated_scenario(mutated, output_path)
     print(f"[OK] Mutated scenario saved to {output_path}")
+
+def handle_export(args):
+    """Handler for 'export' command."""
+    from . import exporter
+    if args.format == "hf":
+        exporter.HFExporter.export(args.input, args.output)
 
 if __name__ == "__main__":
     main()

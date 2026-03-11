@@ -1,0 +1,14 @@
+{"event": "run_start", "timestamp": "2026-03-11T05:42:24.461694Z", "run_id": "run-test-k-218168", "scenario": "test-k", "k_attempts": 2}
+{"event": "task_start", "timestamp": "2026-03-11T05:42:24.463006Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-11T05:42:24.463470Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-11T05:42:24.463829Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T05:42:24.464250Z", "step": 1, "response": {"action": "final_answer", "summary": "Success"}}
+{"event": "evaluation", "timestamp": "2026-03-11T05:42:24.464806Z", "metric": "generic_accuracy", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-11T05:42:24.465134Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "Success"}}], "metrics": [{"metric": "generic_accuracy", "score": 1.0, "threshold": 0.5, "success": true}]}}
+{"event": "task_start", "timestamp": "2026-03-11T05:42:24.465474Z", "task_id": "task-1", "attempt": 2}
+{"event": "agent_request", "timestamp": "2026-03-11T05:42:24.465769Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-11T05:42:24.466042Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-11T05:42:24.466340Z", "step": 1, "response": {"action": "final_answer", "summary": ""}}
+{"event": "evaluation", "timestamp": "2026-03-11T05:42:24.466604Z", "metric": "generic_accuracy", "value": 0.0, "attempt": 2}
+{"event": "task_end", "timestamp": "2026-03-11T05:42:24.466843Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 2, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": ""}}], "metrics": [{"metric": "generic_accuracy", "score": 0.0, "threshold": 0.5, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-11T05:42:24.500428Z", "pass_at_k": 0.5, "successful_attempts": 1, "total_attempts": 2}

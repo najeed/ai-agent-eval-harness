@@ -67,11 +67,28 @@ def load_jsonl(file_path: Path) -> List[Dict]:
 @LoaderRegistry.register(".json")
 def load_single_scenario(file_path: Path) -> List[Dict]:
     """Loads a single scenario JSON file and returns it as a list."""
-    return [load_scenario(file_path)]
+    return [load_scenario(str(file_path))]
 
 
-def load_scenario(file_path: Path) -> dict:
-    """Loads and validates a scenario JSON file."""
+def load_scenario(path: Union[str, Path]) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+    """
+    Loads scenarios from a JSON/YAML file or a Benchmark URI (e.g., gaia://2023).
+    """
+    path_str = str(path)
+    
+    # 1. Handle Benchmark URIs
+    if "://" in path_str:
+        scheme, uri = path_str.split("://", 1)
+        from .benchmarks import BENCHMARK_REGISTRY
+        if scheme in BENCHMARK_REGISTRY:
+            benchmark_class = BENCHMARK_REGISTRY[scheme]
+            return benchmark_class.load(uri)
+        else:
+            print(f"      [Loader] Warning: Unknown benchmark scheme '{scheme}'")
+            return []
+
+    # 2. Handle File Paths
+    file_path = Path(path)
     if not file_path.exists():
         raise FileNotFoundError(f"Scenario file not found at {file_path}")
 
@@ -83,6 +100,7 @@ def load_scenario(file_path: Path) -> dict:
                 f"Error decoding JSON from {file_path}: {e.msg}", e.doc, e.pos
             )
 
+    # Note: validation is only for standard scenario files
     validate(instance=scenario_data, schema=_get_schema())
     return scenario_data
 
