@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+OIL-4326,Hank Corp,Closed,Low,Toronto,2025-03-31T15:56:09.809564Z
+OIL-2244,Frank Corp,Pending,Medium,Dubai,2025-05-29T15:56:09.809602Z
+OIL-7533,Alice Corp,Resolved,Critical,Singapore,2025-12-11T18:56:09.809621Z
+OIL-3833,Hank Corp,In Progress,Medium,New York,2025-09-19T03:56:09.809639Z
+OIL-1635,Grace Corp,Resolved,Critical,Dubai,2025-12-16T12:56:09.809655Z
+OIL-6995,Bob Corp,Active,High,Berlin,2026-01-25T09:56:09.809670Z
+OIL-7957,Diana Corp,Active,High,London,2025-06-05T13:56:09.809685Z
+OIL-1695,Hank Corp,Requires Action,Critical,Singapore,2025-12-15T10:56:09.809700Z
+OIL-1440,Grace Corp,Requires Action,Medium,Toronto,2026-03-05T06:56:09.809714Z
+OIL-6869,Grace Corp,Failed,Low,Tokyo,2025-05-15T06:56:09.809728Z
+OIL-6194,Hank Corp,Failed,High,Singapore,2026-02-11T12:56:09.809741Z
+OIL-8607,Alice Corp,Failed,Critical,New York,2026-03-06T06:56:09.809754Z
+OIL-5131,Frank Corp,Closed,Low,Tokyo,2025-04-23T07:56:09.809769Z
+OIL-4205,Grace Corp,Active,Critical,London,2025-03-25T04:56:09.809783Z
+OIL-9257,Grace Corp,Requires Action,Low,Dubai,2025-05-27T19:56:09.809796Z
+OIL-4118,Ivy Corp,Active,High,Singapore,2026-03-11T09:56:09.809810Z
+OIL-4435,Ivy Corp,Closed,Critical,Toronto,2025-07-02T07:56:09.809823Z
+OIL-8283,Grace Corp,Resolved,Low,Toronto,2025-12-26T00:56:09.809837Z
+OIL-1870,Alice Corp,Requires Action,High,New York,2025-03-26T07:56:09.809850Z
+OIL-6572,Karen Corp,Pending,High,Toronto,2026-01-17T06:56:09.809863Z
+OIL-7716,Eve Corp,Resolved,Medium,Singapore,2025-09-19T04:56:09.809876Z
+OIL-2027,Jack Corp,Active,Low,London,2025-06-27T12:56:09.809890Z
+OIL-6478,Ivy Corp,Pending,High,Tokyo,2026-02-16T06:56:09.809903Z
+OIL-9438,Diana Corp,Closed,Low,New York,2026-01-09T04:56:09.809916Z
+OIL-8748,Charlie Corp,Failed,Medium,Sydney,2025-10-27T11:56:09.809930Z
+OIL-3383,Karen Corp,Active,Low,New York,2026-01-20T02:56:09.809943Z
+OIL-3372,Eve Corp,Closed,High,Berlin,2025-07-10T20:56:09.809957Z
+OIL-4327,Ivy Corp,Closed,Low,Dubai,2026-02-16T08:56:09.809971Z
+OIL-5831,Jack Corp,Requires Action,Low,Dubai,2025-03-13T13:56:09.809984Z
+OIL-7544,Jack Corp,Resolved,Low,Sydney,2025-07-29T02:56:09.809997Z
+OIL-9077,Ivy Corp,Failed,Low,Tokyo,2025-09-30T14:56:09.810010Z
+OIL-2859,Grace Corp,Resolved,Critical,Sydney,2025-11-22T01:56:09.810023Z
+OIL-1336,Grace Corp,Closed,Low,Berlin,2025-12-24T06:56:09.810035Z
+OIL-1930,Grace Corp,In Progress,Medium,Berlin,2025-05-25T13:56:09.810048Z
+OIL-4087,Grace Corp,Active,Low,New York,2026-01-18T07:56:09.810061Z
+OIL-5977,Jack Corp,In Progress,High,London,2025-08-03T23:56:09.810073Z
+OIL-6736,Jack Corp,Pending,High,Singapore,2025-09-20T18:56:09.810087Z
+OIL-2007,Leo Corp,In Progress,High,Toronto,2025-09-20T11:56:09.810099Z
+OIL-4269,Hank Corp,Active,Medium,Singapore,2025-11-26T21:56:09.810111Z
+OIL-7544,Alice Corp,Requires Action,High,London,2025-07-11T02:56:09.810123Z
+OIL-6329,Bob Corp,Requires Action,Critical,Toronto,2025-03-17T19:56:09.810136Z
+OIL-3554,Leo Corp,Active,Low,Berlin,2025-04-30T17:56:09.810151Z
+OIL-1646,Charlie Corp,Requires Action,Low,London,2025-06-17T22:56:09.810164Z
+OIL-8516,Ivy Corp,Closed,Medium,Dubai,2025-12-21T16:56:09.810176Z
+OIL-3714,Hank Corp,Pending,High,Tokyo,2025-08-19T07:56:09.810189Z
+OIL-5540,Alice Corp,Requires Action,High,Toronto,2026-02-26T02:56:09.810203Z
+OIL-1501,Leo Corp,Active,Critical,Singapore,2025-03-27T13:56:09.810217Z
+OIL-5380,Charlie Corp,Closed,Medium,Dubai,2025-10-22T16:56:09.810229Z
+OIL-5767,Eve Corp,Active,High,New York,2026-01-20T19:56:09.810242Z
+OIL-3096,Bob Corp,Closed,High,London,2025-11-10T14:56:09.810254Z
+OIL-3544,Alice Corp,Requires Action,Low,London,2025-07-04T04:56:09.810267Z
+OIL-9167,Grace Corp,Active,Low,New York,2025-11-15T22:56:09.810281Z
+OIL-4646,Diana Corp,In Progress,Critical,Berlin,2025-04-01T08:56:09.810294Z
+OIL-3469,Bob Corp,Active,Low,London,2025-04-29T22:56:09.810307Z
+OIL-9703,Charlie Corp,Resolved,High,Singapore,2025-11-30T05:56:09.810320Z
+OIL-4919,Karen Corp,Closed,Medium,Dubai,2025-12-03T12:56:09.810332Z
+OIL-8027,Eve Corp,Requires Action,Medium,Tokyo,2025-10-25T02:56:09.810347Z
+OIL-5481,Jack Corp,Failed,Low,Dubai,2026-02-11T02:56:09.810359Z
+OIL-9205,Leo Corp,Closed,High,Dubai,2025-04-05T13:56:09.810372Z
+OIL-8962,Jack Corp,Closed,High,Dubai,2026-01-10T01:56:09.810384Z
+OIL-9707,Charlie Corp,Active,Critical,New York,2025-10-24T00:56:09.810397Z
+OIL-2163,Bob Corp,Pending,Medium,New York,2025-05-13T14:56:09.810410Z
+OIL-1748,Diana Corp,In Progress,Medium,Tokyo,2025-05-19T13:56:09.810422Z
+OIL-9866,Hank Corp,Resolved,High,Dubai,2026-01-21T22:56:09.810435Z
+OIL-6146,Diana Corp,Failed,Low,Tokyo,2025-06-01T06:56:09.810448Z
+OIL-5513,Alice Corp,Active,Medium,Sydney,2025-08-03T04:56:09.810465Z
+OIL-7429,Diana Corp,In Progress,Critical,Dubai,2025-11-02T23:56:09.810478Z
+OIL-4195,Frank Corp,Resolved,Medium,Dubai,2025-04-14T10:56:09.810489Z
+OIL-3589,Karen Corp,Closed,High,Dubai,2025-03-28T05:56:09.810502Z
+OIL-7775,Alice Corp,Failed,Critical,Singapore,2025-10-06T15:56:09.810514Z
+OIL-4353,Jack Corp,Active,Critical,Dubai,2025-09-07T03:56:09.810526Z
+OIL-4738,Hank Corp,Closed,Low,Singapore,2025-12-16T22:56:09.810539Z
+OIL-7309,Alice Corp,Pending,High,Dubai,2025-08-20T19:56:09.810552Z
+OIL-4769,Karen Corp,Resolved,Medium,London,2025-07-08T20:56:09.810565Z
+OIL-2706,Frank Corp,Resolved,Medium,Singapore,2025-06-04T07:56:09.810577Z
+OIL-4117,Hank Corp,Closed,Critical,Dubai,2025-05-21T10:56:09.810589Z
+OIL-7208,Diana Corp,Requires Action,Critical,Tokyo,2025-07-24T16:56:09.810602Z
+OIL-3634,Diana Corp,Active,Medium,Sydney,2026-02-23T21:56:09.810619Z
+OIL-9281,Grace Corp,Active,Low,New York,2025-06-13T22:56:09.810634Z
+OIL-9843,Grace Corp,Closed,Medium,New York,2026-01-27T22:56:09.810647Z
+OIL-4719,Hank Corp,Active,Medium,Dubai,2025-05-16T23:56:09.810660Z
+OIL-8586,Eve Corp,Pending,Critical,Singapore,2025-07-23T09:56:09.810673Z
+OIL-7942,Alice Corp,Requires Action,Medium,Sydney,2025-08-14T19:56:09.810688Z
+OIL-8903,Alice Corp,Resolved,Critical,London,2025-11-24T17:56:09.810702Z
+OIL-4098,Leo Corp,Resolved,Low,London,2025-11-22T06:56:09.810716Z
+OIL-6376,Charlie Corp,Active,Medium,Sydney,2026-01-28T23:56:09.810729Z
+OIL-8382,Jack Corp,Resolved,Low,London,2026-03-01T18:56:09.810743Z
+OIL-3131,Frank Corp,Failed,Critical,Sydney,2025-06-13T03:56:09.810756Z
+OIL-7595,Eve Corp,Resolved,High,Sydney,2026-02-03T09:56:09.810769Z
+OIL-9493,Alice Corp,Closed,Critical,Sydney,2026-01-04T10:56:09.810782Z
+OIL-7745,Eve Corp,Active,Low,Toronto,2026-01-19T02:56:09.810795Z
+OIL-1119,Hank Corp,Closed,High,Singapore,2026-01-17T09:56:09.810808Z
+OIL-5808,Karen Corp,Closed,Medium,Sydney,2025-07-13T11:56:09.810822Z
+OIL-5221,Frank Corp,Pending,Medium,Tokyo,2025-12-11T21:56:09.810837Z
+OIL-8942,Karen Corp,Requires Action,Critical,Sydney,2025-04-08T11:56:09.810850Z
+OIL-9689,Bob Corp,In Progress,Low,Toronto,2025-09-06T02:56:09.810863Z
+OIL-3649,Hank Corp,Resolved,Low,New York,2026-01-23T09:56:09.810876Z
+OIL-9119,Leo Corp,Failed,Critical,Tokyo,2026-01-20T09:56:09.810889Z
+OIL-1090,Bob Corp,Requires Action,High,Berlin,2025-12-17T15:56:09.810904Z
+OIL-4949,Charlie Corp,Active,Medium,Berlin,2025-05-16T22:56:09.810917Z

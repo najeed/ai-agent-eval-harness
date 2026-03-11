@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+CHE-1351,Grace Corp,Active,Low,Singapore,2025-05-24T21:56:09.700428Z
+CHE-5133,Grace Corp,In Progress,High,London,2025-10-11T14:56:09.700476Z
+CHE-6120,Eve Corp,In Progress,Critical,London,2025-09-19T19:56:09.700492Z
+CHE-6430,Bob Corp,Failed,Critical,Sydney,2025-06-10T10:56:09.700505Z
+CHE-3633,Grace Corp,Requires Action,Critical,New York,2025-12-08T05:56:09.700517Z
+CHE-3870,Leo Corp,Resolved,Critical,Singapore,2025-09-06T16:56:09.700528Z
+CHE-9829,Bob Corp,Closed,Critical,Dubai,2025-07-25T03:56:09.700541Z
+CHE-9642,Leo Corp,Pending,Low,Tokyo,2025-06-03T02:56:09.700551Z
+CHE-9290,Grace Corp,Requires Action,Medium,New York,2026-02-15T00:56:09.700562Z
+CHE-9751,Grace Corp,Requires Action,Low,Dubai,2025-03-16T18:56:09.700573Z
+CHE-8886,Bob Corp,Failed,Critical,Singapore,2026-01-01T13:56:09.700585Z
+CHE-6947,Hank Corp,Resolved,Low,Tokyo,2025-05-16T07:56:09.700597Z
+CHE-5740,Leo Corp,Pending,High,London,2025-12-14T13:56:09.700607Z
+CHE-4842,Ivy Corp,Pending,Critical,Sydney,2025-03-15T15:56:09.700677Z
+CHE-2242,Alice Corp,Resolved,High,Toronto,2025-07-29T08:56:09.700721Z
+CHE-2184,Grace Corp,Resolved,Low,Tokyo,2025-03-12T13:56:09.700742Z
+CHE-4912,Charlie Corp,Closed,High,New York,2025-08-30T23:56:09.700759Z
+CHE-6039,Jack Corp,Requires Action,Critical,Toronto,2025-12-06T09:56:09.700776Z
+CHE-1243,Charlie Corp,Closed,High,London,2026-03-04T14:56:09.700792Z
+CHE-6313,Eve Corp,Pending,High,Tokyo,2025-12-20T07:56:09.700807Z
+CHE-2834,Bob Corp,Pending,High,Toronto,2025-11-24T10:56:09.700821Z
+CHE-5914,Alice Corp,Active,Critical,London,2025-11-24T20:56:09.700836Z
+CHE-8909,Jack Corp,Resolved,Critical,New York,2025-04-11T00:56:09.700850Z
+CHE-2420,Eve Corp,Failed,High,Sydney,2025-05-01T13:56:09.700866Z
+CHE-9112,Frank Corp,Failed,Low,New York,2025-11-12T23:56:09.700880Z
+CHE-9918,Charlie Corp,Active,High,Berlin,2025-06-17T19:56:09.700894Z
+CHE-8043,Karen Corp,Requires Action,High,Sydney,2025-12-06T23:56:09.700911Z
+CHE-7878,Bob Corp,Closed,High,Berlin,2025-09-28T14:56:09.700925Z
+CHE-2560,Bob Corp,Active,Low,London,2025-10-05T18:56:09.700939Z
+CHE-2908,Frank Corp,Failed,Medium,Tokyo,2025-12-21T06:56:09.700955Z
+CHE-7885,Bob Corp,Failed,Medium,Berlin,2025-12-22T03:56:09.700968Z
+CHE-7311,Hank Corp,Closed,Medium,New York,2025-12-20T21:56:09.700983Z
+CHE-9710,Grace Corp,Closed,High,Toronto,2025-07-24T19:56:09.700998Z
+CHE-4467,Grace Corp,In Progress,Medium,London,2025-09-28T19:56:09.701013Z
+CHE-8180,Karen Corp,Requires Action,Medium,London,2026-01-31T12:56:09.701027Z
+CHE-5003,Diana Corp,Active,Low,Dubai,2025-10-10T14:56:09.701040Z
+CHE-1448,Diana Corp,Pending,Medium,Dubai,2025-10-17T11:56:09.701113Z
+CHE-6717,Karen Corp,Active,Low,Singapore,2025-08-13T22:56:09.701138Z
+CHE-8737,Diana Corp,Requires Action,High,Tokyo,2026-01-28T07:56:09.701158Z
+CHE-1273,Ivy Corp,Requires Action,Low,London,2025-05-20T13:56:09.701176Z
+CHE-6391,Leo Corp,In Progress,Low,Tokyo,2025-06-18T06:56:09.701197Z
+CHE-9693,Ivy Corp,Requires Action,Medium,Berlin,2025-03-20T09:56:09.701213Z
+CHE-4051,Jack Corp,In Progress,Medium,Berlin,2025-06-20T16:56:09.701229Z
+CHE-2363,Leo Corp,Resolved,Critical,Berlin,2025-07-31T00:56:09.701243Z
+CHE-6687,Hank Corp,Closed,Medium,Dubai,2025-08-07T21:56:09.701257Z
+CHE-2345,Frank Corp,Pending,Critical,New York,2025-05-31T23:56:09.701272Z
+CHE-9087,Diana Corp,Resolved,High,Singapore,2025-05-14T00:56:09.701287Z
+CHE-9426,Charlie Corp,In Progress,Low,Tokyo,2025-10-25T08:56:09.701302Z
+CHE-6584,Leo Corp,Resolved,Critical,Toronto,2025-09-02T07:56:09.701318Z
+CHE-5494,Diana Corp,Closed,High,London,2025-08-29T15:56:09.701334Z
+CHE-7277,Karen Corp,Resolved,High,New York,2025-10-28T04:56:09.701349Z
+CHE-5219,Karen Corp,Active,Medium,Toronto,2025-11-11T19:56:09.701363Z
+CHE-3968,Leo Corp,Active,High,Tokyo,2025-08-11T07:56:09.701379Z
+CHE-2519,Grace Corp,Resolved,Low,Berlin,2025-05-10T05:56:09.701394Z
+CHE-5037,Alice Corp,Resolved,High,Singapore,2025-06-04T15:56:09.701410Z
+CHE-5726,Karen Corp,Failed,Low,London,2025-06-04T04:56:09.701425Z
+CHE-3885,Ivy Corp,Requires Action,Critical,Tokyo,2025-09-14T08:56:09.701438Z
+CHE-8780,Frank Corp,Failed,High,New York,2026-01-30T20:56:09.701452Z
+CHE-3284,Hank Corp,Resolved,High,Berlin,2025-08-14T16:56:09.701466Z
+CHE-5040,Grace Corp,Active,Low,Singapore,2025-09-07T07:56:09.701505Z
+CHE-2460,Grace Corp,Closed,Low,Dubai,2025-08-26T20:56:09.701519Z
+CHE-4117,Karen Corp,Requires Action,Critical,Berlin,2026-02-26T13:56:09.701532Z
+CHE-4624,Leo Corp,Failed,Critical,Toronto,2025-05-08T01:56:09.701545Z
+CHE-2169,Alice Corp,Failed,Medium,Sydney,2025-11-27T04:56:09.701558Z
+CHE-2887,Alice Corp,In Progress,High,Sydney,2025-03-15T07:56:09.701571Z
+CHE-9117,Hank Corp,Pending,Low,New York,2025-06-19T20:56:09.701587Z
+CHE-3259,Frank Corp,Resolved,Medium,London,2026-03-07T12:56:09.701603Z
+CHE-8763,Hank Corp,Active,Medium,New York,2025-08-05T05:56:09.701616Z
+CHE-6796,Eve Corp,Failed,High,Dubai,2025-07-04T16:56:09.701630Z
+CHE-6770,Hank Corp,Failed,Critical,Tokyo,2025-03-15T00:56:09.701644Z
+CHE-7228,Leo Corp,In Progress,Critical,Dubai,2025-07-25T01:56:09.701658Z
+CHE-2802,Jack Corp,In Progress,Low,Sydney,2025-03-21T05:56:09.701671Z
+CHE-4795,Ivy Corp,Resolved,Critical,London,2025-12-05T18:56:09.701684Z
+CHE-5706,Karen Corp,Active,Medium,Singapore,2025-06-21T17:56:09.701699Z
+CHE-1394,Alice Corp,Closed,Low,Dubai,2025-10-23T19:56:09.701712Z
+CHE-9042,Grace Corp,Active,Medium,London,2025-06-13T08:56:09.701725Z
+CHE-5794,Charlie Corp,Closed,Low,Berlin,2025-05-13T06:56:09.701737Z
+CHE-7705,Charlie Corp,Failed,Low,Tokyo,2025-10-28T20:56:09.701754Z
+CHE-1092,Leo Corp,Pending,Critical,Tokyo,2025-05-04T17:56:09.701768Z
+CHE-2350,Eve Corp,Resolved,Medium,New York,2025-04-13T07:56:09.701780Z
+CHE-1350,Ivy Corp,Active,High,Singapore,2025-08-27T16:56:09.701792Z
+CHE-7499,Charlie Corp,Active,Medium,Toronto,2026-02-21T17:56:09.701805Z
+CHE-1284,Diana Corp,Requires Action,Medium,Singapore,2025-05-15T09:56:09.701819Z
+CHE-1606,Ivy Corp,Active,Critical,London,2025-05-25T23:56:09.701832Z
+CHE-5899,Charlie Corp,Resolved,Medium,Sydney,2025-06-30T14:56:09.701845Z
+CHE-7359,Frank Corp,Active,Critical,London,2025-10-15T17:56:09.701859Z
+CHE-3579,Bob Corp,Failed,Medium,London,2025-03-20T02:56:09.701872Z
+CHE-9885,Diana Corp,In Progress,Medium,Singapore,2025-03-21T01:56:09.701885Z
+CHE-7562,Frank Corp,Resolved,High,Toronto,2025-12-20T14:56:09.701897Z
+CHE-3241,Bob Corp,Resolved,Low,Toronto,2025-07-25T17:56:09.701912Z
+CHE-8281,Bob Corp,Failed,Low,Toronto,2025-08-17T09:56:09.701924Z
+CHE-1533,Eve Corp,Resolved,Medium,Toronto,2025-06-01T20:56:09.701937Z
+CHE-3303,Jack Corp,Pending,Medium,Singapore,2025-12-25T22:56:09.701949Z
+CHE-2617,Alice Corp,Active,Low,London,2025-12-02T14:56:09.701964Z
+CHE-9270,Diana Corp,Failed,Critical,Tokyo,2026-01-12T20:56:09.701977Z
+CHE-5574,Hank Corp,Closed,Critical,Berlin,2025-08-31T10:56:09.701991Z
+CHE-2345,Diana Corp,Resolved,Low,London,2025-04-08T18:56:09.702004Z
+CHE-2121,Eve Corp,Pending,Medium,Tokyo,2026-01-07T15:56:09.702018Z
+CHE-8988,Eve Corp,In Progress,High,Sydney,2025-12-05T02:56:09.702031Z
+CHE-8619,Frank Corp,Failed,Low,Berlin,2025-12-23T00:56:09.702043Z

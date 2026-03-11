@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+TRA-3711,Alice Corp,Closed,Critical,Sydney,2026-01-01T09:56:09.863289Z
+TRA-7253,Eve Corp,In Progress,Critical,London,2025-10-26T17:56:09.863331Z
+TRA-2048,Karen Corp,Failed,High,Singapore,2026-03-02T04:56:09.863350Z
+TRA-8931,Alice Corp,Resolved,Low,Tokyo,2025-03-14T04:56:09.863367Z
+TRA-2808,Leo Corp,Active,High,Dubai,2025-12-11T16:56:09.863384Z
+TRA-1969,Charlie Corp,In Progress,High,New York,2025-11-13T09:56:09.863399Z
+TRA-9335,Karen Corp,Failed,High,Singapore,2025-09-02T01:56:09.863414Z
+TRA-4734,Alice Corp,Resolved,Critical,Sydney,2025-07-08T06:56:09.863428Z
+TRA-4129,Diana Corp,In Progress,Low,Singapore,2025-05-27T13:56:09.863442Z
+TRA-3193,Diana Corp,Requires Action,Low,Singapore,2025-07-18T20:56:09.863456Z
+TRA-5849,Grace Corp,Closed,Critical,Tokyo,2026-03-09T18:56:09.863496Z
+TRA-9700,Ivy Corp,Failed,Critical,Toronto,2025-03-20T18:56:09.863512Z
+TRA-8953,Diana Corp,Failed,Low,Berlin,2025-08-20T01:56:09.863527Z
+TRA-3623,Frank Corp,Requires Action,High,New York,2025-07-09T04:56:09.863540Z
+TRA-6712,Hank Corp,Resolved,High,New York,2025-08-22T11:56:09.863553Z
+TRA-4982,Eve Corp,Closed,Low,Tokyo,2025-04-01T10:56:09.863565Z
+TRA-9950,Grace Corp,Closed,High,Berlin,2026-01-03T22:56:09.863579Z
+TRA-9103,Hank Corp,Resolved,Critical,New York,2025-12-17T23:56:09.863592Z
+TRA-5462,Leo Corp,Failed,High,Toronto,2025-10-03T19:56:09.863605Z
+TRA-2834,Eve Corp,Pending,Critical,Sydney,2025-12-15T23:56:09.863618Z
+TRA-3798,Karen Corp,Pending,Critical,New York,2026-03-09T10:56:09.863631Z
+TRA-3606,Eve Corp,In Progress,Low,Berlin,2025-11-11T02:56:09.863644Z
+TRA-1097,Frank Corp,Active,Medium,Tokyo,2025-05-25T07:56:09.863657Z
+TRA-3620,Hank Corp,In Progress,High,Singapore,2025-06-06T04:56:09.863672Z
+TRA-8904,Eve Corp,Requires Action,Medium,Tokyo,2026-01-16T00:56:09.863684Z
+TRA-4211,Alice Corp,Active,Low,Toronto,2025-07-23T08:56:09.863697Z
+TRA-9255,Karen Corp,Requires Action,High,Toronto,2025-03-15T14:56:09.863710Z
+TRA-9074,Grace Corp,Resolved,Medium,London,2025-11-11T02:56:09.863723Z
+TRA-7180,Jack Corp,Requires Action,Low,Dubai,2025-08-06T18:56:09.863735Z
+TRA-1302,Karen Corp,Closed,Low,Singapore,2025-12-12T02:56:09.863749Z
+TRA-3753,Eve Corp,Closed,Low,Singapore,2025-05-28T17:56:09.863762Z
+TRA-7071,Grace Corp,Resolved,Medium,London,2025-05-13T20:56:09.863776Z
+TRA-2431,Hank Corp,Resolved,Critical,Dubai,2025-08-14T18:56:09.863788Z
+TRA-2421,Karen Corp,In Progress,Low,Berlin,2025-12-28T05:56:09.863802Z
+TRA-3036,Karen Corp,Active,Medium,Singapore,2025-08-17T15:56:09.863814Z
+TRA-6418,Karen Corp,Closed,High,Sydney,2026-03-05T22:56:09.863826Z
+TRA-8703,Hank Corp,Requires Action,Critical,New York,2025-06-30T06:56:09.863839Z
+TRA-9457,Bob Corp,Requires Action,Low,Berlin,2025-08-20T21:56:09.863853Z
+TRA-8519,Eve Corp,Failed,Low,Berlin,2025-03-16T03:56:09.863867Z
+TRA-5289,Frank Corp,In Progress,Critical,London,2025-09-13T13:56:09.863879Z
+TRA-7814,Leo Corp,Failed,Medium,Sydney,2025-05-02T02:56:09.863892Z
+TRA-6504,Frank Corp,In Progress,Critical,New York,2025-06-16T10:56:09.863906Z
+TRA-4752,Bob Corp,Closed,Medium,London,2025-03-17T18:56:09.863920Z
+TRA-1895,Alice Corp,In Progress,Medium,Sydney,2025-10-25T13:56:09.863933Z
+TRA-3692,Leo Corp,In Progress,Critical,Berlin,2025-05-04T13:56:09.863946Z
+TRA-2577,Karen Corp,Resolved,Medium,Toronto,2025-12-22T19:56:09.863959Z
+TRA-9288,Leo Corp,Pending,Low,Berlin,2025-08-27T01:56:09.863973Z
+TRA-2402,Eve Corp,Resolved,Critical,Singapore,2025-10-13T03:56:09.863987Z
+TRA-7394,Eve Corp,Requires Action,Medium,Toronto,2025-04-16T01:56:09.864001Z
+TRA-4916,Charlie Corp,Resolved,Medium,Singapore,2025-04-03T20:56:09.864014Z
+TRA-3879,Frank Corp,Pending,Low,Toronto,2026-03-02T18:56:09.864028Z
+TRA-1968,Bob Corp,In Progress,Critical,Singapore,2025-06-22T23:56:09.864042Z
+TRA-9270,Leo Corp,Closed,Critical,Berlin,2025-11-17T01:56:09.864055Z
+TRA-2402,Grace Corp,Active,High,Toronto,2025-08-28T06:56:09.864070Z
+TRA-8558,Leo Corp,Failed,Low,Berlin,2025-08-21T08:56:09.864084Z
+TRA-7021,Charlie Corp,Resolved,Critical,Dubai,2025-10-05T05:56:09.864097Z
+TRA-2841,Grace Corp,Pending,Medium,Dubai,2025-11-24T19:56:09.864110Z
+TRA-3840,Frank Corp,In Progress,High,Singapore,2025-05-02T04:56:09.864123Z
+TRA-4609,Eve Corp,Requires Action,Medium,Toronto,2025-03-27T13:56:09.864136Z
+TRA-9543,Alice Corp,Resolved,Medium,New York,2025-06-09T14:56:09.864150Z
+TRA-2720,Karen Corp,Pending,Medium,Toronto,2025-04-07T06:56:09.864163Z
+TRA-5155,Bob Corp,Active,Medium,Singapore,2025-10-08T13:56:09.864176Z
+TRA-9508,Diana Corp,Resolved,Critical,Dubai,2025-12-23T18:56:09.864190Z
+TRA-6579,Jack Corp,In Progress,High,New York,2026-01-23T22:56:09.864202Z
+TRA-8038,Frank Corp,Closed,Critical,Tokyo,2026-01-08T17:56:09.864216Z
+TRA-1898,Grace Corp,In Progress,Medium,Toronto,2025-08-23T22:56:09.864234Z
+TRA-3240,Ivy Corp,Requires Action,Medium,Dubai,2026-03-07T15:56:09.864249Z
+TRA-1693,Charlie Corp,Resolved,High,Toronto,2025-05-18T10:56:09.864263Z
+TRA-1137,Jack Corp,In Progress,Medium,Singapore,2025-08-27T09:56:09.864275Z
+TRA-4059,Frank Corp,Requires Action,Medium,Dubai,2025-06-28T17:56:09.864290Z
+TRA-6871,Diana Corp,Closed,Medium,Toronto,2025-03-28T20:56:09.864304Z
+TRA-9056,Jack Corp,Closed,Critical,Sydney,2025-11-09T14:56:09.864317Z
+TRA-1957,Leo Corp,In Progress,Critical,Dubai,2025-04-19T20:56:09.864329Z
+TRA-2257,Ivy Corp,Closed,Low,Berlin,2025-04-02T04:56:09.864342Z
+TRA-7697,Frank Corp,In Progress,High,Tokyo,2025-05-23T11:56:09.864354Z
+TRA-9051,Leo Corp,Active,High,Berlin,2025-09-18T07:56:09.864367Z
+TRA-6283,Charlie Corp,In Progress,High,Tokyo,2025-05-08T20:56:09.864379Z
+TRA-5650,Leo Corp,Pending,Low,Tokyo,2025-12-26T19:56:09.864396Z
+TRA-2617,Ivy Corp,Closed,Low,London,2025-06-08T00:56:09.864409Z
+TRA-3430,Leo Corp,Failed,Critical,Tokyo,2025-07-29T11:56:09.864422Z
+TRA-2035,Alice Corp,Requires Action,Critical,Singapore,2025-11-29T15:56:09.864435Z
+TRA-3727,Jack Corp,In Progress,Medium,Tokyo,2025-07-29T18:56:09.864448Z
+TRA-8299,Charlie Corp,Resolved,Medium,London,2025-09-18T20:56:09.864461Z
+TRA-9901,Hank Corp,Active,Critical,New York,2025-06-12T12:56:09.864475Z
+TRA-5568,Ivy Corp,Failed,Medium,London,2025-10-13T04:56:09.864490Z
+TRA-4655,Frank Corp,In Progress,High,Sydney,2026-02-04T14:56:09.864503Z
+TRA-4161,Jack Corp,Pending,High,Sydney,2025-06-11T12:56:09.864515Z
+TRA-1376,Frank Corp,In Progress,Medium,Tokyo,2025-12-11T20:56:09.864529Z
+TRA-6472,Frank Corp,Active,Low,Singapore,2025-10-04T20:56:09.864542Z
+TRA-9693,Frank Corp,Closed,High,Dubai,2026-02-07T01:56:09.864554Z
+TRA-2172,Bob Corp,Pending,Low,Tokyo,2025-07-08T04:56:09.864567Z
+TRA-6886,Karen Corp,Failed,Medium,Tokyo,2026-01-05T14:56:09.864579Z
+TRA-2567,Charlie Corp,Failed,Medium,New York,2026-01-26T03:56:09.864592Z
+TRA-1755,Grace Corp,Active,High,London,2026-02-17T00:56:09.864606Z
+TRA-7476,Leo Corp,In Progress,Medium,Sydney,2025-10-25T07:56:09.864619Z
+TRA-6864,Charlie Corp,Pending,High,Singapore,2025-03-24T22:56:09.864632Z
+TRA-4009,Eve Corp,Pending,Critical,Sydney,2025-12-04T18:56:09.864645Z
+TRA-8785,Charlie Corp,Failed,Critical,Berlin,2025-09-24T03:56:09.864659Z
+TRA-5670,Eve Corp,Requires Action,Low,Dubai,2025-09-05T05:56:09.864672Z
+TRA-1103,Karen Corp,Requires Action,Medium,London,2026-01-17T20:56:09.864685Z

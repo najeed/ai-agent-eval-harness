@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+RET-5080,Leo Corp,Resolved,High,Tokyo,2025-04-06T11:56:09.834863Z
+RET-4075,Frank Corp,Resolved,High,Berlin,2026-01-31T20:56:09.834980Z
+RET-5085,Hank Corp,Closed,Critical,Sydney,2025-10-03T00:56:09.835009Z
+RET-5915,Bob Corp,Requires Action,High,Singapore,2025-10-07T06:56:09.835027Z
+RET-7993,Hank Corp,Pending,Critical,London,2026-03-10T12:56:09.835042Z
+RET-8672,Ivy Corp,Failed,Low,Berlin,2025-12-05T05:56:09.835058Z
+RET-9882,Ivy Corp,Pending,Medium,Berlin,2025-08-05T00:56:09.835074Z
+RET-3444,Jack Corp,Requires Action,Low,Tokyo,2025-03-25T01:56:09.835088Z
+RET-9790,Grace Corp,In Progress,Medium,Dubai,2025-09-09T23:56:09.835104Z
+RET-8445,Karen Corp,Requires Action,Low,Berlin,2025-07-25T01:56:09.835122Z
+RET-5346,Ivy Corp,Resolved,Medium,Dubai,2025-08-16T11:56:09.835137Z
+RET-7031,Grace Corp,Failed,Medium,Berlin,2025-07-02T16:56:09.835150Z
+RET-1441,Bob Corp,Closed,High,Singapore,2026-01-02T10:56:09.835164Z
+RET-8748,Charlie Corp,Resolved,Medium,Dubai,2025-11-10T05:56:09.835179Z
+RET-8078,Karen Corp,Resolved,Low,Singapore,2025-09-29T11:56:09.835195Z
+RET-1083,Karen Corp,In Progress,Low,New York,2025-12-29T05:56:09.835209Z
+RET-1509,Jack Corp,Closed,Low,Singapore,2025-04-10T13:56:09.835223Z
+RET-2432,Leo Corp,Pending,Critical,Toronto,2025-09-15T18:56:09.835237Z
+RET-1100,Karen Corp,Pending,High,New York,2025-09-07T17:56:09.835252Z
+RET-7233,Karen Corp,Failed,Low,London,2025-07-30T21:56:09.835267Z
+RET-5750,Alice Corp,Closed,High,London,2025-10-23T16:56:09.835281Z
+RET-7520,Alice Corp,Pending,Critical,London,2025-07-31T06:56:09.835295Z
+RET-3163,Jack Corp,Pending,Critical,New York,2025-12-03T13:56:09.835309Z
+RET-8478,Leo Corp,Failed,Low,London,2025-06-16T18:56:09.835323Z
+RET-9688,Eve Corp,Requires Action,Critical,New York,2025-04-09T02:56:09.835338Z
+RET-9335,Frank Corp,Failed,Low,London,2025-05-03T23:56:09.835355Z
+RET-8018,Jack Corp,Resolved,Critical,New York,2025-08-19T08:56:09.835370Z
+RET-1592,Eve Corp,Requires Action,Low,Dubai,2026-02-20T00:56:09.835387Z
+RET-9986,Karen Corp,Active,Medium,New York,2025-06-24T05:56:09.835403Z
+RET-7281,Bob Corp,Pending,Medium,Sydney,2025-12-27T08:56:09.835419Z
+RET-4197,Jack Corp,Failed,Medium,Singapore,2026-01-09T13:56:09.835436Z
+RET-9298,Grace Corp,Pending,Low,New York,2025-04-08T10:56:09.835455Z
+RET-8940,Alice Corp,Failed,Low,London,2025-05-07T11:56:09.835471Z
+RET-6570,Ivy Corp,Requires Action,Low,New York,2025-06-01T17:56:09.835486Z
+RET-1566,Eve Corp,Resolved,Low,London,2025-06-08T20:56:09.835501Z
+RET-8481,Ivy Corp,Failed,Low,Berlin,2026-01-04T00:56:09.835515Z
+RET-3696,Leo Corp,Active,Critical,Berlin,2025-10-01T07:56:09.835530Z
+RET-3941,Ivy Corp,Failed,High,Tokyo,2025-10-10T15:56:09.835546Z
+RET-4879,Grace Corp,Requires Action,Medium,London,2025-12-11T11:56:09.835561Z
+RET-1895,Leo Corp,Pending,Medium,Sydney,2026-01-10T08:56:09.835577Z
+RET-2126,Leo Corp,Active,Low,Sydney,2025-11-06T17:56:09.835595Z
+RET-5044,Hank Corp,In Progress,High,Toronto,2025-04-02T16:56:09.835612Z
+RET-6773,Grace Corp,Active,High,Sydney,2025-10-29T04:56:09.835627Z
+RET-7593,Jack Corp,Resolved,Medium,Toronto,2025-06-29T20:56:09.835641Z
+RET-5165,Alice Corp,Closed,High,Toronto,2025-06-27T02:56:09.835656Z
+RET-5174,Leo Corp,Resolved,Low,New York,2025-07-11T23:56:09.835671Z
+RET-7467,Grace Corp,In Progress,Medium,Berlin,2025-03-15T10:56:09.835686Z
+RET-9700,Leo Corp,Resolved,High,Singapore,2025-11-07T06:56:09.835700Z
+RET-8731,Grace Corp,Resolved,Medium,Toronto,2025-09-02T15:56:09.835715Z
+RET-7094,Leo Corp,Failed,High,Tokyo,2025-07-24T08:56:09.835732Z
+RET-1250,Karen Corp,Closed,Critical,Dubai,2025-03-26T12:56:09.835745Z
+RET-9779,Eve Corp,Pending,High,Dubai,2025-09-18T01:56:09.835760Z
+RET-8772,Leo Corp,Resolved,Medium,Tokyo,2025-06-13T10:56:09.835774Z
+RET-3757,Bob Corp,Resolved,Low,London,2026-01-08T01:56:09.835790Z
+RET-6483,Grace Corp,Failed,High,Dubai,2025-11-13T18:56:09.835806Z
+RET-1570,Karen Corp,In Progress,Critical,Dubai,2025-08-25T03:56:09.835825Z
+RET-6696,Diana Corp,Active,Critical,New York,2025-10-22T13:56:09.835844Z
+RET-9144,Jack Corp,In Progress,Medium,Berlin,2025-07-05T06:56:09.835863Z
+RET-5854,Karen Corp,Pending,Medium,Tokyo,2025-11-20T07:56:09.835879Z
+RET-2411,Ivy Corp,Closed,Low,Sydney,2025-04-10T13:56:09.835895Z
+RET-2553,Alice Corp,Requires Action,Low,Toronto,2025-05-15T10:56:09.835909Z
+RET-3689,Diana Corp,Closed,Low,Singapore,2026-02-17T14:56:09.835925Z
+RET-1085,Alice Corp,Requires Action,Low,Tokyo,2025-11-15T14:56:09.835938Z
+RET-1691,Ivy Corp,Pending,Medium,New York,2025-07-22T16:56:09.835954Z
+RET-4604,Ivy Corp,Active,Critical,Sydney,2025-10-20T12:56:09.835968Z
+RET-9344,Alice Corp,In Progress,Critical,New York,2025-12-07T16:56:09.835988Z
+RET-6211,Diana Corp,Pending,Low,Toronto,2025-04-06T16:56:09.836005Z
+RET-6444,Charlie Corp,Resolved,High,Toronto,2025-06-03T12:56:09.836020Z
+RET-3242,Grace Corp,Requires Action,Critical,Singapore,2025-10-30T04:56:09.836035Z
+RET-4620,Grace Corp,Pending,High,Dubai,2025-08-23T00:56:09.836050Z
+RET-8899,Leo Corp,Pending,High,London,2025-05-06T07:56:09.836064Z
+RET-9539,Alice Corp,Pending,Low,Dubai,2025-10-14T09:56:09.836077Z
+RET-8694,Eve Corp,Resolved,Low,Dubai,2025-06-08T09:56:09.836091Z
+RET-5025,Frank Corp,Resolved,Critical,New York,2025-03-12T20:56:09.836108Z
+RET-5287,Leo Corp,Resolved,Medium,Sydney,2025-12-12T17:56:09.836122Z
+RET-7845,Charlie Corp,Active,Medium,Sydney,2025-09-29T11:56:09.836137Z
+RET-2861,Charlie Corp,Failed,High,Berlin,2025-10-02T10:56:09.836151Z
+RET-2648,Eve Corp,Failed,Medium,Singapore,2025-03-16T04:56:09.836170Z
+RET-1053,Jack Corp,Resolved,Medium,New York,2025-10-06T09:56:09.836185Z
+RET-1038,Frank Corp,Requires Action,High,Singapore,2025-07-21T20:56:09.836198Z
+RET-1779,Frank Corp,Closed,Medium,London,2025-10-15T06:56:09.836213Z
+RET-5866,Leo Corp,Failed,Medium,London,2025-12-18T03:56:09.836228Z
+RET-8369,Charlie Corp,Pending,Medium,Singapore,2025-12-17T03:56:09.836244Z
+RET-7052,Diana Corp,Failed,Critical,New York,2025-07-14T17:56:09.836259Z
+RET-3447,Frank Corp,Pending,High,New York,2025-10-23T08:56:09.836273Z
+RET-5692,Bob Corp,Closed,Medium,New York,2025-04-22T13:56:09.836288Z
+RET-1644,Hank Corp,Failed,Medium,Toronto,2026-01-13T02:56:09.836302Z
+RET-4589,Grace Corp,Resolved,High,Sydney,2025-08-26T07:56:09.836316Z
+RET-9419,Alice Corp,Pending,Medium,London,2025-04-01T11:56:09.836330Z
+RET-2839,Grace Corp,In Progress,Critical,Berlin,2025-11-13T09:56:09.836345Z
+RET-6108,Hank Corp,Failed,Low,Toronto,2026-02-11T07:56:09.836359Z
+RET-9865,Karen Corp,Requires Action,High,New York,2025-10-16T10:56:09.836372Z
+RET-5668,Karen Corp,Resolved,Critical,Berlin,2026-02-14T00:56:09.836386Z
+RET-2657,Charlie Corp,Closed,Low,Dubai,2025-10-06T05:56:09.836402Z
+RET-3542,Jack Corp,Active,Medium,New York,2025-06-25T22:56:09.836416Z
+RET-4889,Frank Corp,In Progress,Critical,London,2025-06-16T15:56:09.836429Z
+RET-3793,Jack Corp,Resolved,Low,Dubai,2025-05-14T19:56:09.836443Z
+RET-7966,Alice Corp,Active,Critical,London,2026-01-31T13:56:09.836458Z
+RET-3407,Karen Corp,Resolved,Critical,Dubai,2025-09-16T07:56:09.836474Z
+RET-3633,Alice Corp,Requires Action,High,Berlin,2025-08-06T21:56:09.836489Z

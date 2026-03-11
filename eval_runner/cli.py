@@ -62,6 +62,13 @@ def main():
     spec_parser.add_argument("--input", required=True, help="Path to .md file")
     spec_parser.add_argument("--output", help="Path to save generated .json")
 
+    # --- AUTO-TRANSLATE COMMAND ---
+    trans_parser = subparsers.add_parser("auto-translate", help="Translate raw documents to JSON via a local LLM (Ollama required)")
+    trans_parser.add_argument("--input", required=True, help="Path to the source document")
+    trans_parser.add_argument("--model", default="llama3", help="Local Ollama model to use (Ollama must be running)")
+    trans_parser.add_argument("--industry", help="Target industry folder override")
+    trans_parser.add_argument("--output", help="Explicit path to save the generated JSON")
+
     # --- IMPORT-DRIFT COMMAND ---
     drift_parser = subparsers.add_parser("import-drift", help="Import production traces as scenarios")
     drift_parser.add_argument("--input", required=True, help="Path to trace file")
@@ -139,6 +146,8 @@ def main():
                 print(f" - {name}")
         elif args.command == "spec-to-eval":
             handle_spec_to_eval(args)
+        elif args.command == "auto-translate":
+            asyncio.run(handle_auto_translate(args))
         elif args.command == "import-drift":
             handle_import_drift(args)
         elif args.command == "aes":
@@ -474,10 +483,17 @@ Evaluation suite for {framework} agent in the {industry} industry.
     scenario_dir = Path("scenarios")
     scenario_dir.mkdir(parents=True, exist_ok=True)
     
+    # Determine expected dataset path based on the industry
+    expected_csv = "orders.csv" if industry == "ecommerce" else "appointments.csv" if industry == "healthcare" else "support_tickets.csv" if industry == "telecom" else f"{industry}_records.csv"
+    
     starter = {
         "scenario_id": f"starter_{industry}",
         "title": f"Starter Scenario ({industry})",
         "industry": industry,
+        "dataset": {
+            "path": f"industries/{industry}/datasets/{expected_csv}",
+            "format": "csv"
+        },
         "tasks": [{"task_id": "t1", "description": "Verify agent can greet."}]
     }
     
@@ -486,6 +502,40 @@ Evaluation suite for {framework} agent in the {industry} industry.
         
     print(f"\n[CLI] Project initialized successfully!")
     print(f"[CLI] Created: eval_config.json, scenarios/starter_scenario.json")
+
+async def handle_auto_translate(args):
+    """Handler for 'auto-translate' command."""
+    from . import auto_translate
+    input_path = Path(args.input)
+    
+    if not input_path.exists():
+        print(f"[FAIL] Error: Document not found at {input_path}")
+        return
+        
+    print("\n[Auto-Translate] NOTE: This utility requires a local LLM (Ollama) to be running.")
+    print(f"[Auto-Translate] Reading {input_path.name}...")
+    try:
+        text = auto_translate.extract_text(input_path)
+    except Exception as e:
+        print(f"[FAIL] Error extracting text: {e}")
+        return
+        
+    print(f"[Auto-Translate] Prompting Ollama model '{args.model}' (this may take a minute)...")
+    try:
+        scenario = await auto_translate.translate_to_scenario(text, model=args.model)
+    except Exception as e:
+        print(f"[FAIL] Translation failed: {e}")
+        return
+        
+    # Determine output path
+    if args.output:
+        output_path = Path(args.output)
+    else:
+        industry = args.industry or scenario.get("industry", "generic").lower().replace(" ", "_")
+        scenario_id = scenario.get("scenario_id", "auto-translated")
+        output_path = Path("industries") / industry / "scenarios" / f"{scenario_id}.json"
+        
+    auto_translate.save_scenario(scenario, output_path)
 
 def handle_spec_to_eval(args):
     """Handler for 'spec-to-eval' command."""

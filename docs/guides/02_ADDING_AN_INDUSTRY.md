@@ -24,11 +24,14 @@ This guide provides a step-by-step process for adding a new industry to the eval
 2.  Add your new industry, its use cases and core functions, by following the markdown format of the other industries. These constructs relate to the `industry`, `use_case`, and `core_function` fields in your JSON files.
 3.  Define the core functions to document their scope.
 
-## Step 4: (Optional) Add Datasets
+## Step 4: Include Synthetic Datasets
 
-If your scenario requires external data (like a CSV of transactions or a JSONL file of user profiles), add the data file to the `datasets` directory. Be sure to anonymize any sensitive information.
-
-## Step 5: Validate Against Schema
+Realistic environments require data. If your scenarios require data (e.g. a CSV of customer transactions), you should link them via the `dataset` attribute.
+To easily generate highly realistic dummy data for your new industry, use the builtin generation script:
+```bash
+python scripts/generate_industry_datasets.py --industry YOUR_INDUSTRY
+```
+This script uses faker libraries to create a `records.csv` with industry-specific schemas (e.g., policy numbers for insurance, flight routes for airlines) and places it directly in your `datasets/` folder for immediate use.
 
 All scenarios are validated at load time against `schemas/scenario.schema.json`. Your scenario **must** include these required fields:
 

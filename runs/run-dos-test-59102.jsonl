@@ -1,0 +1,261 @@
+{"event": "run_start", "timestamp": "2026-03-12T00:28:31.054254Z", "run_id": "run-dos-test-59102", "scenario": "dos-test", "k_attempts": 50}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.061584Z", "task_id": "t1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.062952Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.064248Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.069341Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.071124Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.072264Z", "task_id": "t1", "attempt": 2}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.073293Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.074346Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.080599Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.081960Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 2, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.083109Z", "task_id": "t1", "attempt": 3}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.084139Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.085195Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.089231Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.090473Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 3, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.091590Z", "task_id": "t1", "attempt": 4}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.092616Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.093733Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.097921Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.099353Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 4, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.100483Z", "task_id": "t1", "attempt": 5}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.101519Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.102555Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.107042Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.108564Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 5, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.109849Z", "task_id": "t1", "attempt": 6}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.111002Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.112165Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.116616Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.117820Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 6, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.119068Z", "task_id": "t1", "attempt": 7}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.120075Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.121091Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.125850Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.127249Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 7, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.128623Z", "task_id": "t1", "attempt": 8}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.129724Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.130834Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.135700Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.136977Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 8, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.138138Z", "task_id": "t1", "attempt": 9}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.139216Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.140263Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.144976Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.146216Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 9, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.147311Z", "task_id": "t1", "attempt": 10}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.148480Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.149636Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.154100Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.155402Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 10, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.156563Z", "task_id": "t1", "attempt": 11}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.157644Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.158769Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.163287Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.164606Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 11, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.165781Z", "task_id": "t1", "attempt": 12}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.166850Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.167998Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.172671Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.174078Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 12, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.175281Z", "task_id": "t1", "attempt": 13}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.176443Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.177927Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.183142Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.186040Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 13, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.187950Z", "task_id": "t1", "attempt": 14}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.189465Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.190881Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.195769Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.197150Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 14, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.198339Z", "task_id": "t1", "attempt": 15}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.199387Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.200459Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.206117Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.207749Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 15, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.209078Z", "task_id": "t1", "attempt": 16}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.210460Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.211794Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.216816Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.218171Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 16, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.219403Z", "task_id": "t1", "attempt": 17}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.220594Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.221676Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.225773Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.227411Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 17, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.228767Z", "task_id": "t1", "attempt": 18}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.229931Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.231116Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.236430Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.237774Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 18, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.238941Z", "task_id": "t1", "attempt": 19}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.239997Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.241087Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.246269Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.247658Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 19, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.249018Z", "task_id": "t1", "attempt": 20}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.250252Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.251417Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.256376Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.257754Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 20, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.258920Z", "task_id": "t1", "attempt": 21}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.260000Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.261226Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.266613Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.268133Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 21, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.269803Z", "task_id": "t1", "attempt": 22}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.271251Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.272707Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.278501Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.279855Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 22, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.281099Z", "task_id": "t1", "attempt": 23}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.282249Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.283441Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.287965Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.289263Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 23, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.290731Z", "task_id": "t1", "attempt": 24}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.291745Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.292353Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.297308Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.298629Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 24, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.300029Z", "task_id": "t1", "attempt": 25}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.301497Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.302590Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.307761Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.308899Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 25, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.309963Z", "task_id": "t1", "attempt": 26}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.311145Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.312393Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.316500Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.317781Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 26, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.319068Z", "task_id": "t1", "attempt": 27}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.320174Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.321302Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.325220Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.326520Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 27, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.327970Z", "task_id": "t1", "attempt": 28}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.329279Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.330480Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.335376Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.336693Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 28, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.337958Z", "task_id": "t1", "attempt": 29}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.339085Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.340818Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.345877Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.347143Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 29, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.348426Z", "task_id": "t1", "attempt": 30}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.349484Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.350518Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.354601Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.355948Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 30, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.357116Z", "task_id": "t1", "attempt": 31}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.358181Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.359275Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.364144Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.365521Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 31, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.366715Z", "task_id": "t1", "attempt": 32}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.367808Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.368917Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.373097Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.374336Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 32, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.375462Z", "task_id": "t1", "attempt": 33}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.376515Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.377927Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.381887Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.383209Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 33, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.384375Z", "task_id": "t1", "attempt": 34}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.385437Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.386545Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.390499Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.391883Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 34, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.393156Z", "task_id": "t1", "attempt": 35}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.394643Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.395916Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.400048Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.401264Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 35, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.402395Z", "task_id": "t1", "attempt": 36}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.403461Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.404526Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.408740Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.410024Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 36, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.411583Z", "task_id": "t1", "attempt": 37}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.412928Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.414197Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.419485Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.420869Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 37, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.422050Z", "task_id": "t1", "attempt": 38}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.423165Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.424276Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.429890Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.431322Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 38, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.432633Z", "task_id": "t1", "attempt": 39}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.434136Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.435864Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.441355Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.442610Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 39, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.443961Z", "task_id": "t1", "attempt": 40}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.444843Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.446222Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.451896Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.453327Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 40, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.454504Z", "task_id": "t1", "attempt": 41}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.455638Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.456778Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.462463Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.463848Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 41, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.464950Z", "task_id": "t1", "attempt": 42}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.466031Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.467263Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.473183Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.474419Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 42, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.475478Z", "task_id": "t1", "attempt": 43}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.476474Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.477650Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.482473Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.483972Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 43, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.485136Z", "task_id": "t1", "attempt": 44}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.486342Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.487441Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.492493Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.493633Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 44, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.494890Z", "task_id": "t1", "attempt": 45}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.496075Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.497106Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.501663Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.502802Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 45, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.503819Z", "task_id": "t1", "attempt": 46}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.504846Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.505905Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.509772Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.511009Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 46, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.512295Z", "task_id": "t1", "attempt": 47}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.513395Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.514405Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.518738Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.519855Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 47, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.520900Z", "task_id": "t1", "attempt": 48}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.521855Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.522884Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.526925Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.528533Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 48, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.529807Z", "task_id": "t1", "attempt": 49}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.530901Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.531974Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.536928Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.538195Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 49, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.539364Z", "task_id": "t1", "attempt": 50}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.540434Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.541531Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.546654Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.547956Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 50, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "run_end", "timestamp": "2026-03-12T00:28:31.559644Z", "pass_at_k": 1.0, "successful_attempts": 50, "total_attempts": 50}
+{"event": "task_start", "timestamp": "2026-03-12T00:28:31.570374Z", "task_id": "t1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T00:28:31.571754Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T00:28:31.572953Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T00:28:31.578814Z", "step": 1, "response": {"action": "branch", "branches": [{"name": "b0", "message": "x"}, {"name": "b1", "message": "x"}, {"name": "b2", "message": "x"}, {"name": "b3", "message": "x"}, {"name": "b4", "message": "x"}, {"name": "b5", "message": "x"}]}}
+{"event": "error", "timestamp": "2026-03-12T00:28:31.580552Z", "message": "Fork Bomb Prevention: Breadth (6) exceeds max (5)."}
+{"event": "task_end", "timestamp": "2026-03-12T00:28:31.582025Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "branch", "branches": [{"name": "b0", "message": "x"}, {"name": "b1", "message": "x"}, {"name": "b2", "message": "x"}, {"name": "b3", "message": "x"}, {"name": "b4", "message": "x"}, {"name": "b5", "message": "x"}]}}], "metrics": []}}
+{"event": "world_state_change", "timestamp": "2026-03-12T00:28:41.670376Z", "state": {}, "shared_state": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T00:28:41.675472Z", "state": {}, "shared_state": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T00:28:41.685365Z", "state": {"current_plan": "Premium"}, "shared_state": {}}

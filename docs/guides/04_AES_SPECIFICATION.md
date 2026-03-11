@@ -25,6 +25,14 @@ metadata:
   tags: ["fintech", "compliance"]
 ```
 
+### Dataset Linkage
+Attach static datasets (like mock CRM records) to scenarios.
+```yaml
+dataset:
+  path: ../datasets/records.csv
+  format: csv
+```
+
 ### Infrastructure Hooks
 Manage environment setup/teardown.
 - `pre_eval`: Command run before evaluation starts.

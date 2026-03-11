@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+CON-9345,Grace Corp,Closed,Critical,New York,2025-12-28T10:56:09.708432Z
+CON-7457,Hank Corp,Requires Action,Critical,Dubai,2026-02-16T19:56:09.708473Z
+CON-6318,Diana Corp,Pending,High,Singapore,2025-04-24T06:56:09.708493Z
+CON-8743,Eve Corp,In Progress,Critical,Sydney,2025-11-24T08:56:09.708510Z
+CON-5554,Diana Corp,In Progress,Medium,Tokyo,2025-12-23T10:56:09.708524Z
+CON-5344,Frank Corp,Failed,Low,Dubai,2025-11-01T11:56:09.708538Z
+CON-4114,Ivy Corp,Failed,Critical,Sydney,2025-10-30T19:56:09.708551Z
+CON-4967,Eve Corp,Closed,Critical,New York,2026-01-07T13:56:09.708564Z
+CON-6926,Frank Corp,Resolved,Medium,Dubai,2025-05-01T18:56:09.708578Z
+CON-5868,Frank Corp,In Progress,High,Tokyo,2025-06-14T12:56:09.708593Z
+CON-3215,Leo Corp,Requires Action,Critical,New York,2025-04-12T06:56:09.708607Z
+CON-2582,Eve Corp,Resolved,Low,Tokyo,2025-12-17T10:56:09.708620Z
+CON-2810,Alice Corp,Failed,Critical,New York,2025-10-15T19:56:09.708633Z
+CON-2642,Karen Corp,Requires Action,Critical,London,2025-09-05T05:56:09.708647Z
+CON-7442,Karen Corp,Resolved,Critical,Berlin,2025-10-28T09:56:09.708660Z
+CON-7270,Leo Corp,Requires Action,Medium,Berlin,2025-05-17T08:56:09.708672Z
+CON-3244,Jack Corp,Resolved,Medium,New York,2025-07-12T04:56:09.708685Z
+CON-8612,Ivy Corp,Failed,Critical,New York,2025-05-17T19:56:09.708698Z
+CON-7172,Charlie Corp,Requires Action,Medium,Berlin,2025-04-06T11:56:09.708711Z
+CON-9131,Charlie Corp,Failed,Critical,Toronto,2025-08-24T13:56:09.708723Z
+CON-2914,Jack Corp,Closed,Medium,Tokyo,2026-01-31T16:56:09.708736Z
+CON-2309,Eve Corp,In Progress,Medium,Tokyo,2026-02-28T09:56:09.708750Z
+CON-4129,Jack Corp,Requires Action,Medium,Toronto,2025-09-20T17:56:09.708763Z
+CON-3243,Charlie Corp,Failed,High,Sydney,2025-09-23T21:56:09.708776Z
+CON-9162,Jack Corp,Resolved,Low,Dubai,2025-10-13T12:56:09.708789Z
+CON-2232,Hank Corp,Failed,High,Dubai,2025-12-05T04:56:09.708804Z
+CON-7992,Diana Corp,Closed,Medium,Berlin,2025-09-18T05:56:09.708818Z
+CON-1682,Frank Corp,Pending,High,New York,2025-11-07T16:56:09.708831Z
+CON-9494,Leo Corp,Pending,Critical,Tokyo,2025-05-02T20:56:09.708845Z
+CON-1902,Jack Corp,Closed,Medium,Singapore,2025-11-20T22:56:09.708858Z
+CON-2181,Charlie Corp,Closed,High,New York,2025-06-27T00:56:09.708871Z
+CON-8223,Eve Corp,Closed,High,London,2025-09-07T19:56:09.708884Z
+CON-4064,Karen Corp,Failed,Low,Tokyo,2025-06-13T03:56:09.708898Z
+CON-2586,Frank Corp,Closed,Low,London,2026-01-22T09:56:09.708913Z
+CON-4520,Diana Corp,Closed,Critical,London,2025-09-16T06:56:09.708928Z
+CON-8939,Jack Corp,Pending,Critical,Dubai,2026-03-10T09:56:09.708942Z
+CON-4210,Grace Corp,Resolved,High,Sydney,2025-11-27T14:56:09.708955Z
+CON-6093,Hank Corp,Requires Action,Critical,New York,2025-03-23T21:56:09.708968Z
+CON-1032,Alice Corp,Requires Action,Medium,Singapore,2025-03-29T11:56:09.708983Z
+CON-8600,Frank Corp,In Progress,Critical,New York,2025-09-01T06:56:09.708997Z
+CON-3881,Diana Corp,Resolved,Medium,London,2025-07-22T15:56:09.709010Z
+CON-3151,Leo Corp,Closed,Low,Dubai,2025-09-29T22:56:09.709025Z
+CON-3682,Grace Corp,Pending,Critical,Tokyo,2026-01-07T08:56:09.709039Z
+CON-9416,Jack Corp,Failed,High,Singapore,2026-02-16T19:56:09.709053Z
+CON-5952,Frank Corp,Active,Low,Singapore,2026-02-25T03:56:09.709066Z
+CON-1130,Bob Corp,Resolved,Critical,Tokyo,2025-10-20T19:56:09.709079Z
+CON-1520,Ivy Corp,Resolved,Medium,London,2025-07-25T04:56:09.709093Z
+CON-8928,Eve Corp,Pending,Low,Tokyo,2025-10-10T15:56:09.709105Z
+CON-3388,Alice Corp,Resolved,High,Tokyo,2025-08-11T08:56:09.709120Z
+CON-3631,Karen Corp,Pending,Low,Toronto,2025-06-16T19:56:09.709132Z
+CON-8490,Grace Corp,Requires Action,High,Dubai,2025-08-02T14:56:09.709145Z
+CON-8962,Jack Corp,Requires Action,Medium,Singapore,2025-10-04T16:56:09.709159Z
+CON-5810,Frank Corp,Pending,Low,Dubai,2026-02-06T02:56:09.709176Z
+CON-7675,Charlie Corp,Failed,Critical,Sydney,2025-11-12T20:56:09.709191Z
+CON-6429,Charlie Corp,Active,Low,Tokyo,2025-12-02T14:56:09.709206Z
+CON-7515,Charlie Corp,Requires Action,Low,Toronto,2025-10-24T10:56:09.709221Z
+CON-2664,Grace Corp,Failed,Low,London,2026-02-08T16:56:09.709236Z
+CON-4995,Frank Corp,Requires Action,High,Toronto,2026-02-24T20:56:09.709250Z
+CON-5692,Alice Corp,Resolved,Low,New York,2026-02-20T15:56:09.709266Z
+CON-1863,Ivy Corp,Requires Action,Medium,New York,2026-01-06T00:56:09.709282Z
+CON-4929,Jack Corp,Closed,Critical,Tokyo,2025-08-08T13:56:09.709298Z
+CON-3533,Bob Corp,Requires Action,Critical,Dubai,2025-07-18T22:56:09.709314Z
+CON-6779,Bob Corp,Closed,Medium,Berlin,2025-09-23T03:56:09.709327Z
+CON-3340,Leo Corp,Closed,High,Dubai,2025-06-19T00:56:09.709340Z
+CON-9990,Ivy Corp,Resolved,Medium,New York,2025-11-18T23:56:09.709355Z
+CON-1738,Hank Corp,Failed,High,London,2025-08-11T13:56:09.709373Z
+CON-1724,Leo Corp,In Progress,Critical,Berlin,2025-03-14T13:56:09.709388Z
+CON-7879,Hank Corp,Closed,High,New York,2025-06-21T12:56:09.709403Z
+CON-3492,Alice Corp,In Progress,Low,London,2025-03-20T21:56:09.709418Z
+CON-4707,Eve Corp,Requires Action,Medium,Tokyo,2025-05-23T07:56:09.709433Z
+CON-1418,Eve Corp,In Progress,High,Tokyo,2026-02-18T17:56:09.709449Z
+CON-3933,Grace Corp,Resolved,Critical,Singapore,2025-12-05T00:56:09.709465Z
+CON-5825,Diana Corp,Requires Action,High,Toronto,2026-02-03T05:56:09.709479Z
+CON-6570,Leo Corp,Resolved,Critical,Dubai,2025-09-11T09:56:09.709493Z
+CON-6065,Hank Corp,Pending,Medium,Berlin,2025-08-25T09:56:09.709508Z
+CON-7542,Diana Corp,Failed,Critical,Berlin,2025-08-11T17:56:09.709522Z
+CON-1877,Ivy Corp,Failed,Critical,Berlin,2025-06-17T15:56:09.709536Z
+CON-7433,Alice Corp,Failed,Low,Dubai,2025-10-25T10:56:09.709555Z
+CON-2877,Eve Corp,Resolved,Low,Toronto,2025-05-11T00:56:09.709570Z
+CON-5265,Charlie Corp,In Progress,Critical,Berlin,2026-01-17T15:56:09.709583Z
+CON-7076,Bob Corp,Pending,Medium,London,2026-02-28T10:56:09.709598Z
+CON-3407,Ivy Corp,In Progress,High,Dubai,2025-06-29T05:56:09.709613Z
+CON-9700,Hank Corp,In Progress,Critical,Sydney,2025-05-15T21:56:09.709627Z
+CON-1299,Diana Corp,Pending,High,Berlin,2026-03-04T06:56:09.709640Z
+CON-6329,Leo Corp,Closed,Low,New York,2025-10-01T10:56:09.709654Z
+CON-2076,Karen Corp,Closed,Medium,Singapore,2025-09-17T11:56:09.709667Z
+CON-3972,Charlie Corp,Closed,High,London,2025-11-21T13:56:09.709680Z
+CON-6791,Frank Corp,Resolved,Medium,Sydney,2025-09-12T13:56:09.709693Z
+CON-5133,Hank Corp,Pending,Medium,Singapore,2026-02-10T09:56:09.709706Z
+CON-3002,Leo Corp,Requires Action,Critical,Toronto,2025-11-04T21:56:09.709766Z
+CON-4518,Hank Corp,Pending,Medium,London,2025-12-13T00:56:09.709817Z
+CON-4007,Eve Corp,Requires Action,Medium,Sydney,2025-04-20T10:56:09.709834Z
+CON-3400,Charlie Corp,Pending,Critical,Dubai,2025-12-16T17:56:09.709850Z
+CON-3385,Frank Corp,Pending,High,Sydney,2025-09-12T04:56:09.709885Z
+CON-2958,Diana Corp,Requires Action,Critical,Berlin,2025-03-24T16:56:09.709899Z
+CON-7247,Leo Corp,Pending,Medium,Tokyo,2025-10-09T03:56:09.709913Z
+CON-4338,Leo Corp,Requires Action,Medium,Berlin,2025-10-04T16:56:09.709927Z
+CON-4203,Eve Corp,Active,Medium,Singapore,2026-01-21T00:56:09.709942Z
+CON-6957,Alice Corp,Resolved,Medium,Toronto,2025-06-10T00:56:09.709956Z
+CON-9666,Grace Corp,Active,High,Tokyo,2025-08-30T11:56:09.709970Z

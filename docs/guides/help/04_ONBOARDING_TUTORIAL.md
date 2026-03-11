@@ -89,29 +89,26 @@ eval-harness evaluate --path industries/telecom --export
 ---
 
 ## 3) Add your own industry / scenario
-You can contribute your own scenarios by placing them under `industries/<your_industry>/scenarios/`.
+Instead of manually typing out JSON, the easiest way to start a new industry benchmark is the `init` command. It will scaffold the directories, create a valid `starter_scenario.json`, and automatically generate a synthetic `.csv` dataset for grounding the evaluation.
 
-1. Create an industry folder (if it doesn't exist):
-
-```bash
-mkdir -p industries/<your_industry>/scenarios
-```
-
-2. Add a JSON scenario (any name ending with `.json`):
-
-```json
-{
-  "scenario_id": "my_scenario_01",
-  "title": "My custom scenario",
-  "industry": "<your_industry>",
-  "tasks": [ ... ]
-}
-```
-
-3. Run it:
+1. Scaffold the environment:
 
 ```bash
-eval-harness run industries/<your_industry>/scenarios/<file>.json
+eval-harness init --dir industries/retail --industry retail
+```
+
+> ✅ Expected Console Output:
+> ```text
+> 🏗️ Initializing new benchmark directory at industries/retail...
+> ✅ Created directory structure.
+> ✅ Generated synthetic dataset for retail at industries/retail/datasets/retail_records.csv
+> ✅ Created starter scenario...
+> ```
+
+2. Run the newly generated scenario:
+
+```bash
+eval-harness run industries/retail/scenarios/starter_scenario.json
 ```
 
 4. (Optional) Run all scenarios in the industry:

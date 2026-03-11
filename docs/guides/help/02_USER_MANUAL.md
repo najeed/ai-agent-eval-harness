@@ -21,6 +21,7 @@ A scenario is the unit of evaluation. It's a JSON file that defines:
 - `scenario_id` — unique identifier
 - `title` — human-friendly name
 - `industry` — category for grouping
+- `dataset` — (optional) path to a synthetic CSV/JSONL dataset to ground the scenario
 - `tasks` — list of tasks to run
 - `tools` — mock tool behaviors (optional)
 - `policies` — rules and governance checks (optional)
@@ -87,13 +88,16 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness aes validate` | `path` | Validate AES benchmark YAML |
 | `eval-harness quickstart` | (none) | Run a 60-second demo (spawns agent + runs eval) |
 | `eval-harness doctor` | (none) | Check environment and dependencies |
+| `eval-harness init` | `--dir`, `--industry` | Scaffold a new benchmark environment and generate linkable synthetic datasets |
 | `eval-harness report` | `path` | Generate rich HTML report with interactive trajectory maps |
 | `eval-harness scenario generate` | (none) | Interactively bootstrap new scenarios |
 | `eval-harness record` | `--agent` | Capture real interactions into an executable trace |
 | `eval-harness playground` | `--agent` | Interactive REPL for rapid agent experimentation |
 | `eval-harness spec-to-eval` | `--input`, `--output` | Convert Markdown spec to scenario JSON |
+| `eval-harness auto-translate` | `--input`, `--model`, `--industry` | Translate raw documents (PDF, DOCX) into scenario JSON via a local LLM |
 | `eval-harness import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |
 | `eval-harness mutate` | `--input`, `--type`, `--output` | Generate adversarial scenario variants |
+| `eval-harness plugin` | `<plugin_name> <cmd>` | Secure namespace for executing 3rd-party plugin commands |
 
 ### 🧩 `run` — single scenario
 
@@ -185,8 +189,14 @@ eval-harness playground --agent http://localhost:5001/execute_task
 ```
 
 ## 🧱 Adding Industries & Scenarios
+The simplest way to add a completely new industry is to generate a bootstrapped setup using `init`, which automatically creates a starter scenario and linked synthetic datasets.
+
+```bash
+eval-harness init --dir industries/my_industry --industry my_industry
+```
+
+If you prefer to add them manually:
 The harness loads scenarios from `industries/<industry>/scenarios/`.
-To add a new industry or scenario:
 
 1. Create a directory for your industry (if it doesn't exist):
 

@@ -1,6 +1,25 @@
 # Plugin Development Guide
 
-The AI Agent Evaluation Harness is built on a "Zero-Touch" core, meaning almost any functionality can be extended or modified via plugins without touching the core engine.
+The AI Agent Evaluation Harness is built on a strict "Zero-Touch Core" philosophy. This means that you should rarely, if ever, modify the `eval_runner` core engine directly. Instead, almost all custom business logic, API integrations, and new CLI commands should be injected via plugins.
+
+## Developer Quick Setup
+Before building a plugin, set up your local development environment:
+
+```bash
+# 1. Clone & activate virtual environment
+git clone https://github.com/najeed/ai-agent-eval-harness.git
+cd ai-agent-eval-harness
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate # Mac/Linux
+
+# 2. Install dependencies & dev tools
+pip install -e .
+pip install pytest flake8 black mypy
+
+# 3. Run the core test suite to ensure stability
+pytest tests/ -v -p no:plugin_gateway
+```
 
 ## Creating a Plugin
 
@@ -55,6 +74,27 @@ class MyReportPlugin(BaseEvalPlugin):
 ```
 
 Usage: `eval-harness plugin myreport generate --format html`
+
+## Extending Core Capabilities
+
+Plugins aren't just for logging; they can extending the core evaluation engine capabilities.
+
+### Example: Creating a Custom Metric
+Instead of modifying `eval_runner.metrics`, write a plugin that hooks into `on_metrics_calculated` to inject new scores.
+
+```python
+from eval_runner.plugins import BaseEvalPlugin
+
+class SentimentMetricPlugin(BaseEvalPlugin):
+    def on_metrics_calculated(self, context, results):
+        # Calculate sentiment on the final answer
+        answer = context.final_state.get("answer", "")
+        sentiment_score = 1.0 if "great" in answer.lower() else 0.0
+        
+        # Inject the metric into the results payload
+        results["metrics"]["custom_sentiment"] = sentiment_score
+        results["passed"] = results["passed"] and (sentiment_score == 1.0)
+```
 
 ## Registering Plugins
 

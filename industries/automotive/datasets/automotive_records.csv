@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+AUT-3261,Eve Corp,Failed,High,London,2025-03-30T21:56:09.695910Z
+AUT-6662,Frank Corp,Closed,High,London,2025-10-30T17:56:09.695953Z
+AUT-6072,Leo Corp,Requires Action,Critical,Tokyo,2025-05-06T19:56:09.695976Z
+AUT-6216,Karen Corp,Failed,High,Berlin,2025-03-23T04:56:09.695994Z
+AUT-3762,Karen Corp,Pending,High,Tokyo,2025-12-27T20:56:09.696010Z
+AUT-7814,Grace Corp,Failed,High,Dubai,2025-05-11T08:56:09.696026Z
+AUT-9319,Leo Corp,In Progress,Medium,Singapore,2025-04-21T04:56:09.696040Z
+AUT-6039,Charlie Corp,Requires Action,Medium,Dubai,2025-09-01T11:56:09.696054Z
+AUT-5283,Grace Corp,Failed,Critical,Tokyo,2025-11-04T03:56:09.696068Z
+AUT-6652,Bob Corp,Closed,Medium,Tokyo,2025-12-12T22:56:09.696082Z
+AUT-2852,Karen Corp,Closed,Low,Tokyo,2025-06-22T22:56:09.696099Z
+AUT-9969,Karen Corp,Resolved,Medium,Berlin,2025-10-05T12:56:09.696113Z
+AUT-5385,Charlie Corp,Pending,Critical,Dubai,2026-03-11T15:56:09.696127Z
+AUT-8261,Karen Corp,Closed,High,Singapore,2025-08-20T13:56:09.696143Z
+AUT-1511,Charlie Corp,In Progress,Critical,Dubai,2025-04-15T23:56:09.696157Z
+AUT-4227,Jack Corp,Pending,High,London,2025-10-29T03:56:09.696170Z
+AUT-3927,Karen Corp,Requires Action,High,Dubai,2026-02-03T17:56:09.696184Z
+AUT-2494,Grace Corp,Active,Critical,Berlin,2026-02-19T06:56:09.696198Z
+AUT-3596,Hank Corp,Active,Critical,London,2025-10-01T08:56:09.696212Z
+AUT-9219,Grace Corp,In Progress,Medium,Dubai,2025-12-10T23:56:09.696225Z
+AUT-8259,Ivy Corp,Pending,High,London,2025-03-15T12:56:09.696239Z
+AUT-4404,Grace Corp,Pending,Low,Toronto,2025-12-29T08:56:09.696253Z
+AUT-8946,Frank Corp,Failed,Low,Toronto,2025-08-01T21:56:09.696267Z
+AUT-4066,Hank Corp,Active,High,London,2025-11-29T20:56:09.696281Z
+AUT-2533,Bob Corp,In Progress,Medium,Berlin,2025-12-16T00:56:09.696295Z
+AUT-3195,Jack Corp,Closed,High,London,2025-10-12T20:56:09.696308Z
+AUT-9388,Jack Corp,Failed,Critical,London,2025-09-14T20:56:09.696323Z
+AUT-7153,Frank Corp,Requires Action,High,Sydney,2025-04-26T02:56:09.696337Z
+AUT-3258,Hank Corp,Closed,Medium,Tokyo,2025-05-09T10:56:09.696350Z
+AUT-9286,Charlie Corp,Requires Action,Low,Berlin,2025-08-31T11:56:09.696364Z
+AUT-9727,Charlie Corp,Resolved,Low,Singapore,2025-07-18T21:56:09.696378Z
+AUT-7237,Diana Corp,Failed,High,Tokyo,2025-07-30T19:56:09.696392Z
+AUT-2761,Alice Corp,Pending,High,New York,2025-05-03T13:56:09.696405Z
+AUT-3616,Hank Corp,Resolved,High,Berlin,2025-05-31T01:56:09.696419Z
+AUT-9237,Jack Corp,Requires Action,Critical,Toronto,2026-02-13T02:56:09.696432Z
+AUT-3747,Charlie Corp,Requires Action,Low,Sydney,2025-11-10T10:56:09.696446Z
+AUT-9288,Frank Corp,Closed,Medium,London,2025-04-24T19:56:09.696460Z
+AUT-7932,Hank Corp,Resolved,Low,New York,2025-08-03T14:56:09.696474Z
+AUT-1100,Grace Corp,Closed,High,Berlin,2025-10-09T10:56:09.696488Z
+AUT-1610,Jack Corp,In Progress,Low,Sydney,2025-11-30T17:56:09.696503Z
+AUT-7546,Karen Corp,Failed,Medium,London,2025-08-03T00:56:09.696517Z
+AUT-8191,Diana Corp,Failed,Medium,Dubai,2025-06-28T08:56:09.696532Z
+AUT-6937,Diana Corp,Failed,Medium,Tokyo,2025-05-29T18:56:09.696545Z
+AUT-5262,Ivy Corp,Failed,Medium,Singapore,2025-11-03T06:56:09.696560Z
+AUT-8572,Diana Corp,Requires Action,Critical,Toronto,2025-05-01T00:56:09.696574Z
+AUT-3212,Bob Corp,Closed,High,London,2025-12-19T17:56:09.696589Z
+AUT-2635,Bob Corp,Requires Action,High,Toronto,2026-02-22T17:56:09.696603Z
+AUT-5329,Eve Corp,In Progress,Low,Dubai,2026-01-12T11:56:09.696617Z
+AUT-7565,Grace Corp,Closed,High,Sydney,2025-08-29T10:56:09.696631Z
+AUT-4390,Charlie Corp,Requires Action,High,Dubai,2025-12-19T04:56:09.696644Z
+AUT-4880,Diana Corp,Requires Action,Medium,Sydney,2025-06-30T16:56:09.696660Z
+AUT-6198,Karen Corp,Resolved,Critical,Toronto,2025-05-31T10:56:09.696673Z
+AUT-9105,Charlie Corp,In Progress,Low,Sydney,2025-07-26T10:56:09.696687Z
+AUT-7211,Diana Corp,Resolved,Medium,Dubai,2025-12-26T23:56:09.696700Z
+AUT-1348,Diana Corp,Resolved,Critical,Toronto,2025-12-12T11:56:09.696714Z
+AUT-6528,Eve Corp,Pending,Medium,Toronto,2025-12-31T17:56:09.696727Z
+AUT-4789,Alice Corp,Resolved,High,Sydney,2025-06-29T04:56:09.696741Z
+AUT-1358,Frank Corp,Closed,High,London,2025-09-03T19:56:09.696754Z
+AUT-3980,Leo Corp,Failed,Medium,Sydney,2025-07-13T20:56:09.696768Z
+AUT-8800,Frank Corp,Closed,Low,Singapore,2025-06-20T10:56:09.696781Z
+AUT-9079,Leo Corp,Resolved,Medium,Toronto,2026-01-06T21:56:09.696796Z
+AUT-2707,Grace Corp,In Progress,Medium,Berlin,2026-02-24T23:56:09.696810Z
+AUT-1932,Jack Corp,Requires Action,Critical,Berlin,2025-09-09T13:56:09.696824Z
+AUT-7130,Karen Corp,Closed,Medium,Berlin,2025-11-14T13:56:09.696837Z
+AUT-2786,Jack Corp,Requires Action,Medium,Singapore,2025-04-07T03:56:09.696851Z
+AUT-9036,Ivy Corp,Active,Low,Singapore,2025-09-11T22:56:09.696874Z
+AUT-7199,Leo Corp,In Progress,Critical,Singapore,2025-03-14T13:56:09.696888Z
+AUT-6842,Hank Corp,Resolved,Low,Dubai,2025-08-19T00:56:09.696901Z
+AUT-3494,Eve Corp,Resolved,Critical,Sydney,2025-05-04T19:56:09.696915Z
+AUT-9003,Bob Corp,In Progress,Critical,London,2026-02-20T04:56:09.696928Z
+AUT-4079,Leo Corp,Active,Medium,New York,2026-03-06T08:56:09.696942Z
+AUT-9063,Bob Corp,Failed,Medium,London,2025-06-09T17:56:09.696956Z
+AUT-1584,Diana Corp,In Progress,Critical,Berlin,2025-08-05T14:56:09.696970Z
+AUT-2205,Frank Corp,Requires Action,High,Toronto,2025-03-11T17:56:09.696983Z
+AUT-7440,Eve Corp,Pending,Critical,Tokyo,2025-07-20T08:56:09.696997Z
+AUT-5152,Hank Corp,Resolved,High,Sydney,2025-06-07T05:56:09.697010Z
+AUT-3940,Diana Corp,Resolved,Low,Berlin,2025-09-09T02:56:09.697023Z
+AUT-6651,Charlie Corp,Failed,Critical,New York,2025-12-02T01:56:09.697042Z
+AUT-7688,Charlie Corp,Failed,Critical,Singapore,2025-10-16T05:56:09.697055Z
+AUT-3929,Hank Corp,Pending,Critical,Sydney,2025-10-12T00:56:09.697070Z
+AUT-8324,Jack Corp,Pending,Medium,Toronto,2026-01-23T18:56:09.697085Z
+AUT-9556,Ivy Corp,In Progress,Medium,New York,2025-04-06T11:56:09.697099Z
+AUT-5941,Jack Corp,Closed,Low,Sydney,2025-04-16T09:56:09.697112Z
+AUT-8369,Leo Corp,Active,Critical,Sydney,2025-07-20T03:56:09.697126Z
+AUT-8350,Karen Corp,Resolved,Low,London,2026-02-01T16:56:09.697139Z
+AUT-1593,Eve Corp,Active,Critical,Dubai,2025-10-28T06:56:09.697152Z
+AUT-1968,Grace Corp,Pending,Low,Dubai,2025-10-02T20:56:09.697165Z
+AUT-4688,Alice Corp,Closed,Low,Singapore,2025-07-29T13:56:09.697178Z
+AUT-7373,Ivy Corp,Failed,Low,Singapore,2025-10-18T23:56:09.697192Z
+AUT-9336,Leo Corp,Failed,Critical,Singapore,2026-02-18T17:56:09.697205Z
+AUT-1168,Diana Corp,In Progress,Low,Berlin,2026-02-18T21:56:09.697245Z
+AUT-1304,Ivy Corp,Requires Action,Low,Tokyo,2025-04-30T21:56:09.697263Z
+AUT-9683,Ivy Corp,Active,Critical,Sydney,2026-03-02T13:56:09.697277Z
+AUT-7299,Jack Corp,Active,High,New York,2025-09-20T14:56:09.697292Z
+AUT-4600,Alice Corp,Requires Action,Critical,London,2025-05-14T02:56:09.697305Z
+AUT-4022,Leo Corp,Failed,Low,Singapore,2025-07-27T17:56:09.697318Z
+AUT-6326,Leo Corp,Requires Action,Medium,Singapore,2025-10-21T04:56:09.697330Z
+AUT-1422,Ivy Corp,Resolved,Medium,Sydney,2025-04-03T23:56:09.697342Z
+AUT-5499,Charlie Corp,Closed,High,Tokyo,2025-04-14T14:56:09.697355Z
+AUT-7019,Eve Corp,In Progress,Medium,Dubai,2025-07-24T17:56:09.697368Z

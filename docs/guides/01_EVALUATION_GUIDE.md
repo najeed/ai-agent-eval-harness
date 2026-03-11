@@ -14,6 +14,7 @@ Each evaluation is defined by a `.json` file in an industry's `scenarios` direct
 -   `use_case`: The specific business function being tested (e.g., `Customer Service`).
 -   `industry`: The industry this scenario belongs to.
 -   `core_function`: The category within the use case this scenario belongs to.
+-   `dataset`: (Optional) Path and format of a synthetic or real dataset required for this scenario (e.g., `{"path": "../datasets/records.csv", "format": "csv"}`).
 -   `initial_state`: (Optional) The starting state for the sandbox.
 -   `policies`: (Optional) Governance rules to enforce during execution.
 -   `tasks`: An array of task objects that represent the steps an agent must take.

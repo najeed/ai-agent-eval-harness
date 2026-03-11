@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+MAR-6052,Jack Corp,Resolved,Low,Dubai,2025-10-24T06:56:09.795212Z
+MAR-2415,Charlie Corp,Active,High,Toronto,2025-11-08T18:56:09.795266Z
+MAR-3905,Hank Corp,Resolved,High,Toronto,2026-03-09T18:56:09.795288Z
+MAR-1478,Eve Corp,Requires Action,Medium,Toronto,2026-03-07T02:56:09.795306Z
+MAR-4760,Bob Corp,Active,Medium,London,2026-03-06T05:56:09.795321Z
+MAR-3867,Eve Corp,Closed,Medium,Dubai,2025-09-12T06:56:09.795338Z
+MAR-6900,Diana Corp,Active,Critical,Dubai,2025-07-08T02:56:09.795352Z
+MAR-7563,Eve Corp,Active,Critical,Toronto,2026-02-16T12:56:09.795367Z
+MAR-7250,Eve Corp,Requires Action,Critical,New York,2026-01-11T18:56:09.795380Z
+MAR-2969,Charlie Corp,Failed,Critical,Singapore,2025-12-18T23:56:09.795395Z
+MAR-5013,Grace Corp,Pending,Medium,London,2025-11-03T01:56:09.795409Z
+MAR-6281,Hank Corp,Pending,Critical,Berlin,2025-07-02T06:56:09.795424Z
+MAR-3451,Diana Corp,Pending,Low,Tokyo,2025-09-21T23:56:09.795437Z
+MAR-7686,Frank Corp,Requires Action,Critical,Dubai,2025-04-27T04:56:09.795452Z
+MAR-3877,Eve Corp,Closed,Critical,Toronto,2025-11-22T10:56:09.795467Z
+MAR-2025,Grace Corp,Resolved,Medium,Singapore,2025-06-19T12:56:09.795480Z
+MAR-5793,Alice Corp,Resolved,High,Tokyo,2025-04-12T10:56:09.795495Z
+MAR-2698,Alice Corp,Resolved,Low,Toronto,2025-06-13T05:56:09.795511Z
+MAR-7634,Alice Corp,Active,Critical,Sydney,2025-09-23T07:56:09.795524Z
+MAR-4683,Frank Corp,Pending,Low,Toronto,2025-08-20T17:56:09.795538Z
+MAR-6196,Jack Corp,In Progress,Critical,Sydney,2025-07-20T02:56:09.795552Z
+MAR-9013,Leo Corp,Closed,Low,Sydney,2025-12-04T04:56:09.795594Z
+MAR-9441,Jack Corp,Requires Action,Low,Singapore,2025-03-31T00:56:09.795612Z
+MAR-2038,Diana Corp,In Progress,Low,London,2025-09-12T05:56:09.795626Z
+MAR-4417,Leo Corp,Closed,Low,Dubai,2025-12-19T09:56:09.795639Z
+MAR-9424,Eve Corp,Requires Action,High,New York,2026-02-08T02:56:09.795654Z
+MAR-7767,Hank Corp,Active,Low,Dubai,2025-04-05T15:56:09.795668Z
+MAR-4011,Hank Corp,In Progress,Critical,Singapore,2026-01-17T08:56:09.795682Z
+MAR-3140,Ivy Corp,Requires Action,Critical,Dubai,2025-11-30T14:56:09.795695Z
+MAR-5454,Hank Corp,Active,High,Sydney,2025-05-26T11:56:09.795709Z
+MAR-6765,Leo Corp,Resolved,High,Sydney,2025-08-30T11:56:09.795723Z
+MAR-8036,Charlie Corp,Requires Action,Medium,Dubai,2025-07-26T12:56:09.795737Z
+MAR-1138,Charlie Corp,Failed,Critical,London,2025-06-23T10:56:09.795751Z
+MAR-5571,Bob Corp,Resolved,High,Toronto,2025-04-09T07:56:09.795766Z
+MAR-5348,Diana Corp,Failed,Low,Berlin,2026-02-11T22:56:09.795780Z
+MAR-8048,Karen Corp,Closed,Critical,Singapore,2025-08-18T11:56:09.795794Z
+MAR-7458,Hank Corp,In Progress,Low,Toronto,2025-10-05T03:56:09.795807Z
+MAR-8016,Diana Corp,Requires Action,High,Toronto,2025-10-24T23:56:09.795822Z
+MAR-9682,Eve Corp,Pending,Low,Sydney,2025-10-08T14:56:09.795836Z
+MAR-3881,Karen Corp,Closed,Medium,New York,2025-10-26T22:56:09.795850Z
+MAR-1888,Grace Corp,Resolved,Critical,Tokyo,2026-01-24T12:56:09.795863Z
+MAR-2212,Hank Corp,Pending,Critical,Tokyo,2025-09-30T11:56:09.795879Z
+MAR-3616,Diana Corp,Resolved,Medium,Tokyo,2025-04-13T01:56:09.795893Z
+MAR-2022,Hank Corp,Pending,Low,Sydney,2025-12-27T13:56:09.795907Z
+MAR-7669,Alice Corp,Resolved,High,Tokyo,2026-02-01T13:56:09.795922Z
+MAR-1810,Ivy Corp,Resolved,High,Sydney,2025-08-17T02:56:09.795938Z
+MAR-5553,Frank Corp,Failed,Critical,Dubai,2025-12-15T11:56:09.795952Z
+MAR-1480,Frank Corp,Requires Action,Critical,Tokyo,2026-02-02T23:56:09.795968Z
+MAR-4424,Frank Corp,Requires Action,Low,London,2025-03-29T21:56:09.795984Z
+MAR-1758,Jack Corp,Active,Low,London,2025-10-08T20:56:09.795999Z
+MAR-9198,Frank Corp,Requires Action,Low,Tokyo,2025-05-11T01:56:09.796014Z
+MAR-3289,Karen Corp,In Progress,Medium,New York,2025-11-18T00:56:09.796031Z
+MAR-9577,Jack Corp,Pending,Critical,Sydney,2025-05-26T17:56:09.796125Z
+MAR-1989,Hank Corp,Failed,High,Sydney,2025-06-23T15:56:09.796173Z
+MAR-4104,Eve Corp,Resolved,Low,Singapore,2025-06-06T19:56:09.796188Z
+MAR-7884,Ivy Corp,Requires Action,Medium,New York,2025-06-16T00:56:09.796199Z
+MAR-5971,Charlie Corp,Failed,Critical,Berlin,2025-09-17T08:56:09.796210Z
+MAR-3762,Diana Corp,In Progress,Medium,London,2025-04-11T16:56:09.796221Z
+MAR-1212,Leo Corp,Active,Low,Berlin,2025-07-22T09:56:09.796233Z
+MAR-8792,Diana Corp,Closed,High,Sydney,2025-07-02T12:56:09.796245Z
+MAR-2467,Diana Corp,Pending,High,Berlin,2026-01-02T16:56:09.796256Z
+MAR-2424,Diana Corp,In Progress,Medium,Berlin,2025-04-24T21:56:09.796266Z
+MAR-7177,Frank Corp,Active,Medium,Dubai,2025-09-21T21:56:09.796278Z
+MAR-1040,Leo Corp,Active,High,Toronto,2025-08-19T20:56:09.796288Z
+MAR-5839,Eve Corp,Pending,High,Dubai,2025-07-07T05:56:09.796299Z
+MAR-7206,Alice Corp,Requires Action,Low,Dubai,2025-09-10T10:56:09.796314Z
+MAR-9828,Frank Corp,Requires Action,Medium,New York,2025-12-21T04:56:09.796326Z
+MAR-2680,Grace Corp,In Progress,Medium,Singapore,2026-01-13T20:56:09.796338Z
+MAR-5618,Leo Corp,Closed,Medium,Toronto,2025-06-16T13:56:09.796349Z
+MAR-3363,Eve Corp,Failed,High,Singapore,2025-03-22T12:56:09.796359Z
+MAR-9243,Grace Corp,Requires Action,High,London,2025-10-21T08:56:09.796370Z
+MAR-6342,Bob Corp,In Progress,Medium,Dubai,2025-08-30T06:56:09.796381Z
+MAR-9816,Jack Corp,Requires Action,Medium,London,2025-07-28T06:56:09.796393Z
+MAR-7697,Charlie Corp,Resolved,High,Tokyo,2026-02-16T03:56:09.796405Z
+MAR-1706,Ivy Corp,Closed,Critical,New York,2025-05-05T22:56:09.796418Z
+MAR-3884,Alice Corp,In Progress,High,Berlin,2025-11-03T08:56:09.796430Z
+MAR-5725,Eve Corp,Resolved,Medium,Singapore,2025-09-28T02:56:09.796442Z
+MAR-4139,Eve Corp,In Progress,Low,Berlin,2025-04-03T07:56:09.796459Z
+MAR-4714,Bob Corp,In Progress,High,Toronto,2025-08-23T04:56:09.796471Z
+MAR-3437,Alice Corp,In Progress,Medium,Berlin,2025-10-02T23:56:09.796483Z
+MAR-2623,Hank Corp,Resolved,High,Sydney,2025-06-08T12:56:09.796535Z
+MAR-5356,Alice Corp,Resolved,Critical,London,2025-10-15T17:56:09.796694Z
+MAR-2191,Diana Corp,Pending,Low,Dubai,2025-11-03T13:56:09.796707Z
+MAR-4435,Ivy Corp,Failed,High,Dubai,2025-06-26T20:56:09.796761Z
+MAR-1231,Charlie Corp,Closed,High,London,2026-01-09T19:56:09.796776Z
+MAR-1427,Grace Corp,Active,Low,Singapore,2025-07-24T16:56:09.796872Z
+MAR-5328,Grace Corp,Pending,Low,New York,2025-12-16T17:56:09.797012Z
+MAR-2037,Leo Corp,Closed,Critical,Dubai,2025-07-25T11:56:09.797081Z
+MAR-3845,Leo Corp,Active,Low,Tokyo,2025-04-07T22:56:09.797093Z
+MAR-6260,Eve Corp,Resolved,High,Singapore,2025-09-13T06:56:09.797105Z
+MAR-6905,Hank Corp,Requires Action,High,Toronto,2025-05-27T06:56:09.797117Z
+MAR-5637,Eve Corp,Pending,High,London,2025-09-19T23:56:09.797128Z
+MAR-4687,Alice Corp,Requires Action,Critical,Berlin,2025-05-22T21:56:09.797141Z
+MAR-4479,Karen Corp,In Progress,Medium,London,2025-12-06T20:56:09.797155Z
+MAR-8510,Bob Corp,Closed,Low,Berlin,2025-08-23T16:56:09.797167Z
+MAR-2080,Leo Corp,Pending,Low,Berlin,2025-05-27T21:56:09.797178Z
+MAR-1299,Leo Corp,In Progress,High,Toronto,2025-07-05T07:56:09.797189Z
+MAR-2130,Alice Corp,In Progress,Low,Berlin,2025-09-12T04:56:09.797200Z
+MAR-1949,Leo Corp,In Progress,Low,Singapore,2025-03-19T04:56:09.797213Z
+MAR-1760,Bob Corp,Closed,Low,Toronto,2025-04-14T13:56:09.797225Z

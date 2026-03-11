@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+ENE-5198,Karen Corp,Closed,Critical,Dubai,2025-11-22T04:56:09.735217Z
+ENE-1419,Leo Corp,Failed,High,Tokyo,2025-09-30T06:56:09.735265Z
+ENE-3928,Bob Corp,In Progress,Low,Sydney,2025-05-29T07:56:09.735287Z
+ENE-7641,Jack Corp,In Progress,High,New York,2025-07-04T08:56:09.735304Z
+ENE-1651,Leo Corp,In Progress,Low,Dubai,2025-11-23T22:56:09.735321Z
+ENE-6010,Frank Corp,Resolved,Low,Singapore,2025-09-17T03:56:09.735337Z
+ENE-1155,Bob Corp,Active,Medium,New York,2026-02-20T15:56:09.735353Z
+ENE-7722,Karen Corp,Failed,Low,Berlin,2025-05-17T21:56:09.735368Z
+ENE-5125,Eve Corp,Active,Low,Berlin,2025-04-20T10:56:09.735384Z
+ENE-7787,Alice Corp,Requires Action,Low,Tokyo,2025-08-03T05:56:09.735409Z
+ENE-5720,Ivy Corp,Closed,Low,Berlin,2025-07-26T03:56:09.735424Z
+ENE-8256,Frank Corp,Resolved,Critical,London,2025-04-19T12:56:09.735438Z
+ENE-7360,Leo Corp,Failed,High,Toronto,2026-01-02T01:56:09.735453Z
+ENE-1689,Hank Corp,Closed,High,Dubai,2025-06-23T09:56:09.735467Z
+ENE-6267,Bob Corp,Active,Low,Singapore,2025-05-24T21:56:09.735482Z
+ENE-9059,Grace Corp,Active,Low,New York,2025-09-29T22:56:09.735496Z
+ENE-2775,Diana Corp,Active,Medium,Sydney,2025-07-23T02:56:09.735518Z
+ENE-1384,Diana Corp,Active,Low,London,2025-09-11T06:56:09.735535Z
+ENE-8294,Charlie Corp,Failed,Low,Sydney,2025-05-02T19:56:09.735549Z
+ENE-6925,Frank Corp,Closed,Low,Singapore,2025-08-22T11:56:09.735565Z
+ENE-3196,Hank Corp,In Progress,Low,Singapore,2025-12-23T18:56:09.735580Z
+ENE-8776,Leo Corp,Closed,Medium,Tokyo,2025-09-28T16:56:09.735596Z
+ENE-5343,Karen Corp,In Progress,High,Berlin,2025-07-10T11:56:09.735611Z
+ENE-9113,Jack Corp,Closed,Low,Berlin,2026-02-13T05:56:09.735625Z
+ENE-9410,Charlie Corp,Requires Action,Medium,Sydney,2025-12-31T02:56:09.735640Z
+ENE-6890,Grace Corp,Failed,Critical,London,2026-03-09T20:56:09.735654Z
+ENE-8392,Ivy Corp,Resolved,Medium,New York,2026-01-07T16:56:09.735668Z
+ENE-2155,Frank Corp,Failed,Critical,Berlin,2025-03-13T14:56:09.735682Z
+ENE-9650,Ivy Corp,Active,Low,New York,2025-07-06T22:56:09.735697Z
+ENE-4521,Jack Corp,Pending,Low,London,2025-08-12T14:56:09.735712Z
+ENE-2936,Diana Corp,Resolved,Critical,Dubai,2025-11-30T06:56:09.735727Z
+ENE-4671,Alice Corp,Closed,Low,New York,2025-03-30T19:56:09.735742Z
+ENE-3688,Grace Corp,Requires Action,Critical,Dubai,2025-08-02T19:56:09.735756Z
+ENE-5500,Alice Corp,In Progress,High,Berlin,2025-07-11T10:56:09.735770Z
+ENE-3630,Bob Corp,Closed,High,New York,2025-06-15T22:56:09.735785Z
+ENE-2582,Bob Corp,In Progress,High,Singapore,2026-01-06T11:56:09.735800Z
+ENE-2068,Ivy Corp,Active,Critical,London,2025-09-17T18:56:09.735815Z
+ENE-2281,Charlie Corp,Resolved,High,London,2025-03-24T08:56:09.735829Z
+ENE-5335,Leo Corp,Closed,Medium,Dubai,2025-07-16T08:56:09.735844Z
+ENE-1491,Frank Corp,Pending,Critical,Singapore,2025-05-12T21:56:09.735859Z
+ENE-1321,Grace Corp,Failed,Critical,Tokyo,2026-01-07T19:56:09.735875Z
+ENE-3817,Bob Corp,In Progress,Low,New York,2025-09-04T23:56:09.735891Z
+ENE-9971,Frank Corp,Active,Low,Dubai,2025-06-27T05:56:09.735905Z
+ENE-1113,Jack Corp,Resolved,Medium,Dubai,2025-11-16T07:56:09.735920Z
+ENE-7322,Diana Corp,Resolved,Low,New York,2025-12-19T05:56:09.735934Z
+ENE-8293,Grace Corp,Failed,Critical,New York,2025-12-18T08:56:09.735949Z
+ENE-5714,Jack Corp,Pending,Low,London,2025-10-27T15:56:09.735964Z
+ENE-1137,Jack Corp,Requires Action,Low,New York,2025-10-07T15:56:09.735978Z
+ENE-7922,Charlie Corp,Resolved,Low,Tokyo,2025-05-23T20:56:09.735993Z
+ENE-3274,Ivy Corp,Resolved,Low,Berlin,2025-12-05T04:56:09.736007Z
+ENE-7595,Frank Corp,Failed,Medium,Toronto,2025-06-06T04:56:09.736025Z
+ENE-3859,Eve Corp,Requires Action,Medium,Berlin,2025-04-08T03:56:09.736040Z
+ENE-4467,Charlie Corp,Active,High,New York,2025-07-05T04:56:09.736058Z
+ENE-6083,Grace Corp,Active,Medium,Berlin,2025-12-17T20:56:09.736074Z
+ENE-7724,Eve Corp,Failed,Critical,Sydney,2025-08-23T04:56:09.736090Z
+ENE-9675,Eve Corp,Closed,High,New York,2026-02-19T18:56:09.736105Z
+ENE-8013,Ivy Corp,Pending,High,New York,2025-08-26T12:56:09.736123Z
+ENE-3277,Leo Corp,Resolved,High,London,2025-09-02T15:56:09.736138Z
+ENE-7289,Eve Corp,Pending,Critical,Berlin,2025-08-15T19:56:09.736153Z
+ENE-4131,Eve Corp,Requires Action,Critical,Tokyo,2025-04-27T20:56:09.736168Z
+ENE-5575,Bob Corp,In Progress,High,New York,2025-08-15T10:56:09.736183Z
+ENE-1822,Grace Corp,Requires Action,Low,Berlin,2025-04-13T00:56:09.736197Z
+ENE-6770,Ivy Corp,Requires Action,Medium,Berlin,2026-02-11T18:56:09.736212Z
+ENE-6546,Grace Corp,In Progress,Critical,New York,2025-05-03T08:56:09.736226Z
+ENE-6209,Karen Corp,Closed,High,Dubai,2025-10-04T15:56:09.736240Z
+ENE-8991,Hank Corp,In Progress,Low,London,2025-08-16T16:56:09.736260Z
+ENE-1776,Ivy Corp,In Progress,Low,Dubai,2025-11-23T22:56:09.736276Z
+ENE-5570,Bob Corp,Pending,High,New York,2025-10-01T13:56:09.736291Z
+ENE-6819,Bob Corp,In Progress,High,London,2025-06-30T08:56:09.736305Z
+ENE-7955,Diana Corp,Requires Action,Medium,Toronto,2025-04-10T10:56:09.736319Z
+ENE-1423,Charlie Corp,Pending,Medium,Toronto,2026-01-03T12:56:09.736333Z
+ENE-3288,Jack Corp,Pending,Medium,Berlin,2025-05-12T07:56:09.736346Z
+ENE-2122,Frank Corp,Closed,High,Dubai,2026-03-02T09:56:09.736360Z
+ENE-8097,Karen Corp,Requires Action,Critical,New York,2026-01-13T08:56:09.736375Z
+ENE-8961,Frank Corp,Resolved,High,Sydney,2025-11-17T02:56:09.736389Z
+ENE-9362,Hank Corp,Closed,High,Singapore,2026-01-25T00:56:09.736402Z
+ENE-5575,Diana Corp,In Progress,Critical,Sydney,2025-11-29T05:56:09.736416Z
+ENE-9730,Bob Corp,Resolved,High,London,2025-12-20T22:56:09.736435Z
+ENE-8324,Alice Corp,Resolved,High,Tokyo,2025-09-04T22:56:09.736449Z
+ENE-6007,Diana Corp,Pending,Low,Dubai,2025-12-18T20:56:09.736462Z
+ENE-9865,Grace Corp,Pending,Medium,Tokyo,2025-09-28T04:56:09.736476Z
+ENE-2814,Ivy Corp,Active,Medium,London,2025-05-18T03:56:09.736489Z
+ENE-3253,Leo Corp,Failed,Critical,Berlin,2025-09-27T22:56:09.736503Z
+ENE-2432,Hank Corp,Failed,High,London,2025-03-30T19:56:09.736517Z
+ENE-5601,Frank Corp,Requires Action,Low,New York,2025-06-10T23:56:09.736532Z
+ENE-9695,Karen Corp,Failed,Medium,Dubai,2025-08-22T08:56:09.736547Z
+ENE-3575,Jack Corp,Failed,High,Dubai,2025-11-08T12:56:09.736561Z
+ENE-4647,Eve Corp,In Progress,High,Singapore,2025-05-06T07:56:09.736574Z
+ENE-1010,Frank Corp,Requires Action,Low,Berlin,2025-05-21T23:56:09.736588Z
+ENE-4159,Jack Corp,Active,Low,Berlin,2026-02-12T08:56:09.736602Z
+ENE-5965,Eve Corp,In Progress,Medium,London,2026-03-06T01:56:09.736616Z
+ENE-8030,Grace Corp,Resolved,Medium,Dubai,2026-01-16T12:56:09.736629Z
+ENE-9988,Charlie Corp,Closed,High,Tokyo,2025-03-28T23:56:09.736642Z
+ENE-4339,Eve Corp,Resolved,Critical,London,2025-08-03T14:56:09.736657Z
+ENE-5398,Ivy Corp,Resolved,Critical,New York,2026-02-09T04:56:09.736671Z
+ENE-3603,Bob Corp,Requires Action,Low,Tokyo,2025-07-27T12:56:09.736685Z
+ENE-6154,Alice Corp,Requires Action,Medium,Singapore,2025-08-17T10:56:09.736699Z
+ENE-7497,Karen Corp,Active,Low,Toronto,2025-08-20T09:56:09.736726Z
+ENE-8831,Charlie Corp,Resolved,High,Sydney,2026-03-08T16:56:09.736742Z
+ENE-2516,Ivy Corp,Failed,Low,Singapore,2025-03-23T05:56:09.736756Z

@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+AGR-3684,Charlie Corp,In Progress,Low,London,2025-11-22T05:56:09.682424Z
+AGR-6928,Jack Corp,Requires Action,Critical,Tokyo,2025-06-03T00:56:09.682475Z
+AGR-1326,Ivy Corp,Failed,Critical,London,2026-02-07T14:56:09.682498Z
+AGR-9440,Alice Corp,Active,Medium,Sydney,2026-01-20T06:56:09.682515Z
+AGR-8140,Karen Corp,Requires Action,Medium,New York,2025-10-11T05:56:09.682530Z
+AGR-5131,Eve Corp,Failed,Critical,Sydney,2025-08-13T05:56:09.682545Z
+AGR-5732,Jack Corp,Closed,High,Singapore,2025-05-16T10:56:09.682560Z
+AGR-6713,Leo Corp,Requires Action,Low,Dubai,2025-07-21T01:56:09.682574Z
+AGR-9640,Jack Corp,Resolved,Critical,Toronto,2025-12-10T22:56:09.682588Z
+AGR-8622,Alice Corp,Resolved,Medium,Sydney,2025-09-07T03:56:09.682601Z
+AGR-4731,Eve Corp,Pending,Medium,Singapore,2025-05-03T04:56:09.682615Z
+AGR-8295,Charlie Corp,Active,Critical,Toronto,2025-03-20T12:56:09.682628Z
+AGR-5531,Alice Corp,In Progress,Low,Dubai,2025-05-11T00:56:09.682642Z
+AGR-5561,Eve Corp,Closed,Medium,London,2025-12-08T10:56:09.682655Z
+AGR-6681,Eve Corp,Pending,Low,Sydney,2025-09-28T06:56:09.682668Z
+AGR-9557,Ivy Corp,Requires Action,Low,Sydney,2025-07-10T04:56:09.682681Z
+AGR-2310,Hank Corp,Failed,Medium,Singapore,2025-05-09T02:56:09.682695Z
+AGR-7370,Bob Corp,Requires Action,Low,Dubai,2026-01-20T19:56:09.682708Z
+AGR-5369,Leo Corp,Active,High,Toronto,2025-10-11T19:56:09.682720Z
+AGR-9913,Hank Corp,Resolved,Critical,Toronto,2025-12-12T08:56:09.682733Z
+AGR-6039,Bob Corp,Requires Action,Critical,Sydney,2025-08-29T01:56:09.682768Z
+AGR-5111,Jack Corp,Failed,Low,New York,2025-10-05T23:56:09.682782Z
+AGR-6339,Charlie Corp,Active,Critical,Toronto,2025-06-12T07:56:09.682796Z
+AGR-7697,Eve Corp,Failed,Critical,Toronto,2025-08-11T17:56:09.682809Z
+AGR-1807,Hank Corp,Resolved,Critical,Dubai,2026-02-20T17:56:09.682822Z
+AGR-2948,Alice Corp,Requires Action,High,Tokyo,2025-09-03T15:56:09.682836Z
+AGR-7697,Eve Corp,Resolved,Critical,Tokyo,2025-11-01T05:56:09.682851Z
+AGR-2760,Jack Corp,Failed,Medium,Berlin,2025-08-28T21:56:09.682864Z
+AGR-2559,Jack Corp,Closed,Medium,Toronto,2025-10-26T01:56:09.682877Z
+AGR-8751,Grace Corp,Requires Action,Critical,New York,2025-12-06T20:56:09.682890Z
+AGR-2120,Eve Corp,Resolved,Low,Tokyo,2025-10-10T02:56:09.682905Z
+AGR-1332,Alice Corp,Requires Action,Low,Toronto,2025-04-05T04:56:09.682918Z
+AGR-1016,Karen Corp,Failed,Medium,Dubai,2025-12-31T20:56:09.682931Z
+AGR-9783,Hank Corp,In Progress,Low,London,2025-12-28T14:56:09.682947Z
+AGR-4384,Leo Corp,Failed,Medium,Dubai,2025-12-12T01:56:09.682961Z
+AGR-4460,Hank Corp,Requires Action,Low,Berlin,2026-01-17T02:56:09.682976Z
+AGR-3317,Jack Corp,Resolved,Low,London,2025-04-25T06:56:09.682991Z
+AGR-1699,Diana Corp,Requires Action,Critical,Berlin,2025-10-24T10:56:09.683005Z
+AGR-3390,Jack Corp,Closed,Medium,London,2025-06-02T11:56:09.683021Z
+AGR-4545,Bob Corp,Closed,Low,Dubai,2025-08-20T23:56:09.683036Z
+AGR-6874,Hank Corp,Active,Critical,Sydney,2025-07-06T00:56:09.683050Z
+AGR-3014,Leo Corp,Closed,High,Berlin,2025-08-05T18:56:09.683066Z
+AGR-2818,Alice Corp,Failed,Low,Sydney,2026-01-24T17:56:09.683082Z
+AGR-8251,Charlie Corp,Resolved,High,Dubai,2025-09-27T20:56:09.683096Z
+AGR-3773,Alice Corp,Failed,Critical,New York,2026-01-23T17:56:09.683110Z
+AGR-7918,Grace Corp,In Progress,Low,London,2025-07-12T17:56:09.683123Z
+AGR-2355,Karen Corp,Closed,Critical,Toronto,2025-11-16T14:56:09.683137Z
+AGR-3077,Alice Corp,Failed,Medium,Singapore,2025-07-21T08:56:09.683156Z
+AGR-5619,Eve Corp,In Progress,Critical,Dubai,2026-02-20T03:56:09.683173Z
+AGR-4984,Diana Corp,In Progress,Low,Berlin,2025-06-24T10:56:09.683187Z
+AGR-7674,Eve Corp,Requires Action,Low,New York,2025-07-30T22:56:09.683202Z
+AGR-3311,Hank Corp,Pending,High,Singapore,2025-11-23T16:56:09.683216Z
+AGR-1393,Hank Corp,Failed,Critical,Toronto,2025-12-26T03:56:09.683231Z
+AGR-5015,Jack Corp,Resolved,High,Dubai,2025-07-28T23:56:09.683248Z
+AGR-1681,Hank Corp,Resolved,Medium,Singapore,2025-04-27T11:56:09.683261Z
+AGR-1513,Eve Corp,Resolved,High,New York,2025-07-02T21:56:09.683276Z
+AGR-3862,Alice Corp,Pending,Low,New York,2025-05-18T08:56:09.683289Z
+AGR-9596,Diana Corp,In Progress,High,London,2026-01-29T23:56:09.683303Z
+AGR-8112,Alice Corp,Failed,High,Dubai,2025-05-31T20:56:09.683317Z
+AGR-8687,Leo Corp,Pending,Medium,Sydney,2026-01-26T07:56:09.683331Z
+AGR-5310,Diana Corp,Failed,Low,Toronto,2026-01-19T10:56:09.683345Z
+AGR-3081,Bob Corp,Closed,Low,Tokyo,2025-03-25T21:56:09.683359Z
+AGR-1814,Eve Corp,Resolved,Critical,London,2025-05-16T00:56:09.683373Z
+AGR-3262,Diana Corp,Resolved,Critical,Dubai,2025-04-19T11:56:09.683387Z
+AGR-6870,Alice Corp,Failed,High,Toronto,2025-03-22T19:56:09.683401Z
+AGR-6702,Eve Corp,Closed,Low,Singapore,2025-09-22T13:56:09.683427Z
+AGR-8331,Alice Corp,Pending,Medium,Singapore,2025-06-08T02:56:09.683444Z
+AGR-5752,Leo Corp,Resolved,Low,Dubai,2025-09-24T04:56:09.683459Z
+AGR-4149,Jack Corp,Failed,Critical,Singapore,2026-01-30T11:56:09.683472Z
+AGR-8811,Hank Corp,Pending,Medium,Sydney,2025-12-25T11:56:09.683485Z
+AGR-4627,Ivy Corp,Requires Action,Medium,Singapore,2025-12-13T04:56:09.683499Z
+AGR-6836,Alice Corp,In Progress,Low,Toronto,2025-10-25T00:56:09.683514Z
+AGR-2956,Bob Corp,Pending,Low,New York,2025-08-12T14:56:09.683528Z
+AGR-9432,Eve Corp,Failed,Critical,Singapore,2025-03-30T22:56:09.683542Z
+AGR-4685,Jack Corp,Resolved,Low,New York,2025-05-09T13:56:09.683557Z
+AGR-2680,Frank Corp,Failed,Low,London,2025-06-23T18:56:09.683573Z
+AGR-1485,Frank Corp,Pending,Critical,Berlin,2025-10-07T17:56:09.683589Z
+AGR-7264,Bob Corp,Resolved,Low,Berlin,2025-08-06T11:56:09.683609Z
+AGR-1436,Bob Corp,In Progress,Low,Berlin,2025-04-28T01:56:09.683623Z
+AGR-7706,Diana Corp,In Progress,High,Tokyo,2026-01-24T21:56:09.683639Z
+AGR-4910,Alice Corp,Failed,Medium,Toronto,2025-06-18T14:56:09.683652Z
+AGR-4289,Frank Corp,Failed,Medium,Dubai,2025-04-25T09:56:09.683666Z
+AGR-8359,Diana Corp,Pending,High,London,2025-05-07T15:56:09.683681Z
+AGR-2548,Alice Corp,Failed,High,Tokyo,2025-08-13T08:56:09.683695Z
+AGR-5058,Leo Corp,Failed,Medium,London,2025-04-16T21:56:09.683708Z
+AGR-5108,Frank Corp,Closed,High,New York,2026-01-26T23:56:09.683721Z
+AGR-4328,Alice Corp,Requires Action,High,Singapore,2025-08-16T14:56:09.683734Z
+AGR-3394,Grace Corp,Failed,Medium,Tokyo,2025-11-11T06:56:09.683747Z
+AGR-5466,Grace Corp,In Progress,Low,Tokyo,2025-12-16T09:56:09.683759Z
+AGR-4944,Ivy Corp,Requires Action,High,London,2025-05-29T23:56:09.683771Z
+AGR-4184,Alice Corp,Requires Action,High,Toronto,2025-08-25T05:56:09.683785Z
+AGR-2128,Karen Corp,Resolved,Medium,Tokyo,2025-08-07T05:56:09.683798Z
+AGR-5268,Bob Corp,Resolved,Medium,New York,2025-12-19T17:56:09.683810Z
+AGR-8971,Ivy Corp,Resolved,Medium,New York,2026-01-27T08:56:09.683826Z
+AGR-5835,Leo Corp,Active,High,Berlin,2025-03-26T17:56:09.683840Z
+AGR-1040,Alice Corp,Active,Critical,Sydney,2026-01-24T16:56:09.683854Z
+AGR-7785,Jack Corp,Requires Action,Critical,Dubai,2025-06-11T12:56:09.683868Z
+AGR-5785,Jack Corp,Requires Action,Critical,Sydney,2025-09-26T17:56:09.683881Z
+AGR-7698,Alice Corp,Requires Action,Critical,Tokyo,2025-07-13T09:56:09.683894Z
+AGR-6833,Hank Corp,Pending,Medium,New York,2026-01-21T17:56:09.683906Z

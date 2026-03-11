@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+LOG-6439,Jack Corp,Closed,Low,London,2026-01-24T16:56:09.786772Z
+LOG-4857,Bob Corp,Active,Medium,London,2025-03-29T14:56:09.786815Z
+LOG-6850,Grace Corp,Active,Medium,Toronto,2026-02-27T20:56:09.786835Z
+LOG-9866,Bob Corp,In Progress,Low,Singapore,2025-07-20T11:56:09.786851Z
+LOG-4117,Ivy Corp,Active,High,Dubai,2025-11-28T09:56:09.786867Z
+LOG-7419,Charlie Corp,Requires Action,Medium,Berlin,2025-12-05T18:56:09.786882Z
+LOG-6186,Frank Corp,Closed,Medium,Sydney,2025-10-09T23:56:09.786899Z
+LOG-5276,Leo Corp,Requires Action,High,New York,2025-07-13T10:56:09.786915Z
+LOG-7046,Diana Corp,Resolved,High,New York,2026-01-21T12:56:09.786929Z
+LOG-8200,Bob Corp,Active,Low,London,2025-10-19T01:56:09.786943Z
+LOG-1639,Grace Corp,Closed,Medium,Singapore,2025-08-13T23:56:09.786957Z
+LOG-5595,Jack Corp,Active,High,New York,2026-01-10T18:56:09.786972Z
+LOG-2423,Diana Corp,Requires Action,High,Tokyo,2026-01-09T03:56:09.786985Z
+LOG-4004,Hank Corp,Closed,Critical,Berlin,2025-07-10T14:56:09.786998Z
+LOG-3180,Frank Corp,Closed,Medium,Berlin,2026-01-05T22:56:09.787012Z
+LOG-8027,Leo Corp,Closed,Low,London,2026-01-13T09:56:09.787026Z
+LOG-8731,Ivy Corp,Requires Action,Critical,Dubai,2025-08-29T10:56:09.787038Z
+LOG-2941,Diana Corp,Closed,High,Dubai,2026-02-25T21:56:09.787051Z
+LOG-3263,Alice Corp,In Progress,Low,London,2025-12-26T07:56:09.787064Z
+LOG-2829,Charlie Corp,In Progress,Medium,Tokyo,2025-11-29T22:56:09.787078Z
+LOG-5346,Eve Corp,Failed,Critical,New York,2025-11-10T14:56:09.787091Z
+LOG-9626,Diana Corp,Active,Critical,Sydney,2025-12-17T05:56:09.787106Z
+LOG-3700,Grace Corp,Requires Action,Critical,Sydney,2025-11-08T00:56:09.787119Z
+LOG-5185,Eve Corp,Closed,Critical,New York,2025-09-23T02:56:09.787133Z
+LOG-5050,Jack Corp,Resolved,Low,Toronto,2025-10-21T19:56:09.787148Z
+LOG-2231,Jack Corp,Resolved,Low,Sydney,2026-02-26T20:56:09.787162Z
+LOG-6044,Alice Corp,Resolved,Low,London,2026-01-21T00:56:09.787176Z
+LOG-1070,Diana Corp,Pending,Low,Dubai,2025-06-18T14:56:09.787189Z
+LOG-7173,Grace Corp,Failed,Low,London,2025-03-16T21:56:09.787203Z
+LOG-1382,Karen Corp,Requires Action,High,Toronto,2025-08-04T13:56:09.787218Z
+LOG-7610,Hank Corp,Failed,Low,Toronto,2025-05-30T05:56:09.787231Z
+LOG-6895,Ivy Corp,Closed,High,Tokyo,2025-03-16T17:56:09.787245Z
+LOG-6010,Charlie Corp,Pending,High,New York,2026-03-07T13:56:09.787259Z
+LOG-5125,Hank Corp,Requires Action,Critical,London,2025-04-20T14:56:09.787274Z
+LOG-5985,Bob Corp,Pending,High,Tokyo,2025-04-18T11:56:09.787288Z
+LOG-7693,Leo Corp,Resolved,Medium,London,2025-08-28T11:56:09.787301Z
+LOG-3040,Karen Corp,In Progress,Critical,Singapore,2025-06-29T13:56:09.787315Z
+LOG-3589,Alice Corp,Failed,Medium,Berlin,2025-11-24T18:56:09.787328Z
+LOG-9486,Charlie Corp,Pending,Low,Dubai,2025-11-18T06:56:09.787341Z
+LOG-4903,Bob Corp,In Progress,High,Toronto,2025-11-28T17:56:09.787355Z
+LOG-6217,Leo Corp,Requires Action,Critical,Sydney,2025-09-14T01:56:09.787368Z
+LOG-3452,Alice Corp,Closed,High,Singapore,2026-02-15T12:56:09.787381Z
+LOG-5407,Jack Corp,Requires Action,Critical,Singapore,2025-06-01T18:56:09.787394Z
+LOG-9271,Ivy Corp,Failed,Low,Sydney,2025-07-29T02:56:09.787407Z
+LOG-2821,Eve Corp,In Progress,Critical,Dubai,2025-03-25T05:56:09.787420Z
+LOG-6592,Grace Corp,Pending,Critical,Dubai,2025-12-24T17:56:09.787435Z
+LOG-7884,Hank Corp,Failed,High,Singapore,2026-03-04T09:56:09.787448Z
+LOG-9334,Diana Corp,Active,Critical,Toronto,2026-01-07T14:56:09.787462Z
+LOG-9897,Eve Corp,Closed,High,Tokyo,2025-07-06T20:56:09.787475Z
+LOG-7815,Ivy Corp,Active,Low,New York,2025-11-24T23:56:09.787488Z
+LOG-2488,Jack Corp,In Progress,Critical,Dubai,2025-04-04T13:56:09.787502Z
+LOG-1214,Charlie Corp,Pending,Low,Dubai,2025-03-15T15:56:09.787518Z
+LOG-1551,Frank Corp,In Progress,High,Sydney,2025-05-06T09:56:09.787533Z
+LOG-5786,Ivy Corp,Closed,Medium,London,2025-07-20T01:56:09.787547Z
+LOG-9874,Hank Corp,Pending,Low,London,2025-06-28T15:56:09.787560Z
+LOG-1659,Jack Corp,Pending,Critical,Berlin,2026-02-20T04:56:09.787573Z
+LOG-3557,Diana Corp,Active,Medium,Sydney,2025-07-12T18:56:09.787586Z
+LOG-4355,Alice Corp,Closed,Low,Singapore,2025-12-10T21:56:09.787598Z
+LOG-5220,Grace Corp,Closed,Low,Berlin,2026-02-10T19:56:09.787611Z
+LOG-4747,Eve Corp,Pending,High,Toronto,2025-09-18T14:56:09.787624Z
+LOG-7605,Jack Corp,Pending,Low,London,2025-07-21T17:56:09.787636Z
+LOG-4396,Grace Corp,Active,Low,Singapore,2025-08-10T13:56:09.787649Z
+LOG-2800,Grace Corp,Resolved,Medium,Berlin,2025-09-06T07:56:09.787663Z
+LOG-8029,Jack Corp,Pending,Medium,Sydney,2025-12-10T00:56:09.787677Z
+LOG-6634,Frank Corp,Failed,Critical,Toronto,2025-09-13T09:56:09.787690Z
+LOG-9669,Leo Corp,Resolved,Low,Sydney,2026-03-04T16:56:09.787706Z
+LOG-8444,Charlie Corp,Resolved,Medium,Tokyo,2025-11-02T08:56:09.787721Z
+LOG-1598,Frank Corp,Active,Critical,Tokyo,2025-12-01T02:56:09.787733Z
+LOG-3541,Diana Corp,In Progress,Low,Tokyo,2025-12-26T19:56:09.787747Z
+LOG-2362,Jack Corp,Requires Action,Critical,Berlin,2025-03-28T18:56:09.787761Z
+LOG-9699,Ivy Corp,Pending,Critical,Berlin,2025-09-26T15:56:09.787774Z
+LOG-5837,Bob Corp,Requires Action,Low,Berlin,2025-11-10T10:56:09.787787Z
+LOG-4297,Leo Corp,Failed,Low,New York,2026-01-30T06:56:09.787800Z
+LOG-8238,Alice Corp,Requires Action,High,London,2025-05-23T07:56:09.787812Z
+LOG-9904,Jack Corp,Requires Action,Low,Tokyo,2025-04-18T19:56:09.787826Z
+LOG-2694,Ivy Corp,Pending,Low,Singapore,2025-08-12T23:56:09.787839Z
+LOG-1846,Karen Corp,Closed,Low,Toronto,2025-06-08T08:56:09.787852Z
+LOG-9354,Grace Corp,In Progress,Low,Berlin,2025-12-06T23:56:09.787867Z
+LOG-3926,Bob Corp,Pending,Low,London,2025-08-25T10:56:09.787882Z
+LOG-4705,Frank Corp,Active,Critical,Toronto,2025-08-10T05:56:09.787894Z
+LOG-8543,Eve Corp,Failed,High,London,2025-07-01T17:56:09.787907Z
+LOG-3593,Bob Corp,In Progress,Low,Dubai,2026-02-21T04:56:09.787920Z
+LOG-2108,Karen Corp,Active,Low,Toronto,2025-07-13T19:56:09.787932Z
+LOG-3371,Alice Corp,Closed,Medium,Dubai,2025-03-23T02:56:09.787945Z
+LOG-6494,Ivy Corp,Pending,Critical,Dubai,2025-07-08T02:56:09.787958Z
+LOG-2173,Jack Corp,Resolved,High,Dubai,2025-07-11T03:56:09.787971Z
+LOG-7687,Eve Corp,In Progress,Low,Berlin,2025-08-24T02:56:09.787984Z
+LOG-5713,Charlie Corp,Active,High,Tokyo,2026-03-01T21:56:09.787998Z
+LOG-1168,Alice Corp,Failed,Low,New York,2025-12-02T23:56:09.788011Z
+LOG-2703,Frank Corp,In Progress,High,Berlin,2025-09-30T03:56:09.788023Z
+LOG-2633,Alice Corp,In Progress,High,Singapore,2025-07-02T19:56:09.788037Z
+LOG-8292,Charlie Corp,Active,Low,Tokyo,2025-11-09T04:56:09.788050Z
+LOG-4701,Leo Corp,Failed,Medium,Dubai,2025-10-19T11:56:09.788064Z
+LOG-4961,Charlie Corp,Requires Action,Critical,Dubai,2025-06-12T13:56:09.788078Z
+LOG-8620,Leo Corp,Requires Action,High,Berlin,2025-10-12T12:56:09.788091Z
+LOG-1366,Ivy Corp,Closed,Critical,New York,2025-08-04T10:56:09.788104Z
+LOG-9881,Charlie Corp,Requires Action,Medium,Dubai,2025-10-29T21:56:09.788118Z
+LOG-7372,Hank Corp,Failed,Medium,Toronto,2025-07-01T11:56:09.788131Z
+LOG-9560,Eve Corp,Closed,Critical,Singapore,2026-01-31T04:56:09.788144Z
+LOG-2420,Ivy Corp,Requires Action,High,Singapore,2026-01-25T01:56:09.788157Z

@@ -20,14 +20,15 @@ This repository uses **CLA Assistant** to manage contributor agreements. You **m
 ## 🏗️ How to Contribute
 
 ### 1. Adding New Industries & Scenarios
-- **Schema Compliance**: All JSON files must pass the validation checks in `/schemas`.
-- **Scaffolding**: Use `eval-harness scenario generate` to bootstrap new scenarios.
-- **Verification**: Ensure your scenario runs correctly with `eval-harness run industries/<ind>/scenarios/<file>.json`.
+- **Schema Compliance**: All JSON files must pass the validation checks via `eval-harness aes validate <path>`.
+- **Scaffolding**: Use `eval-harness init --dir <name> --industry <ind>` to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.
+- **Verification**: Ensure your scenario runs correctly with `eval-harness evaluate --path industries/<ind>`.
 
-### 2. Improving the Zero-Touch Core
-The core engine must remain fast, modular, and lightweight.
+### 2. The Zero-Touch Core Philosophy
+We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests that modify the core orchestration (`eval_runner/runner.py`, `eval_runner/metrics.py`) to handle edge cases or custom platforms will generally be rejected.
 - **Decoupling**: Keep orchestration (Runner), state (Session), and observation (EventEmitter) separated.
-- **Immutability**: `TurnContext` and `EvaluationContext` are frozen. Use `dataclasses.replace()` for updates.
+- **Extensibility**: All custom business logic, LLM providers, and bespoke metrics MUST be implemented as a plugin.
+- **Immutability**: `TurnContext` and `EvaluationContext` are frozen data structures. Use `dataclasses.replace()` for updates rather than mutating state directly.
 - **Typing**: All Python code must be fully type-hinted using `mypy` standards.
 - **Testing**: New features must include a unit test in the `/tests` directory.
 

@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+INF-2827,Charlie Corp,Resolved,High,New York,2025-03-17T03:56:09.768480Z
+INF-3399,Jack Corp,Pending,Low,Singapore,2025-11-10T08:56:09.768519Z
+INF-7815,Charlie Corp,Active,Critical,Tokyo,2025-08-05T02:56:09.768538Z
+INF-7044,Karen Corp,Requires Action,Critical,Dubai,2025-12-27T18:56:09.768553Z
+INF-9000,Bob Corp,Resolved,High,Dubai,2025-06-04T16:56:09.768568Z
+INF-6515,Bob Corp,Failed,Low,London,2025-10-24T10:56:09.768583Z
+INF-7641,Karen Corp,Active,High,Berlin,2025-06-05T20:56:09.768598Z
+INF-2676,Hank Corp,Failed,Low,Singapore,2025-05-18T22:56:09.768613Z
+INF-7196,Eve Corp,Pending,High,Singapore,2025-09-09T10:56:09.768626Z
+INF-9921,Hank Corp,Active,Medium,London,2025-06-14T09:56:09.768640Z
+INF-2147,Eve Corp,Requires Action,High,Dubai,2025-06-07T06:56:09.768653Z
+INF-6739,Alice Corp,Pending,High,Sydney,2025-09-26T01:56:09.768668Z
+INF-9178,Alice Corp,Failed,Medium,Singapore,2026-02-04T19:56:09.768682Z
+INF-3731,Ivy Corp,Pending,Medium,London,2025-11-30T17:56:09.768696Z
+INF-7423,Eve Corp,Requires Action,Critical,Singapore,2025-08-13T12:56:09.768709Z
+INF-6656,Diana Corp,Resolved,Low,New York,2025-10-30T05:56:09.768723Z
+INF-5674,Eve Corp,In Progress,Critical,London,2025-04-09T02:56:09.768735Z
+INF-1379,Eve Corp,Closed,Critical,Toronto,2026-01-12T12:56:09.768749Z
+INF-6916,Eve Corp,Active,Low,Sydney,2025-10-24T22:56:09.768763Z
+INF-9678,Ivy Corp,Closed,Critical,Toronto,2025-08-16T13:56:09.768777Z
+INF-7452,Bob Corp,Active,Low,Berlin,2025-12-10T10:56:09.768791Z
+INF-3115,Jack Corp,Failed,High,New York,2025-06-17T11:56:09.768804Z
+INF-8412,Karen Corp,Closed,Critical,Dubai,2025-06-25T15:56:09.768818Z
+INF-7758,Hank Corp,Closed,High,Berlin,2025-11-24T12:56:09.768832Z
+INF-5067,Alice Corp,Requires Action,Medium,Toronto,2025-05-09T13:56:09.768846Z
+INF-6184,Alice Corp,Closed,Medium,Toronto,2025-11-13T22:56:09.768859Z
+INF-8958,Charlie Corp,Pending,Critical,Singapore,2025-07-04T04:56:09.768872Z
+INF-3851,Diana Corp,Active,Medium,New York,2026-01-31T00:56:09.768885Z
+INF-5808,Bob Corp,Closed,Critical,Berlin,2026-02-10T04:56:09.768898Z
+INF-3626,Leo Corp,Pending,Medium,Sydney,2026-01-04T14:56:09.768911Z
+INF-4609,Bob Corp,Failed,Low,Dubai,2025-04-30T18:56:09.768925Z
+INF-4950,Ivy Corp,Resolved,Medium,Berlin,2025-12-04T21:56:09.768938Z
+INF-5393,Ivy Corp,Pending,Medium,Singapore,2025-03-20T15:56:09.768951Z
+INF-4016,Ivy Corp,Failed,Medium,Sydney,2025-12-05T17:56:09.768965Z
+INF-4684,Karen Corp,In Progress,Low,Dubai,2026-02-11T15:56:09.768978Z
+INF-4757,Hank Corp,In Progress,Low,Tokyo,2025-03-21T16:56:09.768992Z
+INF-8254,Charlie Corp,Requires Action,Low,Tokyo,2026-02-27T23:56:09.769008Z
+INF-3285,Hank Corp,Failed,High,Berlin,2026-03-09T08:56:09.769024Z
+INF-3574,Diana Corp,Requires Action,High,London,2025-09-01T16:56:09.769037Z
+INF-3640,Ivy Corp,Requires Action,High,Toronto,2025-04-21T08:56:09.769051Z
+INF-8971,Hank Corp,Resolved,High,Singapore,2025-12-01T06:56:09.769065Z
+INF-2734,Charlie Corp,Requires Action,Medium,Sydney,2025-09-28T10:56:09.769080Z
+INF-9754,Leo Corp,Failed,Medium,Tokyo,2025-08-07T08:56:09.769093Z
+INF-8872,Alice Corp,Requires Action,Critical,London,2025-06-21T08:56:09.769106Z
+INF-6040,Eve Corp,Active,Medium,Sydney,2025-06-21T00:56:09.769119Z
+INF-2312,Diana Corp,In Progress,Medium,Sydney,2025-05-06T16:56:09.769132Z
+INF-2102,Eve Corp,Closed,Critical,Dubai,2025-12-04T19:56:09.769146Z
+INF-8800,Grace Corp,Active,Low,Berlin,2026-01-13T14:56:09.769159Z
+INF-5365,Frank Corp,Active,Medium,Toronto,2025-07-01T11:56:09.769173Z
+INF-9768,Leo Corp,In Progress,Medium,London,2025-12-20T07:56:09.769186Z
+INF-3911,Jack Corp,Closed,Medium,New York,2025-12-22T15:56:09.769200Z
+INF-9168,Diana Corp,Pending,Low,London,2025-09-04T12:56:09.769213Z
+INF-6528,Frank Corp,Closed,Low,Sydney,2026-01-30T02:56:09.769228Z
+INF-6837,Eve Corp,Resolved,Medium,London,2025-11-14T21:56:09.769243Z
+INF-1384,Grace Corp,In Progress,Critical,Tokyo,2025-09-18T03:56:09.769255Z
+INF-4502,Karen Corp,In Progress,High,Sydney,2025-12-03T02:56:09.769269Z
+INF-8449,Charlie Corp,Failed,Critical,Dubai,2025-06-11T12:56:09.769282Z
+INF-3973,Jack Corp,Pending,Low,New York,2025-07-03T03:56:09.769296Z
+INF-7240,Diana Corp,Pending,Low,Berlin,2025-05-31T06:56:09.769310Z
+INF-1215,Alice Corp,Requires Action,High,Sydney,2025-06-25T11:56:09.769323Z
+INF-2686,Eve Corp,Closed,Critical,Tokyo,2025-08-29T08:56:09.769336Z
+INF-1694,Alice Corp,Requires Action,High,London,2025-12-01T22:56:09.769350Z
+INF-6752,Karen Corp,In Progress,High,London,2025-03-25T04:56:09.769363Z
+INF-5199,Frank Corp,Requires Action,Medium,Berlin,2026-02-03T17:56:09.769376Z
+INF-6896,Ivy Corp,Pending,High,Berlin,2025-11-17T17:56:09.769390Z
+INF-2678,Jack Corp,Resolved,High,Toronto,2025-08-30T23:56:09.769410Z
+INF-6040,Alice Corp,Active,Critical,Dubai,2026-03-09T00:56:09.769423Z
+INF-7657,Grace Corp,Pending,High,Berlin,2025-10-15T17:56:09.769435Z
+INF-9566,Alice Corp,Requires Action,Low,Singapore,2025-07-08T06:56:09.769448Z
+INF-1967,Bob Corp,Active,Low,Toronto,2025-08-09T10:56:09.769461Z
+INF-4007,Leo Corp,Active,Low,Berlin,2025-04-03T02:56:09.769473Z
+INF-5635,Leo Corp,Requires Action,Critical,Toronto,2025-04-05T09:56:09.769487Z
+INF-5576,Grace Corp,Active,Medium,London,2025-03-31T13:56:09.769499Z
+INF-3020,Eve Corp,Requires Action,High,New York,2025-07-27T01:56:09.769512Z
+INF-1457,Charlie Corp,Closed,Medium,Dubai,2025-04-30T07:56:09.769524Z
+INF-6433,Charlie Corp,Active,High,Tokyo,2025-04-02T02:56:09.769537Z
+INF-7472,Jack Corp,In Progress,High,Singapore,2025-10-30T03:56:09.769550Z
+INF-4590,Leo Corp,Failed,Critical,Tokyo,2025-04-18T12:56:09.769567Z
+INF-4138,Charlie Corp,Failed,High,London,2025-05-08T13:56:09.769580Z
+INF-4480,Grace Corp,Pending,Low,New York,2025-06-29T13:56:09.769593Z
+INF-3119,Karen Corp,Pending,Low,New York,2025-03-19T22:56:09.769606Z
+INF-7223,Hank Corp,Closed,Medium,London,2025-10-12T02:56:09.769619Z
+INF-8036,Ivy Corp,Closed,Low,New York,2026-01-15T23:56:09.769633Z
+INF-7602,Jack Corp,Resolved,Medium,Singapore,2025-05-05T06:56:09.769646Z
+INF-3580,Bob Corp,Failed,Medium,New York,2025-12-24T19:56:09.769659Z
+INF-9934,Eve Corp,Active,Medium,Tokyo,2025-10-19T18:56:09.769673Z
+INF-3597,Hank Corp,Active,Critical,New York,2025-07-15T02:56:09.769686Z
+INF-5618,Leo Corp,Resolved,Critical,Berlin,2025-09-25T06:56:09.769698Z
+INF-5536,Charlie Corp,Requires Action,Critical,Toronto,2025-07-20T08:56:09.769712Z
+INF-7305,Grace Corp,In Progress,Low,Toronto,2025-06-29T10:56:09.769725Z
+INF-2919,Leo Corp,Requires Action,Low,Berlin,2025-06-13T10:56:09.769738Z
+INF-2271,Hank Corp,In Progress,Low,Singapore,2025-08-20T03:56:09.769751Z
+INF-3385,Ivy Corp,In Progress,Low,Dubai,2025-06-08T00:56:09.769764Z
+INF-4469,Jack Corp,Resolved,High,London,2025-04-05T16:56:09.769778Z
+INF-6989,Diana Corp,Active,High,Toronto,2025-04-27T08:56:09.769792Z
+INF-5483,Frank Corp,Resolved,Low,Sydney,2025-11-08T02:56:09.769804Z
+INF-4628,Ivy Corp,Failed,High,Toronto,2025-04-09T22:56:09.769817Z
+INF-1582,Leo Corp,Requires Action,Medium,Toronto,2025-04-12T07:56:09.769830Z
+INF-2241,Eve Corp,Failed,Low,New York,2025-10-09T22:56:09.769843Z
+INF-1811,Diana Corp,Closed,Critical,Singapore,2025-08-12T17:56:09.769855Z

@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+AER-2846,Eve Corp,In Progress,Low,Tokyo,2025-03-20T15:56:09.676982Z
+AER-5414,Leo Corp,Active,Medium,Dubai,2025-09-21T16:56:09.677025Z
+AER-9687,Frank Corp,Failed,High,Berlin,2025-03-12T23:56:09.677045Z
+AER-6963,Ivy Corp,Resolved,Medium,Tokyo,2025-06-28T11:56:09.677063Z
+AER-1982,Ivy Corp,Resolved,Medium,Sydney,2025-04-30T13:56:09.677078Z
+AER-7526,Hank Corp,Closed,Medium,Toronto,2025-11-13T14:56:09.677093Z
+AER-6414,Frank Corp,Closed,Low,London,2025-12-06T03:56:09.677108Z
+AER-9175,Alice Corp,Requires Action,Medium,Singapore,2025-09-20T10:56:09.677124Z
+AER-3747,Diana Corp,Pending,Low,Berlin,2025-06-25T02:56:09.677138Z
+AER-8790,Jack Corp,In Progress,Critical,Toronto,2025-12-27T00:56:09.677151Z
+AER-8364,Eve Corp,Failed,Low,Berlin,2025-09-02T14:56:09.677165Z
+AER-6687,Ivy Corp,Closed,Medium,Toronto,2026-02-25T14:56:09.677180Z
+AER-5024,Bob Corp,Pending,Medium,Tokyo,2025-04-03T21:56:09.677193Z
+AER-2708,Grace Corp,Requires Action,Critical,Sydney,2025-03-28T15:56:09.677208Z
+AER-5217,Eve Corp,Resolved,Critical,Berlin,2025-05-21T13:56:09.677222Z
+AER-3833,Frank Corp,Requires Action,Medium,New York,2025-04-08T15:56:09.677235Z
+AER-4417,Leo Corp,Closed,Medium,London,2026-03-09T22:56:09.677249Z
+AER-1667,Karen Corp,Pending,Low,Berlin,2025-04-04T19:56:09.677263Z
+AER-5977,Bob Corp,Resolved,High,Berlin,2025-12-09T15:56:09.677277Z
+AER-9488,Diana Corp,Requires Action,Medium,London,2025-08-27T14:56:09.677290Z
+AER-4121,Charlie Corp,Failed,High,New York,2025-10-19T22:56:09.677309Z
+AER-3679,Jack Corp,Closed,Medium,Toronto,2025-06-01T13:56:09.677325Z
+AER-7284,Bob Corp,Closed,Low,Dubai,2025-08-22T18:56:09.677338Z
+AER-6280,Karen Corp,Requires Action,Low,Tokyo,2025-08-09T03:56:09.677354Z
+AER-1464,Grace Corp,In Progress,Medium,London,2025-11-24T07:56:09.677369Z
+AER-4380,Grace Corp,Requires Action,Medium,London,2025-11-22T22:56:09.677384Z
+AER-5736,Alice Corp,Resolved,Low,Toronto,2025-09-24T07:56:09.677411Z
+AER-8709,Leo Corp,Closed,Medium,Sydney,2025-04-10T09:56:09.677429Z
+AER-9512,Ivy Corp,Pending,High,London,2026-01-04T12:56:09.677443Z
+AER-8289,Eve Corp,Active,Low,Tokyo,2025-09-16T01:56:09.677458Z
+AER-6378,Hank Corp,Requires Action,Critical,Sydney,2025-06-11T08:56:09.677473Z
+AER-8158,Hank Corp,Resolved,Critical,Berlin,2025-10-18T20:56:09.677486Z
+AER-2198,Diana Corp,Pending,Low,Toronto,2026-02-17T04:56:09.677500Z
+AER-7291,Diana Corp,Failed,High,London,2026-01-16T20:56:09.677515Z
+AER-1440,Charlie Corp,In Progress,Medium,London,2025-06-10T08:56:09.677529Z
+AER-8329,Alice Corp,Active,Low,Toronto,2025-08-21T03:56:09.677543Z
+AER-7198,Grace Corp,Resolved,Critical,Sydney,2025-12-17T06:56:09.677558Z
+AER-6936,Jack Corp,Failed,High,London,2025-06-13T05:56:09.677571Z
+AER-6196,Charlie Corp,Requires Action,High,New York,2025-11-05T11:56:09.677585Z
+AER-5744,Grace Corp,Resolved,Critical,London,2025-04-04T04:56:09.677599Z
+AER-8239,Ivy Corp,Requires Action,Critical,Sydney,2025-11-28T07:56:09.677613Z
+AER-9638,Diana Corp,Closed,Critical,Toronto,2025-03-20T08:56:09.677628Z
+AER-3259,Grace Corp,In Progress,Critical,Tokyo,2026-03-10T18:56:09.677642Z
+AER-5872,Grace Corp,Requires Action,High,New York,2025-12-16T03:56:09.677655Z
+AER-7677,Frank Corp,In Progress,Medium,Berlin,2025-09-30T04:56:09.677675Z
+AER-7235,Grace Corp,In Progress,Low,London,2025-04-25T04:56:09.677692Z
+AER-8055,Alice Corp,Pending,Critical,Dubai,2025-10-28T02:56:09.677709Z
+AER-3915,Bob Corp,Closed,Critical,Toronto,2026-02-22T22:56:09.677723Z
+AER-7832,Jack Corp,Pending,Low,London,2025-09-24T21:56:09.677736Z
+AER-4775,Alice Corp,Resolved,Low,London,2025-03-14T17:56:09.677750Z
+AER-3644,Frank Corp,Failed,Critical,London,2025-11-02T21:56:09.677766Z
+AER-8554,Karen Corp,Requires Action,Medium,Singapore,2025-09-16T21:56:09.677781Z
+AER-9424,Bob Corp,In Progress,Medium,Dubai,2026-01-24T23:56:09.677794Z
+AER-2767,Frank Corp,Active,Low,Tokyo,2025-09-20T04:56:09.677808Z
+AER-7905,Leo Corp,Closed,High,Dubai,2025-03-15T08:56:09.677822Z
+AER-9479,Karen Corp,Active,Critical,Sydney,2025-07-09T08:56:09.677835Z
+AER-7934,Diana Corp,Active,High,Sydney,2025-04-14T19:56:09.677850Z
+AER-9698,Hank Corp,Requires Action,Medium,Toronto,2025-03-16T02:56:09.677865Z
+AER-5506,Bob Corp,In Progress,Medium,New York,2025-05-03T19:56:09.677879Z
+AER-7398,Charlie Corp,Failed,High,New York,2026-02-05T06:56:09.677893Z
+AER-7220,Frank Corp,Pending,High,Tokyo,2025-04-09T14:56:09.677906Z
+AER-7698,Ivy Corp,Closed,High,Singapore,2025-04-02T03:56:09.677919Z
+AER-6851,Frank Corp,Closed,Medium,Singapore,2025-04-15T05:56:09.677932Z
+AER-9063,Charlie Corp,Active,Critical,Tokyo,2025-03-30T17:56:09.677946Z
+AER-2551,Hank Corp,Requires Action,Low,Tokyo,2026-02-11T13:56:09.677959Z
+AER-1275,Frank Corp,In Progress,Medium,Singapore,2025-12-07T12:56:09.677982Z
+AER-4503,Grace Corp,Active,Medium,London,2025-08-30T23:56:09.678000Z
+AER-6689,Jack Corp,Pending,Medium,New York,2025-12-10T01:56:09.678013Z
+AER-9844,Leo Corp,Requires Action,Medium,Toronto,2025-10-15T08:56:09.678027Z
+AER-2565,Hank Corp,Closed,Critical,Dubai,2025-04-07T02:56:09.678043Z
+AER-5146,Hank Corp,In Progress,Medium,Berlin,2025-12-23T12:56:09.678057Z
+AER-8788,Eve Corp,Resolved,Critical,New York,2025-09-14T06:56:09.678069Z
+AER-9593,Karen Corp,Requires Action,Medium,Singapore,2025-03-27T14:56:09.678082Z
+AER-5996,Eve Corp,In Progress,Critical,London,2025-11-22T16:56:09.678096Z
+AER-9163,Jack Corp,Closed,Critical,New York,2026-02-27T04:56:09.678110Z
+AER-2963,Eve Corp,Resolved,Low,Singapore,2026-03-03T16:56:09.678124Z
+AER-3646,Ivy Corp,Requires Action,Medium,New York,2025-10-17T14:56:09.678138Z
+AER-3821,Hank Corp,Active,Low,Dubai,2025-06-08T01:56:09.678156Z
+AER-2023,Jack Corp,Active,Critical,Toronto,2025-07-19T20:56:09.678170Z
+AER-8350,Karen Corp,Resolved,Medium,Toronto,2025-04-21T10:56:09.678184Z
+AER-1653,Grace Corp,Resolved,Medium,New York,2025-06-12T19:56:09.678196Z
+AER-5528,Eve Corp,Resolved,Medium,Singapore,2025-04-27T13:56:09.678209Z
+AER-3531,Jack Corp,Active,Critical,Singapore,2026-02-08T09:56:09.678222Z
+AER-6567,Grace Corp,In Progress,Low,London,2025-07-29T09:56:09.678235Z
+AER-6513,Leo Corp,Closed,High,Berlin,2025-12-07T02:56:09.678248Z
+AER-7818,Eve Corp,In Progress,High,Berlin,2025-10-31T04:56:09.678267Z
+AER-6266,Jack Corp,Closed,Low,Berlin,2025-11-01T02:56:09.678281Z
+AER-1621,Karen Corp,Failed,Medium,Sydney,2025-09-06T17:56:09.678299Z
+AER-4162,Diana Corp,Closed,Medium,Toronto,2025-07-18T12:56:09.678313Z
+AER-4653,Hank Corp,Failed,Low,Tokyo,2026-01-31T03:56:09.678326Z
+AER-6800,Charlie Corp,Resolved,Medium,Sydney,2025-09-27T04:56:09.678340Z
+AER-3201,Karen Corp,Closed,High,Toronto,2025-05-27T09:56:09.678354Z
+AER-1516,Grace Corp,Active,Medium,New York,2025-09-26T04:56:09.678368Z
+AER-6735,Eve Corp,Requires Action,High,Tokyo,2025-08-15T09:56:09.678384Z
+AER-9883,Leo Corp,Active,Low,London,2026-02-17T02:56:09.678398Z
+AER-9176,Frank Corp,Pending,Medium,Toronto,2025-05-28T15:56:09.678411Z
+AER-7542,Karen Corp,Failed,Medium,London,2025-09-13T08:56:09.678423Z
+AER-6397,Hank Corp,Closed,Critical,New York,2025-12-09T16:56:09.678436Z
+AER-1414,Grace Corp,Failed,Medium,Sydney,2025-07-10T07:56:09.678449Z
+AER-4227,Bob Corp,Active,High,London,2025-08-12T15:56:09.678462Z

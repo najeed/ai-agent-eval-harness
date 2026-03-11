@@ -49,22 +49,41 @@ The harness is organized into the following key components:
 The fastest way to see the harness in action:
 
 ```bash
-# 1. Clone and install locally
+# 1. Clone the repository
 git clone https://github.com/najeed/ai-agent-eval-harness.git
 cd ai-agent-eval-harness
+
+# 2. Set up a virtual environment (Recommended)
+python -m venv venv
+venv\Scripts\activate  # On Windows
+# source venv/bin/activate  # On macOS/Linux
+
+# 3. Install the package in editable mode
 pip install -e .
 
-# 2. Run the Quickstart Demo
+# 4. Run the Quickstart Demo
 eval-harness quickstart
 ```
 
-**What it does:** Spawns a sample agent, runs a troubleshooting evaluation, and generates a rich visual report in `reports/`.
+**What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich HTML report in `reports/`.
 
-### 🛠 Manual Evaluation
+*(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker-compose up --build`.
 
-1.  **Start your Agent**: Ensure your agent is running (e.g., `python sample_agent/agent_app.py`).
-2.  **Set Endpoint**: `set AGENT_API_URL=http://localhost:5001/execute_task`.
-3.  **Run Batch**: `eval-harness evaluate --path industries/telecom`.
+### 🛠 Manual Evaluation (Running the Sample Agent)
+
+1.  **Start your Agent**: The framework includes a reference agent for testing.
+    ```bash
+    python sample_agent/agent_app.py
+    ```
+2.  **Set Endpoint**: Point the harness to your agent's webhook.
+    ```bash
+    set AGENT_API_URL=http://localhost:5001/execute_task   # Windows
+    export AGENT_API_URL=http://localhost:5001/execute_task # Mac/Linux
+    ```
+3.  **Run Batch Evaluation**: 
+    ```bash
+    eval-harness evaluate --path industries/telecom
+    ```
 
 ---
 
@@ -129,6 +148,17 @@ pytest tests/ -v -p no:plugin_gateway
 |---|---|---|
 | `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint URL |
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
+| `OPENAI_API_KEY` | *(None)* | Required if using LLM-as-a-Judge metrics |
+
+### 🚨 Run Trace Warning
+All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory.
+
+### 🐛 Troubleshooting
+
+- **`ConnectionRefusedError`**: The harness cannot reach the agent. Ensure `AGENT_API_URL` is set correctly and the agent API is running.
+- **`GoException: no routes for location`**: Occurs in the Flutter UI dashboard if the router isn't rebuilt. Re-run `flutter pub run build_runner build`.
+- **`PluginTimeoutError`**: A registered plugin took too long to execute a hook. Check your plugin logic or increase the timeout.
+- **`Invalid JSON Error (LLM)`**: The `auto-translate` command expects strict JSON. Ensure your local Ollama model (e.g., `llama3`) is running and capable of JSON mode.
 
 ## How to Contribute
 

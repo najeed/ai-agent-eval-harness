@@ -24,11 +24,13 @@ Entry point: `eval_runner/cli.py`
 - `evaluate` — Run a batch of scenarios
 - `quickstart` — End-to-end evaluation demo using `sample_agent`
 - `doctor` — Validate environment health and dependencies
+- `init` — Scaffold new project directories with synthetic datasets
 - `report` — Generate rich HTML reports from existing `.jsonl` traces
 - `run` — Run a single scenario file
 - `replay` — Replay a run trace
 - `aes validate` — Validate AES benchmark definitions
 - `spec-to-eval` — Convert Markdown specs into JSON scenarios
+- `auto-translate` — Automatically translate documents into scenarios using Ollama
 - `import-drift` — Convert production traces into scenarios
 - `mutate` — Generate adversarial variants (typos, ambiguity, injection)
 - `scenario generate` — Interactive generator for boilerplate scenarios
@@ -68,6 +70,7 @@ Plugins are the primary extension point. They are discovered via `eval_runner.pl
 | `on_tool_request` | **Interception**: Return `False` to block a tool call. |
 | `on_tool_result` | Observe tool outputs and world state side-effects. |
 | `on_metrics_calculated`| Post-process or inject custom metrics. |
+| `on_register_commands` | Securely register plugin CLI commands (replaces `extend_cli`). |
 | `after_evaluation` | Final reporting or post-run notifications. |
 
 ### 4.2 Interception Example

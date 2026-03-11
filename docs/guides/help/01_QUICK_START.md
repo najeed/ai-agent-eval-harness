@@ -24,6 +24,24 @@ eval-harness quickstart
 
 ---
 
+## 🏗️ Building Your Own Suite
+
+When you're ready to start building benchmarks for your own use-case:
+
+### 1. Scaffold the Project
+Generate a starter workspace linked to automatically generated realistic datasets.
+```bash
+eval-harness init --dir my_benchmarks --industry finance
+```
+
+### 2. Auto-Translate Existing Specs
+If you already have PDF or Markdown guidelines, convert them into JSON scenarios automatically (requires local `Ollama`):
+```bash
+eval-harness auto-translate --input specs/loan_approval.pdf --industry finance
+```
+
+---
+
 ## 🛠 Manual Setup (The "Standard" Way)
 
 If you're ready to integrate your own agent, follow these steps.

@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+HEA-8127,Diana Corp,In Progress,High,New York,2025-09-08T10:56:09.749817Z
+HEA-4642,Karen Corp,In Progress,High,Dubai,2025-04-17T07:56:09.749885Z
+HEA-6306,Karen Corp,Closed,High,Dubai,2025-07-18T01:56:09.749905Z
+HEA-4206,Bob Corp,Failed,Critical,Sydney,2025-12-28T21:56:09.749925Z
+HEA-1153,Diana Corp,Pending,High,Toronto,2025-08-01T21:56:09.749941Z
+HEA-5106,Frank Corp,In Progress,Medium,Singapore,2025-07-21T12:56:09.749956Z
+HEA-5806,Eve Corp,In Progress,Critical,Berlin,2025-11-03T01:56:09.749971Z
+HEA-2018,Bob Corp,Active,Low,London,2026-01-02T06:56:09.749986Z
+HEA-6521,Alice Corp,Active,Critical,Toronto,2026-01-02T21:56:09.750000Z
+HEA-2693,Jack Corp,Closed,High,Tokyo,2025-11-12T01:56:09.750014Z
+HEA-3710,Charlie Corp,Closed,Critical,Singapore,2025-06-25T20:56:09.750029Z
+HEA-4297,Bob Corp,Failed,High,London,2026-02-03T10:56:09.750044Z
+HEA-5904,Hank Corp,In Progress,Medium,New York,2025-07-29T09:56:09.750059Z
+HEA-2014,Hank Corp,Requires Action,Medium,New York,2025-12-01T23:56:09.750074Z
+HEA-3755,Eve Corp,In Progress,Critical,Tokyo,2025-10-13T02:56:09.750088Z
+HEA-1141,Diana Corp,Resolved,High,London,2025-09-12T07:56:09.750102Z
+HEA-7388,Leo Corp,Resolved,Medium,Singapore,2026-03-11T00:56:09.750115Z
+HEA-5914,Bob Corp,In Progress,High,Berlin,2026-03-07T13:56:09.750132Z
+HEA-2550,Alice Corp,Closed,Critical,New York,2025-03-14T19:56:09.750148Z
+HEA-4564,Jack Corp,In Progress,Medium,Dubai,2025-07-30T22:56:09.750164Z
+HEA-4518,Leo Corp,In Progress,Low,New York,2026-02-10T09:56:09.750178Z
+HEA-4397,Eve Corp,Closed,Critical,Dubai,2025-05-24T18:56:09.750192Z
+HEA-2249,Grace Corp,Pending,Critical,Singapore,2026-01-22T21:56:09.750208Z
+HEA-1218,Ivy Corp,In Progress,Low,Toronto,2025-11-17T20:56:09.750222Z
+HEA-1391,Alice Corp,Requires Action,Low,New York,2025-10-12T12:56:09.750237Z
+HEA-7082,Bob Corp,Active,Medium,Dubai,2025-10-13T12:56:09.750252Z
+HEA-9284,Charlie Corp,In Progress,Medium,New York,2025-08-08T19:56:09.750265Z
+HEA-4729,Eve Corp,Requires Action,Critical,Sydney,2025-12-23T09:56:09.750280Z
+HEA-9534,Grace Corp,Failed,Medium,Tokyo,2025-09-06T20:56:09.750294Z
+HEA-7372,Diana Corp,Active,Critical,Tokyo,2026-01-24T03:56:09.750310Z
+HEA-9332,Leo Corp,Pending,High,Sydney,2025-11-16T15:56:09.750324Z
+HEA-7561,Alice Corp,Closed,Medium,New York,2025-07-20T01:56:09.750338Z
+HEA-3334,Frank Corp,Requires Action,High,Berlin,2025-05-23T07:56:09.750352Z
+HEA-9541,Diana Corp,In Progress,Medium,Tokyo,2025-08-12T16:56:09.750368Z
+HEA-9031,Jack Corp,Resolved,Medium,Berlin,2025-07-06T03:56:09.750381Z
+HEA-5779,Karen Corp,Resolved,Critical,Dubai,2025-10-01T16:56:09.750395Z
+HEA-4327,Bob Corp,Closed,High,Singapore,2025-07-16T10:56:09.750408Z
+HEA-9166,Frank Corp,Resolved,Critical,Berlin,2025-05-19T19:56:09.750422Z
+HEA-6537,Leo Corp,Requires Action,Critical,Toronto,2026-02-23T14:56:09.750436Z
+HEA-3481,Frank Corp,Failed,Critical,New York,2025-05-21T08:56:09.750450Z
+HEA-2505,Diana Corp,Requires Action,High,Toronto,2025-03-13T00:56:09.750465Z
+HEA-4143,Eve Corp,Closed,Low,Toronto,2025-07-12T15:56:09.750480Z
+HEA-4068,Alice Corp,Pending,Critical,London,2025-07-20T00:56:09.750494Z
+HEA-9327,Hank Corp,Active,Critical,London,2025-05-28T00:56:09.750508Z
+HEA-7269,Hank Corp,Closed,Low,London,2025-07-01T08:56:09.750521Z
+HEA-1830,Grace Corp,Active,High,London,2026-01-20T10:56:09.750535Z
+HEA-8400,Karen Corp,Failed,Medium,Berlin,2025-05-13T13:56:09.750548Z
+HEA-6559,Bob Corp,Active,Low,London,2025-08-13T06:56:09.750562Z
+HEA-9225,Karen Corp,Pending,High,Berlin,2025-10-26T19:56:09.750577Z
+HEA-5030,Leo Corp,Active,High,Singapore,2025-11-24T10:56:09.750592Z
+HEA-1244,Hank Corp,Failed,Critical,Tokyo,2025-07-03T00:56:09.750606Z
+HEA-8052,Ivy Corp,Failed,Medium,Berlin,2026-02-23T13:56:09.750621Z
+HEA-6609,Karen Corp,Pending,Medium,Sydney,2026-02-25T07:56:09.750636Z
+HEA-8362,Bob Corp,Closed,Critical,Dubai,2025-12-05T09:56:09.750651Z
+HEA-9362,Charlie Corp,Resolved,Medium,Tokyo,2025-06-17T09:56:09.750669Z
+HEA-9305,Frank Corp,Failed,Medium,Tokyo,2025-05-05T09:56:09.750688Z
+HEA-7354,Charlie Corp,Closed,High,Tokyo,2025-09-08T06:56:09.750703Z
+HEA-5420,Hank Corp,Active,Medium,Singapore,2025-08-21T15:56:09.750717Z
+HEA-5366,Alice Corp,In Progress,Medium,Toronto,2025-09-10T02:56:09.750732Z
+HEA-1841,Alice Corp,Active,Low,Toronto,2025-04-13T06:56:09.750746Z
+HEA-9299,Karen Corp,Closed,Medium,Berlin,2025-05-30T04:56:09.750761Z
+HEA-8056,Bob Corp,In Progress,Low,Dubai,2025-05-09T02:56:09.750776Z
+HEA-4961,Ivy Corp,Active,Critical,Dubai,2025-08-13T12:56:09.750791Z
+HEA-3832,Eve Corp,Resolved,Low,Dubai,2025-11-01T04:56:09.750804Z
+HEA-8793,Bob Corp,Active,High,Dubai,2026-01-06T05:56:09.750819Z
+HEA-2174,Eve Corp,Resolved,Critical,Sydney,2025-08-26T04:56:09.750842Z
+HEA-4758,Frank Corp,Requires Action,Medium,London,2025-04-05T10:56:09.750858Z
+HEA-3146,Eve Corp,Closed,Low,New York,2025-03-12T12:56:09.750874Z
+HEA-9796,Diana Corp,Closed,Low,New York,2025-12-18T20:56:09.750888Z
+HEA-4502,Eve Corp,Requires Action,Medium,London,2026-02-19T06:56:09.750903Z
+HEA-1224,Diana Corp,In Progress,Low,New York,2025-06-21T11:56:09.750918Z
+HEA-4097,Diana Corp,Failed,Critical,Toronto,2025-06-11T21:56:09.750933Z
+HEA-4052,Bob Corp,Pending,Low,London,2025-08-08T22:56:09.750947Z
+HEA-6357,Karen Corp,Closed,Low,Dubai,2025-05-01T04:56:09.750961Z
+HEA-8570,Karen Corp,Closed,Low,Berlin,2025-03-23T23:56:09.750975Z
+HEA-8975,Karen Corp,Closed,Medium,Singapore,2025-10-05T08:56:09.750990Z
+HEA-4037,Alice Corp,Requires Action,Low,Berlin,2025-03-17T02:56:09.751004Z
+HEA-5660,Eve Corp,Pending,Medium,London,2025-09-04T18:56:09.751023Z
+HEA-6504,Diana Corp,In Progress,Critical,Tokyo,2025-09-04T20:56:09.751039Z
+HEA-6240,Jack Corp,Pending,High,Dubai,2025-07-13T17:56:09.751054Z
+HEA-4818,Eve Corp,Active,High,London,2025-11-12T02:56:09.751068Z
+HEA-8982,Charlie Corp,In Progress,Low,Sydney,2025-05-20T23:56:09.751083Z
+HEA-4578,Charlie Corp,Resolved,Critical,Sydney,2026-01-31T17:56:09.751099Z
+HEA-7731,Bob Corp,Failed,High,New York,2025-08-17T16:56:09.751113Z
+HEA-6123,Alice Corp,In Progress,High,New York,2026-01-07T22:56:09.751127Z
+HEA-7420,Ivy Corp,Pending,Medium,Sydney,2025-03-25T01:56:09.751141Z
+HEA-7592,Charlie Corp,Active,Medium,Berlin,2025-09-12T16:56:09.751155Z
+HEA-5124,Diana Corp,Active,High,Tokyo,2025-10-15T14:56:09.751169Z
+HEA-3249,Frank Corp,Requires Action,Medium,Toronto,2025-12-21T21:56:09.751184Z
+HEA-8359,Charlie Corp,Resolved,Low,Singapore,2025-07-18T15:56:09.751198Z
+HEA-5150,Leo Corp,Failed,Critical,Dubai,2025-10-31T18:56:09.751211Z
+HEA-5364,Bob Corp,In Progress,Medium,Tokyo,2026-01-13T21:56:09.751225Z
+HEA-3762,Eve Corp,Active,High,Berlin,2026-02-28T15:56:09.751238Z
+HEA-6929,Karen Corp,Pending,Medium,Tokyo,2026-01-10T01:56:09.751255Z
+HEA-6218,Leo Corp,Failed,Medium,London,2025-08-19T05:56:09.751269Z
+HEA-3277,Bob Corp,Requires Action,Critical,Tokyo,2026-02-04T12:56:09.751283Z
+HEA-8740,Diana Corp,Resolved,Medium,Berlin,2025-10-10T22:56:09.751296Z
+HEA-2464,Karen Corp,In Progress,Critical,Tokyo,2025-11-04T07:56:09.751311Z
+HEA-1208,Eve Corp,In Progress,Critical,New York,2025-10-07T05:56:09.751325Z
+HEA-9536,Charlie Corp,Failed,Medium,Singapore,2025-10-11T08:56:09.751341Z

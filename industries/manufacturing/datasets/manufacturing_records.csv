@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+MAN-7872,Eve Corp,Active,Medium,Tokyo,2025-12-10T13:56:09.790827Z
+MAN-5987,Alice Corp,Active,High,Toronto,2025-12-11T13:56:09.790863Z
+MAN-6870,Bob Corp,Resolved,Critical,Tokyo,2025-10-14T11:56:09.790881Z
+MAN-3535,Grace Corp,Requires Action,Low,Berlin,2025-07-18T17:56:09.790896Z
+MAN-1336,Jack Corp,Pending,Low,Toronto,2025-10-28T15:56:09.790910Z
+MAN-7347,Alice Corp,Failed,Low,Singapore,2025-09-22T06:56:09.790923Z
+MAN-4863,Hank Corp,Requires Action,Critical,Toronto,2025-08-18T18:56:09.790939Z
+MAN-8803,Leo Corp,Active,Low,Sydney,2025-05-24T09:56:09.790954Z
+MAN-5531,Alice Corp,In Progress,Low,London,2025-04-03T20:56:09.790969Z
+MAN-9333,Charlie Corp,Requires Action,High,London,2026-02-18T04:56:09.790983Z
+MAN-1880,Eve Corp,Active,Low,Berlin,2025-08-03T20:56:09.790997Z
+MAN-5118,Bob Corp,Active,High,London,2025-03-17T11:56:09.791011Z
+MAN-6148,Alice Corp,Pending,Medium,Toronto,2025-08-24T16:56:09.791024Z
+MAN-8262,Diana Corp,Requires Action,Medium,Toronto,2025-04-05T05:56:09.791037Z
+MAN-6555,Leo Corp,In Progress,Low,New York,2025-10-02T13:56:09.791050Z
+MAN-6651,Ivy Corp,Pending,High,New York,2025-04-04T00:56:09.791063Z
+MAN-2680,Charlie Corp,Closed,Low,London,2025-05-27T00:56:09.791077Z
+MAN-5007,Grace Corp,Resolved,Critical,Toronto,2025-08-12T19:56:09.791091Z
+MAN-3544,Charlie Corp,Pending,Medium,Toronto,2026-02-19T15:56:09.791104Z
+MAN-7354,Diana Corp,Pending,Low,London,2025-04-02T05:56:09.791118Z
+MAN-3679,Grace Corp,In Progress,Low,Singapore,2025-05-19T19:56:09.791133Z
+MAN-4502,Karen Corp,Resolved,Low,Toronto,2025-10-23T18:56:09.791146Z
+MAN-6933,Alice Corp,Pending,Critical,London,2025-03-19T20:56:09.791161Z
+MAN-9455,Eve Corp,In Progress,Medium,New York,2025-05-28T23:56:09.791175Z
+MAN-1262,Eve Corp,Pending,Critical,Singapore,2025-05-23T17:56:09.791188Z
+MAN-8079,Hank Corp,Failed,Low,Sydney,2025-08-06T15:56:09.791202Z
+MAN-7891,Grace Corp,Resolved,High,Singapore,2026-02-14T12:56:09.791215Z
+MAN-5300,Hank Corp,Failed,Critical,Tokyo,2025-05-03T15:56:09.791228Z
+MAN-6875,Diana Corp,Active,Medium,New York,2025-08-10T18:56:09.791242Z
+MAN-8779,Jack Corp,Resolved,High,Sydney,2025-07-13T18:56:09.791255Z
+MAN-4629,Diana Corp,Active,Critical,Berlin,2025-08-09T01:56:09.791269Z
+MAN-1982,Frank Corp,Requires Action,Critical,New York,2025-11-08T08:56:09.791282Z
+MAN-1928,Alice Corp,In Progress,High,Berlin,2025-07-16T04:56:09.791296Z
+MAN-3623,Frank Corp,Failed,Critical,London,2025-07-02T07:56:09.791310Z
+MAN-3093,Bob Corp,Closed,Critical,Toronto,2025-04-05T21:56:09.791323Z
+MAN-3966,Alice Corp,In Progress,Critical,Dubai,2026-01-08T15:56:09.791337Z
+MAN-3595,Bob Corp,Closed,Critical,Berlin,2025-06-03T03:56:09.791351Z
+MAN-9343,Ivy Corp,Pending,Critical,Singapore,2025-12-29T13:56:09.791364Z
+MAN-6319,Hank Corp,Active,Low,New York,2025-12-28T03:56:09.791377Z
+MAN-5548,Bob Corp,Resolved,Critical,London,2025-12-19T14:56:09.791391Z
+MAN-7516,Charlie Corp,In Progress,Critical,Toronto,2025-11-11T08:56:09.791405Z
+MAN-2488,Leo Corp,Resolved,High,Dubai,2026-03-09T18:56:09.791419Z
+MAN-9152,Alice Corp,In Progress,Critical,Berlin,2025-03-12T23:56:09.791433Z
+MAN-8232,Ivy Corp,Requires Action,Critical,Berlin,2025-08-04T04:56:09.791448Z
+MAN-5574,Jack Corp,Pending,Medium,Singapore,2026-01-25T18:56:09.791461Z
+MAN-9735,Hank Corp,Active,Critical,Tokyo,2025-09-20T05:56:09.791475Z
+MAN-3073,Grace Corp,Failed,High,New York,2025-09-03T09:56:09.791488Z
+MAN-6663,Charlie Corp,In Progress,Critical,New York,2026-01-05T16:56:09.791501Z
+MAN-4816,Hank Corp,Requires Action,High,Singapore,2026-01-25T16:56:09.791515Z
+MAN-4069,Eve Corp,Active,Critical,Tokyo,2025-05-08T13:56:09.791529Z
+MAN-5430,Eve Corp,Requires Action,High,Toronto,2025-07-05T23:56:09.791543Z
+MAN-3688,Alice Corp,Closed,Medium,London,2026-02-03T14:56:09.791557Z
+MAN-8570,Ivy Corp,Resolved,High,Singapore,2025-11-13T19:56:09.791570Z
+MAN-1615,Frank Corp,Resolved,High,Tokyo,2025-04-27T01:56:09.791585Z
+MAN-6598,Grace Corp,Pending,High,Berlin,2025-05-13T09:56:09.791599Z
+MAN-1913,Jack Corp,Resolved,Critical,New York,2026-02-08T08:56:09.791613Z
+MAN-4985,Grace Corp,Active,Critical,New York,2025-03-13T19:56:09.791626Z
+MAN-6190,Grace Corp,Requires Action,Critical,Singapore,2025-09-16T03:56:09.791641Z
+MAN-5199,Karen Corp,Resolved,Critical,Tokyo,2025-11-14T15:56:09.791655Z
+MAN-1866,Bob Corp,In Progress,Medium,Berlin,2025-07-05T04:56:09.791669Z
+MAN-5104,Eve Corp,Requires Action,Low,Singapore,2025-12-12T23:56:09.791683Z
+MAN-1716,Hank Corp,In Progress,Low,Berlin,2025-12-25T11:56:09.791696Z
+MAN-7067,Bob Corp,Pending,Low,Berlin,2025-09-19T21:56:09.791712Z
+MAN-2002,Diana Corp,Active,Critical,London,2026-02-14T22:56:09.791726Z
+MAN-4014,Ivy Corp,Active,Medium,Berlin,2025-07-14T17:56:09.791740Z
+MAN-1428,Ivy Corp,In Progress,Critical,Dubai,2025-05-11T04:56:09.791758Z
+MAN-3855,Frank Corp,Failed,Critical,Dubai,2025-06-21T08:56:09.791773Z
+MAN-7057,Alice Corp,In Progress,Critical,Toronto,2026-02-14T00:56:09.791787Z
+MAN-4368,Hank Corp,Closed,Critical,Berlin,2025-12-07T06:56:09.791800Z
+MAN-3711,Bob Corp,Failed,Medium,Berlin,2026-02-17T23:56:09.791814Z
+MAN-1099,Hank Corp,Resolved,Medium,New York,2025-05-05T21:56:09.791827Z
+MAN-7166,Charlie Corp,Active,Low,Dubai,2026-01-26T10:56:09.791841Z
+MAN-4069,Diana Corp,Active,High,London,2025-07-15T00:56:09.791855Z
+MAN-9059,Hank Corp,Resolved,Low,Singapore,2026-02-22T01:56:09.791868Z
+MAN-5796,Ivy Corp,In Progress,High,Sydney,2026-02-18T18:56:09.791880Z
+MAN-3572,Hank Corp,Active,Low,London,2025-04-30T10:56:09.791893Z
+MAN-7774,Leo Corp,Active,Critical,Toronto,2025-12-04T07:56:09.791906Z
+MAN-4536,Jack Corp,Pending,Medium,Tokyo,2025-06-13T00:56:09.791922Z
+MAN-4723,Charlie Corp,Active,High,Tokyo,2025-05-17T05:56:09.791937Z
+MAN-1190,Karen Corp,Pending,Critical,Sydney,2025-09-30T08:56:09.791950Z
+MAN-4689,Leo Corp,In Progress,Low,London,2026-01-14T10:56:09.791963Z
+MAN-1611,Leo Corp,Closed,Low,Sydney,2025-05-12T22:56:09.791977Z
+MAN-9505,Eve Corp,Closed,Low,Singapore,2025-05-11T22:56:09.791991Z
+MAN-6330,Karen Corp,Requires Action,High,Berlin,2025-06-18T22:56:09.792004Z
+MAN-3869,Karen Corp,Closed,Medium,Berlin,2025-05-16T08:56:09.792018Z
+MAN-3529,Grace Corp,Active,Medium,Tokyo,2025-09-29T12:56:09.792032Z
+MAN-8513,Ivy Corp,Requires Action,Low,London,2025-04-16T10:56:09.792045Z
+MAN-4530,Alice Corp,Pending,Critical,Sydney,2025-03-13T11:56:09.792058Z
+MAN-3752,Ivy Corp,Closed,High,Dubai,2025-07-31T06:56:09.792072Z
+MAN-6746,Jack Corp,Active,Critical,Sydney,2025-03-18T15:56:09.792086Z
+MAN-8500,Hank Corp,Pending,Medium,Toronto,2025-06-15T13:56:09.792101Z
+MAN-9256,Leo Corp,Pending,Low,Toronto,2026-01-18T06:56:09.792114Z
+MAN-2302,Bob Corp,Failed,Medium,Singapore,2025-09-17T10:56:09.792128Z
+MAN-1645,Alice Corp,In Progress,Critical,Toronto,2025-03-11T12:56:09.792145Z
+MAN-6104,Grace Corp,In Progress,Medium,London,2025-11-10T05:56:09.792159Z
+MAN-1730,Karen Corp,Requires Action,Low,Toronto,2025-09-23T11:56:09.792173Z
+MAN-5018,Ivy Corp,In Progress,Medium,Berlin,2025-04-01T01:56:09.792186Z
+MAN-6260,Bob Corp,Closed,Medium,Toronto,2025-04-18T21:56:09.792200Z
+MAN-6554,Diana Corp,Closed,Critical,London,2025-07-02T08:56:09.792214Z
+MAN-8426,Eve Corp,Active,Low,Tokyo,2025-06-16T00:56:09.792227Z

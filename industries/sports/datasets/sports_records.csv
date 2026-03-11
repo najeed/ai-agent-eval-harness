@@ -1,0 +1,101 @@
+record_id,entity_name,status,priority,assigned_region,last_updated
+SPO-9632,Karen Corp,Active,Critical,Singapore,2026-03-11T01:56:09.843692Z
+SPO-6819,Alice Corp,Resolved,Critical,Dubai,2026-01-12T21:56:09.843726Z
+SPO-4804,Diana Corp,Resolved,High,Dubai,2025-09-24T23:56:09.843744Z
+SPO-3970,Jack Corp,Resolved,Critical,Tokyo,2025-05-13T15:56:09.843759Z
+SPO-6047,Charlie Corp,Pending,High,Berlin,2025-08-06T00:56:09.843774Z
+SPO-7305,Bob Corp,Requires Action,Medium,Sydney,2025-09-16T16:56:09.843790Z
+SPO-6331,Karen Corp,Closed,High,London,2025-12-26T17:56:09.843803Z
+SPO-6229,Diana Corp,Pending,Critical,Tokyo,2025-05-19T07:56:09.843817Z
+SPO-4595,Charlie Corp,Requires Action,Medium,New York,2025-07-22T15:56:09.843830Z
+SPO-5729,Karen Corp,Pending,High,Berlin,2025-10-17T10:56:09.843844Z
+SPO-4292,Eve Corp,Resolved,Medium,Toronto,2026-02-13T23:56:09.843857Z
+SPO-6467,Charlie Corp,Active,Low,Tokyo,2025-08-04T21:56:09.843871Z
+SPO-2768,Hank Corp,Requires Action,Low,Tokyo,2025-05-26T12:56:09.843884Z
+SPO-7898,Hank Corp,Pending,Low,Toronto,2025-10-08T07:56:09.843897Z
+SPO-7397,Frank Corp,In Progress,Low,London,2025-09-13T03:56:09.843910Z
+SPO-2459,Charlie Corp,Pending,High,Berlin,2025-08-26T13:56:09.843922Z
+SPO-4975,Frank Corp,In Progress,High,Berlin,2025-09-11T08:56:09.843937Z
+SPO-9090,Alice Corp,In Progress,Critical,Singapore,2025-06-13T06:56:09.843949Z
+SPO-3949,Karen Corp,Requires Action,Critical,Tokyo,2025-05-26T06:56:09.843962Z
+SPO-2405,Frank Corp,Closed,Low,New York,2025-06-11T06:56:09.843975Z
+SPO-8996,Jack Corp,Requires Action,Low,Toronto,2025-05-27T06:56:09.843988Z
+SPO-6190,Bob Corp,Pending,Low,London,2025-07-14T06:56:09.844002Z
+SPO-6968,Bob Corp,Closed,High,Singapore,2025-08-08T12:56:09.844016Z
+SPO-9875,Hank Corp,Resolved,High,Dubai,2026-02-03T06:56:09.844029Z
+SPO-9736,Hank Corp,Failed,High,Dubai,2025-06-18T05:56:09.844042Z
+SPO-8892,Jack Corp,Closed,Medium,Dubai,2025-10-31T03:56:09.844056Z
+SPO-8652,Leo Corp,Closed,High,Tokyo,2025-07-11T09:56:09.844069Z
+SPO-3526,Bob Corp,Failed,High,Toronto,2025-04-18T15:56:09.844082Z
+SPO-8057,Karen Corp,Requires Action,Low,London,2025-11-20T12:56:09.844097Z
+SPO-9601,Hank Corp,In Progress,High,Tokyo,2025-07-06T07:56:09.844112Z
+SPO-1234,Charlie Corp,Resolved,High,Toronto,2025-09-03T23:56:09.844125Z
+SPO-8115,Jack Corp,Failed,Critical,Berlin,2026-02-06T07:56:09.844138Z
+SPO-9944,Alice Corp,Closed,High,New York,2026-03-01T14:56:09.844152Z
+SPO-3556,Grace Corp,Closed,Low,Dubai,2025-08-14T23:56:09.844168Z
+SPO-9235,Alice Corp,Resolved,Critical,Sydney,2025-03-21T02:56:09.844181Z
+SPO-7368,Charlie Corp,Closed,High,Singapore,2025-03-11T00:56:09.844194Z
+SPO-3276,Jack Corp,In Progress,Critical,Toronto,2025-12-22T04:56:09.844207Z
+SPO-4009,Eve Corp,Pending,Low,Sydney,2025-06-24T07:56:09.844219Z
+SPO-2908,Jack Corp,Resolved,Critical,Singapore,2025-06-16T02:56:09.844233Z
+SPO-7595,Bob Corp,Pending,High,Toronto,2025-10-31T01:56:09.844246Z
+SPO-3125,Charlie Corp,Active,Critical,Singapore,2025-04-02T23:56:09.844259Z
+SPO-5628,Jack Corp,Closed,High,Sydney,2025-10-07T00:56:09.844273Z
+SPO-7587,Bob Corp,Closed,Medium,Tokyo,2026-01-12T16:56:09.844286Z
+SPO-3097,Grace Corp,Closed,Medium,London,2025-11-22T17:56:09.844300Z
+SPO-1772,Karen Corp,Failed,Medium,Toronto,2026-01-29T08:56:09.844312Z
+SPO-7822,Jack Corp,Requires Action,Critical,New York,2025-06-11T19:56:09.844325Z
+SPO-8256,Hank Corp,Closed,Medium,Toronto,2025-12-13T01:56:09.844337Z
+SPO-6278,Karen Corp,Pending,High,Singapore,2026-02-27T19:56:09.844349Z
+SPO-1357,Charlie Corp,Active,Critical,New York,2026-02-16T05:56:09.844362Z
+SPO-9226,Alice Corp,Requires Action,High,Berlin,2025-10-05T20:56:09.844375Z
+SPO-2843,Hank Corp,Resolved,Medium,Tokyo,2025-07-06T21:56:09.844388Z
+SPO-4352,Leo Corp,Requires Action,High,Sydney,2025-03-15T10:56:09.844400Z
+SPO-1456,Eve Corp,Closed,High,Dubai,2025-07-12T01:56:09.844412Z
+SPO-6349,Leo Corp,Active,High,Toronto,2025-05-02T00:56:09.844426Z
+SPO-8787,Ivy Corp,Active,High,Sydney,2025-04-20T04:56:09.844439Z
+SPO-4474,Charlie Corp,In Progress,Critical,Sydney,2026-01-08T21:56:09.844451Z
+SPO-2792,Leo Corp,Requires Action,Medium,Singapore,2025-09-23T11:56:09.844464Z
+SPO-2507,Jack Corp,In Progress,Medium,Toronto,2025-11-15T18:56:09.844477Z
+SPO-7091,Jack Corp,Active,Low,Toronto,2025-09-14T02:56:09.844490Z
+SPO-4729,Grace Corp,Active,Medium,New York,2025-08-26T04:56:09.844503Z
+SPO-7829,Frank Corp,Requires Action,Medium,London,2025-07-26T09:56:09.844516Z
+SPO-4750,Leo Corp,Pending,High,Dubai,2025-04-05T07:56:09.844529Z
+SPO-9624,Bob Corp,In Progress,High,Singapore,2025-11-18T00:56:09.844544Z
+SPO-3017,Hank Corp,Closed,Low,Berlin,2025-12-27T10:56:09.844556Z
+SPO-2541,Ivy Corp,In Progress,Medium,Sydney,2025-11-12T05:56:09.844568Z
+SPO-4233,Hank Corp,Requires Action,High,Singapore,2025-11-21T12:56:09.844585Z
+SPO-1006,Hank Corp,Resolved,Medium,Toronto,2025-07-07T11:56:09.844599Z
+SPO-2816,Bob Corp,Active,Medium,Toronto,2025-07-03T14:56:09.844612Z
+SPO-7896,Leo Corp,Requires Action,High,Singapore,2025-08-23T09:56:09.844625Z
+SPO-5126,Leo Corp,Closed,High,Sydney,2025-08-26T20:56:09.844639Z
+SPO-2296,Charlie Corp,Resolved,Medium,London,2025-09-20T03:56:09.844652Z
+SPO-9943,Jack Corp,Resolved,Low,New York,2025-09-12T04:56:09.844666Z
+SPO-5528,Grace Corp,Active,High,Singapore,2025-12-16T09:56:09.844679Z
+SPO-7933,Leo Corp,Resolved,High,Dubai,2025-06-13T19:56:09.844691Z
+SPO-8836,Hank Corp,Failed,Critical,Tokyo,2025-11-17T00:56:09.844703Z
+SPO-2517,Hank Corp,Requires Action,Critical,Tokyo,2025-06-28T00:56:09.844716Z
+SPO-9192,Grace Corp,Failed,High,Dubai,2025-08-30T06:56:09.844729Z
+SPO-8306,Karen Corp,In Progress,Medium,London,2025-10-13T21:56:09.844746Z
+SPO-4385,Bob Corp,In Progress,Critical,Tokyo,2025-10-16T16:56:09.844759Z
+SPO-7541,Ivy Corp,Pending,Medium,Toronto,2026-02-22T04:56:09.844771Z
+SPO-4595,Ivy Corp,Failed,Critical,London,2025-03-13T12:56:09.844784Z
+SPO-8330,Grace Corp,Pending,Low,Sydney,2025-09-25T03:56:09.844799Z
+SPO-4235,Alice Corp,Pending,Critical,Berlin,2025-11-17T07:56:09.844812Z
+SPO-4691,Leo Corp,In Progress,Medium,Tokyo,2025-03-18T20:56:09.844825Z
+SPO-6415,Karen Corp,Pending,Critical,New York,2025-11-28T22:56:09.844839Z
+SPO-2557,Frank Corp,Pending,Low,Toronto,2025-05-05T22:56:09.844855Z
+SPO-8520,Eve Corp,In Progress,Critical,London,2025-11-06T11:56:09.844868Z
+SPO-5900,Eve Corp,Resolved,Critical,Toronto,2025-07-30T01:56:09.844882Z
+SPO-7715,Bob Corp,Closed,Low,Toronto,2026-03-08T12:56:09.844897Z
+SPO-1913,Hank Corp,Active,Low,Tokyo,2025-07-03T15:56:09.844909Z
+SPO-1296,Frank Corp,Pending,High,Tokyo,2025-11-04T10:56:09.844924Z
+SPO-3222,Karen Corp,Requires Action,High,Toronto,2025-04-02T11:56:09.844938Z
+SPO-3594,Grace Corp,Requires Action,Low,Sydney,2025-10-09T16:56:09.844952Z
+SPO-7778,Frank Corp,Closed,Medium,Tokyo,2025-09-30T23:56:09.844969Z
+SPO-4001,Bob Corp,Closed,Low,Toronto,2025-11-06T09:56:09.844983Z
+SPO-7321,Grace Corp,Active,Medium,Singapore,2025-06-13T08:56:09.844995Z
+SPO-1924,Jack Corp,In Progress,High,Dubai,2025-12-07T22:56:09.845009Z
+SPO-1123,Grace Corp,Pending,Medium,New York,2025-10-22T00:56:09.845022Z
+SPO-9550,Hank Corp,Requires Action,Critical,Singapore,2025-06-19T06:56:09.845036Z
+SPO-2353,Hank Corp,Pending,Medium,Toronto,2025-03-27T04:56:09.845049Z

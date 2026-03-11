@@ -9,8 +9,8 @@ Run evaluations on one or more scenarios.
 ```bash
 eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 ```
-- `--path`: Path to a JSON scenario file or a directory containing scenarios.
-- `--attempts`: Number of attempts per scenario (for pass@k and consistency metrics).
+- `--path`: Path to a single Scenario JSON file or a directory containing scenarios.
+- `--attempts`: Number of attempts per scenario (for pass@k and consistency metrics). Default is 1.
 - `--limit`: Max number of scenarios to run.
 - `--format`: Dataset format (`jsonl` or `csv`).
 
@@ -18,6 +18,12 @@ eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 Execute a single scenario file.
 ```bash
 eval-harness run --scenario <path>
+```
+
+### `init`
+Scaffold a new benchmark directory with starter scenarios for a specific industry. Automatically links the scenario to realistic synthetic CSV datasets.
+```bash
+eval-harness init --dir <directory_name> --industry <industry_name>
 ```
 
 ## Specification & Validation
@@ -32,6 +38,14 @@ eval-harness aes validate <path>
 Convert a Markdown PRD/Spec file into a structured Scenario JSON.
 ```bash
 eval-harness spec-to-eval --input <prd.md> [--output <scenario.json>]
+```
+**Example:** Converts a Markdown spec (e.g., *“The agent must verify patient ID and schedule a follow-up if urgent”*) into an AES-compliant `tasks` and `validations` JSON array.
+
+### `auto-translate`
+Translate raw, unstructured documents (TXT, MD, PDF, DOCX) into structured Scenario JSON files using a local LLM.
+**Requirement:** `Ollama` must be running locally.
+```bash
+eval-harness auto-translate --input <document.pdf> --model <model_name> --industry <industry>
 ```
 
 ## Drift & Research

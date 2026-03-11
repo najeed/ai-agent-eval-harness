@@ -25,6 +25,8 @@ eval-harness quickstart
 
 ### 1.2 Useful CLI Commands
 - `eval-harness doctor`: Check your environment health.
+- `eval-harness init --dir <name> --industry <ind>`: Scaffold a new benchmark project.
+- `eval-harness auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
 - `eval-harness report <path>`: Re-generate HTML report from a `.jsonl` trace.
 - `eval-harness replay --path <path>`: View the step-by-step history of a run in terminal.
 
@@ -37,6 +39,7 @@ eval-harness quickstart
 - **Scenario**: A JSON file containing tasks, tools, and success criteria.
 - **Task**: An individual instruction sent to the agent within a scenario.
 - **Tool Sandbox**: A state-aware execution environment for agent tool calls.
+- **Synthetic Datasets**: Auto-generated industry-specific CSV tabular data used to ground scenarios in reality.
 - **Plugin System**: Lifecycle hooks to extend the harness without modifying the core.
 
 ### 2.2 Advanced CLI
@@ -58,6 +61,7 @@ The harness uses a decoupled, event-driven design:
 ### 3.2 Extensibility
 - **Interception**: Use `on_tool_request` to block or proxy tool calls.
 - **Observability**: Subscribe to `CoreEvents` via the `EventEmitter` for non-blocking logging.
+- **Secure Namespaces**: Legacy `extend_cli` is removed. Use `on_register_commands` to register commands under the `eval-harness plugin <name>` sub-command.
 - **Immutability**: TurnContext and EvaluationContext are frozen to prevent accidental side-effects.
 
 ---
