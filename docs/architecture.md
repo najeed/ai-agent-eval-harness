@@ -7,7 +7,7 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                             CLI (eval_runner/cli.py)                        │
-│  • evaluate / import-drift / aes validate / replay                          │
+│  • evaluate / console / import-drift / aes validate / replay                │
 └──────────────┬───────────────────┬────────────────────────┬─────────────────┘
                │                   │                        │
                ▼                   ▼                        ▼
@@ -49,8 +49,9 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 
 | Module | File | Purpose |
 |--------|------|---------|
-| CLI | `eval_runner/cli.py` | Universal entry-point (`replay`, `aes`, `import-drift`) |
+| CLI | `eval_runner/cli.py` | Universal entry-point (`replay`, `aes`, `console`) |
 | Loader | `eval_runner/loader.py` | Multi-format dataset ingestion and v2.0 schema validation |
+| Admin Console | `eval_runner/console/` & `admin-console/` | Flask proxy API and React Native Expo GUI for visual execution tracing |
 ### `EventEmitter` Bus: Passive Observation
 The core engine is built around a central `EventEmitter` (see `eval_runner/events.py`). Every state transition in the harness - from the start of a run to a tool call or an agent response - is emitted as an event. This allows plugins to observe the system's behavior without modifying the core logic.
 

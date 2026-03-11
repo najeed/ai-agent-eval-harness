@@ -24,6 +24,7 @@ eval-harness quickstart
 **What it does:** Spawns a sample agent, runs a troubleshooting evaluation, and generates a rich visual report in `reports/`.
 
 ### 1.2 Useful CLI Commands
+- `eval-harness console`: Launch the React Native (Expo) Admin Console GUI for visual management.
 - `eval-harness doctor`: Check your environment health.
 - `eval-harness init --dir <name> --industry <ind>`: Scaffold a new benchmark project.
 - `eval-harness auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.

@@ -40,8 +40,10 @@ The Triage Engine automatically analyzes failed evaluation tasks and applies tag
 ### How it Works
 The Triage Engine inspects the `conversation_history` and `EvaluationContext` after a run to match heuristics.
 
-### Example Console Output
-```text
 Task: refund_processing [FAILURE [CONNECTION_ERROR]]
   FAILED Metric: generic_accuracy | Score: 0.00 | Threshold: 0.80
 ```
+
+> [!TIP]
+> **Visual Triage**: Use `eval-harness console` to view these failure tags interactively. The dashboard highlights `POLICY_VIOLATION` and `STALL` events with visual cues in the trajectory timeline.
+

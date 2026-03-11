@@ -100,9 +100,10 @@ Turn 2: Harness → Agent: "GOVERNANCE ERROR: Amount 100 exceeds maximum allowed
          Agent → Harness: {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 50}}
 ```
 
-## Environment Variables
-
-| Variable | Default | Description |
-|---|---|---|
-| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint URL |
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
+
+---
+
+## Admin Console Integration
+The **Admin Console** (`eval-harness console`) utilizes this REST API as its backbone. Enterprise plugins can extend this contract via the `on_register_console_routes` hook to inject custom monitoring or debugging endpoints into the React Native dashboard.
+

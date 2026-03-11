@@ -86,6 +86,7 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness run` | `-k` | Run a single scenario JSON file |
 | `eval-harness replay` | `--path` | Replay a recorded run trace |
 | `eval-harness aes validate` | `path` | Validate AES benchmark YAML |
+| `eval-harness console` | `--port` | Launch the Web Admin Console local API and interactive GUI |
 | `eval-harness quickstart` | (none) | Run a 60-second demo (spawns agent + runs eval) |
 | `eval-harness doctor` | (none) | Check environment and dependencies |
 | `eval-harness init` | `--dir`, `--industry` | Scaffold a new benchmark environment and generate linkable synthetic datasets |
@@ -135,6 +136,12 @@ Runs a complete evaluation loop using the built-in sample agent.
 eval-harness quickstart
 ```
 It automatically spawns the agent server, runs a troubleshooting scenario, and generates a visual report.
+
+### 🖥️ `console` — React Native Admin Console GUI
+Launch a high-fidelity visual dashboard to run scenarios, inspect trace lines chronologically, and review system documentation locally.
+```bash
+eval-harness console --port 5000
+```
 
 ### 🔍 `doctor` — Environment Validator
 Troubleshoot your installation and connectivity.

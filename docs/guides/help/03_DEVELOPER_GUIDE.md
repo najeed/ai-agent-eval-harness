@@ -23,6 +23,7 @@ Entry point: `eval_runner/cli.py`
 ### Main commands
 - `evaluate` — Run a batch of scenarios
 - `quickstart` — End-to-end evaluation demo using `sample_agent`
+- `console` — Launch the local React Native Web Dashboard for visual tracing
 - `doctor` — Validate environment health and dependencies
 - `init` — Scaffold new project directories with synthetic datasets
 - `report` — Generate rich HTML reports from existing `.jsonl` traces
@@ -71,6 +72,7 @@ Plugins are the primary extension point. They are discovered via `eval_runner.pl
 | `on_tool_result` | Observe tool outputs and world state side-effects. |
 | `on_metrics_calculated`| Post-process or inject custom metrics. |
 | `on_register_commands` | Securely register plugin CLI commands (replaces `extend_cli`). |
+| `on_register_console_routes` | Inject custom REST routes and React Native Expo UI navigation links. |
 | `after_evaluation` | Final reporting or post-run notifications. |
 
 ### 4.2 Interception Example
@@ -80,6 +82,31 @@ def on_tool_request(self, context: TurnContext, tool_name: str, args: dict) -> b
     if tool_name == "delete_all" and not args.get("confirmed"):
         return False # Blocks the call
     return True
+```
+
+### 4.3 Extending the Web Admin Console (Native UI)
+Enterprise plugins can inject their own user interfaces natively into the new `eval-harness console` Expo application. Utilizing the `on_register_console_routes` hook, you can register a backend Flask Blueprint and dynamically push navigation links to the frontend drawer for hot-swappable Enterprise SSO tools or analytical views.
+
+```python
+from flask import Blueprint, jsonify
+
+class EnterpriseConsolePlugin(BaseEvalPlugin):
+    def on_register_console_routes(self, app, nav_registry):
+        # 1. Add Navigation to Expo Sidebar (Lucide icon supported)
+        nav_registry.append({
+            "id": "enterprise_ui", 
+            "title": "Enterprise SSO", 
+            "path": "/enterprise/sso", 
+            "icon": "shield"
+        })
+        
+        # 2. Register REST API Blueprint
+        bp = Blueprint("enterprise", __name__)
+        @bp.route("/api/enterprise/status")
+        def status():
+            return jsonify({"status": "Enterprise SSO Active"})
+            
+        app.register_blueprint(bp)
 ```
 
 ---

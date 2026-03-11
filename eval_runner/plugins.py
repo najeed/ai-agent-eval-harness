@@ -68,6 +68,10 @@ class BaseEvalPlugin:
         """Allows plugins to register custom CLI subcommands under their namespace."""
         pass
 
+    def on_register_console_routes(self, app: Any, nav_registry: list):
+        """Allows plugins to register custom Flask Blueprints and UI navigation links to the Admin Console API."""
+        pass
+
 class PluginManager:
     """Discovers and manages evaluation plugins."""
     

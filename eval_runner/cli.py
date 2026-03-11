@@ -78,6 +78,11 @@ def main():
     # --- DOCTOR COMMAND ---
     subparsers.add_parser("doctor", help="Check environment and dependencies")
 
+    # --- CONSOLE COMMAND ---
+    console_parser = subparsers.add_parser("console", help="Launch the Web Admin Console (REST API & Frontend server)")
+    console_parser.add_argument("--host", default="127.0.0.1", help="Host interface to bind to")
+    console_parser.add_argument("--port", type=int, default=5000, help="Port to serve the console API on")
+
     # --- QUICKSTART COMMAND ---
     subparsers.add_parser("quickstart", help="Run a 60-second demo (spawns agent + runs eval)")
 
@@ -159,6 +164,10 @@ def main():
             handle_mutate(args)
         elif args.command == "run":
             asyncio.run(run_scenario(args))
+        elif args.command == "console":
+            from .console.app import run_server
+            print(f"\n[CLI] Starting Admin Console API on http://{args.host}:{args.port}")
+            run_server(host=args.host, port=args.port)
         elif args.command == "doctor":
             from . import doctor
             asyncio.run(doctor.run_doctor())

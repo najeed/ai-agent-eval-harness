@@ -90,6 +90,12 @@ eval-harness record [--agent <url>]
 
 ## Utilities
 
+### `console`
+Launch the Web Admin Console backend API and React Native Expo dashboard. This serves the REST API at port `5000` (by default) for interactive visual management of traces, scenarios, and live debugging via the Expo Frontend.
+```bash
+eval-harness console [--host 127.0.0.1] [--port 5000]
+```
+
 ### `doctor`
 Check the local environment for missing dependencies or configuration issues.
 ```bash

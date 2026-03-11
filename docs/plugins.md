@@ -52,6 +52,7 @@ class MyCustomPlugin(BaseEvalPlugin):
 | `on_metrics_calculated` | `context`, `results` | Post-metric hook for cross-attempt aggregation. |
 | `after_evaluation` | `context`, `results` | Final hook after evaluation completes. |
 | `on_register_commands` | `registry: CommandRegistry` | Register CLI subcommands under the plugin namespace. |
+| `on_register_console_routes` | `app: Flask`, `nav: list` | Inject custom REST routes and React Native UI navigation links to the Admin Console. |
 
 > **⚠️ Security Note:** The legacy `extend_cli` hook has been **removed** to prevent command hijacking. All plugins must use `on_register_commands` which isolates commands under `eval-harness plugin <plugin_name>`.
 
@@ -74,6 +75,32 @@ class MyReportPlugin(BaseEvalPlugin):
 ```
 
 Usage: `eval-harness plugin myreport generate --format html`
+
+## Extending the Admin Console GUI (React Native / Flask)
+
+Plugins can also inject their own UI natively into the new `eval-harness console` Expo application. Use the `on_register_console_routes` hook to register a backend Flask Blueprint and push a navigation link to the frontend drawer.
+
+```python
+from flask import Blueprint, jsonify
+
+class EnterpriseConsolePlugin(BaseEvalPlugin):
+    def on_register_console_routes(self, app, nav_registry):
+        # 1. Add Navigation to Expo Sidebar (Lucide icon supported)
+        nav_registry.append({
+            "id": "enterprise_ui", 
+            "title": "Enterprise SSO Tools", 
+            "path": "/enterprise/sso", 
+            "icon": "shield"
+        })
+        
+        # 2. Register REST API Blueprint
+        bp = Blueprint("enterprise", __name__)
+        @bp.route("/api/enterprise/status")
+        def status():
+            return jsonify({"status": "Active"})
+            
+        app.register_blueprint(bp)
+```
 
 ## Extending Core Capabilities
 

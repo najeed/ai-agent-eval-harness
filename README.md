@@ -93,6 +93,7 @@ eval-harness quickstart
 - **Benchmark Ecosystem**: Native loaders and adapters for community benchmarks like GAIA and AssistantBench.
 - **Pluggable Architecture**: Extend anything via Python plugins, with out-of-the-box framework adapters for LangGraph and CrewAI.
 - **Tool Sandbox**: Governance-controlled execution of real or mock tools.
+- **Visual Admin Console**: Integrated React Native (Expo) dashboard for live trace replay and visual debugging.
 - **Semantic Bridge & Distribution**: Ingest production traces (`import-drift`), analyze failures (`triage`), and export datasets to HuggingFace (`export`).
 - **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
 - **Robust Metrics**: 10+ built-in metrics (Tool Correctness, State Parity, Policy Compliance).
@@ -108,6 +109,9 @@ eval-harness import-drift --input trace.json --industry telecom
 
 # Debug with Flight Recorder
 eval-harness replay runs/run.jsonl
+
+# Launch Admin Console GUI
+eval-harness console --port 5000
 
 # Interactive Playground
 eval-harness playground --agent http://localhost:5001
@@ -130,11 +134,27 @@ The harness is built on a decoupled, event-driven architecture that allows Enter
 - **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
 
 ### 🌟 Productivity Utilities
+- `console`: React Native GUI for Visual Scenario Execution and Debugging.
 - `doctor`: Environment health checker.
 - `report`: Rich HTML reporting with interactive Mermaid trajectories.
 - `record` & `playground`: Interaction capture and REPL experimentation.
 - `spec-to-eval`: Convert Markdown PRDs/Specs into executable JSON scenarios.
 - `scenario generate`: Interactive scaffolding for authoring tests.
+
+## 🖥️ Web Admin Console (Native GUI)
+
+The harness includes a comprehensive **React Native (Expo)** Admin Console that simplifies management of scenarios, runs, and visual debugging.
+
+**Features:**
+- **Visual Debugger**: Live playback of agent trajectories.
+- **Plugin UI Injection**: Enterprise plugins can natively hot-swap their own UI modules into the dashboard.
+- **Flight Recorder**: Interactive trace analysis.
+
+**Launch:**
+```bash
+eval-harness console --port 5000
+```
+*Access via browser at `http://localhost:5000` or build as a mobile app via Expo.*
 
 ### Running Tests
 
@@ -187,18 +207,26 @@ Thanks to all our contributors! 🙌
 
 ## Licensing & Editions
 
-This project follows an **Open Core** model.
+This project follows an **Open Core** model.The open-source capabilities provide a robust evaluation foundation, while the Enterprise Edition delivers the necessary security, governance, and audit-grade intelligence required for regulated deployments.
 
-| Feature | Community Edition (OSS) | Enterprise Edition |
+| Feature Module | Community Edition (OSS) | Enterprise Edition |
 | :--- | :--- | :--- |
-| Core Eval Engine | ✅ Included (BSL 1.1) | ✅ Included |
-| Industry JSON Scenarios | ✅ 4,400+ included | ✅ Priority Updates |
-| Docker Support | ✅ Included | ✅ High-Scale Clusters |
-| Adversarial Simulations | ❌ No | ✅ Advanced Red-Teaming |
-| Visual Dashboard | ❌ CLI Only | ✅ Web UI & Analytics |
+| **Core Architecture** | ✅ Eval Engine, Hooks, JSON Schemas | ✅ Enterprise Service Bus Integration |
+| **Industry Benchmark Set** | ✅ 4,600+ Scenarios | ✅ Prioritized Scenario Updates |
+| **Reliability Metrics** | ✅ `pass@k` multi-attempt scoring | ✅ Persistent Leaderboards & Consensus |
+| **Scenario Mutations** | ✅ Basic (Typos & Ambiguity) | ✅ Adversarial Fuzzing & Prompt Injections |
+| **Execution Security** | ❌ No limits | ✅ Tool Sandboxing & Context Payload Caps |
+| **Privacy Protections** | ❌ No | ✅ Automatic PII Scanning & Redaction |
+| **Simulation** | ❌ Real API required | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
+| **Compliance Suites** | ❌ No | ✅ Turn-key Packs (HIPAA, FINRA, GDPR, PCI) |
+| **Observability** | ❌ Terminal output | ✅ OTEL Drift Alerts & Jira Auto-Ticketing |
+| **Defensibility Governance**| ❌ No | ✅ WORM Audit Logs & Cryptographic Traces|
+| **Integrity Checks** | ❌ No | ✅ AES Scenario Merkle Sync |
+| **Admin Console & GUI** | ✅ Local React Native App | ✅ Hot-Swappable SSO & Enterprise Plugins |
+| **Reproduction Workflow** | ❌ JSONL Only | ✅ Interactive Flight Recorder & Jupyter Export |
 
-Looking for Production-Grade Reliability?
-The Enterprise Edition includes path-efficiency scoring, automated red-teaming, and real-time grounding proxies. Contact ai.eval.harness.contact+enterprise@gmail.com.
+**Looking for Production-Grade Reliability?**
+The Enterprise Edition guarantees that you can safely evaluate agents over sensitive datasets without exposing credentials or executing dangerous code, backed by mathematical proof of non-repudiation. Contact `ai.eval.harness.contact+enterprise@gmail.com`.
 
 ### License
 The core of this project is licensed under the **Business Source License 1.1**. 

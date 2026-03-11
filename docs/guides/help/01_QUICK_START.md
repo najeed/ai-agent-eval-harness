@@ -72,8 +72,8 @@ eval-harness evaluate --path industries/telecom
 After the run, you'll see a summary in the console and detailed logs in:
 - `reports/latest_results.json`
 - `runs/run.jsonl` (Flight Recorder)
-- `reports/trajectories/` (Visual flows)
 - `reports/report_<id>.html` (Rich Visual Report)
+- **Interactive Dashboard:** Run `eval-harness console` to open the local React Native UI.
 
 ---
 

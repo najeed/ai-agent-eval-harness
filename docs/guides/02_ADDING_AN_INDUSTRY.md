@@ -48,8 +48,19 @@ Run schema validation locally:
 python -c "from eval_runner.loader import load_scenario; from pathlib import Path; load_scenario(Path('industries/YOUR_INDUSTRY/scenarios/YOUR_SCENARIO.json'))"
 ```
 
+## Step 5: Verify in Admin Console
+
+Launch the dashboard to ensure your new industry and scenarios are appearing correctly in the library:
+
+```bash
+eval-harness console
+```
+
+Navigate to the **Library** tab to view your JSON structure and trigger a test run visually.
+
 ## Step 6: Submit a Pull Request
 
 Once you have created the directory structure and added at least one complete scenario, please submit a Pull Request. In the description, briefly explain the industry and the use cases you are starting to build out.
 
 Thank you for helping expand the reach of this project!
+

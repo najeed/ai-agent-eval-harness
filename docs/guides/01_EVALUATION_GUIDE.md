@@ -41,11 +41,20 @@ A task is only considered successful if **all** of its success criteria are met.
 
 ## Advanced Orchestration (Phase 3)
 
-The harness now supports sophisticated research-oriented evaluations:
-- **`pass@k` (Robustness)**: Run multiple attempts (`--attempts K`) per scenario. Higher `k` measures if an agent *can* solve a task, even if it fails occasionally.
-- **Outcome Stability (Consistency)**: Measures if results are stable across multiple runs.
-- **Semantic Stability**: Uses consensus scoring to check if agent summaries are semantically consistent across attempts.
 - **HITL (Human-In-The-Loop)**: Pause evaluations for manual intervention via the `human` adapter.
+
+## Visual Evaluation & Debugging (Admin Console)
+
+Beyond the CLI, the harness provides a **React Native Admin Console** for visual management:
+- **Scenario Explorer**: Browse and trigger runs from your library.
+- **Visual Debugger**: Step-through agent trajectories with real-time state inspection.
+- **Flight Recorder**: Replay complex multi-turn sessions with Mermaid-rendered flows.
+
+Launch with:
+```bash
+eval-harness console
+```
+
 
 ## Available Metrics (v3.0)
 

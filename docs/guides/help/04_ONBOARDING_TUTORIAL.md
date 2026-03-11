@@ -176,6 +176,16 @@ eval-harness replay --path runs/run.jsonl
 > --- Run Finished: success ---
 > ```
 
+### ✅ View in the Visual Dashboard
+
+Instead of terminal replay, inspect the results natively:
+
+```bash
+eval-harness console
+```
+
+Open `http://localhost:5000` or use `npm run web` inside `admin-console/` to interactively debug the run in the React Native Expo dashboard.
+
 ---
 
 ## 5) Make a Small Scenario Change & Re-run
