@@ -186,7 +186,7 @@ my_analysis = "my_package.plugin:MyAnalysisPlugin"
 
 ## Framework Adapters (Advanced)
 
-Phase 4 introduced built-in support for extending agent communication protocols without touching the core engine. Using the `on_discover_adapters` hook, a plugin can register custom protocol schemes (e.g., `langgraph://`).
+There is built-in support for extending agent communication protocols without touching the core engine. Using the `on_discover_adapters` hook, a plugin can register custom protocol schemes (e.g., `langgraph://`).
 
 Built-in Ecosystem Adapters:
 - **`langgraph://`**: Integration with LangChain's LangGraph.
