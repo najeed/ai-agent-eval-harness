@@ -84,13 +84,25 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const fetchScenarios = () => {
+        setLoading(true);
         fetch(`/api/scenarios?q=${query}`)
             .then(res => res.json())
             .then(data => {
                 setScenarios(data.scenarios || []);
                 setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setLoading(false);
             });
+    };
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            fetchScenarios();
+        }, 300);
+        return () => clearTimeout(delayDebounceFn);
     }, [query]);
 
     const filteredScenarios = searchQuery 
@@ -351,22 +363,24 @@ const VisualDebugger = ({ runId, onNotify }) => {
     const [isLive, setIsLive] = useState(!runId || runId === 'live');
 
     const loadTrace = (id) => {
-        if (id === 'live' || !id) {
-            setEvents([]);
-            return;
-        }
         setLoading(true);
-        // Historical trace fetching
-        fetch(`/api/runs`) // In a real app, this might be a specific trace
+        const targetId = id || runId;
+        const url = (targetId && targetId !== 'live') 
+            ? `/api/debugger/state?run_id=${targetId}`
+            : `/api/debugger/state`;
+
+        fetch(url)
             .then(res => res.json())
             .then(data => {
-                // Mocking historical events for the demo if found
-                setEvents([
-                    { event: "run_start", timestamp: new Date().toISOString(), run_id: id || "prev-run", scenario: "customer_refund" },
-                    { event: "prompt", role: "user", content: "I want a refund for my cancelled flight UA483.", timestamp: new Date().toISOString() },
-                    { event: "agent_response", step: 1, content: "I'm sorry to hear that. Let me check the flight database.", timestamp: new Date().toISOString() },
-                    { event: "run_end", status: "success", timestamp: new Date().toISOString() }
-                ]);
+                if (data.data && data.data.timeline) {
+                    setEvents(data.data.timeline);
+                } else if (Array.isArray(data)) {
+                    setEvents(data);
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
                 setLoading(false);
             });
     };
@@ -678,8 +692,41 @@ const DocsView = ({ categoryFilter, searchQuery = "" }) => {
     );
 };
 
-const Dashboard = () => (
+const Dashboard = ({ onNavigate, navItems }) => {
+    const [search, setSearch] = useState('');
+    
+    const statusItems = [
+        { label: 'Agent Endpoint', value: 'Connected', icon: 'activity' },
+        { label: 'Engine Version', value: 'v1.1.0', icon: 'box' },
+        { label: 'Control Plane', value: 'Active', icon: 'check' },
+        { label: 'Simulators', value: 'Online', icon: 'debugger' }
+    ];
+
+    const filteredStatus = statusItems.filter(item => 
+        item.label.toLowerCase().includes(search.toLowerCase()) || 
+        item.value.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const filteredNav = navItems.filter(item => 
+        item.title.toLowerCase().includes(search.toLowerCase())
+    );
+
+    return (
     <div className="p-8 space-y-8 max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-2">
+            <h2 className="text-3xl font-bold text-white">Dashboard</h2>
+            <div className="relative">
+                <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input 
+                    type="text"
+                    placeholder="Search console..."
+                    className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-80 text-slate-200"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </div>
+        </div>
+
         <div className="grid grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl shadow-blue-500/20 flex flex-col justify-between h-48 border border-white/10">
                 <Icon name="play" size={24} className="opacity-50" />
@@ -711,30 +758,44 @@ const Dashboard = () => (
         </div>
 
         <div>
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Core Infrastructure</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-6 bg-[#161b22] border border-slate-800 rounded-2xl flex gap-4 items-center">
-                    <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20">
-                        <Icon name="docs" />
+            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Quick Access & Status</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredStatus.map((item, idx) => (
+                    <div key={idx} className="p-6 bg-[#161b22] border border-slate-800 rounded-2xl flex gap-4 items-center animate-in fade-in duration-300">
+                        <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-500/20">
+                            <Icon name={item.icon} />
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-white mb-0.5">{item.label}</h4>
+                            <p className="text-xs text-slate-500">{item.value}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 className="font-bold text-white mb-0.5">Zero-Touch Engine</h4>
-                        <p className="text-xs text-slate-500">Event-driven orchestration & plugin bus</p>
-                    </div>
-                </div>
-                <div className="p-6 bg-[#161b22] border border-slate-800 rounded-2xl flex gap-4 items-center">
-                    <div className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 border border-purple-500/20">
-                        <Icon name="docs" />
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-white mb-0.5">AES Compliance</h4>
-                        <p className="text-xs text-slate-500">Unified Agent Eval Specifications v1.0</p>
-                    </div>
-                </div>
+                ))}
             </div>
         </div>
+
+        {filteredNav.length > 0 && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Navigation</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {filteredNav.map(item => (
+                        <button 
+                            key={item.id}
+                            onClick={() => onNavigate(item)}
+                            className="p-4 bg-[#161b22] border border-slate-800 rounded-2xl hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group flex flex-col items-center text-center"
+                        >
+                            <div className="p-3 bg-slate-800 rounded-xl mb-3 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <Icon name={item.icon} size={20} />
+                            </div>
+                            <span className="text-xs font-bold text-slate-200 group-hover:text-blue-400">{item.title}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+        )}
     </div>
-);
+    );
+};
 
 // --- Main App ---
 
@@ -779,7 +840,7 @@ const App = () => {
 
     const renderContent = () => {
         switch (activeTab) {
-            case 'dashboard': return <Dashboard />;
+            case 'dashboard': return <Dashboard onNavigate={handleNavClick} navItems={navItems} />;
             case 'scenarios': return <ScenarioExplorer onNotify={showToast} searchQuery={globalSearch} />;
             case 'reports': return <ReportsView onViewReport={handleViewReport} />;
             case 'editor': return <ScenarioEditor />;

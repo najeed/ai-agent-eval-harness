@@ -26,7 +26,7 @@ def generate_interactive():
         {
             "desc_tpl": "Edge-case validation for {capability} workflows within the {industry} sector.",
             "task_tpl": "Simulate a complex {capability} interaction. Ensure the agent follows standard {industry} protocols.",
-            "expected_tpl": "{capability.title()} processed with full audit trails."
+            "expected_tpl": "{capability_title} processed with full audit trails."
         },
         {
             "desc_tpl": "Adversarial robustness check: {capability} under high-load/ambiguous conditions.",
@@ -48,7 +48,11 @@ def generate_interactive():
                 {
                     "task_id": f"task_{i}",
                     "description": tpl["task_tpl"].format(capability=capability, industry=industry),
-                    "expected_output": tpl["expected_tpl"].format(capability=capability, industry=industry),
+                    "expected_output": tpl["expected_tpl"].format(
+                        capability=capability, 
+                        industry=industry,
+                        capability_title=capability.title()
+                    ),
                     "requirements": [
                         {"type": "mandatory", "description": f"Call the appropriate {capability} tool."}
                     ],

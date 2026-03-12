@@ -2,6 +2,8 @@ import pytest
 from flask import Flask
 from eval_runner.console.app import create_app
 from eval_runner.plugins import manager, BaseEvalPlugin
+from unittest.mock import patch, MagicMock, AsyncMock
+import threading
 
 # Create a mock plugin to test the lifecycle hook
 class MockConsolePlugin(BaseEvalPlugin):
@@ -33,6 +35,18 @@ def client():
     
     # Clean up
     manager.plugins = mgr_plugins
+
+@pytest.fixture(autouse=True)
+def mock_background_threads(monkeypatch):
+    """Prevent actual background threads from being spawned in tests."""
+    original_thread = threading.Thread
+    def mock_thread_start(self):
+        # Instead of starting a thread, we just return
+        # This prevents run_evaluation from ever executing in tests
+        pass
+    
+    monkeypatch.setattr(threading.Thread, "start", mock_thread_start)
+    yield
 
 def test_nav_registry_loads_core_and_plugins(client):
     """Test that the /api/nav endpoint returns core plugins and dynamically registered plugins."""

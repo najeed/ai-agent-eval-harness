@@ -26417,3 +26417,644 @@
 {"event": "evaluation", "timestamp": "2026-03-12T21:58:03.819537Z", "metric": "policy_compliance", "value": 1.0, "attempt": 1}
 {"event": "task_end", "timestamp": "2026-03-12T21:58:03.821679Z", "task_id": "task-3", "results": {"task_id": "task-3", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Send an order confirmation to the retailer with an estimated shipping date."}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "policy_compliance", "score": 1.0, "threshold": 1.0, "success": true}]}}
 {"event": "run_end", "timestamp": "2026-03-12T21:58:03.859286Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:07:36.424379Z", "run_id": "run-telecom-ts-13814-8259", "scenario": "telecom-ts-13814", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:07:36.430934Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:07:36.431398Z", "role": "user", "content": "Identify the customer and the speed tier of their internet plan."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:07:36.431735Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:07:36.703213Z", "step": 1, "response": {"action": "call_tool", "summary": "Identified customer Jane Doe on plan 100 Mbps Fiber.", "tool_name": "get_customer_details", "tool_output": {"customer_name": "Jane Doe", "plan": "100 Mbps Fiber", "status": "success"}, "tool_params": {"customer_id": "cust_123"}}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:07:36.707653Z", "step": 1, "tool": "get_customer_details", "arguments": {"customer_id": "cust_123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:07:36.708555Z", "state": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:07:36.709250Z", "step": 1, "tool": "get_customer_details", "result": {"status": "success", "message": "Executed get_customer_details"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:07:36.716051Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:07:36.986324Z", "step": 2, "response": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:07:36.987832Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "evaluation", "timestamp": "2026-03-12T22:07:36.988785Z", "metric": "state_verification", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:07:36.989803Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Identify the customer and the speed tier of their internet plan."}, {"role": "agent", "content": {"action": "call_tool", "summary": "Identified customer Jane Doe on plan 100 Mbps Fiber.", "tool_name": "get_customer_details", "tool_output": {"customer_name": "Jane Doe", "plan": "100 Mbps Fiber", "status": "success"}, "tool_params": {"customer_id": "cust_123"}}}, {"role": "environment", "content": {"status": "success", "message": "Executed get_customer_details"}, "state_before": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "state_after": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}, {"metric": "state_verification", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "task_start", "timestamp": "2026-03-12T22:07:36.990478Z", "task_id": "task-2", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:07:36.991031Z", "role": "user", "content": "Run a remote line test and a speed test to the customer's modem."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:07:36.992121Z", "turn": 1, "task_id": "task-2"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:07:37.270455Z", "step": 1, "response": {"action": "call_multiple_tools", "summary": "Remote diagnostics complete. Modem is receiving full speed (102.5 Mbps).", "tool_names": ["run_line_test", "run_remote_speed_test"], "tool_outputs": [{"connection": "Stable", "line_quality": "Excellent", "status": "success"}, {"download_speed_mbps": 102.5, "status": "success", "upload_speed_mbps": 21.3}]}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:07:37.271182Z", "step": 1, "tool": "run_line_test", "arguments": {}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:07:37.272236Z", "step": 1, "tool": "run_remote_speed_test", "arguments": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:07:37.278151Z", "state": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:07:37.278656Z", "step": 1, "tool": "run_line_test", "result": {"status": "success", "message": "Executed run_line_test"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:07:37.281544Z", "state": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:07:37.282017Z", "step": 1, "tool": "run_remote_speed_test", "result": {"status": "success", "message": "Executed run_remote_speed_test"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:07:37.286899Z", "turn": 2, "task_id": "task-2"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:07:37.551542Z", "step": 2, "response": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:07:37.552513Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "evaluation", "timestamp": "2026-03-12T22:07:37.553688Z", "metric": "state_verification", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:07:37.554719Z", "task_id": "task-2", "results": {"task_id": "task-2", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Run a remote line test and a speed test to the customer's modem."}, {"role": "agent", "content": {"action": "call_multiple_tools", "summary": "Remote diagnostics complete. Modem is receiving full speed (102.5 Mbps).", "tool_names": ["run_line_test", "run_remote_speed_test"], "tool_outputs": [{"connection": "Stable", "line_quality": "Excellent", "status": "success"}, {"download_speed_mbps": 102.5, "status": "success", "upload_speed_mbps": 21.3}]}}, {"role": "environment", "content": [{"status": "success", "message": "Executed run_line_test"}, {"status": "success", "message": "Executed run_remote_speed_test"}], "state_before": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "state_after": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}, {"metric": "state_verification", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "task_start", "timestamp": "2026-03-12T22:07:37.555352Z", "task_id": "task-3", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:07:37.556277Z", "role": "user", "content": "Since the issue is likely with the customer's Wi-Fi, guide them to run a speed test on a device connected via Ethernet."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:07:37.556588Z", "turn": 1, "task_id": "task-3"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:07:37.819476Z", "step": 1, "response": {"action": "provide_instructions", "instructions": "Please connect your computer directly to the router with an Ethernet cable and run a speed test at example-speedtest.com."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:07:37.820055Z", "metric": "instructional_clarity", "value": 0.0, "attempt": 1}
+{"event": "evaluation", "timestamp": "2026-03-12T22:07:37.820800Z", "metric": "state_verification", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:07:37.821320Z", "task_id": "task-3", "results": {"task_id": "task-3", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Since the issue is likely with the customer's Wi-Fi, guide them to run a speed test on a device connected via Ethernet."}, {"role": "agent", "content": {"action": "provide_instructions", "instructions": "Please connect your computer directly to the router with an Ethernet cable and run a speed test at example-speedtest.com."}}], "metrics": [{"metric": "instructional_clarity", "score": 0.0, "threshold": 1.0, "success": false}, {"metric": "state_verification", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "task_start", "timestamp": "2026-03-12T22:07:37.821751Z", "task_id": "task-4", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:07:37.822681Z", "role": "user", "content": "Based on the local test results, recommend Wi-Fi optimization steps like changing the channel or moving the router."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:07:37.823702Z", "turn": 1, "task_id": "task-4"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:07:38.083840Z", "step": 1, "response": {"action": "call_tool", "summary": "The issue is likely with local Wi-Fi. I have provided a guide for optimization steps: http://example.com/wifi-help", "tool_name": "provide_wifi_optimization_guide", "tool_output": {"guide_url": "http://example.com/wifi-help", "status": "success"}, "tool_params": {"customer_id": "cust_123"}}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:07:38.088393Z", "step": 1, "tool": "provide_wifi_optimization_guide", "arguments": {"customer_id": "cust_123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:07:38.089063Z", "state": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:07:38.089434Z", "step": 1, "tool": "provide_wifi_optimization_guide", "result": {"status": "success", "message": "Executed provide_wifi_optimization_guide"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:07:38.094176Z", "turn": 2, "task_id": "task-4"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:07:38.363996Z", "step": 2, "response": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:07:38.366965Z", "metric": "problem_resolution_effectiveness", "value": 0.0, "attempt": 1}
+{"event": "evaluation", "timestamp": "2026-03-12T22:07:38.368775Z", "metric": "state_verification", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:07:38.370139Z", "task_id": "task-4", "results": {"task_id": "task-4", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Based on the local test results, recommend Wi-Fi optimization steps like changing the channel or moving the router."}, {"role": "agent", "content": {"action": "call_tool", "summary": "The issue is likely with local Wi-Fi. I have provided a guide for optimization steps: http://example.com/wifi-help", "tool_name": "provide_wifi_optimization_guide", "tool_output": {"guide_url": "http://example.com/wifi-help", "status": "success"}, "tool_params": {"customer_id": "cust_123"}}}, {"role": "environment", "content": {"status": "success", "message": "Executed provide_wifi_optimization_guide"}, "state_before": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "state_after": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "problem_resolution_effectiveness", "score": 0.0, "threshold": 1.0, "success": false}, {"metric": "state_verification", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:07:38.411088Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:09:21.411065Z", "run_id": "run-telecom-ts-13814-8364", "scenario": "telecom-ts-13814", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:09:21.429189Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:09:21.430492Z", "role": "user", "content": "Identify the customer and the speed tier of their internet plan."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:09:21.432500Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:09:21.715596Z", "step": 1, "response": {"action": "call_tool", "summary": "Identified customer Jane Doe on plan 100 Mbps Fiber.", "tool_name": "get_customer_details", "tool_output": {"customer_name": "Jane Doe", "plan": "100 Mbps Fiber", "status": "success"}, "tool_params": {"customer_id": "cust_123"}}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:09:21.724431Z", "step": 1, "tool": "get_customer_details", "arguments": {"customer_id": "cust_123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:09:21.726074Z", "state": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:09:21.727505Z", "step": 1, "tool": "get_customer_details", "result": {"status": "success", "message": "Executed get_customer_details"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:09:21.739360Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:09:22.008633Z", "step": 2, "response": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:09:22.011159Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "evaluation", "timestamp": "2026-03-12T22:09:22.013657Z", "metric": "state_verification", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:09:22.016321Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Identify the customer and the speed tier of their internet plan."}, {"role": "agent", "content": {"action": "call_tool", "summary": "Identified customer Jane Doe on plan 100 Mbps Fiber.", "tool_name": "get_customer_details", "tool_output": {"customer_name": "Jane Doe", "plan": "100 Mbps Fiber", "status": "success"}, "tool_params": {"customer_id": "cust_123"}}}, {"role": "environment", "content": {"status": "success", "message": "Executed get_customer_details"}, "state_before": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "state_after": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}, {"metric": "state_verification", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "task_start", "timestamp": "2026-03-12T22:09:22.019568Z", "task_id": "task-2", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:09:22.022850Z", "role": "user", "content": "Run a remote line test and a speed test to the customer's modem."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:09:22.025331Z", "turn": 1, "task_id": "task-2"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:09:22.305333Z", "step": 1, "response": {"action": "call_multiple_tools", "summary": "Remote diagnostics complete. Modem is receiving full speed (102.5 Mbps).", "tool_names": ["run_line_test", "run_remote_speed_test"], "tool_outputs": [{"connection": "Stable", "line_quality": "Excellent", "status": "success"}, {"download_speed_mbps": 102.5, "status": "success", "upload_speed_mbps": 21.3}]}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:09:22.307414Z", "step": 1, "tool": "run_line_test", "arguments": {}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:09:22.309264Z", "step": 1, "tool": "run_remote_speed_test", "arguments": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:09:22.325950Z", "state": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:09:22.327996Z", "step": 1, "tool": "run_line_test", "result": {"status": "success", "message": "Executed run_line_test"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:09:22.339965Z", "state": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:09:22.341822Z", "step": 1, "tool": "run_remote_speed_test", "result": {"status": "success", "message": "Executed run_remote_speed_test"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:09:22.354495Z", "turn": 2, "task_id": "task-2"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:09:22.636264Z", "step": 2, "response": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:09:22.638546Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "evaluation", "timestamp": "2026-03-12T22:09:22.640473Z", "metric": "state_verification", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:09:22.641473Z", "task_id": "task-2", "results": {"task_id": "task-2", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Run a remote line test and a speed test to the customer's modem."}, {"role": "agent", "content": {"action": "call_multiple_tools", "summary": "Remote diagnostics complete. Modem is receiving full speed (102.5 Mbps).", "tool_names": ["run_line_test", "run_remote_speed_test"], "tool_outputs": [{"connection": "Stable", "line_quality": "Excellent", "status": "success"}, {"download_speed_mbps": 102.5, "status": "success", "upload_speed_mbps": 21.3}]}}, {"role": "environment", "content": [{"status": "success", "message": "Executed run_line_test"}, {"status": "success", "message": "Executed run_remote_speed_test"}], "state_before": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "state_after": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}, {"metric": "state_verification", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "task_start", "timestamp": "2026-03-12T22:09:22.643275Z", "task_id": "task-3", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:09:22.644736Z", "role": "user", "content": "Since the issue is likely with the customer's Wi-Fi, guide them to run a speed test on a device connected via Ethernet."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:09:22.646105Z", "turn": 1, "task_id": "task-3"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:09:22.917711Z", "step": 1, "response": {"action": "provide_instructions", "instructions": "Please connect your computer directly to the router with an Ethernet cable and run a speed test at example-speedtest.com."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:09:22.920277Z", "metric": "instructional_clarity", "value": 0.0, "attempt": 1}
+{"event": "evaluation", "timestamp": "2026-03-12T22:09:22.923640Z", "metric": "state_verification", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:09:22.926388Z", "task_id": "task-3", "results": {"task_id": "task-3", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Since the issue is likely with the customer's Wi-Fi, guide them to run a speed test on a device connected via Ethernet."}, {"role": "agent", "content": {"action": "provide_instructions", "instructions": "Please connect your computer directly to the router with an Ethernet cable and run a speed test at example-speedtest.com."}}], "metrics": [{"metric": "instructional_clarity", "score": 0.0, "threshold": 1.0, "success": false}, {"metric": "state_verification", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "task_start", "timestamp": "2026-03-12T22:09:22.928344Z", "task_id": "task-4", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:09:22.930208Z", "role": "user", "content": "Based on the local test results, recommend Wi-Fi optimization steps like changing the channel or moving the router."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:09:22.932270Z", "turn": 1, "task_id": "task-4"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:09:23.220593Z", "step": 1, "response": {"action": "call_tool", "summary": "The issue is likely with local Wi-Fi. I have provided a guide for optimization steps: http://example.com/wifi-help", "tool_name": "provide_wifi_optimization_guide", "tool_output": {"guide_url": "http://example.com/wifi-help", "status": "success"}, "tool_params": {"customer_id": "cust_123"}}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:09:23.228009Z", "step": 1, "tool": "provide_wifi_optimization_guide", "arguments": {"customer_id": "cust_123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:09:23.228923Z", "state": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:09:23.229646Z", "step": 1, "tool": "provide_wifi_optimization_guide", "result": {"status": "success", "message": "Executed provide_wifi_optimization_guide"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:09:23.240104Z", "turn": 2, "task_id": "task-4"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:09:23.506370Z", "step": 2, "response": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:09:23.508965Z", "metric": "problem_resolution_effectiveness", "value": 0.0, "attempt": 1}
+{"event": "evaluation", "timestamp": "2026-03-12T22:09:23.511773Z", "metric": "state_verification", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:09:23.514211Z", "task_id": "task-4", "results": {"task_id": "task-4", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Based on the local test results, recommend Wi-Fi optimization steps like changing the channel or moving the router."}, {"role": "agent", "content": {"action": "call_tool", "summary": "The issue is likely with local Wi-Fi. I have provided a guide for optimization steps: http://example.com/wifi-help", "tool_name": "provide_wifi_optimization_guide", "tool_output": {"guide_url": "http://example.com/wifi-help", "status": "success"}, "tool_params": {"customer_id": "cust_123"}}}, {"role": "environment", "content": {"status": "success", "message": "Executed provide_wifi_optimization_guide"}, "state_before": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}, "state_after": {"session_active": true, "user_authenticated": true, "system_status": "nominal"}}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "problem_resolution_effectiveness", "score": 0.0, "threshold": 1.0, "success": false}, {"metric": "state_verification", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:09:23.569188Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:16:11.281956Z", "run_id": "run-test-scenario-8774", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:16:11.286382Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:16:11.286828Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:16:11.287137Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:16:11.289097Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:16:11.292450Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:16:11.292843Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:16:11.293125Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:16:11.298586Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:16:11.302895Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:16:11.303580Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:16:11.304009Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:16:11.308685Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:19:21.838537Z", "run_id": "run-test-scenario-8965", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:19:21.843073Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:19:21.843516Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:19:21.843859Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:19:21.846550Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:19:21.851887Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:19:21.852828Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:19:21.853576Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:19:21.859185Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:19:21.861130Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:19:21.861557Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:19:21.861910Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:19:21.868807Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:19:32.136339Z", "run_id": "run-test-scenario-8975", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:19:32.146709Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:19:32.148055Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:19:32.148560Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:19:32.154185Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:19:32.161222Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:19:32.162273Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:19:32.163185Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:19:32.174568Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:19:32.180215Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:19:32.181759Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:19:32.182386Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:19:32.189853Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:19:41.063463Z", "run_id": "run-test-scenario-8984", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:19:41.070826Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:19:41.071787Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:19:41.072240Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:19:41.075619Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:19:41.082648Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:19:41.083387Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:19:41.083741Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:19:41.088419Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:19:41.090477Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:19:41.090917Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:19:41.091260Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:19:41.095643Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:20:12.879538Z", "run_id": "run-test-scenario-9016", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:20:12.890762Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:20:12.891339Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:20:12.891682Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:20:12.894103Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:20:12.900330Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:20:12.901221Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:20:12.901538Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:20:12.907353Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:20:12.909933Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:20:12.910860Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:20:12.911639Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:20:12.919744Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:29:12.023194Z", "run_id": "run-test-scenario-9555", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:29:12.028047Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:29:12.028508Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:29:12.028823Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:29:12.030572Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:29:12.035396Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:29:12.035767Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:29:12.036081Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:29:12.039153Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:29:12.040890Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:29:12.041308Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:29:12.041660Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:29:12.046202Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:30:02.436999Z", "run_id": "run-test-scenario-9605", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:30:02.441609Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:30:02.442065Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:30:02.442388Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:30:02.444193Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:30:02.446152Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:30:02.446505Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:30:02.446798Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:30:02.449865Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:30:02.453475Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:30:02.454260Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:30:02.455060Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:30:02.464756Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:30:12.873961Z", "run_id": "run-test-scenario-9616", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:30:12.881111Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:30:12.881978Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:30:12.882700Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:30:12.887295Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:30:12.894872Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:30:12.895746Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:30:12.896424Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:30:12.903161Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:30:12.907466Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:30:12.908472Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:30:12.909253Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:30:12.915239Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:30:31.437587Z", "run_id": "run-test-scenario-9634", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:30:31.450347Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:30:31.451392Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:30:31.452300Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:30:31.458153Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:30:31.462119Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:30:31.463119Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:30:31.463817Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:30:31.474007Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:30:31.480004Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:30:31.481163Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:30:31.482141Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:30:31.494215Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:28.446880Z", "run_id": "run-test-scenario-9691", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:28.455112Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:28.456043Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:28.456779Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:28.460732Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:31:28.463016Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:31:28.463427Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:31:28.463720Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:28.466745Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:28.469157Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:28.469894Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:28.470453Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:28.477340Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.105418Z", "run_id": "run-test-scenario-9701", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.112305Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.113186Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.113990Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.119125Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:31:38.126130Z", "step": 1, "tool": "tool_a", "arguments": {"id": "123"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:31:38.127187Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:31:38.128041Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.138263Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.143956Z", "step": 2, "response": {"action": "final_answer", "summary": "Task complete."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.144987Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.145805Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {"id": "123"}, "summary": "Called tool_a."}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Task complete."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.155006Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.159403Z", "run_id": "run-test-scenario-9701", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.163706Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.164570Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.165344Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.169324Z", "step": 1, "response": {"action": "call_multiple_tools", "tool_names": ["tool_a", "tool_b"], "summary": "Ran both tools."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:31:38.169934Z", "step": 1, "tool": "tool_a", "arguments": {}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:31:38.170358Z", "step": 1, "tool": "tool_b", "arguments": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:31:38.175805Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:31:38.176786Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:31:38.182752Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:31:38.183854Z", "step": 1, "tool": "tool_b", "result": {"status": "success", "message": "Executed tool_b"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.190265Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.196320Z", "step": 2, "response": {"action": "final_answer", "summary": "All done."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.197468Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.198503Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_multiple_tools", "tool_names": ["tool_a", "tool_b"], "summary": "Ran both tools."}}, {"role": "environment", "content": [{"status": "success", "message": "Executed tool_a"}, {"status": "success", "message": "Executed tool_b"}], "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "All done."}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.209266Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.215297Z", "run_id": "run-test-scenario-9701", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.223165Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.224216Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.225115Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.231733Z", "step": 1, "response": {"action": "final_answer", "summary": "I already know the answer."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.232857Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.233764Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "final_answer", "summary": "I already know the answer."}}], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.243808Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.249393Z", "run_id": "run-test-scenario-9701", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.257072Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.258245Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.259243Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.266613Z", "step": 1, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {}, "summary": "Turn 0"}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:31:38.274297Z", "step": 1, "tool": "tool_a", "arguments": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:31:38.275486Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:31:38.276458Z", "step": 1, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.288179Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.295251Z", "step": 2, "response": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {}, "summary": "Turn 1"}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:31:38.301507Z", "step": 2, "tool": "tool_a", "arguments": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:31:38.302971Z", "state": {}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:31:38.304237Z", "step": 2, "tool": "tool_a", "result": {"status": "success", "message": "Executed tool_a"}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.316975Z", "metric": "tool_call_correctness", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.318189Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Do the thing."}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {}, "summary": "Turn 0"}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "tool_a", "tool_params": {}, "summary": "Turn 1"}}, {"role": "environment", "content": {"status": "success", "message": "Executed tool_a"}, "state_before": {}, "state_after": {}}], "metrics": [{"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.331138Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.337644Z", "run_id": "run-test-scenario-9701", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.345353Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.346590Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.347731Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-12T22:31:38.354399Z", "message": "Agent Error: Connection Error"}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.355821Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.356896Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 0, "conversation_history": [{"role": "user", "content": "Do the thing."}], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.369307Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.376957Z", "run_id": "run-test-scenario-9701", "scenario": "test-scenario", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.384789Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.386086Z", "role": "user", "content": "Do the thing."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.387295Z", "turn": 1, "task_id": "task-1"}
+{"event": "error", "timestamp": "2026-03-12T22:31:38.395064Z", "message": "Agent Error: "}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.396456Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.397536Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 0, "conversation_history": [{"role": "user", "content": "Do the thing."}], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.408970Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.415248Z", "run_id": "run-accuracy-test-9701", "scenario": "accuracy-test", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.423404Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.424668Z", "role": "user", "content": "Retrieve info."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.425357Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.431971Z", "step": 1, "response": {"action": "final_answer", "summary": "The customer is on the 100 Mbps plan."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.436505Z", "metric": "information_retrieval_accuracy", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.437762Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Retrieve info."}, {"role": "agent", "content": {"action": "final_answer", "summary": "The customer is on the 100 Mbps plan."}}], "metrics": [{"metric": "information_retrieval_accuracy", "score": 1.0, "threshold": 0.8, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.452284Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.459154Z", "run_id": "run-clarity-test-9701", "scenario": "clarity-test", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.466825Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.468059Z", "role": "user", "content": "Explain the issue."}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.469228Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.476765Z", "step": 1, "response": {"action": "final_answer", "summary": "The issue is with the customer's local Wi-Fi network."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.478426Z", "metric": "communication_clarity", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.479629Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Explain the issue."}, {"role": "agent", "content": {"action": "final_answer", "summary": "The issue is with the customer's local Wi-Fi network."}}], "metrics": [{"metric": "communication_clarity", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.493593Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.500192Z", "run_id": "run-policy-test-9701", "scenario": "policy-test", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.508466Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.509797Z", "role": "user", "content": ""}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.510981Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.518427Z", "step": 1, "response": {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 100}, "summary": "Trying refund."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:31:38.525929Z", "step": 1, "tool": "apply_refund", "arguments": {"amount": 100}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:31:38.527212Z", "step": 1, "tool": "apply_refund", "result": {"status": "policy_violation", "violation": "Amount 100 exceeds limit of 50"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.540218Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.547748Z", "step": 2, "response": {"action": "final_answer", "summary": "Limited the refund to 50."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.549179Z", "metric": "policy_compliance", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.550387Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": ""}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 100}, "summary": "Trying refund."}}, {"role": "environment", "content": {"status": "policy_violation", "violation": "Amount 100 exceeds limit of 50"}, "state_before": {}, "state_after": {}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Limited the refund to 50."}}], "metrics": [{"metric": "policy_compliance", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.563965Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.570929Z", "run_id": "run-state-test-9701", "scenario": "state-test", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.579220Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:38.580533Z", "role": "user", "content": ""}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.581570Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.588483Z", "step": 1, "response": {"action": "call_tool", "tool_name": "update_plan", "tool_params": {"current_plan": "Premium"}, "summary": "Updating plan."}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:31:38.596436Z", "step": 1, "tool": "update_plan", "arguments": {"current_plan": "Premium"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:31:38.597961Z", "state": {"current_plan": "Premium"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:31:38.598812Z", "step": 1, "tool": "update_plan", "result": {"status": "success"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.611728Z", "turn": 2, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:38.618741Z", "step": 2, "response": {"action": "final_answer", "summary": "Plan updated."}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:38.620412Z", "metric": "state_verification", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:38.621130Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": ""}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "update_plan", "tool_params": {"current_plan": "Premium"}, "summary": "Updating plan."}}, {"role": "environment", "content": {"status": "success"}, "state_before": {"current_plan": "Basic"}, "state_after": {"current_plan": "Premium"}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Plan updated."}}], "metrics": [{"metric": "state_verification", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:38.634397Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:38.892435Z", "run_id": "test-123"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:38.894525Z", "turn": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:38.898441Z", "task": "t1"}
+{"event": "custom_event", "timestamp": "2026-03-12T22:31:38.901435Z", "foo": "bar"}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:39.556844Z", "run_id": "run-test-k-9702", "scenario": "test-k", "k_attempts": 2}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:39.565268Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:39.566858Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:39.568327Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:39.577067Z", "step": 1, "response": {"action": "final_answer", "summary": "Success"}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:39.581807Z", "metric": "generic_accuracy", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:39.583251Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Do something"}, {"role": "agent", "content": {"action": "final_answer", "summary": "Success"}}], "metrics": [{"metric": "generic_accuracy", "score": 1.0, "threshold": 0.5, "success": true}]}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:39.584171Z", "task_id": "task-1", "attempt": 2}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:39.584928Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:39.585684Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:39.592666Z", "step": 1, "response": {"action": "final_answer", "summary": ""}}
+{"event": "evaluation", "timestamp": "2026-03-12T22:31:39.593778Z", "metric": "generic_accuracy", "value": 0.0, "attempt": 2}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:39.594400Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 2, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Do something"}, {"role": "agent", "content": {"action": "final_answer", "summary": ""}}], "metrics": [{"metric": "generic_accuracy", "score": 0.0, "threshold": 0.5, "success": false}]}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:39.617877Z", "pass_at_k": 0.5, "successful_attempts": 1, "total_attempts": 2}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:39.625190Z", "run_id": "run-test-consistency-9702", "scenario": "test-consistency", "k_attempts": 2}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:39.633374Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:39.635078Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:39.636789Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:39.644478Z", "step": 1, "response": {"action": "final_answer", "summary": "Identical result"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:39.645932Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Do something"}, {"role": "agent", "content": {"action": "final_answer", "summary": "Identical result"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:39.646592Z", "task_id": "task-1", "attempt": 2}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:39.647109Z", "role": "user", "content": "Do something"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:39.647606Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:39.654233Z", "step": 1, "response": {"action": "final_answer", "summary": "Identical result"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:39.655589Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 2, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Do something"}, {"role": "agent", "content": {"action": "final_answer", "summary": "Identical result"}}], "metrics": []}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:39.679030Z", "pass_at_k": 1.0, "successful_attempts": 2, "total_attempts": 2}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:31:39.700415Z", "state": {}, "shared_state": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:31:39.717027Z", "state": {}, "shared_state": {}}
+{"event": "run_start", "timestamp": "2026-03-12T22:31:54.235310Z", "run_id": "run-dos-test-9717", "scenario": "dos-test", "k_attempts": 50}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.241764Z", "task_id": "t1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.242746Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.243842Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.249082Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.253026Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.253496Z", "task_id": "t1", "attempt": 2}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.254287Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.254809Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.259464Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.259979Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 2, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.260348Z", "task_id": "t1", "attempt": 3}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.260699Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.261058Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.265954Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.266498Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 3, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.266933Z", "task_id": "t1", "attempt": 4}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.267256Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.267570Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.273585Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.274572Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 4, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.275496Z", "task_id": "t1", "attempt": 5}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.276463Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.277448Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.282407Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.283253Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 5, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.284148Z", "task_id": "t1", "attempt": 6}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.284589Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.284929Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.289828Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.290757Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 6, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.291707Z", "task_id": "t1", "attempt": 7}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.292625Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.293516Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.298726Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.299563Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 7, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.300351Z", "task_id": "t1", "attempt": 8}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.300848Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.301213Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.306067Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.306995Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 8, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.307846Z", "task_id": "t1", "attempt": 9}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.308690Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.309618Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.314700Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.315606Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 9, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.316516Z", "task_id": "t1", "attempt": 10}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.317275Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.317709Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.322753Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.323828Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 10, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.324579Z", "task_id": "t1", "attempt": 11}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.324957Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.325309Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.329918Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.330786Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 11, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.331659Z", "task_id": "t1", "attempt": 12}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.332470Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.333316Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.338912Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.339494Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 12, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.339865Z", "task_id": "t1", "attempt": 13}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.340174Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.340483Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.345572Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.346482Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 13, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.347341Z", "task_id": "t1", "attempt": 14}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.348180Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.348563Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.353235Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.354259Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 14, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.355182Z", "task_id": "t1", "attempt": 15}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.355624Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.355958Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.360452Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.361334Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 15, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.362134Z", "task_id": "t1", "attempt": 16}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.362867Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.363604Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.369301Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.370411Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 16, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.371418Z", "task_id": "t1", "attempt": 17}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.372280Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.372683Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.378222Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.379410Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 17, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.380367Z", "task_id": "t1", "attempt": 18}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.381329Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.381785Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.387739Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.388788Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 18, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.389873Z", "task_id": "t1", "attempt": 19}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.390780Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.391655Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.398181Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.399210Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 19, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.400154Z", "task_id": "t1", "attempt": 20}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.400958Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.401808Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.407237Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.408134Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 20, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.408962Z", "task_id": "t1", "attempt": 21}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.409765Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.410584Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.415962Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.416808Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 21, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.417690Z", "task_id": "t1", "attempt": 22}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.418506Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.419538Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.424797Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.425681Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 22, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.426543Z", "task_id": "t1", "attempt": 23}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.427367Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.427753Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.432315Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.433181Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 23, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.433997Z", "task_id": "t1", "attempt": 24}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.434704Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.435132Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.439974Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.440887Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 24, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.441794Z", "task_id": "t1", "attempt": 25}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.442675Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.443532Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.448625Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.449507Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 25, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.450349Z", "task_id": "t1", "attempt": 26}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.450911Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.451792Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.457100Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.457982Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 26, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.458842Z", "task_id": "t1", "attempt": 27}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.459774Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.460657Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.465856Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.466685Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 27, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.467451Z", "task_id": "t1", "attempt": 28}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.468290Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.469008Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.473672Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.474512Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 28, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.475486Z", "task_id": "t1", "attempt": 29}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.475930Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.476256Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.480683Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.481535Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 29, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.482336Z", "task_id": "t1", "attempt": 30}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.483290Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.484349Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.490144Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.491065Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 30, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.491933Z", "task_id": "t1", "attempt": 31}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.492714Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.493489Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.498549Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.499440Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 31, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.500167Z", "task_id": "t1", "attempt": 32}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.501374Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.501826Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.506408Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.507282Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 32, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.508006Z", "task_id": "t1", "attempt": 33}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.508877Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.509279Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.513769Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.514893Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 33, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.515941Z", "task_id": "t1", "attempt": 34}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.516439Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.516895Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.522237Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.523111Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 34, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.523602Z", "task_id": "t1", "attempt": 35}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.524452Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.524862Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.529136Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.529957Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 35, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.530696Z", "task_id": "t1", "attempt": 36}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.531625Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.532065Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.537479Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.538524Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 36, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.539345Z", "task_id": "t1", "attempt": 37}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.539801Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.540156Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.545011Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.545855Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 37, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.546707Z", "task_id": "t1", "attempt": 38}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.547482Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.548123Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.552929Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.553942Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 38, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.554787Z", "task_id": "t1", "attempt": 39}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.555608Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.556031Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.560615Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.561480Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 39, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.562389Z", "task_id": "t1", "attempt": 40}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.563181Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.564057Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.569112Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.569703Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 40, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.570089Z", "task_id": "t1", "attempt": 41}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.570386Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.570681Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.575550Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.576377Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 41, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.577122Z", "task_id": "t1", "attempt": 42}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.577942Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.578304Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.582665Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.583607Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 42, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.584509Z", "task_id": "t1", "attempt": 43}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.585305Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.585895Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.590406Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.591317Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 43, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.592119Z", "task_id": "t1", "attempt": 44}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.592875Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.593806Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.598583Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.599406Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 44, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.600202Z", "task_id": "t1", "attempt": 45}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.601041Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.601911Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.606976Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.607865Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 45, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.608629Z", "task_id": "t1", "attempt": 46}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.609467Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.610359Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.615342Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.615906Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 46, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.616274Z", "task_id": "t1", "attempt": 47}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.616682Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.617059Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.621461Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.622350Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 47, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.623146Z", "task_id": "t1", "attempt": 48}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.623968Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.624327Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.628714Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.629546Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 48, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.630265Z", "task_id": "t1", "attempt": 49}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.631089Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.631923Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.636546Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.637447Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 49, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.638338Z", "task_id": "t1", "attempt": 50}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.638790Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.639156Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.643228Z", "step": 1, "response": {"action": "final_answer", "summary": "ok"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.644052Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 50, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "final_answer", "summary": "ok"}}], "metrics": []}}
+{"event": "run_end", "timestamp": "2026-03-12T22:31:54.658777Z", "pass_at_k": 1.0, "successful_attempts": 50, "total_attempts": 50}
+{"event": "task_start", "timestamp": "2026-03-12T22:31:54.664048Z", "task_id": "t1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:31:54.664669Z", "role": "user", "content": "test"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:31:54.665071Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:31:54.669594Z", "step": 1, "response": {"action": "branch", "branches": [{"name": "b0", "message": "x"}, {"name": "b1", "message": "x"}, {"name": "b2", "message": "x"}, {"name": "b3", "message": "x"}, {"name": "b4", "message": "x"}, {"name": "b5", "message": "x"}]}}
+{"event": "error", "timestamp": "2026-03-12T22:31:54.670475Z", "message": "Fork Bomb Prevention: Breadth (6) exceeds max (5)."}
+{"event": "task_end", "timestamp": "2026-03-12T22:31:54.671321Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "test"}, {"role": "agent", "content": {"action": "branch", "branches": [{"name": "b0", "message": "x"}, {"name": "b1", "message": "x"}, {"name": "b2", "message": "x"}, {"name": "b3", "message": "x"}, {"name": "b4", "message": "x"}, {"name": "b5", "message": "x"}]}}], "metrics": []}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:32:04.727763Z", "state": {}, "shared_state": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:32:04.729492Z", "state": {}, "shared_state": {}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:32:04.732451Z", "state": {"current_plan": "Premium"}, "shared_state": {}}
+{"event": "run_start", "timestamp": "2026-03-12T22:32:04.737431Z", "run_id": "run-test_m4-9727", "scenario": "test_m4", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T22:32:04.739900Z", "task_id": "t1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T22:32:04.740290Z", "role": "user", "content": "Call update_status"}
+{"event": "turn_start", "timestamp": "2026-03-12T22:32:04.740602Z", "turn": 1, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:32:04.742255Z", "step": 1, "response": {"action": "call_tool", "tool_name": "update_status", "tool_params": {"status": "active"}}}
+{"event": "tool_call", "timestamp": "2026-03-12T22:32:04.746991Z", "step": 1, "tool": "update_status", "arguments": {"status": "active"}}
+{"event": "world_state_change", "timestamp": "2026-03-12T22:32:04.747347Z", "state": {"status": "active"}, "shared_state": {}}
+{"event": "tool_result", "timestamp": "2026-03-12T22:32:04.747625Z", "step": 1, "tool": "update_status", "result": {"status": "success"}}
+{"event": "turn_start", "timestamp": "2026-03-12T22:32:04.751027Z", "turn": 2, "task_id": "t1"}
+{"event": "agent_response", "timestamp": "2026-03-12T22:32:04.754750Z", "step": 2, "response": {"action": "final_answer", "summary": "Done"}}
+{"event": "task_end", "timestamp": "2026-03-12T22:32:04.755318Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 1, "turns_taken": 2, "conversation_history": [{"role": "user", "content": "Call update_status"}, {"role": "agent", "content": {"action": "call_tool", "tool_name": "update_status", "tool_params": {"status": "active"}}}, {"role": "environment", "content": {"status": "success"}, "state_before": {"status": "idle"}, "state_after": {"status": "active"}}, {"role": "agent", "content": {"action": "final_answer", "summary": "Done"}}], "metrics": []}}
+{"event": "run_end", "timestamp": "2026-03-12T22:32:04.759960Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}
