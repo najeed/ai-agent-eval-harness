@@ -1,3 +1,5 @@
+import os
+import aiohttp
 from typing import Dict, Any
 from ..plugins import BaseEvalPlugin
 from .. import config

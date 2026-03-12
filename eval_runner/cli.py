@@ -657,7 +657,7 @@ def handle_init(_):
         api_url = config.AGENT_API_URL
         
     # Generate eval_config.json
-    config = {
+    scaffold_config = {
         "project_name": "My AI Agent Eval",
         "industry": industry,
         "framework": framework,
@@ -666,7 +666,7 @@ def handle_init(_):
     
     config_path = Path("eval_config.json")
     with open(config_path, "w") as f:
-        json.dump(config, f, indent=2)
+        json.dump(scaffold_config, f, indent=2)
     
     # Create agent_adapter.py template
     adapter_content = """import asyncio

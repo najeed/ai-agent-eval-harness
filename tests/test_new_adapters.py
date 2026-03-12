@@ -1,8 +1,8 @@
 import pytest
 import os
 from unittest.mock import AsyncMock, patch
-from eval_runner.adapters.autogen import AutoGenAdapter
-from eval_runner.adapters.grok import GrokAdapter
+from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+from eval_runner.adapters.grok import GrokAdapterPlugin
 
 @pytest.mark.asyncio
 async def test_autogen_adapter():
