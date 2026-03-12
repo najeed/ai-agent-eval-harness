@@ -175,20 +175,20 @@ Beyond the Visionary suite, the harness provides a robust toolkit for profession
 
 ## 🖥️ Web Admin Console (Native GUI)
 
-The harness includes a comprehensive **React Native (Expo)** Admin Console that simplifies management of scenarios, runs, and visual debugging.
+The harness includes a unified **React-powered SPA** Admin Console that simplifies management of scenarios, runs, and visual debugging across all industries.
 
-**Features:**
-- **Scenario Explorer**: Browse the catalog with faceted filters and view real-time **Quality Badges** (Lint scores).
-- **Scenario Editor**: Visual drag-and-drop AES construction logic.
-- **Secure Handoff**: JWT-authenticated access to Enterprise plugin views.
-- **Dual-Mode Rendering**: Adaptive UI rendering (Native SDUI vs. Secure WebView).
-- **Flight Recorder**: Interactive trace analysis and replay.
+**Key Feature Hubs:**
+- **Scenario Explorer**: Browse the catalog with faceted filters, global search, and real-time **Quality Badges** (Lint scores).
+- **Visual AES Builder**: Construction of complex agentic evaluation sequences using a drag-and-drop node logic—outputs production-ready JSON.
+- **Reports & Traces Hub**: Historical execution timeline with detailed analysis and instant "View Report" navigation.
+- **Interactive Visual Debugger**: Real-time trajectory playback, state inspection, and trace export (JSON) for regression testing.
+- **Documentation Hub**: Categorized access to all Markdown guides, architectural diagrams, and API references.
 
-**Launch:**
+**Quick Launch:**
 ```bash
-eval-harness console --port 5000
+eval-harness console
 ```
-*Access via browser at `http://localhost:5000` or build as a mobile app via Expo.*
+*Access via browser at `http://localhost:5000`. The console features an adaptive, premium dark-mode UI with high-density data visualizations.*
 
 ### Running Tests
 

@@ -86,3 +86,29 @@ def test_plugin_blueprint_registration(client):
     response = client.get("/api/mock/status")
     assert response.status_code == 200
     assert response.get_json()["status"] == "active"
+
+def test_evaluate_endpoint(client):
+    """Test that the evaluation endpoint is functional."""
+    response = client.post("/api/evaluate", json={"path": "scenarios/generic.yaml"})
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["status"] == "queued"
+    
+    # Test error case
+    response = client.post("/api/evaluate", json={})
+    assert response.status_code == 400
+
+def test_docs_uniqueness(client):
+    """Ensure that the /api/docs endpoint does not contain duplicate entries."""
+    response = client.get("/api/docs")
+    assert response.status_code == 200
+    data = response.get_json()
+    doc_ids = [d["id"] for d in data["docs"]]
+    assert len(doc_ids) == len(set(doc_ids))
+
+def test_catchall_route(client):
+    """Ensure that valid navigation paths serve the index.html (SPA)."""
+    for path in ["/", "/scenarios", "/reports", "/editor", "/debugger", "/docs", "/docs/api"]:
+        response = client.get(path)
+        assert response.status_code == 200
+        assert b"<!DOCTYPE html>" in response.data

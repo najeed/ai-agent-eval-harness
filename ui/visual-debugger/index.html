@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Visual Debugger</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <title>OpenCore Admin Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b0e14; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
 </head>
-<body class="bg-[#0f172a] text-slate-200 min-h-screen font-sans">
-    <div id="root"></div>
+<body class="text-slate-300 min-h-screen overflow-hidden">
+    <div id="root" class="h-screen flex overflow-hidden font-sans">
+        <div class="flex-1 flex items-center justify-center">
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-slate-500 font-medium animate-pulse">Initializing OpenCore Console...</p>
+            </div>
+        </div>
+    </div>
 
-    <!-- For demo purposes, we embed the data and components in script tags -->
-    <script type="text/babel">
-        // Import components would normally happen here
-        // We will inject the logic in App.jsx
-    </script>
-    <script type="text/babel" data-presets="react" src="App.jsx"></script>
+    <!-- Load the main application logic -->
+    <script type="text/babel" data-presets="react" src="/App.jsx"></script>
 </body>
 </html>

@@ -11,6 +11,7 @@ def register_core_routes(app, nav_registry):
         {"id": "dashboard", "title": "Dashboard", "path": "/", "icon": "home", "type": "internal"},
         {"id": "scenarios", "title": "Scenarios", "path": "/scenarios", "icon": "file-text", "type": "internal"},
         {"id": "reports", "title": "Reports & Traces", "path": "/reports", "icon": "bar-chart-2", "type": "internal"},
+        {"id": "editor", "title": "Scenario Editor", "path": "/editor", "icon": "file-text", "type": "internal"},
         {"id": "debugger", "title": "Visual Debugger", "path": "/debugger", "icon": "activity", "type": "internal"},
         {"id": "docs", "title": "Documentation", "path": "/docs", "icon": "book", "type": "internal"},
         {"id": "api_docs", "title": "API Reference", "path": "/docs/api", "icon": "box", "type": "internal"},
@@ -91,19 +92,25 @@ def get_debugger_state():
 def list_docs():
     """Retrieve available documentation guides and API reference."""
     docs = []
+    seen_ids = set()
     base = Path("docs")
     
-    # Standard Markdown Guides
-    for file in base.rglob("*.md"):
-        # Exclude internal or template folders if necessary
-        if ".github" in str(file): continue
-        docs.append({"id": str(file.relative_to(base)), "title": file.stem, "category": "Guide"})
-        
-    # Check for auto-generated API docs (e.g., in docs/api/)
+    # Check for auto-generated API docs first to give them priority/specific category
     api_base = base / "api"
     if api_base.exists() and api_base.is_dir():
         for file in api_base.rglob("*.md"):
-            docs.append({"id": str(file.relative_to(base)), "title": f"API: {file.stem}", "category": "API Reference"})
+            doc_id = str(file.relative_to(base))
+            if doc_id not in seen_ids:
+                docs.append({"id": doc_id, "title": f"API: {file.stem}", "category": "API Reference"})
+                seen_ids.add(doc_id)
+            
+    # Standard Markdown Guides (remaining ones)
+    for file in base.rglob("*.md"):
+        if ".github" in str(file): continue
+        doc_id = str(file.relative_to(base))
+        if doc_id not in seen_ids:
+            docs.append({"id": doc_id, "title": file.stem, "category": "Guide"})
+            seen_ids.add(doc_id)
             
     return jsonify({"docs": docs})
 

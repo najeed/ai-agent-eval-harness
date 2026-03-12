@@ -1,15 +1,26 @@
-from flask import Flask
+import os
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from .routes import register_core_routes
 from .auth import auth_bp
 from eval_runner.plugins import manager
 
 def create_app():
-    app = Flask(__name__)
+    # Set static_folder to the visual debugger UI directory
+    ui_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "ui", "visual-debugger"))
+    app = Flask(__name__, static_folder=ui_path, static_url_path='')
     CORS(app)
     app.register_blueprint(auth_bp)
     
-    
+    @app.route("/")
+    @app.route("/scenarios")
+    @app.route("/reports")
+    @app.route("/editor")
+    @app.route("/debugger")
+    @app.route("/docs")
+    @app.route("/docs/api")
+    def index():
+        return send_from_directory(app.static_folder, "index.html")
     # Core navigation registry
     nav_registry = []
     
