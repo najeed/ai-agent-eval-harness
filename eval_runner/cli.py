@@ -57,6 +57,15 @@ def main():
     eval_parser.add_argument(
         "--master-log", action="store_true", default=None, help="Append all events to a master run.jsonl"
     )
+    eval_parser.add_argument(
+        "--protocol", default="http", choices=["http", "local", "socket"], help="Communication protocol for the agent"
+    )
+    eval_parser.add_argument(
+        "--agent-cmd", help="Command to run the local agent (for protocol=local)"
+    )
+    eval_parser.add_argument(
+        "--agent-socket", help="Socket address (unix:/path or tcp:host:port) (for protocol=socket)"
+    )
     
     # --- LIST COMMAND ---
     list_parser = subparsers.add_parser("list", help="List and search available scenarios")
@@ -439,6 +448,11 @@ async def run_evaluate(args):
         os.environ["RUN_LOG_PER_RUN"] = "true" if args.per_run_logs else "false"
     if args.master_log is not None:
         os.environ["RUN_LOG_MASTER"] = "true" if args.master_log else "false"
+    
+    if args.protocol == "local" and args.agent_cmd:
+        os.environ["AGENT_LOCAL_CMD"] = args.agent_cmd
+    if args.protocol == "socket" and args.agent_socket:
+        os.environ["AGENT_SOCKET_ADDR"] = args.agent_socket
 
     try:
         path_obj = Path(args.path)
@@ -461,7 +475,11 @@ async def run_evaluate(args):
         
         for attempt in range(attempts):
             print(f"\n[{i+1}/{len(scenarios)}] Attempt {attempt+1}/{attempts} - Scenario: {scenario.get('title', 'Untitled')}")
-            results = await engine.run_evaluation(scenario, metadata={"args": args})
+            # Ensure protocol is passed to engine
+            results = await engine.run_evaluation(scenario, metadata={
+                "args": args,
+                "protocol": args.protocol
+            })
             scenario_tries.append(results)
             
             # Results are now handled by ReportingPlugin via engine hooks

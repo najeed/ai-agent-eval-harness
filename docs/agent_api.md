@@ -104,6 +104,34 @@ Turn 2: Harness → Agent: "GOVERNANCE ERROR: Amount 100 exceeds maximum allowed
 
 ---
 
+## 💻 Local Subprocess Protocol
+
+When using `--protocol local`, the harness communicates via **Standard I/O**.
+
+1.  **Request**: Harness writes a single-line JSON payload to the agent's `stdin`.
+2.  **Response**: Agent must write a single-line JSON response to `stdout`.
+3.  **Logs**: Anything the agent writes to `stderr` is captured and emitted as an engine log.
+
+### Example Agent (Python)
+```python
+import sys, json
+for line in sys.stdin:
+    payload = json.loads(line)
+    # Process...
+    print(json.dumps({"action": "final_answer", "summary": "Done"}))
+    sys.stdout.flush()
+```
+
+## 🔌 Socket Protocol
+
+When using `--protocol socket`, the harness opens a persistent connection:
+-   **TCP**: `host:port`
+-   **Unix**: `/path/to/socket`
+
+Payloads are exchanged as JSON strings followed by a newline `\n`.
+
+---
+
 ## 🔗 Ecosystem Hub Payloads
 When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harness transparently maps the AES scenario into specific provider payloads. The return object follows the same `action` structure as the standard POST request.
 

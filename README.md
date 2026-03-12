@@ -68,8 +68,9 @@ The harness is organized into the following key components:
 
 -   **Python 3.8+**
 -   **pip**
--   **Ollama (optional, for Local LLM Evaluation)**:
-    -   Download from [ollama.com](https://ollama.com).
+-   **Docker & Docker Compose (optional, for Lab Mode)**:
+    -   **Windows/Mac**: Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+    -   **Linux**: Install [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 > [!IMPORTANT]
 > ### 🚀 60-Second Quickstart (Get Running Now)
@@ -97,7 +98,7 @@ The harness is organized into the following key components:
 > [!TIP]
 > **Prefer a visual experience?** After running the quickstart, launch the **Admin Console** to replay the trace interactively: `eval-harness console`.
 
-*(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker-compose up --build`.
+*(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker compose up --build`. If you don't have Docker, you can run services manually (see [Troubleshooting](#-troubleshooting)).
 
 ### 🛠 Manual Evaluation (Running the Sample Agent)
 
@@ -110,10 +111,29 @@ The harness is organized into the following key components:
     set AGENT_API_URL=http://localhost:5001/execute_task   # Windows
     export AGENT_API_URL=http://localhost:5001/execute_task # Mac/Linux
     ```
-3.  **Run Batch Evaluation**: 
+3.  **Run Evaluation**: 
     ```bash
+    # Standard HTTP (default)
     eval-harness evaluate --path industries/telecom
+
+    # Local Subprocess (stdin/stdout)
+    eval-harness evaluate --path industries/telecom --protocol local --agent-cmd "python my_agent.py"
+
+    # Socket (TCP/Unix)
+    eval-harness evaluate --path industries/telecom --protocol socket --agent-socket "localhost:9000"
     ```
+
+---
+
+## 📡 Agent Communication Protocols
+
+The harness supports multiple ways to talk to your agent, enabling seamless integration with local scripts, legacy binaries, or remote services.
+
+| Protocol | Description | Configuration Flag | Env Variable |
+| :--- | :--- | :--- | :--- |
+| **HTTP** | Standard REST API (POST) | `(default)` | `AGENT_API_URL` |
+| **Local** | Local process via stdin/stdout | `--agent-cmd` | `AGENT_LOCAL_CMD` |
+| **Socket** | TCP or Unix Domain Socket | `--agent-socket` | `AGENT_SOCKET_ADDR` |
 
 ---
 
@@ -200,7 +220,9 @@ pytest tests/ -v -p no:plugin_gateway
 
 | Variable | Default | Description |
 |---|---|---|
-| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint URL |
+| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint URL (HTTP) |
+| `AGENT_LOCAL_CMD` | *(None)* | Command for local agent execution |
+| `AGENT_SOCKET_ADDR` | *(None)* | Address/Path for socket agent |
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
 | `OPENAI_API_KEY` | *(None)* | Required if using LLM-as-a-Judge metrics |
 
@@ -222,6 +244,12 @@ All evaluation execution logs are appended to `runs/run.jsonl`. Because this act
 - **`GoException: no routes for location`**: Occurs in the Flutter UI dashboard if the router isn't rebuilt. Re-run `flutter pub run build_runner build`.
 - **`PluginTimeoutError`**: A registered plugin took too long to execute a hook. Check your plugin logic or increase the timeout.
 - **`Invalid JSON Error (LLM)`**: The `auto-translate` command expects strict JSON. Ensure your local Ollama model (e.g., `llama3`) is running and capable of JSON mode.
+- **`docker: command not found`**: You need to install Docker. Follow the [Official Installation Guide](https://docs.docker.com/get-docker/).
+- **Running Lab Mode without Docker**:
+    If you cannot install Docker, run these 3 commands in separate terminals:
+    1. `python sample_agent/agent_app.py`
+    2. `eval-harness console`
+    3. `streamlit run dashboard/app.py` (requires `pip install streamlit`)
 
 ## How to Contribute
 

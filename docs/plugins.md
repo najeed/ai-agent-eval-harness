@@ -76,16 +76,16 @@ class MyReportPlugin(BaseEvalPlugin):
 
 Usage: `eval-harness plugin myreport generate --format html`
 
-## Extending the Admin Console GUI (Native SDUI & Secure WebView)
+## Extending the Admin Console GUI (Unified React SPA)
 
-Plugins can inject high-fidelity UIs into the `eval-harness console` using the **Secure Handoff Architecture**. This ensures Enterprise-grade security while maintaining a "Zero-Touch" core.
+Plugins can inject custom views and navigation links into the `eval-harness console` using the **Secure Handoff Architecture**. This ensures Enterprise-grade security while maintaining a "Zero-Touch" core.
 
 ### 1. Registering the Navigation Link
-You must specify the `type: "plugin"` in the `nav_registry` to trigger the secure JWT handoff.
+The `on_register_console_routes` hook allows you to append items to the `nav_registry`. The console will automatically render these in the sidebar.
 
 ### 2. Implementation Modes
-- **Mode A (Native)**: Return JSON to let the console render it with premium native components.
-- **Mode B (Web)**: Return HTML/JS to render inside a secure WebView.
+- **Mode A (JSON)**: Return a structured JSON spec that the console renders using premium React components.
+- **Mode B (External)**: Register external links or documentation paths.
 
 ```python
 from flask import Blueprint, jsonify
@@ -107,7 +107,7 @@ class AuditPlugin(BaseEvalPlugin):
         @bp.route("/api/plugin/audit")
         @handoff_required # Mandatory for Enterprise security
         def get_audit():
-            # Returning JSON triggers Mode A (Native Rendering)
+            # Returning JSON triggers Mode A
             return jsonify({
                 "title": "Audit Dashboard",
                 "items": [{"label": "Status", "value": "Secure"}]
@@ -142,7 +142,7 @@ class SentimentMetricPlugin(BaseEvalPlugin):
 Phase 6 and 7 introduced high-level automation tools that leverage the plugin system and event bus:
 - **`explain <run.jsonl>`**: Uses heuristic pattern matching (expandable via plugins) to diagnose agent failures.
 - **`analyze <url>`**: Scans agent codebases; plugins can register new "Tool Signature" detectors to improve scanning accuracy.
-- **Visual Scenario Editor**: A drag-and-drop React Native UI for building AES logic, accessible via the Admin Console.
+- **Visual AES Builder**: A drag-and-drop integrated logic builder for complex AES flows, accessible via the Admin Console.
 
 ## Registering Plugins
 

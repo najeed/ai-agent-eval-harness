@@ -17,7 +17,7 @@ async def test_pass_at_k_protocol():
     
     # Mock agent to succeed in 1 out of 2 attempts
     attempt_count = 0
-    async def mock_agent_call(payload): # Remove cls here
+    async def mock_agent_call(payload, protocol="http", endpoint=None): 
         nonlocal attempt_count
         attempt_count += 1
         if attempt_count == 1:
@@ -54,7 +54,7 @@ async def test_consistency_score_integration():
     }
     
     # Mock agent to give same answer twice
-    async def mock_agent_call(payload):
+    async def mock_agent_call(payload, protocol="http", endpoint=None):
         return {"action": "final_answer", "summary": "Identical result"}
             
     with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", side_effect=mock_agent_call):

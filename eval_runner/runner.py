@@ -48,7 +48,7 @@ class DefaultRunner(BaseRunner):
         all_attempt_results = []
         
         for k in range(1, attempts + 1):
-            session = SessionManager(scenario)
+            session = SessionManager(scenario, metadata=ctx.metadata)
             attempt_results = await session.execute_tasks(k)
             all_attempt_results.append(attempt_results)
 

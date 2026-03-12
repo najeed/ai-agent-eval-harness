@@ -44,6 +44,7 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 │  • coverage/: HTML grounding heatmaps                                       │
 │  • catalog/: Optimized scenario indexing and faceted search                 │
 │  • linter/: AES compliance and quality scoring logic                        │
+│  • dashboard/: SPA Frontend (Unified React Admin Console)                   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -53,7 +54,8 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 |--------|------|---------|
 | CLI | `eval_runner/cli.py` | Universal entry-point (`replay`, `aes`, `console`) |
 | Loader | `eval_runner/loader.py` | Multi-format dataset ingestion and v2.0 schema validation |
-| Admin Console | `eval_runner/console/` & `admin-console/` | Flask proxy API and React Native Expo GUI for visual execution tracing |
+| Adapters | `eval_runner/adapters.py` | Native communication shims (HTTP, Local, Sockets) |
+| Admin Console | `eval_runner/console/` & `ui/` | Flask proxy API and Unified React SPA for visual execution tracing |
 ### `EventEmitter` Bus: Passive Observation
 The core engine is built around a central `EventEmitter` (see `eval_runner/events.py`). Every state transition in the harness - from the start of a run to a tool call or an agent response - is emitted as an event. This allows plugins to observe the system's behavior without modifying the core logic.
 
@@ -113,7 +115,8 @@ Phase 2 focuses on operationalizing evaluation data:
 Phase 3 introduces advanced orchestration capabilities for research and complex production replay:
 - **Native HITL (Human-In-The-Loop)**: The `human` adapter allows scenarios to pause and wait for human intervention. This is integrated directly into the `SessionManager` loop, emitting `HITL_PAUSE` and `HITL_RESUME` events.
 - **Non-Linear Trajectories**: `SessionManager.fork()` enables creators to explore multiple agent paths from a single checkpoint. This is essential for studying agent decision-making under ambiguity.
-- **Advanced Adapter Discovery**: The `AgentAdapterRegistry` now supports plugin-driven discovery. External plugins can register custom protocols (e.g., `mock_proto`, `proprietary_rpc`) using the `on_discover_adapters` hook.
+- **Universal Agent Adapters**: The `AgentAdapterRegistry` allows switching between `http`, `local` (subprocess), and `socket` protocols. High-level metadata is propagated from the CLI to ensure the correct communication shim is used without scenario-level changes.
+- **Advanced Adapter Discovery**: The registry supports plugin-driven discovery. External plugins can register custom protocols (e.g., `mock_proto`, `proprietary_rpc`) using the `on_discover_adapters` hook.
 - **Scenario Catalog & Intelligence**: A centralized indexer (`catalog.py`) enables high-performance discovery across thousands of scenarios. It supports faceted search (industry, difficulty, tags) and powers the Admin Console "Scenario Explorer".
 - **AES Quality Linter**: The `linter.py` module implements automated quality scoring, ensuring scenarios have required metadata, balanced task counts, and no duplicates.
 
@@ -159,16 +162,16 @@ The following mitigations are enforced at the core level:
 | 6 | Fork Bomb | `MAX_FORK_DEPTH = 3`, `MAX_FORK_BREADTH = 5` enforced in `SessionManager` | `session.py` |
 | 7 | RCE via Repro Scripts | Scripts output as inert `.txt`; `os.system`/`subprocess` strings stripped | `reporting_plugin.py` |
 | 8 | Prototype Pollution | `EvaluationContext`/`TurnContext` are `frozen` dataclasses; nested dicts wrapped in `MappingProxyType`; history stored as `tuple` | `context.py` |
-| 9 | Plugin GUI Hijacking | JWT-based **Secure Handoff** (60s tokens) for all Enterprise routes | `auth.py`, `_layout.tsx` |
+| 9 | Plugin GUI Hijacking | JWT-based **Secure Handoff** (60s tokens) for all Enterprise routes | `auth.py`, `App.jsx` |
 
 ## Secure GUI Handoff Architecture
 
 The Admin Console uses a **Token-Exchange Protocol** to ensure Enterprise features are never exposed to unauthorized web requests:
 
 1. **Discovery**: The Flask backend exposes core and plugin routes via `/api/nav` with metadata (`type: internal | external | plugin`).
-2. **Handoff**: When a `plugin` link is clicked, the Expo app fetches a single-use JWT from `/api/auth/handoff`.
+2. **Handoff**: When a `plugin` link is clicked, the React SPA fetches a single-use JWT from `/api/auth/handoff`.
 3. **Validation**: The plugin route verifies the JWT via the `@handoff_required` decorator.
 4. **Adaptive Rendering**: 
-   - **Mode A (Native)**: Renders JSON specs using the console's premium Design System.
-   - **Mode B (WebView)**: Renders custom HTML inside an authenticated container.
+   - **Mode A (JSON)**: Renders structured layouts using the console's premium Design System.
+   - **Mode B (External)**: Navigates to or embeds external documentation and community links.
 

@@ -34,25 +34,6 @@ RUN_LOG_PER_RUN = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
 RUN_LOG_MASTER = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
 RUN_LOG_ROTATE_COUNT = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))  # 0 means no rotation
 
-def rotate_logs(log_dir: Path, max_files: int):
-    """Keeps only the latest N run-<id>.jsonl files in the log directory."""
-    if max_files <= 0:
-        return
-    
-    run_files = sorted(
-        log_dir.glob("run-*.jsonl"),
-        key=lambda x: x.stat().st_mtime,
-        reverse=True
-    )
-    
-    if len(run_files) >= max_files:
-        for old_file in run_files[max_files - 1:]:
-            try:
-                old_file.unlink()
-                print(f"      [Engine] Rotated old log: {old_file.name}")
-            except Exception as e:
-                print(f"      [Engine] Error rotating log {old_file}: {e}")
-
 # Dynamic Adapter Registry for Agent Communication
 class AgentAdapterRegistry:
     _adapters: Dict[str, Callable] = {}
@@ -67,6 +48,13 @@ class AgentAdapterRegistry:
         """Triggers plugin-based discovery of adapters."""
         if cls._discovered:
             return
+        
+        # Load standard adapters
+        from . import adapters
+        cls.register("http", adapters.http_adapter)
+        cls.register("local", adapters.local_subprocess_adapter)
+        cls.register("socket", adapters.socket_adapter)
+
         plugins.manager.trigger("on_discover_adapters", cls)
         
         # Register default human adapter if not already registered
@@ -82,18 +70,25 @@ class AgentAdapterRegistry:
         return {"action": "hitl_pause", "message": "Waiting for human intervention."}
         
     @classmethod
-    async def call_agent(cls, payload: dict, protocol="http"):
+    async def call_agent(cls, payload: dict, protocol="http", endpoint: Optional[str] = None):
         cls._discover()
         adapter = cls._adapters.get(protocol)
-        if adapter:
-            return await adapter(payload)
-        # Default HTTP implementation
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                AGENT_API_URL, json=payload, timeout=aiohttp.ClientTimeout(total=10)
-            ) as response:
-                response.raise_for_status()
-                return await response.json()
+        if not adapter:
+            raise ValueError(f"No adapter registered for protocol: {protocol}")
+        
+        # Use provided endpoint or fall back to defaults
+        if not endpoint:
+            if protocol == "http":
+                endpoint = AGENT_API_URL
+            elif protocol == "local":
+                endpoint = os.getenv("AGENT_LOCAL_CMD")
+            elif protocol == "socket":
+                endpoint = os.getenv("AGENT_SOCKET_ADDR")
+
+        if not endpoint:
+            raise ValueError(f"No endpoint/command provided for protocol '{protocol}'")
+
+        return await adapter(payload, endpoint)
 
 async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[dict] = None) -> list:
     """Entry point for evaluation. Delegates to the Runner strategy."""

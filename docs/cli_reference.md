@@ -10,8 +10,11 @@ Run evaluations on one or more scenarios.
 eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 ```
 - `--path`: Path to a single Scenario JSON file or a directory containing scenarios.
-- `--attempts`: Number of attempts per scenario (for pass@k and consistency metrics). Default is 1.
+- `--attempts`: Number of attempts per scenario.
 - `--limit`: Max number of scenarios to run.
+- `--protocol`: Agent protocol (`http`, `local`, `socket`).
+- `--agent-cmd`: Shell command for `local` protocol.
+- `--agent-socket`: Socket address (e.g., `localhost:9000`) or path for `socket` protocol.
 - `--format`: Dataset format (`jsonl` or `csv`).
 
 ### `run`
@@ -142,7 +145,11 @@ eval-harness record [--agent <url>]
 ## Utilities
 
 ### `console`
-Launch the Web Admin Console backend API and React Native Expo dashboard. This serves the REST API at port `5000` (by default) for interactive visual management of traces, scenarios, and live debugging via the Expo Frontend.
+Launch the Web Admin Console backend API and Unified React SPA. This serves the REST API at port `5000` (by default) for interactive visual management of traces, scenarios, and live debugging via the high-density React Dashboard. The console provides:
+- **Scenario Explorer**: Browse the catalog with faceted filters and global search.
+- **Visual AES Builder**: Drag-and-drop integrated logic builder for complex flows.
+- **Reports & Traces**: Historical execution timeline with detailed analysis and instant "View Report" navigation.
+- **Visual Debugger**: Real-time trajectory playback with interactive state inspection and trace export.
 ```bash
 eval-harness console [--host 127.0.0.1] [--port 5000]
 ```

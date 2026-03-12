@@ -23,9 +23,10 @@ MAX_FORK_BREADTH = 5
 class SessionManager:
     """Manages a single evaluation attempt's lifecycle."""
 
-    def __init__(self, scenario: dict):
+    def __init__(self, scenario: dict, metadata: Optional[dict] = None):
         from .engine import MAX_TURNS
         self.scenario = scenario
+        self.metadata = metadata or {}
         self.max_turns = int(scenario.get("max_turns", MAX_TURNS))
         self.fork_depth = scenario.get("_fork_depth", 0)
 
@@ -66,7 +67,9 @@ class SessionManager:
                             "turn": turn_ctx.turn_number,
                             "conversation_history": turn_ctx.history,
                         }
-                        agent_response = await AgentAdapterRegistry.call_agent(payload)
+                        
+                        protocol = self.metadata.get("protocol", "http")
+                        agent_response = await AgentAdapterRegistry.call_agent(payload, protocol=protocol)
                         turns_taken += 1
                         # Support immutable TurnContext
                         turn_ctx = replace(turn_ctx, agent_response=agent_response)

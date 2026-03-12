@@ -45,10 +45,11 @@ A task is only considered successful if **all** of its success criteria are met.
 
 ## Visual Evaluation & Debugging (Admin Console)
 
-Beyond the CLI, the harness provides a **React Native Admin Console** for visual management:
-- **Scenario Explorer**: Browse and trigger runs from your library.
-- **Visual Debugger**: Step-through agent trajectories with real-time state inspection.
-- **Flight Recorder**: Replay complex multi-turn sessions with Mermaid-rendered flows.
+Beyond the CLI, the harness provides a **Unified React SPA** Admin Console for visual management:
+- **Scenario Explorer**: Browse the catalog with faceted filters and global search.
+- **Visual AES Builder**: Drag-and-drop integrated logic builder for complex flows.
+- **Reports & Traces**: Historical execution timeline with detailed analysis and instant "View Report" navigation.
+- **Visual Debugger**: Real-time trajectory playback with interactive state inspection and trace export.
 
 Launch with:
 ```bash
