@@ -244,7 +244,14 @@ class SessionManager:
         if not agent_msgs: return ""
         last_content = agent_msgs[-1].get("content", "")
         if isinstance(last_content, dict):
-            return last_content.get("summary") or last_content.get("content") or ""
+            # Try to find a meaningful string across common fields
+            return (
+                last_content.get("summary") or 
+                last_content.get("instructions") or 
+                last_content.get("content") or 
+                last_content.get("action") or 
+                ""
+            )
         return str(last_content)
 
     def fork(self, history: List[Dict[str, Any]], sandbox_state: Dict[str, Any]) -> SessionManager:

@@ -54,6 +54,8 @@ def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) ->
 
 @MetricRegistry.register("generic_accuracy")
 @MetricRegistry.register("information_retrieval_accuracy")
+@MetricRegistry.register("instructional_clarity")
+@MetricRegistry.register("problem_resolution_effectiveness")
 def calculate_generic_accuracy(criterion: dict, agent_summary: str) -> float:
     """Evaluates whether the agent's summary contains the expected outcome."""
     if not agent_summary:
@@ -222,8 +224,8 @@ def calculate_refusal_calibration(criterion: dict, agent_summary: str) -> float:
 @MetricRegistry.register("luna_judge_score")
 async def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> float:
     """
-    LLM-based evaluation using local 'Ollama'.
-    Defaults to Jaccard similarity if Ollama is unavailable or no expected outcome is provided.
+    LLM-based evaluation using a configurable provider.
+    Defaults to Jaccard similarity if provider fails or no expected outcome is provided.
     """
     expected_outcome = criterion.get("expected_outcome", "")
     if not expected_outcome:
@@ -233,13 +235,7 @@ async def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> flo
     if agent_summary.strip() == expected_outcome.strip():
         return 1.0
 
-    import aiohttp
-    import json
-    import os
-
-    # Configuration
-    OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-    OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
+    from .llm_providers import LLMProviderFactory
 
     prompt = f"""
     You are an objective judge. Rate the similarity between the 'Expected Outcome' and the 'Agent Summary' on a scale of 0.0 to 1.0.
@@ -253,28 +249,23 @@ async def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> flo
     """
 
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{OLLAMA_HOST}/api/generate",
-                json={
-                    "model": OLLAMA_MODEL,
-                    "prompt": prompt,
-                    "stream": False,
-                    "options": {"temperature": 0.0}
-                },
-                timeout=aiohttp.ClientTimeout(total=5)
-            ) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    response_text = data.get("response", "").strip()
-                    try:
-                        score = float(response_text)
-                        print(f"      [Metrics] [Luna-Judge] Ollama ({OLLAMA_MODEL}) score: {score:.2f}")
-                        return max(0.0, min(1.0, score))
-                    except ValueError:
-                        print(f"      [Metrics] [Luna-Judge] Ollama returned non-float: '{response_text}'")
+        provider = LLMProviderFactory.create()
+        response_text = await provider.generate(prompt, temperature=0.0)
+        try:
+            # Try to parse float only
+            import re
+            match = re.search(r"([0-1]\.[0-9]+|1\.0|0)", response_text)
+            if match:
+                score = float(match.group(1))
+            else:
+                score = float(response_text)
+            
+            print(f"      [Metrics] [Luna-Judge] Provider score: {score:.2f}")
+            return max(0.0, min(1.0, score))
+        except ValueError:
+            print(f"      [Metrics] [Luna-Judge] Provider returned non-float: '{response_text}'")
     except Exception as e:
-        print(f"      [Metrics] [Luna-Judge] Ollama connection failed: {e}")
+        print(f"      [Metrics] [Luna-Judge] Provider failed: {e}")
 
     # Fallback to Jaccard Similarity
     def get_tokens(text):

@@ -79,3 +79,4 @@ async def socket_adapter(payload: dict, address: str):
             await writer.wait_closed()
         except Exception:
             pass
+

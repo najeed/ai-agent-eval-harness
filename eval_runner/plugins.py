@@ -124,6 +124,8 @@ class PluginManager:
         """Discovers internal adapters and loads them as plugins."""
         import os
         from pathlib import Path
+        import importlib
+        
         adapter_dir = Path(__file__).parent / "adapters"
         if not adapter_dir.exists():
             return
@@ -133,8 +135,9 @@ class PluginManager:
                 continue
             
             try:
-                module_name = f".adapters.{file.stem}"
-                module = importlib.import_module(module_name, package="eval_runner")
+                # Use absolute import to avoid circular issues during package initialization
+                module_name = f"eval_runner.adapters.{file.stem}"
+                module = importlib.import_module(module_name)
                 # Look for classes inheriting from BaseEvalPlugin
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)

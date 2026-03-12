@@ -1,4 +1,4 @@
-﻿# agent_app.py
+# agent_app.py
 # A simple, rule-based AI agent simulator using the Flask web framework.
 # This agent is designed to handle the "Home Internet Troubleshooting - Slow Speed" scenario.
 
@@ -63,7 +63,14 @@ def execute_task():
         print(f"\nAGENT: Received task: '{task_desc}'")
 
         # Rule-based decision logic
-        if "identify the customer" in task_desc and "speed tier" in task_desc:
+        if "tools returned" in task_desc or "modem is receiving full speed" in task_desc:
+            print("AGENT: Decided that task is complete.")
+            agent_response = {
+                "action": "final_answer",
+                "summary": "The diagnostic tests are complete. I have identified the customer and verified the connection status.",
+            }
+
+        elif "identify the customer" in task_desc and "speed tier" in task_desc:
             print("AGENT: Decided to use 'get_customer_details'")
             tool_result = get_customer_details(customer_id)
             agent_response = {
