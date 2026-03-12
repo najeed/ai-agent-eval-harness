@@ -158,3 +158,15 @@
 {"event": "task_start", "timestamp": "2026-03-12T10:15:07.438521Z", "task": "t1"}
 {"event": "custom_event", "timestamp": "2026-03-12T10:15:07.442693Z", "foo": "bar"}
 {"event": "custom_event", "timestamp": "2026-03-12T10:15:07.442693Z", "foo": "bar"}
+{"event": "run_start", "timestamp": "2026-03-12T11:40:40.253785Z", "run_id": "test-123"}
+{"event": "run_start", "timestamp": "2026-03-12T11:40:40.253785Z", "run_id": "test-123"}
+{"event": "turn_start", "timestamp": "2026-03-12T11:40:40.257605Z", "turn": 1}
+{"event": "turn_start", "timestamp": "2026-03-12T11:40:40.257605Z", "turn": 1}
+{"event": "task_start", "timestamp": "2026-03-12T11:40:40.264955Z", "task": "t1"}
+{"event": "task_start", "timestamp": "2026-03-12T11:40:40.264955Z", "task": "t1"}
+{"event": "custom_event", "timestamp": "2026-03-12T11:40:40.270512Z", "foo": "bar"}
+{"event": "custom_event", "timestamp": "2026-03-12T11:40:40.270512Z", "foo": "bar"}
+{"event": "run_start", "timestamp": "2026-03-12T11:43:05.572176Z", "run_id": "test-123"}
+{"event": "turn_start", "timestamp": "2026-03-12T11:43:05.572783Z", "turn": 1}
+{"event": "task_start", "timestamp": "2026-03-12T11:43:05.574164Z", "task": "t1"}
+{"event": "custom_event", "timestamp": "2026-03-12T11:43:05.576386Z", "foo": "bar"}

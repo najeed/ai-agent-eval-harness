@@ -24,7 +24,7 @@ eval-harness quickstart
 **What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a **Premium HTML report** in `reports/`. 
 
 > [!TIP]
-> **Quickstart is CLI-only.** To access the visual suite, you must separately launch the **Admin Console** via `eval-harness console`.
+> **Integrated Visual Suite**: Launch the premium web dashboard via `eval-harness console`. It now features a **Live Debugger** that streams real-time state from your evaluations using the Zero-Touch `RemoteBridgePlugin`.
 
 ### 1.2 Useful CLI Commands
 - `eval-harness console`: Launch the React Native (Expo) Admin Console GUI for visual management.

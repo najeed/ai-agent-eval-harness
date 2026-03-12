@@ -348,30 +348,48 @@ const VisualDebugger = ({ runId, onNotify }) => {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isLive, setIsLive] = useState(!runId || runId === 'live');
 
     const loadTrace = (id) => {
+        if (id === 'live' || !id) {
+            setEvents([]);
+            return;
+        }
         setLoading(true);
-        // In a real app, this would fetch from /api/runs/{id}
-        // For now, we simulate a load with a toast
-        setTimeout(() => {
-            setEvents([
-                { event: "run_start", timestamp: new Date().toISOString(), run_id: id || "test-123", scenario: "customer_refund" },
-                { event: "prompt", role: "user", content: "I want a refund for my cancelled flight UA483.", timestamp: new Date().toISOString() },
-                { event: "agent_response", step: 1, content: "I'm sorry to hear that. Let me check the flight database.", timestamp: new Date().toISOString() },
-                { event: "tool_call", tool: "flight_db", arguments: { flight_id: "UA483" }, timestamp: new Date().toISOString() },
-                { event: "tool_result", tool: "flight_db", result: { status: "cancelled", refund_eligibility: "full" }, timestamp: new Date().toISOString() },
-                { event: "evaluation", metric: "refund_processed", value: true, timestamp: new Date().toISOString() },
-                { event: "run_end", status: "success", timestamp: new Date().toISOString() }
-            ]);
-            setLoading(false);
-            if (onNotify && id) onNotify(`Loaded trace for ${id}`);
-        }, 500);
+        // Historical trace fetching
+        fetch(`/api/runs`) // In a real app, this might be a specific trace
+            .then(res => res.json())
+            .then(data => {
+                // Mocking historical events for the demo if found
+                setEvents([
+                    { event: "run_start", timestamp: new Date().toISOString(), run_id: id || "prev-run", scenario: "customer_refund" },
+                    { event: "prompt", role: "user", content: "I want a refund for my cancelled flight UA483.", timestamp: new Date().toISOString() },
+                    { event: "agent_response", step: 1, content: "I'm sorry to hear that. Let me check the flight database.", timestamp: new Date().toISOString() },
+                    { event: "run_end", status: "success", timestamp: new Date().toISOString() }
+                ]);
+                setLoading(false);
+            });
     };
 
     useEffect(() => {
-        if (runId) loadTrace(runId);
-        else loadTrace();
+        loadTrace(runId);
     }, [runId]);
+
+    useEffect(() => {
+        if (!isLive) return;
+        
+        const interval = setInterval(() => {
+            fetch('/api/debugger/state')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.data && data.data.timeline) {
+                        setEvents(data.data.timeline);
+                    }
+                });
+        }, 1000);
+        
+        return () => clearInterval(interval);
+    }, [isLive]);
 
     const handleExport = () => {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events, null, 2));

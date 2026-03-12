@@ -108,6 +108,15 @@ class PluginManager:
         except ImportError:
             pass
 
+        # Zero-Touch Live Bridge Fallback
+        try:
+            from .live_bridge_plugin import RemoteBridgePlugin
+            if not any(isinstance(p, RemoteBridgePlugin) for p in self.plugins):
+                self.plugins.append(RemoteBridgePlugin())
+                # print("   [Plugins] Loaded internal plugin: live_bridge")
+        except ImportError:
+            pass
+
         # Phase 4: Discovery of built-in adapters as plugins
         self._load_internal_adapters()
 

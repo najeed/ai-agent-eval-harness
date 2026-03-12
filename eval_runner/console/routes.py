@@ -162,6 +162,7 @@ def save_scenario():
 class DebuggerStateStore:
     """Captured live states from the engine for the Visual Debugger."""
     _last_state = {"message": "Waiting for evaluation..."}
+    _events = []
     _is_active = False
 
     @classmethod
@@ -170,7 +171,17 @@ class DebuggerStateStore:
         name = event.name
         data = event.data
         
-        # We focus on world state changes and turn events for the debugger
+        # Track history for timeline
+        cls._events.append({
+            "event": name,
+            "timestamp": datetime.now().isoformat(),
+            **data
+        })
+        # Keep only the last 50 events
+        if len(cls._events) > 50:
+            cls._events.pop(0)
+
+        # Update summary state
         if name == "world_state_change":
             cls._last_state["state"] = data.get("state")
             cls._last_state["shared_state"] = data.get("shared_state")
@@ -187,15 +198,32 @@ class DebuggerStateStore:
 
     @classmethod
     def get_latest(cls):
-        return cls._last_state
+        return {
+            "summary": cls._last_state,
+            "timeline": cls._events
+        }
 
 # Subscribe to events for the debugger
 from ..events import EventEmitter
 EventEmitter.subscribe(DebuggerStateStore.handle_event)
 
-@core_bp.route("/debugger/state", methods=["GET"])
+@core_bp.route("/debugger/state", methods=["GET", "POST"])
 def get_debugger_state():
-    """Retrieve realtime or latest interactive debugger state."""
+    """Retrieve or update realtime or latest interactive debugger state."""
+    if request.method == "POST":
+        data = request.json or {}
+        # Simulate a CoreEvent for the store
+        class MockEvent:
+            def __init__(self, name, data):
+                self.name = name
+                self.data = data
+        
+        event_name = data.get("event")
+        event_data = data.get("data", {})
+        if event_name:
+            DebuggerStateStore.handle_event(MockEvent(event_name, event_data))
+        return jsonify({"status": "updated"})
+
     return jsonify({
         "status": "ok", 
         "message": "Live data hook is active", 

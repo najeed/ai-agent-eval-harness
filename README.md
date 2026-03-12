@@ -51,8 +51,9 @@ The harness is organized into the following key components:
 
 -   `/industries`: Evaluation assets (4,600+ scenarios) categorized by 44 industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
--   `/eval_runner/console`: Flask-based REST API for the Admin Console.
--   `/admin-console`: React Native (Expo) Frontend for visual management.
+-   `/eval_runner/console`: Flask-based REST API for the **Integrated Visual Suite**.
+-   `/ui/visual-debugger`: Premium React-based Visual Debugger & Dashboard.
+-   `/admin-console`: [DEPRECATED] Legacy React Native prototype.
 -   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
 -   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
 -   `/runs`: Local execution history (Flight Recorder logs).

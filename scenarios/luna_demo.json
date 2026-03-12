@@ -1,0 +1,23 @@
+{
+    "scenario_id": "luna_reasoning_demo",
+    "version": "2.0.0",
+    "title": "Luna-Judge Reasoning Demonstration",
+    "description": "A complex reasoning scenario designed to verify the Luna-Judge LLM-based evaluation metric using Ollama.",
+    "use_case": "advanced_reasoning",
+    "core_function": "llm_evaluation",
+    "industry": "general",
+    "tasks": [
+        {
+            "task_id": "t1_logic_puzzle",
+            "description": "Solve this logic puzzle: If all bloops are razzies and some razzies are fribbles, does it follow that some bloops are definitely fribbles? Explain your reasoning step-by-step.",
+            "expected_outcome": "The agent correctly identifies that it does NOT follow, as the 'some razzies' that are fribbles might not be the same razzies that are bloops.",
+            "success_criteria": [
+                {
+                    "metric": "luna_judge_score",
+                    "threshold": 0.8,
+                    "criteria": "The response must correctly identify the logical fallacy and provide a sound explanation."
+                }
+            ]
+        }
+    ]
+}
