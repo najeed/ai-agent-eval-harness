@@ -23,6 +23,7 @@ from pathlib import Path
 
 from eval_runner import metrics
 from eval_runner.metrics import MetricRegistry
+from unittest.mock import patch, MagicMock
 
 def test_tool_call_correctness_exact_match():
     """
@@ -218,10 +219,42 @@ def test_refusal_calibration():
 async def test_luna_judge_score():
     """Verify local judge fallback (Jaccard)."""
     criterion = {"expected_outcome": "The repo is cloned"}
-    # High overlap
+    
+    # 1. Exact match (short-circuited in logic)
     assert await metrics.calculate_luna_judge_score(criterion, "The repo is cloned") == 1.0
-    # Partial overlap
-    # tokens: {the, repo, is, cloned} (4) vs {repo, cloned} (2) -> intersection=2, union=4 -> 0.5
-    assert await metrics.calculate_luna_judge_score(criterion, "repo cloned") == 0.5
-    # No overlap
-    assert await metrics.calculate_luna_judge_score(criterion, "something else") == 0.0
+
+    # 2. Mocking Ollama Connection Failure -> Should trigger Jaccard Fallback
+    mock_session_fail = MagicMock()
+    mock_session_fail.__aenter__.side_effect = Exception("Conn fail")
+    
+    with patch("aiohttp.ClientSession", return_value=mock_session_fail):
+       # tokens: {the, repo, is, cloned} (4) vs {repo, cloned} (2) -> intersection=2, union=4 -> 0.5
+       assert await metrics.calculate_luna_judge_score(criterion, "repo cloned") == 0.5
+       # No overlap
+       assert await metrics.calculate_luna_judge_score(criterion, "something else") == 0.0
+
+@pytest.mark.asyncio
+async def test_luna_judge_with_mock_ollama():
+    """Verify Luna-Judge when Ollama returns a specific score."""
+    criterion = {"expected_outcome": "Success"}
+    
+    # Setup mock response
+    mock_resp = MagicMock()
+    mock_resp.status = 200
+    
+    # Async mock for respond.json()
+    async def mock_json():
+        return {"response": "0.85"}
+    mock_resp.json = mock_json
+    
+    # Async mock for session.post context manager
+    mock_post_context = MagicMock()
+    mock_post_context.__aenter__.return_value = mock_resp
+    
+    mock_session = MagicMock()
+    mock_session.post.return_value = mock_post_context
+    mock_session.__aenter__.return_value = mock_session
+
+    with patch("aiohttp.ClientSession", return_value=mock_session):
+        score = await metrics.calculate_luna_judge_score(criterion, "Partial Success")
+        assert score == 0.85

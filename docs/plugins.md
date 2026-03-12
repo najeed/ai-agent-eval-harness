@@ -52,9 +52,35 @@ class MyCustomPlugin(BaseEvalPlugin):
 | `on_metrics_calculated` | `context`, `results` | Post-metric hook for cross-attempt aggregation. |
 | `after_evaluation` | `context`, `results` | Final hook after evaluation completes. |
 | `on_register_commands` | `registry: CommandRegistry` | Register CLI subcommands under the plugin namespace. |
-| `on_register_console_routes` | `app: Flask`, `nav: list` | Inject custom REST routes and React Native UI navigation links to the Admin Console. |
+| `on_register_console_routes` | `app: Flask`, `nav: list` | Inject custom REST routes and React navigation links to the [Integrated Visual Suite](#extending-the-visual-suite). |
 
 > **⚠️ Security Note:** The legacy `extend_cli` hook has been **removed** to prevent command hijacking. All plugins must use `on_register_commands` which isolates commands under `eval-harness plugin <plugin_name>`.
+
+## Typed Context Objects
+
+To ensure security and prevent Prototype Pollution, all hooks receive **Frozen Dataclasses**. Plugins cannot modify existing context fields; they must use the `plugin_data` bucket for state sharing.
+
+### 1. `EvaluationContext`
+Passed to `before_evaluation`, `after_evaluation`, and `on_metrics_calculated`.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `scenario_id` | `str` | Unique ID of the current scenario. |
+| `scenario_data`| `dict` | **Read-Only** copy of the full AES JSON scenario. |
+| `metadata` | `dict` | Global metadata (difficulty, industry, etc.). |
+| `plugin_data` | `dict` | **Mutable** bucket for cross-turn plugin state. |
+| `grounding_hits`| `dict` | Real-time map of tool and policy usage. |
+
+### 2. `TurnContext`
+Passed to turn-level hooks (`on_agent_turn_start`, `on_tool_request`, etc.).
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `task_id` | `str` | Current turn/subtask identifier. |
+| `turn_number` | `int` | Current turn index (1-based). |
+| `current_message`| `str` | The latest raw input from the user/environment. |
+| `history` | `tuple` | **Immutable** history of the conversation so far. |
+| `agent_response` | `dict` | Parsed agent action (available in `on_turn_end`). |
 
 ## Plugin Timeout Enforcement
 
@@ -76,45 +102,43 @@ class MyReportPlugin(BaseEvalPlugin):
 
 Usage: `eval-harness plugin myreport generate --format html`
 
-## Extending the Admin Console GUI (Unified React SPA)
+## Extending the Visual Suite (Integrated Console)
 
-Plugins can inject custom views and navigation links into the `eval-harness console` using the **Secure Handoff Architecture**. This ensures Enterprise-grade security while maintaining a "Zero-Touch" core.
+Plugins can inject custom views into the `eval-harness console` (the unified React SPA). This replaces the legacy Admin Console.
 
-### 1. Registering the Navigation Link
-The `on_register_console_routes` hook allows you to append items to the `nav_registry`. The console will automatically render these in the sidebar.
-
-### 2. Implementation Modes
-- **Mode A (JSON)**: Return a structured JSON spec that the console renders using premium React components.
-- **Mode B (External)**: Register external links or documentation paths.
+### 1. Secure Route Registration
+The `on_register_console_routes` hook provides access to the underlying Flask `app` and a `nav_registry` for the sidebar.
 
 ```python
-from flask import Blueprint, jsonify
-from eval_runner.console.auth import handoff_required
-
-class AuditPlugin(BaseEvalPlugin):
-    def on_register_console_routes(self, app, nav_registry):
-        # 1. metadata must include type="plugin"
-        nav_registry.append({
-            "id": "audit_log", 
-            "title": "Security Audit", 
-            "path": "/api/plugin/audit", 
-            "icon": "shield",
-            "type": "plugin"
-        })
-        
-        bp = Blueprint("audit", __name__)
-        
-        @bp.route("/api/plugin/audit")
-        @handoff_required # Mandatory for Enterprise security
-        def get_audit():
-            # Returning JSON triggers Mode A
-            return jsonify({
-                "title": "Audit Dashboard",
-                "items": [{"label": "Status", "value": "Secure"}]
-            })
-            
-        app.register_blueprint(bp)
+def on_register_console_routes(self, app, nav_registry):
+    nav_registry.append({
+        "id": "my_plugin_tab",
+        "title": "My Analysis",
+        "path": "/plugin/my-tab",
+        "icon": "chart-bar"
+    })
 ```
+
+For detailed React component mapping, see the [UI Migration Guide](file:///C:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/docs/guides/help/UI_MIGRATION_GUIDE.md).
+
+## Advanced Patterns: Zero-Touch Observers
+
+The preferred way to bridge internal engine state to external systems (like the Visual Debugger or a custom SIEM) is the **Zero-Touch Observer** pattern. 
+
+### Case Study: `RemoteBridgePlugin`
+Instead of modifying the core evaluation loop, the bridge uses standard lifecycle hooks to push state updates via HTTP.
+
+```python
+class RemoteBridgePlugin(BaseEvalPlugin):
+    def on_agent_turn_start(self, context):
+        # Push current turn state to the listener
+        requests.post(self.endpoint, json={
+            "event": "turn_start",
+            "scenario": context.scenario_id,
+            "turn": context.turn_number
+        })
+```
+This pattern ensures that the core engine remains totally unaware of the debugger and can operate even if the bridge is removed or fails.
 
 ## Extending Core Capabilities
 

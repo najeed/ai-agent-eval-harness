@@ -226,6 +226,10 @@ async def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> flo
     if not expected_outcome:
         return 1.0
         
+    # Short-circuit for exact matches to avoid LLM variance/cost
+    if agent_summary.strip() == expected_outcome.strip():
+        return 1.0
+
     import aiohttp
     import json
     import os

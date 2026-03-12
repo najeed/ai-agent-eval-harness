@@ -38,8 +38,8 @@ jobs:
           eval-harness evaluate --path industries/telecom/scenarios --format jsonl --output reports/eval_results.json
         env:
           OTEL_SDK_DISABLED: true
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || '' }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || '' }}
 
       - name: Upload Replay Traces
         uses: actions/upload-artifact@v4

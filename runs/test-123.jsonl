@@ -170,3 +170,7 @@
 {"event": "turn_start", "timestamp": "2026-03-12T11:43:05.572783Z", "turn": 1}
 {"event": "task_start", "timestamp": "2026-03-12T11:43:05.574164Z", "task": "t1"}
 {"event": "custom_event", "timestamp": "2026-03-12T11:43:05.576386Z", "foo": "bar"}
+{"event": "run_start", "timestamp": "2026-03-12T12:01:46.328797Z", "run_id": "test-123"}
+{"event": "turn_start", "timestamp": "2026-03-12T12:01:46.329745Z", "turn": 1}
+{"event": "task_start", "timestamp": "2026-03-12T12:01:46.332904Z", "task": "t1"}
+{"event": "custom_event", "timestamp": "2026-03-12T12:01:46.335963Z", "foo": "bar"}

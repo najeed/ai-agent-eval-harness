@@ -242,15 +242,14 @@ All evaluation execution logs are appended to `runs/run.jsonl`. Because this act
 ### 🐛 Troubleshooting
 
 - **`ConnectionRefusedError`**: The harness cannot reach the agent. Ensure `AGENT_API_URL` is set correctly and the agent API is running.
-- **`GoException: no routes for location`**: Occurs in the Flutter UI dashboard if the router isn't rebuilt. Re-run `flutter pub run build_runner build`.
+- **`GoException: no routes for location`**: Occurs in the legacy prototype dashboard if the router isn't rebuilt. Use the new **Integrated Visual Suite** (`eval-harness console`) as the primary management interface.
 - **`PluginTimeoutError`**: A registered plugin took too long to execute a hook. Check your plugin logic or increase the timeout.
 - **`Invalid JSON Error (LLM)`**: The `auto-translate` command expects strict JSON. Ensure your local Ollama model (e.g., `llama3`) is running and capable of JSON mode.
 - **`docker: command not found`**: You need to install Docker. Follow the [Official Installation Guide](https://docs.docker.com/get-docker/).
 - **Running Lab Mode without Docker**:
-    If you cannot install Docker, run these 3 commands in separate terminals:
+    If you cannot install Docker, run these 2 commands in separate terminals:
     1. `python sample_agent/agent_app.py`
     2. `eval-harness console`
-    3. `streamlit run dashboard/app.py` (requires `pip install streamlit`)
 
 ## How to Contribute
 
