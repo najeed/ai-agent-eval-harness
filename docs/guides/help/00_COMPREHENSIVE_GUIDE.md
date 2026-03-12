@@ -21,7 +21,7 @@ pip install -e .
 eval-harness quickstart
 ```
 
-**What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich legacy HTML report in `reports/`. 
+**What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a **Premium HTML report** in `reports/`. 
 
 > [!TIP]
 > **Quickstart is CLI-only.** To access the visual suite, you must separately launch the **Admin Console** via `eval-harness console`.
@@ -32,7 +32,7 @@ eval-harness quickstart
 - `eval-harness list --search <query>`: Search the scenario catalog (supports faceted filtering).
 - `eval-harness lint <path>`: Verify scenario quality and AES specification compliance.
 - `eval-harness auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
-- `eval-harness report <path>`: Re-generate HTML report from a `.jsonl` trace.
+- `eval-harness report <path>`: Generate a standalone **Premium HTML report** (reconstructed from any `.jsonl` trace).
 - `eval-harness replay --path <path>`: View the step-by-step history of a run in terminal.
 - **Visionary Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain`.
 
@@ -53,7 +53,7 @@ eval-harness quickstart
 - `import-drift --input <pord.jsonl>`: Convert production traces into regression tests.
 - `mutate --input <file> --type injection`: Generate adversarial test variants for red-teaming.
 - **Visionary Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain` ([Reference](../../cli_reference.md)).
-- **Visual Scenario Editor**: A drag-and-drop React Native UI for building AES logic, accessible via the `console` command.
+- **Visual Scenario Editor**: A visual React Native UI for constructing AES logic and saving it directly to the catalog, accessible via the `console` command.
 
 ---
 

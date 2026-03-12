@@ -73,20 +73,133 @@ def list_runs():
 
 @core_bp.route("/evaluate", methods=["POST"])
 def evaluate_scenario():
-    """Trigger an evaluation."""
+    """Trigger an evaluation in the background."""
     data = request.json or {}
-    path = data.get("path")
-    if not path:
+    path_str = data.get("path")
+    if not path_str:
         return jsonify({"error": "Missing 'path' parameter"}), 400
         
-    # Async evaluation scheduling logic placeholder
-    return jsonify({"status": "queued", "message": f"Evaluation triggered for {path}"})
+    path = Path(path_str)
+    if not path.exists():
+        # Try relative to root?
+        path = Path(__file__).parent.parent.parent / path_str
+        if not path.exists():
+             return jsonify({"error": f"Scenario not found at {path_str}"}), 404
+
+    from ..loader import load_scenario
+    from ..engine import run_evaluation
+    import asyncio
+    import threading
+
+    def run_in_background(scenario_data):
+        # We need a new event loop for the background thread if one doesn't exist
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(run_evaluation(scenario_data))
+        loop.close()
+
+    try:
+        scenario_data = load_scenario(path)
+        # Launch evaluation in a background thread to avoid blocking Flask
+        thread = threading.Thread(target=run_in_background, args=(scenario_data,))
+        thread.start()
+        
+        return jsonify({
+            "status": "started", 
+            "message": f"Evaluation started for {path.name}",
+            "scenario_id": scenario_data.get("scenario_id")
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@core_bp.route("/scenarios", methods=["POST"])
+def save_scenario():
+    """Saves or updates a scenario JSON file."""
+    data = request.json or {}
+    scenario_id = data.get("scenario_id")
+    if not scenario_id:
+        return jsonify({"error": "Missing scenario_id"}), 400
+
+    # Secure path resolution (prevent traversal)
+    safe_id = "".join(c for c in scenario_id if c.isalnum() or c in ("-", "_")).strip()
+    if not safe_id:
+        return jsonify({"error": "Invalid scenario_id"}), 400
+
+    industry = data.get("industry", "generic")
+    output_dir = Path("industries") / industry / "scenarios"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    file_path = output_dir / f"{safe_id}.json"
+    
+    # Structure the AES JSON
+    scenario_obj = {
+        "scenario_id": safe_id,
+        "version": data.get("version", "2.0.0"),
+        "title": data.get("title", "Untitled Scenario"),
+        "industry": industry,
+        "description": data.get("description", ""),
+        "tasks": data.get("tasks", []),
+        "metadata": data.get("metadata", {
+            "difficulty": data.get("difficulty", 1),
+            "tags": data.get("tags", []),
+            "created_at": datetime.now().isoformat()
+        })
+    }
+
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(scenario_obj, f, indent=2)
+        
+        # Invalidate catalog index to reflect changes
+        from ..catalog import ScenarioCatalog
+        ScenarioCatalog().build_index()
+        
+        return jsonify({"status": "success", "path": str(file_path), "message": "Scenario saved and indexed."})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+class DebuggerStateStore:
+    """Captured live states from the engine for the Visual Debugger."""
+    _last_state = {"message": "Waiting for evaluation..."}
+    _is_active = False
+
+    @classmethod
+    def handle_event(cls, event):
+        from ..events import CoreEvents
+        name = event.name
+        data = event.data
+        
+        # We focus on world state changes and turn events for the debugger
+        if name == "world_state_change":
+            cls._last_state["state"] = data.get("state")
+            cls._last_state["shared_state"] = data.get("shared_state")
+        elif name == CoreEvents.TURN_START:
+            cls._last_state["message"] = f"Processing Turn {data.get('turn_idx')}..."
+            cls._last_state["current_agent"] = data.get("agent_name")
+        elif name == CoreEvents.TOOL_CALL:
+            cls._last_state["last_tool"] = data.get("tool")
+            cls._last_state["last_params"] = data.get("arguments")
+        elif name == CoreEvents.RUN_START:
+            cls._last_state = {"message": "Run started...", "scenario": data.get("scenario")}
+        elif name == CoreEvents.RUN_END:
+            cls._last_state["message"] = f"Run finished: {data.get('status')}"
+
+    @classmethod
+    def get_latest(cls):
+        return cls._last_state
+
+# Subscribe to events for the debugger
+from ..events import EventEmitter
+EventEmitter.subscribe(DebuggerStateStore.handle_event)
 
 @core_bp.route("/debugger/state", methods=["GET"])
 def get_debugger_state():
     """Retrieve realtime or latest interactive debugger state."""
-    # Placeholder: hook into the last evaluation context or a live stream
-    return jsonify({"status": "ok", "message": "Debugger data hook is active", "state": {}})
+    return jsonify({
+        "status": "ok", 
+        "message": "Live data hook is active", 
+        "data": DebuggerStateStore.get_latest()
+    })
 
 @core_bp.route("/docs", methods=["GET"])
 def list_docs():

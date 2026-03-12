@@ -11,9 +11,22 @@ export default function ScenarioEditor() {
   });
 
   const saveScenario = () => {
-    Alert.alert('Success', 'Scenario JSON exported to clipboard (Simulated).');
-    console.log(JSON.stringify(scenario, null, 2));
+    fetch('http://127.0.0.1:5000/api/scenarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(scenario)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        Alert.alert('Success', `Scenario saved to: ${data.path}`);
+      } else {
+        Alert.alert('Error', data.error || 'Failed to save scenario');
+      }
+    })
+    .catch(err => Alert.alert('Error', 'Connection failed: ' + err.message));
   };
+
 
   const addTask = () => {
     setScenario({

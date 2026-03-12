@@ -145,11 +145,11 @@ eval-harness record [--agent <url>]
 ## Utilities
 
 ### `console`
-Launch the Web Admin Console backend API and Unified React SPA. This serves the REST API at port `5000` (by default) for interactive visual management of traces, scenarios, and live debugging via the high-density React Dashboard. The console provides:
-- **Scenario Explorer**: Browse the catalog with faceted filters and global search.
-- **Visual AES Builder**: Drag-and-drop integrated logic builder for complex flows.
-- **Reports & Traces**: Historical execution timeline with detailed analysis and instant "View Report" navigation.
-- **Visual Debugger**: Real-time trajectory playback with interactive state inspection and trace export.
+Launch the Web Admin Console backend API and Unified React SPA. The console provides a high-density dashboard for end-to-end evaluation management:
+- **Scenario Explorer**: Browse the catalog with faceted filters, global search, and real-time **Lint Scores**.
+- **Visual AES Builder**: Drag-and-drop integrated logic builder that saves production-ready JSON directly to the industry catalog.
+- **Background Evaluation**: Trigger runs directly from the UI; the console handles background execution and event streaming.
+- **Visual Debugger**: Real-time trajectory playback with interactive state inspection powered by the `DebuggerStateStore`.
 ```bash
 eval-harness console [--host 127.0.0.1] [--port 5000]
 ```
@@ -167,10 +167,13 @@ eval-harness quickstart
 ```
 
 ### `report`
-Generate a standalone HTML report from a execution trace.
+Generate a standalone Premium HTML report from an execution trace.
 ```bash
 eval-harness report <path/to/run.jsonl>
 ```
+**Feature Highlights:**
+- **Trace Reconstruction**: Automatically reconstructs hierarchical task results, metrics, and triage tags from historical JSONL events.
+- **Visual Trajectories**: Generates interactive Mermaid maps for every task in the trace.
 
 ### `scenario generate`
 Interactively workspace to generate new test scenarios via a terminal wizard.

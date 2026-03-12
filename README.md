@@ -163,9 +163,9 @@ The latest release introduces a new suite of high-level automation and visual to
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 
 #### 🎨 Visionary UX Tools
-- **Scenario Editor**: A drag-and-drop React Native interface for constructing complex AES logic without writing JSON.
+- **Scenario Editor**: A visual React Native interface for constructing real-world AES logic—saves production-ready JSON directly to the catalog.
 - **VS Code Extension**: Run evaluations and visualize timelines directly within your IDE.
-- **Visual Debugger**: Real-time trajectory playback with interactive state inspection.
+- **Visual Debugger**: Real-time trajectory playback with interactive state inspection (Live Engine Hook).
 
 ---
 

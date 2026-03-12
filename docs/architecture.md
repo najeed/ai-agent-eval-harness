@@ -39,9 +39,10 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 │                          Persistence & Reporting                            │
 │                                                                             │
 │  • run.jsonl (Flight Recorder): Deterministic, streamable execution logs    │
-│  • trajectories/: Mermaid visual flows for debugging                        │
+│  • trajectories/: Mermaid visual flows (Reconstructed from traces)          │
 │  • triage.py: Heuristic failure tagging (CONNECTION_ERROR, etc.)            │
 │  • coverage/: HTML grounding heatmaps                                       │
+│                                       │                                     │
 │  • catalog/: Optimized scenario indexing and faceted search                 │
 │  • linter/: AES compliance and quality scoring logic                        │
 │  • dashboard/: SPA Frontend (Unified React Admin Console)                   │
@@ -55,7 +56,7 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 | CLI | `eval_runner/cli.py` | Universal entry-point (`replay`, `aes`, `console`) |
 | Loader | `eval_runner/loader.py` | Multi-format dataset ingestion and v2.0 schema validation |
 | Adapters | `eval_runner/adapters.py` | Native communication shims (HTTP, Local, Sockets) |
-| Admin Console | `eval_runner/console/` & `ui/` | Flask proxy API and Unified React SPA for visual execution tracing |
+| Admin Console | `eval_runner/console/` & `admin-console/` | Flask proxy API (Background Eval) and Unified React SPA |
 ### `EventEmitter` Bus: Passive Observation
 The core engine is built around a central `EventEmitter` (see `eval_runner/events.py`). Every state transition in the harness - from the start of a run to a tool call or an agent response - is emitted as an event. This allows plugins to observe the system's behavior without modifying the core logic.
 
@@ -119,6 +120,7 @@ Phase 3 introduces advanced orchestration capabilities for research and complex 
 - **Advanced Adapter Discovery**: The registry supports plugin-driven discovery. External plugins can register custom protocols (e.g., `mock_proto`, `proprietary_rpc`) using the `on_discover_adapters` hook.
 - **Scenario Catalog & Intelligence**: A centralized indexer (`catalog.py`) enables high-performance discovery across thousands of scenarios. It supports faceted search (industry, difficulty, tags) and powers the Admin Console "Scenario Explorer".
 - **AES Quality Linter**: The `linter.py` module implements automated quality scoring, ensuring scenarios have required metadata, balanced task counts, and no duplicates.
+- **Visual Debugger Hook**: A dedicated `DebuggerStateStore` in the console backend captures live world state and tool signals via the `EventEmitter` for real-time UI synchronization.
 
 ## Simulation Lab & Research metrics
 

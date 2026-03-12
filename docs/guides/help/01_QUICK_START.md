@@ -19,7 +19,7 @@ eval-harness quickstart
 **What happens:**
 1. Spawns a sample agent server in the background.
 2. Executes a telecom troubleshooting evaluation.
-3. Generates a visual HTML report in `reports/`.
+3. Generates a **Premium HTML report** in `reports/` (with Mermaid trajectories).
 4. Shuts down the agent automatically.
 
 ---
@@ -72,8 +72,8 @@ eval-harness evaluate --path industries/telecom
 After the run, you'll see a summary in the console and detailed logs in:
 - `reports/latest_results.json`
 - `runs/run.jsonl` (Flight Recorder)
-- `reports/report_<id>.html` (Rich Visual Report)
-- **Interactive Dashboard:** Run `eval-harness console` to open the local React Native UI.
+- `reports/report_<id>.html` (**Premium HTML Report** with trace reconstruction)
+- **Interactive Dashboard:** Run `eval-harness console` for visual background evaluation and live DNA debugging.
 
 ---
 

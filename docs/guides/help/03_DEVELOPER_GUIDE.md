@@ -23,10 +23,10 @@ Entry point: `eval_runner/cli.py`
 ### Main commands
 - `evaluate` — Run a batch of scenarios
 - `quickstart` — End-to-end evaluation demo using `sample_agent`
-- `console` — Launch the local React Native Web Dashboard for visual tracing
+- `console` — Launch the Web Admin Console backend (with background execution and live visual debugging)
 - `doctor` — Validate environment health and dependencies
 - `init` — Scaffold new project directories with synthetic datasets
-- `report` — Generate rich HTML reports from existing `.jsonl` traces
+- `report` — Generate a standalone **Premium HTML report** (reconstructed from any `.jsonl` trace)
 - `run` — Run a single scenario file
 - `replay` — Replay a run trace
 - `aes validate` — Validate AES benchmark definitions
@@ -115,7 +115,7 @@ def on_tool_request(self, context: TurnContext, tool_name: str, args: dict) -> b
 ```
 
 ### 4.3 Extending the Web Admin Console (Native GUI)
-Enterprise plugins can inject their own user interfaces natively into the `eval-harness console` Expo application using a **Secure Handoff** architecture.
+The Admin Console uses a **Secure Handoff** architecture and provides integrated high-level features like the **Visual Scenario Editor** (persists directly to disk) and the **Visual DNA Debugger** (taps into engine events).
 
 #### Secure Handoff Workflow:
 1. **JWT Issuance**: The frontend requests a short-lived (60s) handoff token from `/api/auth/handoff`.

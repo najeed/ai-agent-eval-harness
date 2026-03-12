@@ -299,6 +299,52 @@ def handle_lint(args):
     """Handler for 'lint' command."""
     linter.run_lint(args.path)
 
+def reconstruct_results_from_events(events: list) -> list:
+    """
+    Reconstructs the task results structure from a list of JSONL event dictionaries.
+    Required for generating reports from historical traces.
+    """
+    results_map = {}
+    
+    # 1. Group events by task_id and capture metrics
+    for event in events:
+        task_id = event.get("task_id", "unknown")
+        ev_type = event.get("event")
+        
+        if task_id not in results_map:
+            results_map[task_id] = {
+                "task_id": task_id,
+                "metrics": [],
+                "conversation_history": [],
+                "triage_tag": "SUCCESS"
+            }
+        
+        res = results_map[task_id]
+        
+        if ev_type == "evaluation":
+            res["metrics"].append({
+                "metric": event.get("metric"),
+                "score": event.get("value"),
+                "threshold": event.get("threshold", 0.5),
+                "success": event.get("success", False)
+            })
+        elif ev_type in ["prompt", "agent_response", "tool_result", "agent_request"]:
+            # Reconstruct history for Mermaid visualization
+            role = "agent" if ev_type in ["agent_response", "agent_request"] else "user"
+            if ev_type == "tool_result": role = "environment"
+            
+            res["conversation_history"].append({
+                "role": role,
+                "content": event.get("content") or {"action": event.get("tool"), "status": event.get("status")}
+            })
+
+    # 2. Finalize triage and structure
+    from .triage import TriageEngine
+    final_results = list(results_map.values())
+    TriageEngine.apply_triage(final_results)
+    
+    return final_results
+
 def handle_report(args):
     """Handler for 'report' command."""
     from . import reporter
@@ -308,40 +354,42 @@ def handle_report(args):
         print(f"❌ Error: Trace file not found at {path}")
         return
 
-    # To generate a report, we need the scenario data. 
-    # We can try to extract it from the run_start event in the JSONL.
     events = []
-    with open(path, "r") as f:
-        for line in f:
-            events.append(json.loads(line))
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    events.append(json.loads(line))
+    except Exception as e:
+        print(f"❌ Error reading trace: {e}")
+        return
     
     run_start = next((e for e in events if e.get("event") == "run_start"), None)
     if not run_start:
         print("❌ Error: Could not find run_start event in trace.")
         return
         
-    scenario_id = run_start.get("scenario")
-    # Try to find the scenario file
-    scenario = {"scenario_id": scenario_id, "title": f"Report for {scenario_id}"}
+    scenario_metadata = run_start.get("metadata", {})
+    scenario_id = run_start.get("scenario", "unknown")
     
-    # Reconstruct results from events
-    # This is a bit complex, but for now we can pass a dummy scenario 
-    # and the events if we refactor reporter.py further.
-    # For now, let's just use the metadata we have.
+    # Reconstruct scenario object for the reporter
+    scenario = {
+        "scenario_id": scenario_id,
+        "title": scenario_metadata.get("title", f"Report: {scenario_id}"),
+        "industry": scenario_metadata.get("industry", "N/A"),
+        "description": scenario_metadata.get("description", "")
+    }
     
-    # A better approach: the engine should save a full results JSON that reporter can load.
-    # But for this demo, we'll just mock the scenario slightly.
+    print("   -> Reconstructing task results from trace...")
+    results = reconstruct_results_from_events(events)
     
-    # Actually, we can just use the events to fill in what generate_html_report needs.
-    # It needs tr["metrics"] and tr["task_id"].
-    
-    print("   Note: HTML report generation from raw JSONL is a beta feature.")
-    # (In a real implementation, we'd reconstruct the results object perfectly)
-    # For now, let's assume successful reconstruction for the demo.
-    
-    # results = reconstruct_results_from_events(events)
-    # reporter.generate_html_report(scenario, results)
-    print("✔ HTML Report generated successfully.")
+    if not results:
+        print("⚠ Warning: No task results found in trace.")
+        return
+
+    print("   -> Generating Premium HTML Report...")
+    html_path = reporter.generate_html_report(scenario, results)
+    print(f"✔ HTML Report generated successfully: {html_path}")
 
 def handle_aes_validate(args):
     """Handler for 'aes validate' command."""

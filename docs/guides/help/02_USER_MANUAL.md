@@ -90,7 +90,7 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness quickstart` | (none) | 60-second CLI demo (spawns agent + runs evaluation). Does NOT launch the GUI. |
 | `eval-harness doctor` | (none) | Check environment, dependencies, and connectivity |
 | `eval-harness init` | `--dir`, `--industry` | Scaffold a new benchmark environment and generate linkable synthetic datasets |
-| `eval-harness report` | `path` | Generate rich HTML report with interactive trajectory maps |
+| `eval-harness report` | `path` | Generate a **Premium HTML report** (reconstructed from any `.jsonl` trace) with interactive trajectory maps |
 | `eval-harness scenario generate` | (none) | Interactively bootstrap new scenarios |
 | `eval-harness record` | `--agent` | Capture real interactions into an executable trace |
 | `eval-harness playground` | `--agent` | Interactive REPL for rapid agent experimentation |
@@ -139,15 +139,16 @@ eval-harness quickstart
 ```
 *   Spawns the sample agent server process.
 *   Runs a telecom troubleshooting scenario.
-*   Generates a legacy HTML report in `reports/`.
-*   **Note:** This command is designed for CLI-only instant feedback and does not launch the Admin Console.
+*   Generates a **Premium HTML report** (Mermaid trajectories enabled) in `reports/`.
+*   **Note:** This command is designed for CLI-only instant feedback; use `eval-harness console` for the visual experience.
 
 ### 🖥️ `console` — React Native Admin Console GUI
 Launch a high-fidelity visual dashboard to run scenarios, inspect trace lines chronologically, and review system documentation locally.
 
 #### Key Features:
-- **Scenario Explorer**: Browse the catalog with faceted filters (industry, difficulty, tags). View real-time **Lint Scores** and quality status badges (Pass, Warning, Fail).
-- **Execution Tracing**: Interactive chronological view of agent thought, tool calls, and results.
+- **Scenario Explorer**: Browse the catalog with faceted filters (industry, difficulty, tags). View real-time **Lint Scores** and quality status badges.
+- **Background Execution**: Trigger evaluations directly from the UI; monitor progress in real-time.
+- **Visual DNA Debugger**: Live trajectory playback, state inspection, and trace export via the `DebuggerStateStore` hook.
 - **API Reference**: Integrated technical documentation drawer for one-click access to guides.
 
 ```bash
@@ -160,10 +161,10 @@ Troubleshoot your installation and connectivity.
 eval-harness doctor
 ```
 
-### 🎨 `report` — Visual Reporting
-Generate a premium HTML report with interactive trajectory maps.
+### 🎨 `report` — Premium Visual Reporting
+Generate a premium HTML report with interactive trajectory maps reconstructed from historical trace events.
 ```bash
-eval-harness report runs/run-<id>.jsonl
+eval-harness report runs/run_<id>.jsonl
 ```
 
 ### ✨ `scenario generate` — Interactive Scaffolding
@@ -222,7 +223,7 @@ eval-harness explain runs/run.jsonl
 ```
 
 ### 🛠️ Visual Scenario Editor
-Built into the Admin Console (`eval-harness console`), this tool provides a drag-and-drop interface for constructing AES logic without writing JSON.
+Built into the Admin Console (`eval-harness console`), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.
 
 ---
 

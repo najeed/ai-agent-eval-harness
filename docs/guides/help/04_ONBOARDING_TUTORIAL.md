@@ -121,16 +121,18 @@ eval-harness replay --path runs/run.jsonl
 ```
 
 ### ✅ View in the Visual Dashboard
-Inspect results natively using the **Admin Console**.
 
 ```bash
 eval-harness console
 ```
 
-Open `http://localhost:5000` to interactively debug runs and browse the **Scenario Explorer**.
-*   **Faceted Search**: Use the sidebar to filter by industry (e.g., Telecom) or difficulty.
-*   **Quality Badges**: Look for the "Lint Score" on each scenario. Scenarios with a score of **90+** are considered high-fidelity benchmarks.
-*   **Documentation Drawer**: Click the "API Reference" icon to see these guides directly within the app.
+Inspect results natively using the **Admin Console**. The console provides a unified hub for the entire lifecycle:
+- **Scenario Editor**: Design and save scenarios directly to the industry libraries.
+- **Background Runner**: Trigger evaluations and monitor them via the UI.
+- **Visual DNA Debugger**: Live trajectory playback, state inspection, and trace export.
+- **Faceted Search**: Use the sidebar to filter by industry (e.g., Telecom) or difficulty.
+- **Quality Badges**: Look for the "Lint Score" on each scenario. Scenarios with a score of **90+** are considered high-fidelity benchmarks.
+- **Documentation Drawer**: Click the "API Reference" icon to see these guides directly within the app.
 
 ---
 
