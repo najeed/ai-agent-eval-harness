@@ -153,7 +153,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 
 The latest release introduces a new suite of high-level automation and visual tools designed for 10x developer productivity.
 
-#### 🛠️ Advanced CLI Suite
+#### Advanced CLI Suite
 - **`list`**: Faceted search filtering across 4,600+ industry scenarios.
 - **`lint`**: Automated quality scoring and AES compliance verification.
 - **`install <pack>`**: Rapid deployment of curated, industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
@@ -163,14 +163,14 @@ The latest release introduces a new suite of high-level automation and visual to
 - **`explain <run.jsonl>`**: AI-powered trace diagnostics identifying root causes (loops, timeouts, PII leaks).
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 
-#### 🎨 Premium UX Tools
+#### Premium UX Tools
 - **Scenario Editor**: A visual React Native interface for constructing real-world AES logic—saves production-ready JSON directly to the catalog.
 - **VS Code Extension**: Run evaluations and visualize timelines directly within your IDE.
 - **Visual Debugger**: Real-time trajectory playback with interactive state inspection (Live Engine Hook).
 
 ---
 
-## 🏗 Zero-Touch Core Architecture
+## Zero-Touch Core Architecture
 
 The harness is built on a decoupled, event-driven architecture that allows Enterprise integrations to be hot-swapped without core modifications.
 
@@ -184,7 +184,7 @@ The harness is built on a decoupled, event-driven architecture that allows Enter
 
 - **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
 
-### 🌟 Advanced Utilities
+### Advanced Utilities
 Beyond the advanced suite, the harness provides a robust toolkit for professional evaluation:
 - **`doctor`**: Environment health checker.
 - **`report`**: Rich HTML reporting with interactive Mermaid trajectories.
