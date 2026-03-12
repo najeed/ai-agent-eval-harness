@@ -150,3 +150,11 @@
 {"event": "turn_start", "timestamp": "2026-03-12T09:32:26.411269Z", "turn": 1}
 {"event": "task_start", "timestamp": "2026-03-12T09:32:26.412828Z", "task": "t1"}
 {"event": "custom_event", "timestamp": "2026-03-12T09:32:26.415054Z", "foo": "bar"}
+{"event": "run_start", "timestamp": "2026-03-12T10:15:07.435671Z", "run_id": "test-123"}
+{"event": "run_start", "timestamp": "2026-03-12T10:15:07.435671Z", "run_id": "test-123"}
+{"event": "turn_start", "timestamp": "2026-03-12T10:15:07.436675Z", "turn": 1}
+{"event": "turn_start", "timestamp": "2026-03-12T10:15:07.436675Z", "turn": 1}
+{"event": "task_start", "timestamp": "2026-03-12T10:15:07.438521Z", "task": "t1"}
+{"event": "task_start", "timestamp": "2026-03-12T10:15:07.438521Z", "task": "t1"}
+{"event": "custom_event", "timestamp": "2026-03-12T10:15:07.442693Z", "foo": "bar"}
+{"event": "custom_event", "timestamp": "2026-03-12T10:15:07.442693Z", "foo": "bar"}

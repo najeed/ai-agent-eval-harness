@@ -16,7 +16,7 @@
 | **License** | **BSL 1.1** (Converts to Apache 2.0 in 2032) |
 | **Status** | Production-Ready Framework |
 | **Core Goal** | Eliminating the "Agentic Reliability Gap" |
-| **Quick Links** | [Quickstart](#-60-second-quickstart) • [Visionary Update](#-the-visionary-update-v11) • [Architecture](#-zero-touch-core-architecture) • [Security](#-security--governance-audit-ready) • [Editions](#licensing--editions) |
+| **Quick Links** | [Quickstart](#-60-second-quickstart) • [Advanced Update](#-the-advanced-update-v11) • [Architecture](#-zero-touch-core-architecture) • [Security](#-security--governance-audit-ready) • [Editions](#licensing--editions) |
 
 ## 📖 Table of Contents
 - [Mission](#mission)
@@ -25,7 +25,7 @@
     - [60-Second Quickstart](#-60-second-quickstart)
     - [Manual Evaluation](#-manual-evaluation-running-the-sample-agent)
 - [At a Glance (v1.0 RC)](#-at-a-glance-v10-rc)
-- [The Visionary Update (v1.1)](#-the-visionary-update-v11)
+- [The Advanced Update (v1.1)](#-the-advanced-update-v11)
 - [Zero-Touch Core Architecture](#-zero-touch-core-architecture)
     - [Advanced Utilities](#-advanced-utilities)
 - [Web Admin Console (Native GUI)](#-web-admin-console-native-gui)
@@ -148,11 +148,11 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
 - **Robust Metrics**: 10+ built-in metrics (Tool Correctness, State Parity, Policy Compliance).
 
-## ✨ The Visionary Update (v1.1)
+## ✨ The Advanced Update (v1.1)
 
 The latest release introduces a new suite of high-level automation and visual tools designed for 10x developer productivity.
 
-#### 🛠️ Visionary CLI Suite
+#### 🛠️ Advanced CLI Suite
 - **`list`**: Faceted search filtering across 4,600+ industry scenarios.
 - **`lint`**: Automated quality scoring and AES compliance verification.
 - **`install <pack>`**: Rapid deployment of curated, industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
@@ -162,7 +162,7 @@ The latest release introduces a new suite of high-level automation and visual to
 - **`explain <run.jsonl>`**: AI-powered trace diagnostics identifying root causes (loops, timeouts, PII leaks).
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 
-#### 🎨 Visionary UX Tools
+#### 🎨 Premium UX Tools
 - **Scenario Editor**: A visual React Native interface for constructing real-world AES logic—saves production-ready JSON directly to the catalog.
 - **VS Code Extension**: Run evaluations and visualize timelines directly within your IDE.
 - **Visual Debugger**: Real-time trajectory playback with interactive state inspection (Live Engine Hook).
@@ -184,7 +184,7 @@ The harness is built on a decoupled, event-driven architecture that allows Enter
 - **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
 
 ### 🌟 Advanced Utilities
-Beyond the Visionary suite, the harness provides a robust toolkit for professional evaluation:
+Beyond the advanced suite, the harness provides a robust toolkit for professional evaluation:
 - **`doctor`**: Environment health checker.
 - **`report`**: Rich HTML reporting with interactive Mermaid trajectories.
 - **`record` & `playground`**: Interaction capture and REPL experimentation for rapid prototyping.

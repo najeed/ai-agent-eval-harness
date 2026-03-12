@@ -1,6 +1,6 @@
 # Architecture Overview
 
-This document describes the system architecture of the AI Agent Evaluation Harness, following the "Visionary Core 2.0" evolution.
+This document describes the system architecture of the AI Agent Evaluation Harness, following the "Advanced Core 2.0" evolution.
 
 ## High-Level Data Flow
 

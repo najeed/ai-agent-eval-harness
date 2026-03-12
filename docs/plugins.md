@@ -137,7 +137,7 @@ class SentimentMetricPlugin(BaseEvalPlugin):
         results["passed"] = results["passed"] and (sentiment_score == 1.0)
 ```
 
-## Visionary Platform Utilities
+## Advanced Platform Utilities
 
 Phase 6 and 7 introduced high-level automation tools that leverage the plugin system and event bus:
 - **`explain <run.jsonl>`**: Uses heuristic pattern matching (expandable via plugins) to diagnose agent failures.

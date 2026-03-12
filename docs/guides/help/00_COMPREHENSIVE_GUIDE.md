@@ -34,7 +34,7 @@ eval-harness quickstart
 - `eval-harness auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
 - `eval-harness report <path>`: Generate a standalone **Premium HTML report** (reconstructed from any `.jsonl` trace).
 - `eval-harness replay --path <path>`: View the step-by-step history of a run in terminal.
-- **Visionary Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain`.
+- **Advanced Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain`.
 
 ---
 
@@ -52,7 +52,7 @@ eval-harness quickstart
 - `evaluate --path <dir> --attempts 3`: Run batch evaluations with pass@k scoring.
 - `import-drift --input <pord.jsonl>`: Convert production traces into regression tests.
 - `mutate --input <file> --type injection`: Generate adversarial test variants for red-teaming.
-- **Visionary Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain` ([Reference](../../cli_reference.md)).
+- **Advanced Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain` ([Reference](../../cli_reference.md)).
 - **Visual Scenario Editor**: A visual React Native UI for constructing AES logic and saving it directly to the catalog, accessible via the `console` command.
 
 ---

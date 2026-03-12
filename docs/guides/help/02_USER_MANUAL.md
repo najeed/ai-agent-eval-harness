@@ -202,7 +202,7 @@ eval-harness lint industries/telecom/scenarios/troubleshooting_v1.json
 
 ---
 
-## 🚀 Visionary CLI Utilities & UX
+## 🚀 Advanced CLI Utilities & UX
 
 ### 📦 `install` — Scenario Packs
 Rapidly deploy industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).

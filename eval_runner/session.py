@@ -49,6 +49,7 @@ class SessionManager:
                 agent_actions = {"used_tools": []}
 
                 EventEmitter.emit(CoreEvents.AGENT_REQUEST, {"role": "user", "content": current_message})
+                conversation_history.append({"role": "user", "content": current_message})
 
                 for turn in range(1, self.max_turns + 1):
                     turn_ctx = TurnContext(
