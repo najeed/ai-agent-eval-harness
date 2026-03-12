@@ -26397,3 +26397,23 @@
 {"event": "evaluation", "timestamp": "2026-03-12T21:36:18.728129Z", "metric": "policy_compliance", "value": 1.0, "attempt": 1}
 {"event": "task_end", "timestamp": "2026-03-12T21:36:18.730086Z", "task_id": "task-4", "results": {"task_id": "task-4", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Generate putaway instructions for the warehouse staff to store the items."}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "policy_compliance", "score": 1.0, "threshold": 1.0, "success": true}]}}
 {"event": "run_end", "timestamp": "2026-03-12T21:36:18.773938Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}
+{"event": "run_start", "timestamp": "2026-03-12T21:58:02.927376Z", "run_id": "run-wholesale-om-14310-7686", "scenario": "wholesale-om-14310", "k_attempts": 1}
+{"event": "task_start", "timestamp": "2026-03-12T21:58:02.946851Z", "task_id": "task-1", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T21:58:02.947883Z", "role": "user", "content": "Receive the purchase order from the retailer and enter it into the order management system."}
+{"event": "turn_start", "timestamp": "2026-03-12T21:58:02.948775Z", "turn": 1, "task_id": "task-1"}
+{"event": "agent_response", "timestamp": "2026-03-12T21:58:03.238681Z", "step": 1, "response": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}
+{"event": "evaluation", "timestamp": "2026-03-12T21:58:03.244000Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T21:58:03.245461Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Receive the purchase order from the retailer and enter it into the order management system."}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "task_start", "timestamp": "2026-03-12T21:58:03.246808Z", "task_id": "task-2", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T21:58:03.248330Z", "role": "user", "content": "Check inventory levels for all items on the order."}
+{"event": "turn_start", "timestamp": "2026-03-12T21:58:03.249731Z", "turn": 1, "task_id": "task-2"}
+{"event": "agent_response", "timestamp": "2026-03-12T21:58:03.523612Z", "step": 1, "response": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}
+{"event": "evaluation", "timestamp": "2026-03-12T21:58:03.525887Z", "metric": "tool_call_correctness", "value": 0.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T21:58:03.527501Z", "task_id": "task-2", "results": {"task_id": "task-2", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Check inventory levels for all items on the order."}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": false}]}}
+{"event": "task_start", "timestamp": "2026-03-12T21:58:03.529285Z", "task_id": "task-3", "attempt": 1}
+{"event": "agent_request", "timestamp": "2026-03-12T21:58:03.530918Z", "role": "user", "content": "Send an order confirmation to the retailer with an estimated shipping date."}
+{"event": "turn_start", "timestamp": "2026-03-12T21:58:03.532364Z", "turn": 1, "task_id": "task-3"}
+{"event": "agent_response", "timestamp": "2026-03-12T21:58:03.816849Z", "step": 1, "response": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}
+{"event": "evaluation", "timestamp": "2026-03-12T21:58:03.819537Z", "metric": "policy_compliance", "value": 1.0, "attempt": 1}
+{"event": "task_end", "timestamp": "2026-03-12T21:58:03.821679Z", "task_id": "task-3", "results": {"task_id": "task-3", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "user", "content": "Send an order confirmation to the retailer with an estimated shipping date."}, {"role": "agent", "content": {"action": "error", "summary": "I'm sorry, I don't know how to handle that task."}}], "metrics": [{"metric": "policy_compliance", "score": 1.0, "threshold": 1.0, "success": true}]}}
+{"event": "run_end", "timestamp": "2026-03-12T21:58:03.859286Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}

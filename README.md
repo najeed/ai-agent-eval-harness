@@ -290,14 +290,14 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Scenario Mutations** | 🔶 Basic (Typos & Ambiguity) | ✅ Adversarial Fuzzing & Prompt Injections |
 | **Execution Security** | 🔶 Basic Path/Shell Gating | ✅ Tool Sandboxing & Context Payload Caps |
 | **Privacy Protections** | ❌ No | ✅ Automatic PII Scanning & Redaction |
-| **Simulation** | ❌ Real API required | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
+| **Simulation** | 🔶 Real API required | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
 | **Compliance Suites** | ❌ No | ✅ Turn-key Packs (HIPAA, FINRA, GDPR, PCI) |
-| **Observability** | ❌ Terminal output | ✅ OTEL Drift Alerts & Jira Auto-Ticketing |
+| **Observability** | 🔶 Terminal output | ✅ OTEL Drift Alerts & Jira Auto-Ticketing |
 | **Defensibility Governance**| ❌ No | ✅ WORM Audit Logs & Cryptographic Traces|
 | **Integrity Checks** | ❌ No | ✅ AES Scenario Merkle Sync |
 | **Admin Console & GUI** | ✅ Local React Native App | ✅ Hot-Swappable SSO & Enterprise Plugins |
 | **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Export |
-| **Parallel Engine** | ❌ Sequential only | ✅ Ray Integration for Distributed Runs |
+| **Parallel Engine** | 🔶 Sequential only | ✅ Ray Integration for Distributed Runs |
 | **Interactive Triage** | 🔶 Heuristic only | ✅ Human Annotation & Trace Tagging |
 | **Advanced Sandbox** | 🔶 Basic Path/Shell Gating| ✅ Docker Containerization & Red-Team Probes |
 | **Auth & Governance** | ❌ None | ✅ OIDC SSO, RBAC, Managed Leaderboards |
