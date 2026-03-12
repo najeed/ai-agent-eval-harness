@@ -579,10 +579,31 @@ async def run_evaluate(args):
     # Save research summary if multiple attempts were made
     if research_summary:
         summary_path = Path("reports/research_summary.json")
+        summary_path_md = Path("reports/research_summary.md")
         summary_path.parent.mkdir(parents=True, exist_ok=True)
+        
         with open(summary_path, "w") as f:
             json.dump(research_summary, f, indent=2)
-        print(f"\n[Research] Summary saved to {summary_path}")
+            
+        print("\n" + "=" * 80)
+        print(f"{'SCENARIO ID':<25} | {'PASS@K':<10} | {'STABILITY':<12} | {'SEMANTIC':<10}")
+        print("-" * 80)
+        
+        md_content = ["# Research Evaluation Summary", "", "| Scenario ID | Pass@k | Success Consistency | Semantic Stability |", "| :--- | :--- | :--- | :--- |"]
+        
+        for k, v in research_summary.items():
+            pass_k = f"{v['pass_at_k']*100:.1f}%"
+            stab = f"{v['success_consistency']*100:.1f}%"
+            sem = f"{v['semantic_stability']:.2f}"
+            print(f"{k[:25]:<25} | {pass_k:<10} | {stab:<12} | {sem:<10}")
+            md_content.append(f"| {k} | {pass_k} | {stab} | {sem} |")
+            
+        print("=" * 80)
+        
+        with open(summary_path_md, "w") as f:
+            f.write("\n".join(md_content))
+            
+        print(f"\n[Research] Summary saved to {summary_path} and {summary_path_md}")
 
 def detect_framework():
     """Simple heuristic to detect the agent framework used in the current dir."""

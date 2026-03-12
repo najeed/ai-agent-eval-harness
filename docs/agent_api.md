@@ -128,7 +128,7 @@ When using `--protocol socket`, the harness opens a persistent connection:
 -   **TCP**: `host:port`
 -   **Unix**: `/path/to/socket`
 
-Payloads are exchanged as JSON strings followed by a newline `\n`.
+Payloads are exchanged as JSON strings followed by a newline `\n`. The harness ensures persistent connection stability during multi-attempt evaluations.
 
 ---
 

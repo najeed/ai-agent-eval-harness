@@ -10,12 +10,17 @@ Run evaluations on one or more scenarios.
 eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 ```
 - `--path`: Path to a single Scenario JSON file or a directory containing scenarios.
-- `--attempts`: Number of attempts per scenario.
+- `--attempts`: Number of attempts (K) per scenario for `pass@k` calculation.
 - `--limit`: Max number of scenarios to run.
 - `--protocol`: Agent protocol (`http`, `local`, `socket`).
 - `--agent-cmd`: Shell command for `local` protocol.
 - `--agent-socket`: Socket address (e.g., `localhost:9000`) or path for `socket` protocol.
 - `--format`: Dataset format (`jsonl` or `csv`).
+
+**Research Summary Output:**
+When `--attempts` > 1, the harness generates:
+- `reports/research_summary.json`: Raw aggregate data.
+- `reports/research_summary.md`: A formatted Markdown table of Pass@k, Success Consistency, and Semantic Stability.
 
 ### `run`
 Execute a single scenario file.

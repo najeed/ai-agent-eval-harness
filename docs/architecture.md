@@ -125,7 +125,7 @@ Phase 3 introduces advanced orchestration capabilities for research and complex 
 ## Simulation Lab & Research metrics
 
 - **Simulation Shims**: State-aware mocks (Git Simulator) that enable testing complex agentic tasks (clone -> hack -> commit) without real infrastructure.
-- **Research Metrics**: Native support for `pass@k` (robustness across attempts) and `Success Consistency`.
+- **Research Metrics**: Native support for `pass@k` (robustness across attempts) and `Success Consistency`. The harness now generates a `research_summary.md` and ASCII table for multi-attempt evaluations, capturing semantic stability and outcome variance.
 - **Adversarial Red-Teaming**: The `mutator` engine injects typos, prompt-injection, and ambiguity into scenarios to test agent edge-resistance.
 
 ## Ecosystem, Benchmarks & Distribution

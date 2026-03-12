@@ -45,14 +45,14 @@ class RemoteBridgePlugin(BaseEvalPlugin):
 
     def on_agent_turn_start(self, context):
         self._post_event(CoreEvents.TURN_START, {
-            "turn_idx": context.turn_idx,
-            "agent_name": context.agent_name
+            "turn_idx": context.turn_number,
+            "agent_name": getattr(context, 'agent_name', 'agent')
         })
 
     def on_turn_end(self, context):
         self._post_event(CoreEvents.TURN_END, {
-            "turn_idx": context.turn_idx,
-            "metrics": context.turn_metrics
+            "turn_idx": context.turn_number,
+            "metrics": getattr(context, 'turn_metrics', {})
         })
 
     def on_tool_request(self, context, tool_name, args):

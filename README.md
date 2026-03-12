@@ -16,25 +16,25 @@
 | **License** | **BSL 1.1** (Converts to Apache 2.0 in 2032) |
 | **Status** | Production-Ready Framework |
 | **Core Goal** | Eliminating the "Agentic Reliability Gap" |
-| **Quick Links** | [Quickstart](#-60-second-quickstart) • [Advanced Update](#-the-advanced-update-v11) • [Architecture](#-zero-touch-core-architecture) • [Security](#-security--governance-audit-ready) • [Editions](#licensing--editions) |
+| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [Advanced Update](#the-advanced-update-v11) • [Architecture](#zero-touch-core-architecture) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
-## 📖 Table of Contents
+## Table of Contents
 - [Mission](#mission)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
-    - [60-Second Quickstart](#-60-second-quickstart)
-    - [Manual Evaluation](#-manual-evaluation-running-the-sample-agent)
-- [At a Glance (v1.0 RC)](#-at-a-glance-v10-rc)
-- [The Advanced Update (v1.1)](#-the-advanced-update-v11)
-- [Zero-Touch Core Architecture](#-zero-touch-core-architecture)
-    - [Advanced Utilities](#-advanced-utilities)
-- [Web Admin Console (Native GUI)](#-web-admin-console-native-gui)
-- [Security & Governance](#-security--governance-audit-ready)
-- [Troubleshooting](#-troubleshooting)
+    - [60-Second Quickstart](#60-second-quickstart-get-running-now)
+    - [Manual Evaluation](#manual-evaluation-running-the-sample-agent)
+- [At a Glance (v1.0 RC)](#at-a-glance-v10-rc)
+- [The Advanced Update (v1.1)](#the-advanced-update-v11)
+- [Zero-Touch Core Architecture](#zero-touch-core-architecture)
+    - [Advanced Utilities](#advanced-utilities)
+- [Web Admin Console (Native GUI)](#web-admin-console-native-gui)
+- [Security and Governance](#security-and-governance-audit-ready)
+- [Troubleshooting](#troubleshooting)
 - [How to Contribute](#how-to-contribute)
-- [Licensing & Editions](#licensing--editions)
+- [Licensing and Editions](#licensing-and-editions)
 
-## 🚀 TL;DR: Impact in 60s
+## TL;DR: Impact in 60s
 Get from zero to evaluated in seconds:
 ```bash
 pip install -e .
@@ -74,7 +74,7 @@ The harness is organized into the following key components:
     -   **Linux**: Install [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
 
 > [!IMPORTANT]
-> ### 🚀 60-Second Quickstart (Get Running Now)
+> ### 60-Second Quickstart (Get Running Now)
 > The fastest way to see the harness in action:
 >
 > ```bash
@@ -101,7 +101,7 @@ The harness is organized into the following key components:
 
 *(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker compose up --build`. If you don't have Docker, you can run services manually (see [Troubleshooting](#-troubleshooting)).
 
-### 🛠 Manual Evaluation (Running the Sample Agent)
+### Manual Evaluation (Running the Sample Agent)
 
 1.  **Start your Agent**: The framework includes a reference agent for testing.
     ```bash
@@ -126,7 +126,7 @@ The harness is organized into the following key components:
 
 ---
 
-## 📡 Agent Communication Protocols
+## Agent Communication Protocols
 
 The harness supports multiple ways to talk to your agent, enabling seamless integration with local scripts, legacy binaries, or remote services.
 
@@ -138,7 +138,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 
 ---
 
-## 🚀 At a Glance (v1.0 RC)
+## At a Glance (v1.0 RC)
 
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
 - **Benchmark Ecosystem**: Native loaders and adapters for community benchmarks like GAIA and AssistantBench.
@@ -149,7 +149,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
 - **Robust Metrics**: 10+ built-in metrics (Tool Correctness, State Parity, Policy Compliance).
 
-## ✨ The Advanced Update (v1.1)
+## The Advanced Update (v1.1)
 
 The latest release introduces a new suite of high-level automation and visual tools designed for 10x developer productivity.
 
@@ -194,7 +194,7 @@ Beyond the advanced suite, the harness provides a robust toolkit for professiona
 - **`mutate`**: Adversarial scenario generator (typos, injections, ambiguity).
 - **`import-drift`**: Convert production logs into regression test cases.
 
-## 🖥️ Web Admin Console (Native GUI)
+## Web Admin Console (Native GUI)
 
 The harness includes a unified **React-powered SPA** Admin Console that simplifies management of scenarios, runs, and visual debugging across all industries.
 
@@ -227,7 +227,7 @@ pytest tests/ -v -p no:plugin_gateway
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
 | `OPENAI_API_KEY` | *(None)* | Required if using LLM-as-a-Judge metrics |
 
-### 🛡️ Security & Governance (Audit-Ready)
+### Security and Governance (Audit-Ready)
 The platform is built with a **Secure-by-Design** philosophy, complying with enterprise-grade audit standards.
 
 - **PII/Secret Redaction**: Automatic, recursive scanning and redaction of JWTs, AWS keys, and PII from all event logs.
@@ -236,20 +236,21 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **WORM Logs**: Write-Once-Read-Many immutable flight recorder traces (`run.jsonl`).
 - **Audit Points**: 100% compliance with the 8-point Enterprise Security Audit (DoS caps, Fork Bomb prevention, RCE guards).
 
-### 🚨 Run Trace Warning
+### Run Trace Warning
 All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory via `eval-harness cleanup-runs --days 7`.
 
-### 🐛 Troubleshooting
+### Troubleshooting
 
 - **`ConnectionRefusedError`**: The harness cannot reach the agent. Ensure `AGENT_API_URL` is set correctly and the agent API is running.
-- **`GoException: no routes for location`**: Occurs in the legacy prototype dashboard if the router isn't rebuilt. Use the new **Integrated Visual Suite** (`eval-harness console`) as the primary management interface.
+- **`GoException: no routes for location`**: Occurs in the Flutter UI dashboard if the router isn't rebuilt. Re-run `flutter pub run build_runner build`.
 - **`PluginTimeoutError`**: A registered plugin took too long to execute a hook. Check your plugin logic or increase the timeout.
 - **`Invalid JSON Error (LLM)`**: The `auto-translate` command expects strict JSON. Ensure your local Ollama model (e.g., `llama3`) is running and capable of JSON mode.
 - **`docker: command not found`**: You need to install Docker. Follow the [Official Installation Guide](https://docs.docker.com/get-docker/).
 - **Running Lab Mode without Docker**:
-    If you cannot install Docker, run these 2 commands in separate terminals:
+    If you cannot install Docker, run these 3 commands in separate terminals:
     1. `python sample_agent/agent_app.py`
     2. `eval-harness console`
+    3. `streamlit run dashboard/app.py` (requires `pip install streamlit`)
 
 ## How to Contribute
 
@@ -277,7 +278,7 @@ Thanks to all our contributors! 🙌
   <img src="https://contrib.rocks/image?repo=najeed/ai-agent-eval-harness" />
 </a>
 
-## Licensing & Editions
+## Licensing and Editions
 
 This project follows an **Open Core** model. The open-source capabilities provide a robust evaluation foundation, while the Enterprise Edition delivers the necessary security, governance, and audit-grade intelligence required for regulated deployments.
 
