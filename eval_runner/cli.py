@@ -835,8 +835,13 @@ on:
 jobs:
   eval:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
