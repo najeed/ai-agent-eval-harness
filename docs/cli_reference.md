@@ -153,6 +153,13 @@ eval-harness explain <path/to/run.jsonl>
 ```
 **Heuristics:** Detects infinite loops, tool-call hallucinations, policy violations, and PII exposure with targeted remediation advice.
 
+### `calibrate`
+Measure alignment between the LLM judge and human ground truth in a flight recorder log.
+```bash
+eval-harness calibrate <path/to/run.jsonl>
+```
+**Metrics:** Calculates Pearson Correlation and Mean Absolute Error (MAE) based on paired `luna_judge_score` and `human_score` events.
+
 ### `playground`
 Launch an interactive REPL to talk to an agent directly in the terminal.
 ```bash

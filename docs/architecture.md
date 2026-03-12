@@ -53,11 +53,8 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 
 | Module | File | Purpose |
 |--------|------|---------|
-| CLI | `eval_runner/cli.py` | Universal entry-point (`replay`, `aes`, `console`) |
-| Loader | `eval_runner/loader.py` | Multi-format dataset ingestion and v2.0 schema validation |
-| Configuration | `eval_runner/config.py` | Centralized constants and environment orchestration |
-| Adapters | `eval_runner/adapters.py` | Native communication shims (HTTP, Local, Sockets) |
 | Admin Console | `eval_runner/console/` & `admin-console/` | Flask proxy API (Background Eval) and Unified React SPA |
+| Rubrics | `eval_runner/rubrics.py` | Registry for industry-standard evaluation prompts |
 ### `EventEmitter` Bus: Passive Observation
 The core engine is built around a central `EventEmitter` (see `eval_runner/events.py`). Every state transition in the harness - from the start of a run to a tool call or an agent response - is emitted as an event. This allows plugins to observe the system's behavior without modifying the core logic.
 
@@ -135,7 +132,9 @@ Phase 4 elevates the Harness from an isolated tool to an integrated participant 
 - **Community Benchmark Integration**: The harness natively supports downloading and structuring data from major AI benchmarks. Passing URIs like `gaia://...` to the loader transparently fetches and wraps the datasets into executable `Scenario` objects with compatible metrics.
 - **HuggingFace Distribution**: The `HFExporter` enables a one-click CLI flow (`eval-harness export --format hf`) to transform deterministic internal `run.jsonl` flight logs into normalized datasets ready for HuggingFace publication and leaderboards.
 - **Framework Adapters via Plugins**: Supporting frameworks like `LangGraph`, `CrewAI`, and **Microsoft AutoGen** (via `autogen://`) without "polluting" the core engine. These are implemented as modular `BaseEvalPlugin` classes that hook into the `on_discover_adapters` lifecycle to register their custom execution protocols.
-- **Ecosystem Hub**: A unified registry for LLM providers (**OpenAI**, **Gemini**, **Claude**, **Ollama**, **xAI Grok**) and orchestration frameworks. The Ecosystem Hub ensures the core evaluator remains "Zero-Touch"—swapping a provider requires zero core code changes. The LLM judge is now configurable via the `JUDGE_PROVIDER` environment variable.
+- **Ecosystem Hub**: A unified registry for LLM providers (**OpenAI**, **Gemini**, **Claude**, **Ollama**, **xAI Grok**) and orchestration frameworks. The Ecosystem Hub ensures the core evaluator remains "Zero-Touch"—swapping a provider requires zero core code changes. The LLM judge is now configurable via the `JUDGE_PROVIDER` environment variable, with support for per-scenario `judge_config` overrides.
+- **Industry-Standard Rubrics**: The `rubrics.py` module provides a hot-swappable registry for clinical, fiduciary, and legal scoring logic, enabling precise evaluation without modifying engine code.
+- **Judge Calibration**: The `calibrate` command analyzes `run.jsonl` flight logs to measure alignment between automated judges and human ground truth, calculating Pearson Correlation and Error metrics.
 
 ## Key Environment Variables
 

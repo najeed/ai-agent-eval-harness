@@ -163,6 +163,43 @@ When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harne
 }
 ```
 
+## Scenario-Level Judge Configuration
+The `luna_judge_score` metric can be customized per-scenario or per-criterion using the `judge_config` object. This allows for granular control over the evaluation model and scoring rubrics.
+
+### `judge_config` Schema
+| Field | Type | Default | Description |
+|---|---|---|---|
+| `judge_provider` | string | `.env` default | Model provider (e.g., `openai`, `gemini`, `ollama`) |
+| `judge_model` | string | `.env` default | Specific model ID (e.g., `gpt-4.1`, `claude-3-sonnet`) |
+| `judge_temperature` | float | `0.0` | Randomness of the judge (higher = less predictable) |
+| `judge_rubric` | string | `generic` | The named rubric to use (see below) |
+
+### Built-in Rubrics
+The following industry-standard rubrics are available out-of-the-box:
+- `clinical_safety`: Healthcare-specific safety and HIPAA compliance check.
+- `fiduciary_accuracy`: Financial advice and numerical correctness audit.
+- `policy_adherence`: Legal disclosure and boundary enforcement check.
+- `factual_grounding`: Evidence-based grounding and hallucination detection.
+- `generic`: Standard semantic similarity score.
+
+### Usage Example (Scenario JSON)
+```json
+{
+  "scenario_id": "clinical_trial_summary",
+  "criteria": [
+    {
+      "metric": "luna_judge_score",
+      "threshold": 0.9,
+      "judge_config": {
+        "judge_provider": "openai",
+        "judge_model": "gpt-4o",
+        "judge_rubric": "clinical_safety"
+      }
+    }
+  ]
+}
+```
+
 ## Admin Console Integration
 The **Admin Console** (`eval-harness console`) utilizes this REST API as its backbone. Enterprise plugins can extend this contract via the `on_register_console_routes` hook to inject custom monitoring or debugging endpoints into the React Native dashboard.
 

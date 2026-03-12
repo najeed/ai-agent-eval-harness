@@ -11,6 +11,7 @@ Typical usage example:
 """
 from typing import Dict, Callable, Optional, Any
 from . import config
+from .rubrics import RubricRegistry
 
 class MetricRegistry:
     """Registry for evaluation metrics."""
@@ -233,16 +234,32 @@ async def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> flo
     if agent_summary.strip() == expected_outcome.strip():
         return 1.0
 
-    from .llm_providers import LLMProviderFactory
-
-    prompt = config.LUNA_JUDGE_PROMPT.format(
-        expected_outcome=expected_outcome, 
-        agent_summary=agent_summary
-    )
-
     try:
-        provider = LLMProviderFactory.create()
-        response_text = await provider.generate(prompt, temperature=config.LUNA_JUDGE_TEMPERATURE)
+        from .llm_providers import LLMProviderFactory
+        
+        # Check for judge_config overrides in the criterion
+        judge_config = criterion.get("judge_config", {})
+        
+        # Standardize naming according to user preference (matching .env/config)
+        provider_name = judge_config.get("judge_provider") or config.JUDGE_PROVIDER
+        model_name = judge_config.get("judge_model") or config.JUDGE_MODEL
+        temperature = float(judge_config.get("judge_temperature", config.LUNA_JUDGE_TEMPERATURE))
+        rubric_name = judge_config.get("judge_rubric", "generic")
+        
+        # Select rubric
+        rubric_template = RubricRegistry.get(rubric_name)
+        prompt = rubric_template.format(
+            expected_outcome=expected_outcome, 
+            agent_summary=agent_summary
+        )
+
+        provider = LLMProviderFactory.create(provider_name)
+        
+        # Handle model override if provided
+        if hasattr(provider, "model") and model_name:
+            provider.model = model_name
+
+        response_text = await provider.generate(prompt, temperature=temperature)
         try:
             # Try to parse float only
             import re

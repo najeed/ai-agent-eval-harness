@@ -15,6 +15,7 @@ Welcome to the official documentation. Start with the Quick Start guide and expl
 | Document | Description |
 |-------|-------------|
 | [Developer Guide](guides/help/03_DEVELOPER_GUIDE.md) | Architecture, Plugins, and Hook reference |
+| [Ecosystem Verification](guides/help/05_ECOSYSTEM_VERIFICATION_GUIDE.md) | Test plan for third-party integrations |
 | [Architecture](architecture.md) | High-level data flow and system design |
 | [Agent API Spec](agent_api.md) | Contract for agent communication |
 

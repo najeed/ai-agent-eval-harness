@@ -211,3 +211,22 @@ If this plugin is active, scenarios can now specify an agent URL like `langgraph
 ### Ecosystem Provider Adapters
 Providers like **OpenAI**, **Gemini**, **Claude**, **Ollama**, and **xAI Grok** are also implemented using this hook. While framework adapters (like LangGraph or AutoGen) often wrap complex logic, provider adapters typically translate AES tasks into specific LLM API calls.
 
+## ⚖️ Extending the Judge Layer (v3.1)
+
+The harness features a pluggable LLM-as-judge layer (`Luna-Judge`). Developers can extend this in two ways:
+
+### 1. Registering Custom Rubrics
+Rubrics are stored in `eval_runner/rubrics.py` via the `RubricRegistry`. While you can add them directly to the registry for the core, you can also register them dynamically in a plugin:
+
+```python
+from eval_runner.rubrics import RubricRegistry
+
+class MyCustomJudgePlugin(BaseEvalPlugin):
+    def before_evaluation(self, context):
+        # Register a domain-specific rubric
+        RubricRegistry.register("my_industry", "Evaluate the agent based on [My Specialized Rules]...")
+```
+
+### 2. Custom Judge Providers
+The judge uses the `LLMProviderFactory` to route scoring requests. By adding a custom adapter via `on_discover_adapters`, you can make new models available for judging by setting the `judge_provider` in your scenario's `judge_config`.
+

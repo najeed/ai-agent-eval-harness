@@ -183,6 +183,10 @@ def main():
     explain_parser = subparsers.add_parser("explain", help="Analyze trace logs to diagnose root causes")
     explain_parser.add_argument("path", help="Path to run.jsonl file")
 
+    # --- CALIBRATE COMMAND ---
+    calibrate_parser = subparsers.add_parser("calibrate", help="Measure judge agreement against human-labeled ground truth")
+    calibrate_parser.add_argument("path", help="Path to run.jsonl file containing both judge and human scores")
+
     # --- PLUGIN COMMAND ---
     # Security Guardrails: Strictly Namespaced Automated Registry
     plugin_parser = subparsers.add_parser("plugin", help="Execute plugin-specific subcommands")
@@ -280,6 +284,8 @@ def main():
                 handle_failures_search(args)
         elif args.command == "explain":
             handle_explain(args)
+        elif args.command == "calibrate":
+            handle_calibrate(args)
         elif args.command == "plugin":
             if args.plugin_name in plugin_handlers and args.plugin_cmd in plugin_handlers[args.plugin_name]:
                 handler = plugin_handlers[args.plugin_name][args.plugin_cmd]
@@ -923,6 +929,73 @@ def handle_explain(args):
     print(f"Root Cause: {diagnosis['root_cause']}")
     print(f"Suggestion: {diagnosis['suggestion']}")
     print("-------------------------")
+
+def handle_calibrate(args):
+    """Handler for 'calibrate' command."""
+    print(f"\n[Calibrate] Measuring judge agreement in: {args.path}")
+    path = Path(args.path)
+    if not path.exists():
+        print(f"❌ Error: Trace file not found: {path}")
+        return
+
+    judge_scores = []
+    human_scores = []
+    
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                if not line.strip(): continue
+                event = json.loads(line)
+                
+                # We look for evaluation events for the luna_judge_score
+                if event.get("event") == "evaluation":
+                    if event.get("metric") == "luna_judge_score":
+                        judge_val = event.get("value")
+                        # The human score is expected to be in the scenario metadata
+                        # or passed along in the evaluation event if already available
+                        human_val = event.get("human_score")
+                        
+                        if human_val is not None:
+                            judge_scores.append(float(judge_val))
+                            human_scores.append(float(human_val))
+    except Exception as e:
+        print(f"❌ Error processing trace for calibration: {e}")
+        return
+
+    if not judge_scores:
+        print("⚠ Warning: No paired judge/human scores found for calibration.")
+        print("   Ensure your scenarios include a 'human_score' field in criteria.")
+        return
+
+    # Calculate Metrics
+    count = len(judge_scores)
+    mean_abs_error = sum(abs(j - h) for j, h in zip(judge_scores, human_scores)) / count
+    
+    # Simple correlation (Simplified Pearson)
+    def mean(data): return sum(data) / len(data)
+    m_j, m_h = mean(judge_scores), mean(human_scores)
+    
+    num = sum((j - m_j) * (h - m_h) for j, h in zip(judge_scores, human_scores))
+    den_j = sum((j - m_j)**2 for j in judge_scores)
+    den_h = sum((h - m_h)**2 for h in human_scores)
+    
+    correlation = num / ((den_j * den_h)**0.5) if (den_j * den_h) > 0 else 1.0
+
+    print("\n" + "=" * 40)
+    print(f"{'JUDGE CALIBRATION REPORT':^40}")
+    print("=" * 40)
+    print(f"Sample Size:        {count}")
+    print(f"Mean Absolute Error: {mean_abs_error:.4f}")
+    print(f"Pearson Correlation: {correlation:.4f}")
+    print("-" * 40)
+    
+    if correlation > 0.9:
+        print("Status: 🟢 EXCELLENT ALIGNMENT")
+    elif correlation > 0.7:
+        print("Status: 🟡 GOOD ALIGNMENT")
+    else:
+        print(" Status: 🔴 POOR ALIGNMENT - Review Rubrics")
+    print("=" * 40)
 
 def handle_cleanup_runs(args):
     """Handler for 'cleanup-runs' command."""

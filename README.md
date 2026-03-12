@@ -177,14 +177,15 @@ The latest release introduces a new suite of high-level automation and visual to
 The harness is built on a decoupled, event-driven architecture that allows Enterprise integrations to be hot-swapped without core modifications.
 
 - **EventEmitter Bus**: Passive observation of every turn, tool call, and state change.
-- **Pluggable Runners**: Strategy-based orchestration for multi-attempt (`pass@k`) or interactive evaluations.
+- **🧩 Pluggable Judge Layer**: Configurable model-based scoring (Luna-Judge) with support for OpenAI, Gemini, Claude, and Ollama.
+- **🏥 Industry-Standard Rubrics**: Built-in specialized evaluators for Clinical Safety (Healthcare), Fiduciary Accuracy (Finance), and Policy Adherence (Legal).
+- **⚖️ Judge Calibration**: Automated alignment checking between automated judge scores and human ground truth via the `calibrate` command.
 - **Interception Hooks**: Plugins can now intercept and block tool calls (`on_tool_request`) or register custom adapters.
 - **Native HITL Support**: Built-in support for pausing evaluation for human intervention via the `human` adapter.
 - **Non-Linear Trajectories**: Support for branching and forking trajectories (`fork()`) in `SessionManager` for research-grade evaluations.
 - **Advanced Discovery**: Plugin-driven registry for third-party agent adapters (LangGraph, CrewAI, AutoGen, Grok) via the `on_discover_adapters` hook.
 - **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
 
-- **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
 
 ### Advanced Utilities
 Beyond the advanced suite, the harness provides a robust toolkit for professional evaluation:

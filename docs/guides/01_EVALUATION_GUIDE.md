@@ -30,12 +30,11 @@ Each object in the `tasks` array represents a single step and contains:
 -   `expected_state_changes`: (Optional) A list of state paths and values that should be true after the task.
 -   `success_criteria`: An array defining how to measure success.
 
-## Success Criteria & Metrics
+### LLM-as-Judge & Rubrics (v3.1)
+For semantic or safety-critical evaluations, you can use the `luna_judge_score` metric. This metric can be customized using a `judge_config` object within the criterion:
 
-Each object in the `success_criteria` array links a metric to a threshold:
-
--   `metric`: The name of the metric to calculate (must correspond to a function in `eval_runner/metrics.py`).
--   `threshold`: The minimum score (from 0.0 to 1.0) required to pass this criterion.
+- **`judge_rubric`**: Select a specialized rubric (e.g., `clinical_safety`, `fiduciary_accuracy`, `policy_adherence`).
+- **`judge_provider`**: Override the global judge model (e.g., `openai`, `gemini`).
 
 A task is only considered successful if **all** of its success criteria are met.
 
