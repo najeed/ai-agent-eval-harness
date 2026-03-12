@@ -690,7 +690,7 @@ if __name__ == "__main__":
         f.write(adapter_content)
 
     # Create README.md
-    readme_content = f"""# {config['project_name']}
+    readme_content = f"""# {scaffold_config['project_name']}
     
 Evaluation suite for {framework} agent in the {industry} industry.
 

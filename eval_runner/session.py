@@ -251,7 +251,6 @@ class SessionManager:
                 last_content.get("summary") or 
                 last_content.get("instructions") or 
                 last_content.get("content") or 
-                last_content.get("action") or 
                 ""
             )
         return str(last_content)

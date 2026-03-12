@@ -65,14 +65,16 @@ async def test_gemini_provider():
         assert result == "0.7"
 
 def test_provider_factory():
-    os.environ["JUDGE_PROVIDER"] = "openai"
-    provider = LLMProviderFactory.create()
-    assert isinstance(provider, OpenAIProvider)
+    from eval_runner import config
     
-    os.environ["JUDGE_PROVIDER"] = "anthropic"
-    provider = LLMProviderFactory.create()
-    assert isinstance(provider, AnthropicProvider)
+    with patch("eval_runner.config.JUDGE_PROVIDER", "openai"):
+        provider = LLMProviderFactory.create()
+        assert isinstance(provider, OpenAIProvider)
+    
+    with patch("eval_runner.config.JUDGE_PROVIDER", "anthropic"):
+        provider = LLMProviderFactory.create()
+        assert isinstance(provider, AnthropicProvider)
 
-    os.environ["JUDGE_PROVIDER"] = "grok"
-    provider = LLMProviderFactory.create()
-    assert isinstance(provider, GrokProvider)
+    with patch("eval_runner.config.JUDGE_PROVIDER", "grok"):
+        provider = LLMProviderFactory.create()
+        assert isinstance(provider, GrokProvider)

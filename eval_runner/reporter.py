@@ -18,11 +18,11 @@ def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = No
     Saves a detailed JSON trajectory of the evaluation run.
     """
     # Systemic path resolution (Guardrail 4.7)
-    if base_dir is None:
-        base_dir = Path(__file__).parent.parent
+    if base_dir:
+        report_dir = base_dir / "reports" / "trajectories"
+    else:
+        report_dir = config.TRAJECTORIES_DIR
     
-    # mypy fix: base_dir is now definitely Path
-    report_dir = config.TRAJECTORIES_DIR
     report_dir.mkdir(parents=True, exist_ok=True)
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
