@@ -1,8 +1,8 @@
-import os
-import aiohttp
 import json
+import aiohttp
 from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any
+from . import config
 
 class LLMProvider(ABC):
     """Abstract base class for LLM providers."""
@@ -16,8 +16,8 @@ class OllamaProvider(LLMProvider):
     """Local Ollama provider."""
     
     def __init__(self, host: Optional[str] = None, model: Optional[str] = None):
-        self.host = host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        self.model = model or os.getenv("OLLAMA_MODEL", "llama3")
+        self.host = host or config.OLLAMA_HOST
+        self.model = model or config.OLLAMA_MODEL
 
     async def generate(self, prompt: str, **kwargs) -> str:
         async with aiohttp.ClientSession() as session:
@@ -44,9 +44,9 @@ class OpenAIProvider(LLMProvider):
     """OpenAI and compatible API provider."""
     
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-        self.base_url = base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-        self.model = model or os.getenv("OPENAI_MODEL", "gpt-4o")
+        self.api_key = api_key or config.OPENAI_API_KEY
+        self.base_url = base_url or config.OPENAI_BASE_URL
+        self.model = model or config.OPENAI_MODEL
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
@@ -78,8 +78,8 @@ class AnthropicProvider(LLMProvider):
     """Anthropic (Claude) provider."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
-        self.model = model or os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20240620")
+        self.api_key = api_key or config.ANTHROPIC_API_KEY
+        self.model = model or config.ANTHROPIC_MODEL
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
@@ -88,7 +88,7 @@ class AnthropicProvider(LLMProvider):
         async with aiohttp.ClientSession() as session:
             headers = {
                 "x-api-key": self.api_key,
-                "anthropic-version": "2023-06-01",
+                "anthropic-version": config.ANTHROPIC_VERSION,
                 "content-type": "application/json"
             }
             async with session.post(
@@ -111,8 +111,8 @@ class GeminiProvider(LLMProvider):
     """Google Gemini provider."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
-        self.model = model or os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
+        self.api_key = api_key or config.GOOGLE_API_KEY
+        self.model = model or config.GEMINI_MODEL
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
@@ -137,14 +137,14 @@ class GrokProvider(LLMProvider):
     """xAI Grok provider (OpenAI-compatible)."""
     
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or os.getenv("XAI_API_KEY")
-        self.model = model or os.getenv("XAI_MODEL", "grok-beta")
+        self.api_key = api_key or config.XAI_API_KEY
+        self.model = model or config.XAI_MODEL
 
     async def generate(self, prompt: str, **kwargs) -> str:
         # Grok uses OpenAI-compatible API
         provider = OpenAIProvider(
             api_key=self.api_key,
-            base_url="https://api.x.ai/v1",
+            base_url=config.XAI_BASE_URL,
             model=self.model
         )
         return await provider.generate(prompt, **kwargs)
@@ -154,7 +154,7 @@ class LLMProviderFactory:
     
     @staticmethod
     def create(provider_name: Optional[str] = None) -> LLMProvider:
-        provider_name = provider_name or os.getenv("JUDGE_PROVIDER", "ollama")
+        provider_name = provider_name or config.JUDGE_PROVIDER
         provider_name = provider_name.lower()
         
         if provider_name == "ollama":

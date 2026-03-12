@@ -12,7 +12,25 @@ eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 - `--path`: Path to a single Scenario JSON file or a directory containing scenarios.
 - `--attempts`: Number of attempts (K) per scenario for `pass@k` calculation.
 - `--limit`: Max number of scenarios to run.
-- `--protocol`: Agent protocol (`http`, `local`, `socket`).
+
+**Environment Variables:**
+| Variable | Default | Description |
+|---|---|---|
+| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint for `http` protocol |
+| `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
+| `JUDGE_PROVIDER` | `ollama` | LLM Judge provider (`openai`, `anthropic`, `gemini`, `ollama`, `grok`) |
+| `JUDGE_MODEL` | - | Specific model for the judge (e.g., `gpt-4o`, `claude-3-5-sonnet`) |
+| `LUNA_JUDGE_TEMPERATURE`| `0.0` | Temperature for judge generation |
+| `OLLAMA_HOST` | `http://localhost:11434` | Ollama service endpoint |
+| `OPENAI_API_KEY` | - | API key for OpenAI provider |
+| `OPENAI_BASE_URL` | `https://api.openai.com/v1` | Base URL for OpenAI-compatible APIs |
+| `ANTHROPIC_API_KEY`| - | API key for Anthropic/Claude provider |
+| `GOOGLE_API_KEY` | - | API key for Google/Gemini provider |
+| `XAI_API_KEY` | - | API key for xAI/Grok provider |
+| `AUTOGEN_API_URL` | `http://localhost:5002/execute_task` | Endpoint for `autogen` protocol |
+| `DEFAULT_ADAPTER_TIMEOUT`| `30` | Network timeout for agent adapters |
+
+- `--protocol`: Agent protocol (`http`, `local`, `socket`, `claude`, `openai`, `ollama`, `gemini`, `crewai`, `langchain`, `langgraph`, `autogen`, `grok`).
 - `--agent-cmd`: Shell command for `local` protocol.
 - `--agent-socket`: Socket address (e.g., `localhost:9000`) or path for `socket` protocol.
 - `--format`: Dataset format (`jsonl` or `csv`).

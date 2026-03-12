@@ -142,12 +142,14 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
 - **Benchmark Ecosystem**: Native loaders and adapters for community benchmarks like GAIA and AssistantBench.
-- **Pluggable Architecture**: Extend anything via Python plugins, with out-of-the-box framework adapters for LangGraph and CrewAI.
+- **Pluggable Architecture**: Extend anything via Python plugins, with out-of-the-box framework adapters for **LangGraph**, **CrewAI**, and **Microsoft AutoGen**.
 - **Tool Sandbox**: Governance-controlled execution of real or mock tools.
 - **Visual Admin Console**: Integrated React Native (Expo) dashboard for live trace replay and visual debugging.
 - **Semantic Bridge & Distribution**: Ingest production traces (`import-drift`), analyze failures (`triage`), and export datasets to HuggingFace (`export`).
 - **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
-- **Robust Metrics**: 10+ built-in metrics (Tool Correctness, State Parity, Policy Compliance).
+- **Robust Metrics**: 12+ built-in metrics (Tool Correctness, State Parity, Policy Compliance, and LLM-Judged Clarity).
+- **Multi-Model LLM Judge (Luna-Judge)**: Advanced scoring via pluggable providers (OpenAI, Gemini, Claude, Ollama, xAI Grok).
+- **Centralized Configuration**: All system constants and environment defaults managed via `eval_runner/config.py`.
 
 ## The Advanced Update (v1.1)
 
@@ -179,7 +181,7 @@ The harness is built on a decoupled, event-driven architecture that allows Enter
 - **Interception Hooks**: Plugins can now intercept and block tool calls (`on_tool_request`) or register custom adapters.
 - **Native HITL Support**: Built-in support for pausing evaluation for human intervention via the `human` adapter.
 - **Non-Linear Trajectories**: Support for branching and forking trajectories (`fork()`) in `SessionManager` for research-grade evaluations.
-- **Advanced Discovery**: Plugin-driven registry for third-party agent adapters via the `on_discover_adapters` hook.
+- **Advanced Discovery**: Plugin-driven registry for third-party agent adapters (LangGraph, CrewAI, AutoGen, Grok) via the `on_discover_adapters` hook.
 - **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
 
 - **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
@@ -217,15 +219,30 @@ eval-harness console
 pytest tests/ -v -p no:plugin_gateway
 ```
 
-### Environment Variables
+### Centralized Configuration
+
+All configurable parameters are centralized in `eval_runner/config.py`. You can override any setting via environment variables.
 
 | Variable | Default | Description |
 |---|---|---|
-| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint URL (HTTP) |
-| `AGENT_LOCAL_CMD` | *(None)* | Command for local agent execution |
-| `AGENT_SOCKET_ADDR` | *(None)* | Address/Path for socket agent |
+| `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent entry point URL (HTTP) |
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
-| `OPENAI_API_KEY` | *(None)* | Required if using LLM-as-a-Judge metrics |
+| `MAX_ENGINE_ATTEMPTS` | `50` | Security cap on evaluation attempts |
+| `JUDGE_PROVIDER` | `ollama` | LLM Judge provider (`openai`, `anthropic`, `gemini`, `ollama`, `grok`) |
+| `JUDGE_MODEL` | *(None)* | Specific model for the judge |
+| `LUNA_JUDGE_TEMPERATURE`| `0.0` | Temperature for judge generation |
+| `OLLAMA_HOST` | `http://localhost:11434` | Local Ollama host URL |
+| `OLLAMA_MODEL` | `llama3` | Default Ollama model |
+| `OPENAI_API_KEY` | *(None)* | API key for OpenAI provider |
+| `OPENAI_BASE_URL` | `https://api.openai.com/v1` | Base URL for OpenAI-compatible APIs |
+| `ANTHROPIC_API_KEY`| *(None)* | API key for Anthropic/Claude provider |
+| `GOOGLE_API_KEY` | *(None)* | API key for Google/Gemini provider |
+| `XAI_API_KEY` | *(None)* | API key for xAI/Grok provider |
+| `DEFAULT_ADAPTER_TIMEOUT`| `30` | Network timeout for agent adapters |
+| `PLUGIN_TIMEOUT` | `5.0` | Execution timeout for plugin hooks |
+| `REPORTS_DIR` | `reports` | Base directory for generated reports |
+
+... and more.
 
 ### Security and Governance (Audit-Ready)
 The platform is built with a **Secure-by-Design** philosophy, complying with enterprise-grade audit standards.

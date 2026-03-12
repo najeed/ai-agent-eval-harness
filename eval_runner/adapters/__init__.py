@@ -12,13 +12,14 @@ import asyncio
 import subprocess
 import sys
 from typing import Dict, Any, Optional
+from .. import config
 
 async def http_adapter(payload: dict, url: str):
     """Call an agent over HTTP (default)."""
     import aiohttp
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            url, json=payload, timeout=aiohttp.ClientTimeout(total=10)
+            url, json=payload, timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT)
         ) as response:
             response.raise_for_status()
             return await response.json()

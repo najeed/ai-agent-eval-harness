@@ -11,6 +11,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+from . import config
 
 def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = None):
     """
@@ -21,7 +22,7 @@ def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = No
         base_dir = Path(__file__).parent.parent
     
     # mypy fix: base_dir is now definitely Path
-    report_dir = base_dir / "reports" / "trajectories"
+    report_dir = config.TRAJECTORIES_DIR
     report_dir.mkdir(parents=True, exist_ok=True)
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -94,7 +95,7 @@ def generate_html_report(scenario: dict, results: list) -> Path:
     """
     Generates a premium HTML report for the evaluation results.
     """
-    report_dir = Path("reports") / "html"
+    report_dir = config.HTML_REPORTS_DIR
     report_dir.mkdir(parents=True, exist_ok=True)
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -147,13 +148,13 @@ def generate_html_report(scenario: dict, results: list) -> Path:
 <html>
 <head>
     <title>Eval Report: {scenario.get('title')}</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({{startOnLoad:true, theme: 'dark'}});</script>
+    <script src="{config.MERMAID_CDN}"></script>
+    <script>mermaid.initialize({{startOnLoad:true, theme: '{config.MERMAID_THEME}'}});</script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {{
-            --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --sub: #94a3b8;
-            --success: #10b981; --failure: #ef4444; --accent: #38bdf8;
+            --bg: {config.HTML_BG_COLOR}; --card: {config.HTML_CARD_COLOR}; --text: {config.HTML_TEXT_COLOR}; --sub: {config.HTML_SUB_TEXT_COLOR};
+            --success: {config.HTML_SUCCESS_COLOR}; --failure: {config.HTML_FAILURE_COLOR}; --accent: {config.HTML_ACCENT_COLOR};
         }}
         body {{ font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 40px; line-height: 1.6; }}
         .header {{ border-bottom: 2px solid var(--card); padding-bottom: 20px; margin-bottom: 40px; }}

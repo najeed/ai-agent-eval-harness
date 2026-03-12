@@ -16,9 +16,11 @@ from .events import EventEmitter, CoreEvents
 from . import plugins
 from . import metrics
 
+from . import config
+
 # Security Guardrails: Fork Bomb Prevention
-MAX_FORK_DEPTH = 3
-MAX_FORK_BREADTH = 5
+MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
+MAX_FORK_BREADTH = config.MAX_FORK_BREADTH
 
 class SessionManager:
     """Manages a single evaluation attempt's lifecycle."""

@@ -12,8 +12,10 @@ import concurrent.futures
 from typing import List, Any
 from .context import EvaluationContext, TurnContext
 
+from . import config
+
 # Security Guardrails: Halt Execution Mitigation
-PLUGIN_TIMEOUT = 5.0
+PLUGIN_TIMEOUT = config.PLUGIN_TIMEOUT
 
 def _invoke_with_timeout(method, *args, **kwargs):
     """Wraps synchronous plugin hooks in a strict timeout."""

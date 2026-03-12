@@ -1,7 +1,6 @@
-import os
-import aiohttp
 from typing import Dict, Any
 from ..plugins import BaseEvalPlugin
+from .. import config
 
 class GrokAdapterPlugin(BaseEvalPlugin):
     """
@@ -23,7 +22,7 @@ class GrokAdapterPlugin(BaseEvalPlugin):
         if not api_key:
             return {"status": "error", "message": "xAI API key missing."}
             
-        model = payload.get("model") or os.getenv("XAI_MODEL", "grok-beta")
+        model = payload.get("model") or config.XAI_MODEL
         prompt = payload.get("task") or str(payload)
         
         async with aiohttp.ClientSession() as session:
@@ -33,14 +32,14 @@ class GrokAdapterPlugin(BaseEvalPlugin):
                     "Content-Type": "application/json"
                 }
                 async with session.post(
-                    "https://api.x.ai/v1/chat/completions",
+                    config.XAI_BASE_URL + "/chat/completions",
                     headers=headers,
                     json={
                         "model": model,
                         "messages": [{"role": "user", "content": prompt}],
                         "temperature": payload.get("temperature", 0.0)
                     },
-                    timeout=aiohttp.ClientTimeout(total=30)
+                    timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT)
                 ) as response:
                     if response.status == 200:
                         data = await response.json()

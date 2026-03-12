@@ -100,7 +100,7 @@ Turn 2: Harness → Agent: "GOVERNANCE ERROR: Amount 100 exceeds maximum allowed
          Agent → Harness: {"action": "call_tool", "tool_name": "apply_refund", "tool_params": {"amount": 50}}
 ```
 
-| `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
+```
 
 ---
 
@@ -145,13 +145,21 @@ When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harne
 }
 ```
 
-### Example: Claude Adapter Payload
+### Example: Grok Adapter Payload
 ```json
 {
   "task": "Process user request...",
-  "messages": [{"role": "user", "content": "..."}],
-  "model": "claude-3-5-sonnet-20240620",
-  "system_prompt": "You are a helpful assistant..."
+  "model": "grok-beta",
+  "temperature": 0.0
+}
+```
+
+### Example: AutoGen Adapter Payload
+```json
+{
+  "task_description": "...",
+  "url": "http://localhost:5002/execute_task",
+  "conversation_history": [...]
 }
 ```
 

@@ -1,8 +1,8 @@
 import json
 import aiohttp
-import os
 from typing import Dict, Any
 from ..plugins import BaseEvalPlugin
+from .. import config
 
 class AutoGenAdapterPlugin(BaseEvalPlugin):
     """
@@ -20,14 +20,14 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
         Calls the AutoGen agent endpoint.
         Standardizes the input to AutoGen's expected format.
         """
-        url = payload.get("url") or os.getenv("AUTOGEN_API_URL", "http://localhost:5002/execute_task")
+        url = payload.get("url") or config.AUTOGEN_API_URL
         
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.post(
                     url,
                     json=payload,
-                    timeout=aiohttp.ClientTimeout(total=30)
+                    timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT)
                 ) as response:
                     if response.status == 200:
                         data = await response.json()

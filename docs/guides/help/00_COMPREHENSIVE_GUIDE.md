@@ -70,7 +70,7 @@ The harness uses a decoupled, event-driven design:
 - **Interception**: Use `on_tool_request` to block or proxy tool calls.
 - **Observability**: Subscribe to `CoreEvents` via the `EventEmitter` for non-blocking logging.
 - **Secure Namespaces**: Legacy `extend_cli` is removed. Use `on_register_commands` to register commands under the `eval-harness plugin <name>` sub-command.
-- **Ecosystem Adapters**: Official, zero-touch support for **LangChain**, **Ollama**, **OpenAI**, **Gemini**, and **Claude**. 
+- **Ecosystem Adapters**: Official, zero-touch support for **LangChain**, **Ollama**, **OpenAI**, **Gemini**, **Claude**, **AutoGen**, and **xAI Grok**.
 - **Immutability**: TurnContext and EvaluationContext are frozen to prevent accidental side-effects.
 
 ---

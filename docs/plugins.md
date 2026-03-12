@@ -188,6 +188,13 @@ my_analysis = "my_package.plugin:MyAnalysisPlugin"
 
 Phase 4 introduced built-in support for extending agent communication protocols without touching the core engine. Using the `on_discover_adapters` hook, a plugin can register custom protocol schemes (e.g., `langgraph://`).
 
+Built-in Ecosystem Adapters:
+- **`langgraph://`**: Integration with LangChain's LangGraph.
+- **`crewai://`**: Support for CrewAI agent swarms.
+- **`autogen://`**: Support for Microsoft AutoGen agents.
+- **`grok://`**: Native xAI Grok API integration.
+- **`ollama://`**, **`openai://`**, **`claude://`**, **`gemini://`**: Direct LLM provider shims.
+
 ```python
 from eval_runner.plugins import BaseEvalPlugin
 
@@ -202,5 +209,5 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
 If this plugin is active, scenarios can now specify an agent URL like `langgraph://my_agent_node`, and the engine will seamlessly route the task to this adapter bypassing standard HTTP mechanisms.
 
 ### Ecosystem Provider Adapters
-Providers like **OpenAI**, **Gemini**, and **Claude** are also implemented using this hook. While framework adapters (like LangGraph) often wrap complex logic, provider adapters typically translate AES tasks into specific LLM API calls.
+Providers like **OpenAI**, **Gemini**, **Claude**, **Ollama**, and **xAI Grok** are also implemented using this hook. While framework adapters (like LangGraph or AutoGen) often wrap complex logic, provider adapters typically translate AES tasks into specific LLM API calls.
 

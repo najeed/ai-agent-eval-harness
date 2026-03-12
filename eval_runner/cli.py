@@ -17,6 +17,9 @@ from . import reporter
 from . import plugins
 from . import catalog
 from . import linter
+from . import doctor
+from . import triage
+from . import config
 
 def main():
     """Main CLI entry point."""
@@ -130,7 +133,7 @@ def main():
 
     # --- RECORD COMMAND ---
     record_parser = subparsers.add_parser("record", help="Record interactions with an agent")
-    record_parser.add_argument("--agent", default="http://localhost:5001/execute_task", help="Agent API URL")
+    record_parser.add_argument("--agent", default=config.AGENT_API_URL, help="Agent entry point URL")
 
     # --- PLAYGROUND COMMAND ---
     playground_parser = subparsers.add_parser("playground", help="Interactive REPL to experiment with an agent")
@@ -651,7 +654,7 @@ def handle_init(_):
         
     api_url = input("Agent API URL (default: http://localhost:5001/execute_task): ").strip()
     if not api_url:
-        api_url = "http://localhost:5001/execute_task"
+        api_url = config.AGENT_API_URL
         
     # Generate eval_config.json
     config = {

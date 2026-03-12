@@ -9,6 +9,7 @@ Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 import json
 from typing import Any, Optional, Dict
 from abc import ABC, abstractmethod
+from . import config
 
 class SharedStateRegistry:
     """Standard protocol for multi-agent state visibility (namespaces)."""
@@ -171,7 +172,7 @@ class ToolSandbox(AbstractSandbox):
         safe = re.sub(r'\.\.[\\/]+', '', path)
         safe = safe.replace("../", "").replace("..\\", "")
         if "/" in safe or "\\" in safe:
-            safe = "vfs:/" + safe.replace("\\", "/").split("/")[-1]
+            safe = config.SANDBOX_VFS_PREFIX + safe.replace("\\", "/").split("/")[-1]
         return safe
 
     @staticmethod
@@ -183,7 +184,7 @@ class ToolSandbox(AbstractSandbox):
             value = re.sub(r'\.\.[\\/]+', '', value)
             value = value.replace("../", "").replace("..\\", "")
             # Strip shell meta-characters
-            for char in [";", "|", "&&", "`"]:
+            for char in config.SHELL_METABLOCKS:
                 value = value.replace(char, "")
         elif isinstance(value, dict):
             return {k: ToolSandbox._sanitize_value(v) for k, v in value.items()}

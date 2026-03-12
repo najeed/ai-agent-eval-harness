@@ -55,6 +55,7 @@ This document describes the system architecture of the AI Agent Evaluation Harne
 |--------|------|---------|
 | CLI | `eval_runner/cli.py` | Universal entry-point (`replay`, `aes`, `console`) |
 | Loader | `eval_runner/loader.py` | Multi-format dataset ingestion and v2.0 schema validation |
+| Configuration | `eval_runner/config.py` | Centralized constants and environment orchestration |
 | Adapters | `eval_runner/adapters.py` | Native communication shims (HTTP, Local, Sockets) |
 | Admin Console | `eval_runner/console/` & `admin-console/` | Flask proxy API (Background Eval) and Unified React SPA |
 ### `EventEmitter` Bus: Passive Observation
@@ -142,6 +143,8 @@ Phase 4 elevates the Harness from an isolated tool to an integrated participant 
 |---|---|---|
 | `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent endpoint |
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
+| `MAX_ENGINE_ATTEMPTS` | `50` | Evaluation security cap |
+| `JUDGE_PROVIDER` | `ollama` | Multi-model judge provider |
 
 ## Test Suite
 
@@ -156,12 +159,12 @@ The following mitigations are enforced at the core level:
 
 | # | Threat | Mitigation | Location |
 |---|---|---|---|
-| 1 | DoS / CPU Exhaustion | `MAX_ENGINE_ATTEMPTS = 50` hard cap | `engine.py` |
+| 1 | DoS / CPU Exhaustion | `MAX_ENGINE_ATTEMPTS = 50` hard cap | `config.py` |
 | 2 | PII / Token Leakage | `sanitize_payload()` redacts JWT, AWS, GitHub, Bearer tokens and neutralizes format-string injection | `events.py` |
 | 3 | CLI Command Hijacking | `extend_cli` removed; plugins use namespaced `on_register_commands` under `eval-harness plugin <name>` | `cli.py`, `plugins.py` |
-| 4 | Plugin Halt (Hang) | All hooks wrapped in `PLUGIN_TIMEOUT = 5.0s` via `_invoke_with_timeout()` | `plugins.py` |
-| 5 | Sandbox Escape | Chroot on emitted state keys **and** values; shell meta-characters (`;`, `\|`, `&&`, `` ` ``) stripped | `tool_sandbox.py` |
-| 6 | Fork Bomb | `MAX_FORK_DEPTH = 3`, `MAX_FORK_BREADTH = 5` enforced in `SessionManager` | `session.py` |
+| 4 | Plugin Halt (Hang) | All hooks wrapped in `PLUGIN_TIMEOUT = 5.0s` via `_invoke_with_timeout()` | `config.py` |
+| 5 | Sandbox Escape | Chroot on emitted state keys **and** values; shell meta-characters (`;`, `\|`, `&&`, `` ` ``) stripped | `config.py` |
+| 6 | Fork Bomb | `MAX_FORK_DEPTH = 3`, `MAX_FORK_BREADTH = 5` enforced in `SessionManager` | `config.py` |
 | 7 | RCE via Repro Scripts | Scripts output as inert `.txt`; `os.system`/`subprocess` strings stripped | `reporting_plugin.py` |
 | 8 | Prototype Pollution | `EvaluationContext`/`TurnContext` are `frozen` dataclasses; nested dicts wrapped in `MappingProxyType`; history stored as `tuple` | `context.py` |
 | 9 | Plugin GUI Hijacking | JWT-based **Secure Handoff** (60s tokens) for all Enterprise routes | `auth.py`, `App.jsx` |

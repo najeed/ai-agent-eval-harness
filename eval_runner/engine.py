@@ -19,20 +19,11 @@ from . import metrics
 from .context import EvaluationContext, TurnContext
 from .tool_sandbox import ToolSandbox
 
-# Read the agent URL from an environment variable, with a default for local testing
-AGENT_API_URL = os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")
-
-# Maximum number of conversation turns per task before forcing completion
-MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "5"))
+from . import config
 
 # Security Guardrails
-MAX_ENGINE_ATTEMPTS = 50
-
-# Run Log Configuration
-RUN_LOG_DIR = Path(os.getenv("RUN_LOG_DIR", "runs"))
-RUN_LOG_PER_RUN = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
-RUN_LOG_MASTER = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
-RUN_LOG_ROTATE_COUNT = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))  # 0 means no rotation
+MAX_ENGINE_ATTEMPTS = config.MAX_ENGINE_ATTEMPTS
+MAX_TURNS = config.EVAL_MAX_TURNS
 
 # Dynamic Adapter Registry for Agent Communication
 class AgentAdapterRegistry:
@@ -79,7 +70,7 @@ class AgentAdapterRegistry:
         # Use provided endpoint or fall back to defaults
         if not endpoint:
             if protocol == "http":
-                endpoint = AGENT_API_URL
+                endpoint = config.AGENT_API_URL
             elif protocol == "local":
                 endpoint = os.getenv("AGENT_LOCAL_CMD")
             elif protocol == "socket":
