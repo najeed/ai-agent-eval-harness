@@ -9,6 +9,7 @@ export default function ScenarioEditor() {
     industry: 'generic',
     tasks: [{ id: '1', description: 'Sample task' }],
   });
+  const [taskSearch, setTaskSearch] = useState('');
 
   const saveScenario = () => {
     fetch('http://127.0.0.1:5000/api/scenarios', {
@@ -35,6 +36,19 @@ export default function ScenarioEditor() {
     });
   };
 
+  const moveTask = (index: number, direction: 'up' | 'down') => {
+    const newTasks = [...scenario.tasks];
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= newTasks.length) return;
+    [newTasks[index], newTasks[newIndex]] = [newTasks[newIndex], newTasks[index]];
+    setScenario({ ...scenario, tasks: newTasks });
+  };
+
+  const deleteTask = (index: number) => {
+    const newTasks = scenario.tasks.filter((_, i) => i !== index);
+    setScenario({ ...scenario, tasks: newTasks });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -58,21 +72,48 @@ export default function ScenarioEditor() {
         />
 
         <Text style={styles.label}>Tasks (State Nodes)</Text>
-        {scenario.tasks.map((task: any, index: number) => (
-          <View key={task.id} style={styles.taskItem}>
-            <Text style={styles.taskNumber}>{index + 1}</Text>
-            <TextInput
-              style={[styles.input, { flex: 1, marginBottom: 0 }]}
-              placeholder="Describe task expectation..."
-              value={task.description}
-              onChangeText={(text: string) => {
-                const newTasks = [...scenario.tasks];
-                newTasks[index].description = text;
-                setScenario({ ...scenario, tasks: newTasks });
-              }}
-            />
-          </View>
-        ))}
+        <View style={styles.searchBar}>
+          <Ionicons name="search" size={18} color="#9CA3AF" />
+          <TextInput
+            style={styles.searchInnerInput}
+            placeholder="Filter tasks..."
+            value={taskSearch}
+            onChangeText={setTaskSearch}
+          />
+        </View>
+
+        {scenario.tasks
+          .map((task: any, index: number) => ({ ...task, originalIndex: index }))
+          .filter((task: any) => task.description.toLowerCase().includes(taskSearch.toLowerCase()))
+          .map((task: any) => {
+            const index = task.originalIndex;
+            return (
+              <View key={task.id} style={styles.taskItem}>
+                <View style={styles.taskActions}>
+                   <TouchableOpacity onPress={() => moveTask(index, 'up')} disabled={index === 0}>
+                      <Ionicons name="arrow-up-circle" size={20} color={index === 0 ? "#E5E7EB" : "#007AFF"} />
+                   </TouchableOpacity>
+                   <TouchableOpacity onPress={() => moveTask(index, 'down')} disabled={index === scenario.tasks.length - 1}>
+                      <Ionicons name="arrow-down-circle" size={20} color={index === scenario.tasks.length - 1 ? "#E5E7EB" : "#007AFF"} />
+                   </TouchableOpacity>
+                </View>
+                <Text style={styles.taskNumber}>{index + 1}</Text>
+                <TextInput
+                  style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                  placeholder="Describe task expectation..."
+                  value={task.description}
+                  onChangeText={(text: string) => {
+                    const newTasks = [...scenario.tasks];
+                    newTasks[index].description = text;
+                    setScenario({ ...scenario, tasks: newTasks });
+                  }}
+                />
+                <TouchableOpacity onPress={() => deleteTask(index)} style={{ marginLeft: 8 }}>
+                   <Ionicons name="trash-outline" size={20} color="#EF4444" />
+                </TouchableOpacity>
+              </View>
+            );
+          })}
 
         <TouchableOpacity style={styles.addButton} onPress={addTask}>
           <Ionicons name="add-circle" size={24} color="#007AFF" />
@@ -137,6 +178,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
+  taskActions: {
+    marginRight: 8,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
   taskNumber: {
     width: 28,
     height: 28,
@@ -163,6 +209,22 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     color: '#007AFF',
     fontWeight: '600',
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  searchInnerInput: {
+    flex: 1,
+    height: 40,
+    fontSize: 14,
+    marginLeft: 5,
   },
   saveButton: {
     backgroundColor: '#111827',

@@ -43,10 +43,13 @@ def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) ->
     Calculates the correctness of tool calls by the agent.
     Returns 1.0 if the sets of tools match exactly, 0.0 otherwise.
     """
+    expected_set = set(expected_tools)
+    actual_set = set(actual_tools)
+    is_match = expected_set == actual_set
     print(
-        "[Metrics] Comparing expected tools {} vs. actual {}".format(expected_tools, actual_tools)
+        f"[Metrics] Comparing expected tools {expected_set} vs. actual {actual_set}. Match: {is_match}"
     )
-    return 1.0 if set(expected_tools) == set(actual_tools) else 0.0
+    return 1.0 if is_match else 0.0
 
 
 @MetricRegistry.register("generic_accuracy")

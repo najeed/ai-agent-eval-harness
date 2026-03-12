@@ -17,8 +17,22 @@ def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) 
     if not trace_path.exists():
         raise FileNotFoundError(f"Trace file not found: {trace_path}")
 
-    with open(trace_path, "r") as f:
-        trace_data = json.loads(f.read())
+    try:
+        with open(trace_path, "r") as f:
+            content = f.read().strip()
+            if not content:
+                raise ValueError("Trace file is empty.")
+            
+            # Support both standard JSON and JSONL (one object per line)
+            lines = content.splitlines()
+            if len(lines) > 1:
+                # Assume JSONL
+                trace_data = [json.loads(line) for line in lines if line.strip()]
+            else:
+                # Assume standard JSON
+                trace_data = json.loads(content)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse trace as JSON/JSONL: {e}")
 
     if isinstance(trace_data, dict):
         history = trace_data.get("history", [])

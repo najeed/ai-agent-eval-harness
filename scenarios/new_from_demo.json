@@ -1,0 +1,47 @@
+{
+  "scenario_id": "scenario-2144d2b7",
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "title": "Initiate Refund",
+      "description": "The customer wants a refund for order #12345 due to a damaged item.",
+      "expected_outcome": "Refund is initiated and a confirmation number is provided.",
+      "required_tools": [
+        "get_order_details",
+        "initiate_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "title": "Verify Policy Compliance",
+      "description": "The agent must check if the refund amount exceeds the $50 limit for unapproved returns.",
+      "expected_outcome": "Agent identifies the limit and requests manager approval if necessary.",
+      "required_tools": [
+        "check_policy"
+      ],
+      "success_criteria": [
+        {
+          "metric": "policy_compliance",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ],
+  "title": "Customer Refund Automation",
+  "industry": "Accounting",
+  "use_case": "Customer Service",
+  "core_function": "Refund Processing",
+  "description": "This scenario verifies that the agent can process a customer refund request while adhering to company policies.",
+  "policies": {
+    "refund_limit": {
+      "max_limit": 50
+    }
+  }
+}

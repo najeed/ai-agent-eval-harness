@@ -50,6 +50,7 @@ def list_scenarios():
 @core_bp.route("/runs", methods=["GET"])
 def list_runs():
     """Returns a list of recent run traces."""
+    query = request.args.get("q", "").lower()
     runs = []
     run_log = Path("runs") / "run.jsonl"
     if run_log.exists():
@@ -59,9 +60,16 @@ def list_runs():
                     try:
                         event = json.loads(line.strip())
                         if event.get("event") == "run_start":
+                            run_id = event.get("run_id")
+                            scenario = event.get("scenario")
+                            
+                            # Filter by query if provided
+                            if query and query not in run_id.lower() and query not in scenario.lower():
+                                continue
+                                
                             runs.append({
-                                "run_id": event.get("run_id"),
-                                "scenario": event.get("scenario"),
+                                "run_id": run_id,
+                                "scenario": scenario,
                                 "timestamp": event.get("timestamp")
                             })
                     except Exception:
@@ -223,6 +231,38 @@ def get_debugger_state():
         if event_name:
             DebuggerStateStore.handle_event(MockEvent(event_name, event_data))
         return jsonify({"status": "updated"})
+
+    # Check for run_id to load historical trace
+    run_id = request.args.get("run_id")
+    if run_id:
+        trace_file = Path("runs") / f"{run_id}.jsonl"
+        if trace_file.exists():
+            events = []
+            summary = {"message": f"Historical Trace: {run_id}"}
+            try:
+                with open(trace_file, "r", encoding="utf-8") as f:
+                    for line in f:
+                        ev = json.loads(line.strip())
+                        events.append(ev)
+                        # Minimal summary extraction for historical view
+                        if ev.get("event") == "world_state_change":
+                            summary["state"] = ev.get("state")
+                            summary["shared_state"] = ev.get("shared_state")
+                        elif ev.get("event") == "agent_request":
+                             summary["message"] = f"User: {ev.get('content')}"
+                        elif ev.get("event") == "agent_response":
+                             summary["last_tool"] = ev.get("response", {}).get("action")
+                
+                return jsonify({
+                    "status": "ok",
+                    "message": "Historical trace loaded",
+                    "data": {
+                        "summary": summary,
+                        "timeline": events[-50:] # Last 50 events
+                    }
+                })
+            except Exception as e:
+                return jsonify({"status": "error", "message": str(e)}), 500
 
     return jsonify({
         "status": "ok", 

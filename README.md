@@ -287,8 +287,8 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Core Architecture** | ✅ Eval Engine, Hooks, JSON Schemas | ✅ Enterprise Service Bus Integration |
 | **Industry Benchmark Set** | ✅ 4,600+ Scenarios | ✅ Prioritized Scenario Updates |
 | **Reliability Metrics** | ✅ `pass@k` multi-attempt scoring | ✅ Persistent Leaderboards & Consensus |
-| **Scenario Mutations** | ✅ Basic (Typos & Ambiguity) | ✅ Adversarial Fuzzing & Prompt Injections |
-| **Execution Security** | ❌ No limits | ✅ Tool Sandboxing & Context Payload Caps |
+| **Scenario Mutations** | 🔶 Basic (Typos & Ambiguity) | ✅ Adversarial Fuzzing & Prompt Injections |
+| **Execution Security** | 🔶 Basic Path/Shell Gating | ✅ Tool Sandboxing & Context Payload Caps |
 | **Privacy Protections** | ❌ No | ✅ Automatic PII Scanning & Redaction |
 | **Simulation** | ❌ Real API required | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
 | **Compliance Suites** | ❌ No | ✅ Turn-key Packs (HIPAA, FINRA, GDPR, PCI) |
@@ -296,11 +296,13 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Defensibility Governance**| ❌ No | ✅ WORM Audit Logs & Cryptographic Traces|
 | **Integrity Checks** | ❌ No | ✅ AES Scenario Merkle Sync |
 | **Admin Console & GUI** | ✅ Local React Native App | ✅ Hot-Swappable SSO & Enterprise Plugins |
-| **Reproduction Workflow** | ❌ JSONL Only | ✅ Interactive Flight Recorder & Jupyter Export |
+| **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Export |
 | **Parallel Engine** | ❌ Sequential only | ✅ Ray Integration for Distributed Runs |
-| **Interactive Triage** | ❌ Heuristic only | ✅ Human Annotation & Trace Tagging |
-| **Advanced Sandbox** | ✅ Basic Path/Shell Gating| ✅ Docker Containerization & Red-Team Probes |
+| **Interactive Triage** | 🔶 Heuristic only | ✅ Human Annotation & Trace Tagging |
+| **Advanced Sandbox** | 🔶 Basic Path/Shell Gating| ✅ Docker Containerization & Red-Team Probes |
 | **Auth & Governance** | ❌ None | ✅ OIDC SSO, RBAC, Managed Leaderboards |
+
+**Legend:** ✅ Full Capability • 🔶 Basic/OSS Only • ❌ Enterprise Only
 
 **Looking for Production-Grade Reliability?**
 The Enterprise Edition guarantees that you can safely evaluate agents over sensitive datasets without exposing credentials or executing dangerous code, backed by mathematical proof of non-repudiation. Contact `ai.eval.harness.contact+enterprise@gmail.com`.

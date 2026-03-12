@@ -7,7 +7,7 @@ class MockContext:
     def __init__(self):
         self.scenario_id = "test_scen"
         self.metadata = {"difficulty": 1}
-        self.turn_idx = 1
+        self.turn_number = 1
         self.agent_name = "test_agent"
         self.turn_metrics = {"accuracy": 1.0}
 

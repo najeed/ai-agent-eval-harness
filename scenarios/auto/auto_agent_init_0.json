@@ -1,0 +1,15 @@
+{
+  "scenario_id": "auto_agent_init_0",
+  "title": "Auto-generated for AgentExecutor(...)",
+  "description": "Verification of agent_init discovered in main.py",
+  "tasks": [
+    {
+      "task_id": "t1",
+      "description": "Interact with AgentExecutor(...) and verify its output."
+    }
+  ],
+  "metadata": {
+    "source_file": "main.py",
+    "pattern": "AgentExecutor(...)"
+  }
+}

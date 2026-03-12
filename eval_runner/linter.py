@@ -38,6 +38,12 @@ class ScenarioLinter:
             return results
 
         # 1. Metadata Checks (Phase 13 Compliance)
+        if not isinstance(data, dict):
+            results["status"] = "fail"
+            results["errors"].append(f"Scenario file must be a JSON object, found {type(data).__name__}")
+            results["score"] = 0
+            return results
+
         meta = data.get("metadata", {})
         required_meta = ["difficulty", "industry"]
         for field in required_meta:

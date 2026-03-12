@@ -17,19 +17,38 @@ def generate_interactive():
     output_dir = Path("scenarios") / industry
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    templates = [
+        {
+            "desc_tpl": "Automatically generated test case for {capability} in {industry} industry.",
+            "task_tpl": "User wants to perform {capability}. Handle the request correctly.",
+            "expected_tpl": "Successfully handled {capability}."
+        },
+        {
+            "desc_tpl": "Edge-case validation for {capability} workflows within the {industry} sector.",
+            "task_tpl": "Simulate a complex {capability} interaction. Ensure the agent follows standard {industry} protocols.",
+            "expected_tpl": "{capability.title()} processed with full audit trails."
+        },
+        {
+            "desc_tpl": "Adversarial robustness check: {capability} under high-load/ambiguous conditions.",
+            "task_tpl": "The user provides minimal info for {capability}. The agent must clarify and then execute.",
+            "expected_tpl": "Agent clarifies request and completes {capability} correctly."
+        }
+    ]
+
     generated_files = []
     for i in range(1, count + 1):
-        scenario_id = f"gen_{industry}_{capability}_{i}"
+        tpl = templates[(i-1) % len(templates)]
+        scenario_id = f"gen_{industry}_{capability.replace(' ', '_')}_{i}"
         scenario = {
             "scenario_id": scenario_id,
             "title": f"Generated {capability.replace('_', ' ').title()} Scenario {i}",
-            "description": f"Automatically generated test case for {capability} in {industry} industry.",
+            "description": tpl["desc_tpl"].format(capability=capability, industry=industry),
             "industry": industry,
             "tasks": [
                 {
                     "task_id": f"task_{i}",
-                    "description": f"User wants to perform {capability}. Handle the request correctly.",
-                    "expected_output": f"Successfully handled {capability}.",
+                    "description": tpl["task_tpl"].format(capability=capability, industry=industry),
+                    "expected_output": tpl["expected_tpl"].format(capability=capability, industry=industry),
                     "requirements": [
                         {"type": "mandatory", "description": f"Call the appropriate {capability} tool."}
                     ],

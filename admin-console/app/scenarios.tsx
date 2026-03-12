@@ -35,6 +35,14 @@ export default function Scenarios() {
     fetchScenarios();
   }, [industry, difficulty]);
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      fetchScenarios();
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [query]);
+
   const handleRun = (path: string) => {
     fetch('http://127.0.0.1:5000/api/evaluate', {
       method: 'POST',
@@ -62,7 +70,6 @@ export default function Scenarios() {
           placeholderTextColor="#666"
           value={query}
           onChangeText={setQuery}
-          onSubmitEditing={fetchScenarios}
         />
       </View>
 
@@ -93,13 +100,13 @@ export default function Scenarios() {
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                   <FileText color="#17A2B8" size={24} style={{ marginRight: 10 }} />
-                  <Text style={styles.title}>{item.title}</Text>
+                  <Text style={styles.title} numberOfLines={1}>{item.title || 'Untitled Scenario'}</Text>
                 </View>
                 <View style={styles.badge}>
                   {getStatusIcon(item.status)}
-                  <Text style={styles.badgeText}>{item.lint_score}%</Text>
+                  <Text style={styles.badgeText}>{item.lint_score ?? 0}%</Text>
                 </View>
               </View>
               

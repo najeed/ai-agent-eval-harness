@@ -1,0 +1,25 @@
+{
+  "scenario_id": "gen_manufacturing_digital twin_2",
+  "title": "Generated Digital Twin Scenario 2",
+  "description": "Automatically generated test case for digital twin in manufacturing industry.",
+  "industry": "manufacturing",
+  "tasks": [
+    {
+      "task_id": "task_2",
+      "description": "User wants to perform digital twin. Handle the request correctly.",
+      "expected_output": "Successfully handled digital twin.",
+      "requirements": [
+        {
+          "type": "mandatory",
+          "description": "Call the appropriate digital twin tool."
+        }
+      ],
+      "metrics": [
+        {
+          "metric": "success_rate",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

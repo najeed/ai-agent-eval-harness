@@ -142,6 +142,12 @@ def main():
     export_p.add_argument("--format", default="hf", choices=["hf"], help="Target format")
     export_p.add_argument("--output", required=True, help="Path to save exported dataset")
     
+    # --- MUTATE COMMAND ---
+    mutate_parser = subparsers.add_parser("mutate", help="Generate adversarial scenario variants")
+    mutate_parser.add_argument("--input", required=True, help="Path to input scenario JSON")
+    mutate_parser.add_argument("--type", required=True, choices=["typo", "injection", "ambiguity"], help="Type of mutation to apply")
+    mutate_parser.add_argument("--output", help="Path to save mutated scenario")
+    
     # --- REPLAY COMMAND ---
     replay_parser = subparsers.add_parser("replay", help="Replay a run trace (Flight Recorder)")
     replay_parser.add_argument("--path", default="runs/run.jsonl", help="Path to the trace file to replay")
