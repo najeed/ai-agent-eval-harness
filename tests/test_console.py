@@ -89,10 +89,10 @@ def test_plugin_blueprint_registration(client):
 
 def test_evaluate_endpoint(client):
     """Test that the evaluation endpoint is functional."""
-    response = client.post("/api/evaluate", json={"path": "scenarios/generic.yaml"})
+    response = client.post("/api/evaluate", json={"path": "scenarios/research_verification.json"})
     assert response.status_code == 200
     data = response.get_json()
-    assert data["status"] == "queued"
+    assert data["status"] == "started"
     
     # Test error case
     response = client.post("/api/evaluate", json={})
