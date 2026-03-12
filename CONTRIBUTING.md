@@ -9,8 +9,8 @@ Thank you for your interest in building the industry standard for agentic reliab
 
 ## ⚖️ Legal & Licensing
 
-### 1. The Business Source License (BSL) 1.1
-By contributing to this repository, you acknowledge that this project is licensed under the **BSL 1.1**. While the core is open for developers and startups, it converts to Apache 2.0 on January 1, 2032. 
+### 1. The Apache License 2.0
+By contributing to this repository, you acknowledge that this project is licensed under the **Apache License 2.0**.
 
 ### 2. Developer Certificate of Origin (DCO)
 To simplify contributions, we use the **DCO** (Developer Certificate of Origin) model instead of a proprietary CLA. By adding a `Signed-off-by` line to your commit messages, you certify that you have the right to submit the work under the project's license.

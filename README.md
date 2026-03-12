@@ -13,7 +13,7 @@
 | Attribute | Specification |
 | :--- | :--- |
 | **Architect** | [Najeed Ahmed Khan](https://github.com/najeed) |
-| **License** | **BSL 1.1** (Converts to Apache 2.0 in 2032) |
+| **License** | **Apache License 2.0** |
 | **Status** | Production-Ready Framework |
 | **Core Goal** | Eliminating the "Agentic Reliability Gap" |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [Advanced Update](#the-advanced-update-v11) • [Architecture](#zero-touch-core-architecture) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -326,8 +326,5 @@ This project follows an **Open Core** model. The open-source capabilities provid
 The Enterprise Edition guarantees that you can safely evaluate agents over sensitive datasets without exposing credentials or executing dangerous code, backed by mathematical proof of non-repudiation. Contact `ai.eval.harness.contact+enterprise@gmail.com`.
 
 ### License
-The core of this project is licensed under the **Business Source License 1.1**. 
-- **For Developers:** It is free to use for testing, research, and startups under $5M revenue.
-- **For Enterprise:** A commercial license is required for high-scale production and competing services.
-- **Future:** This code will automatically transition to **Apache 2.0** on January 1, 2032.
+The core of this project is licensed under the **Apache License 2.0**. 
 See the [LICENSE](LICENSE) file for details.
