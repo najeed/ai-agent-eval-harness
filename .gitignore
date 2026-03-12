@@ -52,6 +52,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+.mypy_cache/
 
 # Environments
 .env
@@ -95,3 +96,21 @@ logs/
 # Sphinx build artifacts
 docs/_build/
 docs/build/
+
+# --- Execution Artifacts ---
+runs/
+reports/
+tmp/
+
+# --- Dependencies ---
+node_modules/
+.npm/
+.yarn/
+
+# --- System Files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log

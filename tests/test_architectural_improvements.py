@@ -7,7 +7,7 @@ from eval_runner.session import SessionManager
 
 class MockDiscoveryPlugin(BaseEvalPlugin):
     def on_discover_adapters(self, registry):
-        registry["mock_proto"] = self.mock_adapter
+        registry.register("mock_proto", self.mock_adapter)
     
     async def mock_adapter(self, payload):
         return {"action": "final_answer", "content": "Mock discovery works!"}
