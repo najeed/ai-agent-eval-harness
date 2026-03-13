@@ -144,6 +144,18 @@ Payloads are exchanged as JSON strings followed by a newline `\n`. The harness e
 
 ---
 
+---
+
+## 🏛 Benchmark URIs (Community Integration)
+The harness natively supports evaluating against major research benchmarks using custom URI schemes:
+
+- **`gaia://[split]`**: Loads scenarios from the GAIA dataset (e.g., `gaia://2023_all`).
+- **`assistantbench://[split]`**: Loads scenarios from AssistantBench (e.g., `assistantbench://test`).
+
+These URIs are handled by the `loader.py` which transparently wraps the external data into the standardized AES format with multi-turn metric support.
+
+---
+
 ## 🔗 Ecosystem Hub Payloads
 When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harness transparently maps the AES scenario into specific provider payloads. The return object follows the same `action` structure as the standard POST request.
 

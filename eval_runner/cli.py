@@ -537,8 +537,13 @@ async def run_evaluate(args):
         os.environ["AGENT_SOCKET_ADDR"] = args.agent_socket
 
     try:
-        path_obj = Path(args.path)
-        scenarios = loader.load_dataset(path_obj, format_type=args.format if args.format != "jsonl" else None)
+        # Pass raw string for URIs to prevent Windows backslash normalization
+        path_input = args.path
+        if "://" in path_input:
+            scenarios = loader.load_dataset(path_input, format_type=args.format if args.format != "jsonl" else None)
+        else:
+            path_obj = Path(path_input)
+            scenarios = loader.load_dataset(path_obj, format_type=args.format if args.format != "jsonl" else None)
     except Exception as e:
         print(f"[CLI] Error loading dataset: {e}")
         sys.exit(1)

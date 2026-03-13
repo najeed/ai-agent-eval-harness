@@ -9,11 +9,21 @@ class AssistantBenchmark:
         print(f"      [Benchmark] Loading AssistantBench dataset from {uri}...")
         return [
             {
-                "id": f"ab_{i}",
-                "task_description": "Solve the AssistantBench web-search/tool task.",
-                "initial_state": {},
-                "success_criteria": [
-                    {"type": "state_verification", "path": "goal_reached", "value": True}
+                "scenario_id": f"ab_{i}",
+                "title": f"AssistantBench Task {i}",
+                "description": "AssistantBench web-search/tool task.",
+                "use_case": "Web Assistant",
+                "core_function": "Search",
+                "industry": "General",
+                "tasks": [
+                    {
+                        "task_id": "solve_task",
+                        "description": "Solve the AssistantBench web-search/tool task.",
+                        "expected_outcome": "Goal reached via tools",
+                        "success_criteria": [
+                            {"metric": "state_verification", "threshold": 1.0}
+                        ]
+                    }
                 ]
             } for i in range(2)
         ]

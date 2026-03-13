@@ -817,9 +817,24 @@ const App = () => {
             .then(res => res.json())
             .then(data => setNavItems(data.nav || []));
             
+        // Security: Global message listener for plugin-to-core communication
+        const handleMessage = (event) => {
+            // Origin Validation (assuming same-origin for now, but extensible)
+            if (event.origin !== window.location.origin) return;
+            
+            const { type, payload } = event.data || {};
+            if (type === 'NOTIFY') {
+                showToast(payload.message, payload.type);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+            
         // Handle direct navigation from URL on boot
         const path = window.location.pathname.substring(1);
         if (path) setActiveTab(path === 'docs/api' ? 'api_docs' : path);
+
+        return () => window.removeEventListener('message', handleMessage);
     }, []);
 
     const handleNavClick = (item) => {
@@ -839,6 +854,22 @@ const App = () => {
     };
 
     const renderContent = () => {
+        const currentItem = navItems.find(n => n.id === activeTab);
+        
+        // Dynamic Component Handling (Zero-Touch Hot-Swap)
+        if (currentItem && currentItem.type === 'component') {
+            return (
+                <div className="h-full w-full overflow-hidden bg-slate-900/10">
+                    <iframe 
+                        src={currentItem.path}
+                        className="w-full h-full border-none"
+                        title={currentItem.title}
+                        sandbox="allow-scripts allow-forms allow-popups"
+                    />
+                </div>
+            );
+        }
+
         switch (activeTab) {
             case 'dashboard': return <Dashboard onNavigate={handleNavClick} navItems={navItems} />;
             case 'scenarios': return <ScenarioExplorer onNotify={showToast} searchQuery={globalSearch} />;

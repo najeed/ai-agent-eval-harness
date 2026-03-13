@@ -125,6 +125,14 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
     
     protocol = (metadata or {}).get("protocol", "unknown")
     agent = (metadata or {}).get("agent", "unknown")
+    if agent == "unknown" or agent is None:
+        if protocol == "http":
+            agent = config.AGENT_API_URL
+        elif protocol == "local":
+            agent = os.getenv("AGENT_LOCAL_CMD") or "local-subprocess"
+        elif protocol == "socket":
+            agent = os.getenv("AGENT_SOCKET_ADDR") or "socket-connection"
+
     agent_name = (metadata or {}).get("agent_name")
     
     # Discovery: If not in metadata, scan results for a discovered name
@@ -259,7 +267,18 @@ def generate_report(scenario: dict, results: list, export_trajectory: bool = Fal
     scenario_id = scenario.get('scenario_id')
     print(f"Scenario: {scenario.get('title')} ({scenario_id})")
     
+    protocol = (metadata or {}).get("protocol", "http")
     agent_target = (metadata or {}).get("agent", "Unknown")
+    
+    # Defaulting: Resolve from system defaults if metadata is missing
+    if agent_target == "Unknown" or agent_target is None:
+        if protocol == "http":
+            agent_target = config.AGENT_API_URL
+        elif protocol == "local":
+            agent_target = os.getenv("AGENT_LOCAL_CMD") or "local-subprocess"
+        elif protocol == "socket":
+            agent_target = os.getenv("AGENT_SOCKET_ADDR") or "socket-connection"
+
     agent_name = (metadata or {}).get("agent_name")
     
     # Discovery: Scan results if not in metadata
@@ -271,7 +290,7 @@ def generate_report(scenario: dict, results: list, export_trajectory: bool = Fal
                     break
             if agent_name: break
             
-    print(f"Protocol: {(metadata or {}).get('protocol', 'N/A').upper()}")
+    print(f"Protocol: {protocol.upper()}")
     print(f"Agent: {agent_name or agent_target}")
     print("-" * 50)
 

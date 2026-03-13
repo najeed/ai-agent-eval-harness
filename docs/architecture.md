@@ -5,7 +5,7 @@ The "Zero-Touch Core" is a design philosophy ensuring the central evaluation eng
 ### Unified Command-Line Interface
 The CLI (`cli.py`) now features **Dynamic Discovery**. Before parsing arguments, the harness triggers the `on_discover_adapters` hook across all registered plugins. This allows ecosystem-specific protocols like `autogen://` or `langgraph://` to be recognized as first-class citizens in the `--protocol` argument without hardcoding.
 
-Furthermore, the unified `--agent` flag provides a single point of entry for specifying target endpoints, which are intelligently routed to the appropriate adapter via the `metadata` context. The harness also implements **Zero-Touch Identity Discovery**, automatically extracting human-readable agent names from response metadata to enrich leaderboards and visual trajectories without framework-level changes.
+Furthermore, the unified `--agent` flag provides a single point of entry for specifying target endpoints, which are intelligently routed to the appropriate adapter via the `metadata` context. The harness also implements **Zero-Touch Identity Discovery**, automatically extracting human-readable agent names from response metadata (via `session.py`) or manual `--agent-name` overrides to enrich leaderboards and visual trajectories without framework-level changes.
 
 ## High-Level Data Flow
 
@@ -177,10 +177,8 @@ The following mitigations are enforced at the core level:
 
 The Admin Console uses a **Token-Exchange Protocol** to ensure Enterprise features are never exposed to unauthorized web requests:
 
-1. **Discovery**: The Flask backend exposes core and plugin routes via `/api/nav` with metadata (`type: internal | external | plugin`).
-2. **Handoff**: When a `plugin` link is clicked, the React SPA fetches a single-use JWT from `/api/auth/handoff`.
-3. **Validation**: The plugin route verifies the JWT via the `@handoff_required` decorator.
-4. **Adaptive Rendering**: 
-   - **Mode A (JSON)**: Renders structured layouts using the console's premium Design System.
-   - **Mode B (External)**: Navigates to or embeds external documentation and community links.
+1. **Discovery**: The Flask backend exposes core and plugin routes via `/api/nav` with metadata (`type: internal | external | component`).
+2. **Handoff**: For internal routes, the React SPA uses standard routing. For `component` types, it renders a **Sandboxed Iframe**.
+3. **Security**: Plugin iframes are constrained via `sandbox="allow-scripts allow-forms allow-popups"` to prevent top-level session hijacking.
+4. **Communication**: Components communicate with the core UI via `window.postMessage` using origin-validated listeners for sanctioned actions like `NOTIFY`.
 

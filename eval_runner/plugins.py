@@ -119,6 +119,7 @@ class PluginManager:
         except ImportError:
             pass
 
+
         # Phase 4: Discovery of built-in adapters as plugins
         self._load_internal_adapters()
 
@@ -145,9 +146,7 @@ class PluginManager:
                     attr = getattr(module, attr_name)
                     if (isinstance(attr, type) and issubclass(attr, BaseEvalPlugin) 
                         and attr is not BaseEvalPlugin):
-                        if not any(isinstance(p, attr) for p in self.plugins):
                             self.plugins.append(attr())
-                            # print(f"   [Plugins] Loaded internal adapter: {attr_name}")
             except Exception as e:
                 # print(f"   [Plugins] Failed to load adapter {file.name}: {e}")
                 pass

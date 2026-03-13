@@ -126,13 +126,28 @@ class AdminAnalysisPlugin(BaseEvalPlugin):
         def get_summary():
             return jsonify({"status": "ok", "insights": ["High latency in turn 3"]})
 
-        # 2. Add a link to the React Sidebar
+        # 2. Add a link to the React Sidebar as a sandboxed component
         nav_registry.append({
             "id": "analysis_tab",
             "title": "Live Analysis",
-            "path": "/plugin/analysis",
-            "icon": "vitals"  # Uses Phosphor Icon names
+            "path": "/api/plugins/analysis",
+            "icon": "vitals",
+            "type": "component"  # Renders in a secure sandboxed iframe
         })
+
+### 2. Secure PostMessage Communication
+Plugins rendered as `component` should use `window.parent.postMessage` to communicate with the core UI.
+```javascript
+window.parent.postMessage({
+    type: 'NOTIFY',
+    payload: { message: 'Analysis complete!', type: 'success' }
+}, window.location.origin);
+```
+
+### 3. Security Boundaries
+The core UI enforces strict security for plugin components:
+- **Iframe Sandboxing**: `allow-scripts allow-forms allow-popups` are enabled. Top-level navigation is **blocked**.
+- **Origin Validation**: All `postMessage` events are validated against the expected origin before processing.
 ```
 
 For detailed React component mapping and HUD customization, see the [UI Migration Guide](file:///C:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/docs/guides/help/UI_MIGRATION_GUIDE.md).

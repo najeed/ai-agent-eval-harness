@@ -107,6 +107,11 @@ def load_scenario(path: Union[str, Path]) -> Union[Dict[str, Any], List[Dict[str
 
 def load_dataset(file_path: Union[str, Path], format_type: Optional[str] = None) -> List[Dict]:
     """Loads a dataset file or scenario(s) using the registered loaders."""
+    # Handle Benchmark URIs before Path normalization
+    if isinstance(file_path, str) and "://" in file_path:
+        scenarios = load_scenario(file_path)
+        return scenarios if isinstance(scenarios, list) else [scenarios]
+
     path_obj = Path(file_path) if isinstance(file_path, str) else file_path
 
     if not path_obj.exists():

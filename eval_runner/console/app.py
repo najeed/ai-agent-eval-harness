@@ -34,7 +34,7 @@ def create_app():
             try:
                 method(app, nav_registry)
             except Exception as e:
-                print(f"[Console] Error registering routes for plugin {plugin.__class__.__name__}: {e}")
+                pass
                 
     # Endpoint to serve the unified navigation menu
     @app.route("/api/nav", methods=["GET"])

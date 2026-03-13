@@ -17,11 +17,21 @@ class GAIABenchmark:
         # For the harness, we convert it to our Scenario format
         return [
             {
-                "id": f"gaia_{i}",
-                "task_description": "Use the provided tools to solve the GAIA reasoning task.",
-                "initial_state": {},
-                "success_criteria": [
-                    {"type": "factual_accuracy", "expected_outcome": "Correct Answer from GAIA Metadata"}
+                "scenario_id": f"gaia_{i}",
+                "title": f"GAIA Task {i}",
+                "description": "General AI Assistants benchmark task.",
+                "use_case": "General Assistant",
+                "core_function": "Reasoning",
+                "industry": "General",
+                "tasks": [
+                    {
+                        "task_id": "solve_task",
+                        "description": "Use the provided tools to solve the GAIA reasoning task.",
+                        "expected_outcome": "Correct Answer from GAIA Metadata",
+                        "success_criteria": [
+                            {"metric": "factual_accuracy", "threshold": 1.0}
+                        ]
+                    }
                 ]
             } for i in range(3)
         ]
