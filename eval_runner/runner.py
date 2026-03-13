@@ -33,7 +33,7 @@ class DefaultRunner(BaseRunner):
         ctx = EvaluationContext(
             scenario_id=scenario.get("scenario_id", "unknown"),
             scenario_data=copy.deepcopy(scenario),
-            metadata=copy.deepcopy(metadata) if metadata else {}
+            metadata=dict(copy.deepcopy(metadata)) if metadata else {}
         )
         
         run_id = f"run-{ctx.scenario_id}-{int(asyncio.get_event_loop().time())}"

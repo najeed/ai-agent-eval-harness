@@ -16,6 +16,18 @@ POST /execute_task
 | `turn` | integer | ✅ | Current turn number in the conversation |
 | `conversation_history` | array | ❌ | Array of previous turns (`{role, content}`) |
 
+
+## Agent Identity (Name Discovery)
+
+The harness supports **Zero-Touch Identity Discovery**. Agents can optionally identify themselves by including a `name` or `agent_name` field in their response. This is highly recommended for leaderboards and visual reporting.
+
+The harness discovers the name using the following priority:
+1.  **Top-level fields**: `name` or `agent_name`.
+2.  **Nested Metadata**: `metadata.name` or `metadata.agent_name`.
+3.  **Model Identity**: `metadata.model` (commonly used by LLM-direct adapters).
+
+If no name is discovered, the harness falls back to the manual `--agent-name` CLI flag or the endpoint URL.
+
 ## Response Body
 
 The agent must return a JSON object with an `action` field indicating what it did:

@@ -68,6 +68,7 @@ def execute_task():
             agent_response = {
                 "action": "final_answer",
                 "summary": "The diagnostic tests are complete. I have identified the customer and verified the connection status.",
+                "name": "Luna-Sample-Agent"
             }
 
         elif "identify the customer" in task_desc and "speed tier" in task_desc:
@@ -79,6 +80,7 @@ def execute_task():
                 "tool_params": {"customer_id": customer_id},
                 "tool_output": tool_result,
                 "summary": f"Identified customer {tool_result['customer_name']} on plan {tool_result['plan']}.",
+                "name": "Luna-Sample-Agent"
             }
 
         elif "run a remote line test" in task_desc and "speed test" in task_desc:
@@ -90,6 +92,7 @@ def execute_task():
                 "tool_names": ["run_line_test", "run_remote_speed_test"],
                 "tool_outputs": [line_result, speed_result],
                 "summary": f"Remote diagnostics complete. Modem is receiving full speed ({speed_result['download_speed_mbps']} Mbps).",
+                "name": "Luna-Sample-Agent"
             }
 
         elif "guide them to run a speed test" in task_desc and "ethernet" in task_desc:
@@ -97,6 +100,7 @@ def execute_task():
             agent_response = {
                 "action": "provide_instructions",
                 "instructions": "Please connect your computer directly to the router with an Ethernet cable and run a speed test at example-speedtest.com.",
+                "name": "Luna-Sample-Agent"
             }
 
         elif "recommend wi-fi optimization steps" in task_desc:
@@ -108,6 +112,7 @@ def execute_task():
                 "tool_params": {"customer_id": customer_id},
                 "tool_output": tool_result,
                 "summary": f"The issue is likely with local Wi-Fi. I have provided a guide for optimization steps: {tool_result['guide_url']}",
+                "name": "Luna-Sample-Agent"
             }
 
         else:
@@ -115,6 +120,7 @@ def execute_task():
             agent_response = {
                 "action": "error",
                 "summary": "I'm sorry, I don't know how to handle that task.",
+                "name": "Luna-Sample-Agent"
             }
 
         return jsonify(agent_response), 200

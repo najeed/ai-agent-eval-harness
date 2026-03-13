@@ -12,6 +12,7 @@ eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 - `--path`: Path to a single Scenario JSON file or a directory containing scenarios.
 - `--attempts`: Number of attempts (K) per scenario for `pass@k` calculation.
 - `--limit`: Max number of scenarios to run.
+- `--agent-name`: Human-readable name for the agent (for reports and leaderboards). Priority: CLI Flag > Zero-Touch Discovery > Endpoint URL.
 
 **Environment Variables:**
 | Variable | Default | Description |

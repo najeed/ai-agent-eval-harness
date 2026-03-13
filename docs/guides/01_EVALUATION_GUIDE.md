@@ -47,8 +47,8 @@ A task is only considered successful if **all** of its success criteria are met.
 Beyond the CLI, the harness provides a **Unified React SPA** Admin Console for visual management:
 - **Scenario Explorer**: Browse the catalog with faceted filters and global search.
 - **Visual AES Builder**: Drag-and-drop integrated logic builder for complex flows.
-- **Reports & Traces**: Historical execution timeline with detailed analysis and instant "View Report" navigation.
-- **Visual Debugger**: Real-time trajectory playback with interactive state inspection and trace export.
+- **Reports & Traces**: Historical execution timeline with detailed analysis, discovered Agent Identity (names/models), and instant "View Report" navigation.
+- **Visual Debugger**: Real-time trajectory playback with interactive state inspection, human-readable agent labels, and trace export.
 
 Launch with:
 ```bash

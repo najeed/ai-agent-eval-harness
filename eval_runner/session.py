@@ -29,6 +29,7 @@ class SessionManager:
         from .engine import MAX_TURNS
         self.scenario = scenario
         self.metadata = metadata or {}
+        self.session_metadata = dict(metadata) if metadata else {}
         self.max_turns = int(scenario.get("max_turns", MAX_TURNS))
         self.fork_depth = scenario.get("_fork_depth", 0)
 
@@ -50,7 +51,17 @@ class SessionManager:
                 turns_taken = 0
                 agent_actions = {"used_tools": []}
 
-                EventEmitter.emit(CoreEvents.AGENT_REQUEST, {"role": "user", "content": current_message})
+                protocol = self.session_metadata.get("protocol", "http")
+                endpoint = self.session_metadata.get("agent")
+                agent_name = self.session_metadata.get("agent_name")
+
+                EventEmitter.emit(CoreEvents.AGENT_REQUEST, {
+                    "role": "user", 
+                    "content": current_message,
+                    "protocol": protocol,
+                    "agent": endpoint,
+                    "agent_name": agent_name
+                })
                 conversation_history.append({"role": "user", "content": current_message})
 
                 for turn in range(1, self.max_turns + 1):
@@ -71,19 +82,57 @@ class SessionManager:
                             "conversation_history": turn_ctx.history,
                         }
                         
-                        protocol = self.metadata.get("protocol", "http")
-                        endpoint = self.metadata.get("agent")
+                        protocol = self.session_metadata.get("protocol", "http")
+                        endpoint = self.session_metadata.get("agent")
+                        agent_name = self.session_metadata.get("agent_name")
+                        EventEmitter.emit(CoreEvents.AGENT_REQUEST, {
+                            "turn": turn,
+                            "protocol": protocol,
+                            "agent": endpoint,
+                            "agent_name": agent_name,
+                            "payload": payload
+                        })
                         agent_response = await AgentAdapterRegistry.call_agent(payload, protocol=protocol, endpoint=endpoint)
                         turns_taken += 1
+                        
+                        # Zero-Touch Name Discovery: Prioritize self-reported name if no CLI override exists
+                        if not agent_name:
+                            # Check top-level first, then nested metadata
+                            discovered_name = (
+                                agent_response.get("name") or 
+                                agent_response.get("agent_name") or
+                                agent_response.get("metadata", {}).get("name") or
+                                agent_response.get("metadata", {}).get("agent_name")
+                            )
+                            # Fallback to model name if available (common in LLM-direct adapters)
+                            if not discovered_name:
+                                discovered_name = agent_response.get("metadata", {}).get("model")
+
+                            if discovered_name:
+                                agent_name = discovered_name
+                                self.session_metadata["agent_name"] = discovered_name  # Persist for subsequent tasks/turns
+
                         # Support immutable TurnContext
                         turn_ctx = replace(turn_ctx, agent_response=agent_response)
                         
-                        EventEmitter.emit(CoreEvents.AGENT_RESPONSE, {"step": turn, "response": agent_response})
+                        EventEmitter.emit(CoreEvents.AGENT_RESPONSE, {
+                            "step": turn, 
+                            "response": agent_response,
+                            "protocol": protocol,
+                            "agent": endpoint,
+                            "agent_name": agent_name,
+                        })
                     except Exception as e:
                         EventEmitter.emit(CoreEvents.ERROR, {"message": f"Agent Error: {str(e)}"})
                         break
 
-                    conversation_history.append({"role": "agent", "content": agent_response})
+                    conversation_history.append({
+                        "role": "agent", 
+                        "content": agent_response,
+                        "protocol": protocol,
+                        "agent": endpoint,
+                        "agent_name": agent_name
+                    })
                     action = agent_response.get("action", "")
 
                     if action == "call_tool":

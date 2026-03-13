@@ -69,7 +69,27 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
         
         if role == "agent":
             action = content.get("action", "unknown")
+            framework = content.get("metadata", {}).get("framework", "")
+            protocol = entry.get("protocol", "")
+            agent = entry.get("agent", "")
+            agent_name = entry.get("agent_name")
+            
             label = f"{turn_idx}: {action}"
+            if action == "unknown":
+                if framework:
+                    label = f"{turn_idx}: {framework}"
+                elif protocol:
+                    label = f"{turn_idx}: {protocol}"
+            
+            if agent_name:
+                label += f" ({agent_name})"
+            elif agent:
+                # Add a truncated agent info for clarity if it's long
+                agent_display = agent.split("://")[-1] if "://" in agent else agent
+                if len(agent_display) > 20:
+                    agent_display = agent_display[:17] + "..."
+                label += f" ({agent_display})"
+            
             mermaid.append(f'  {node_id}["{label}"]')
             mermaid.append(f"  {prev_node} --> {node_id}")
             prev_node = node_id
@@ -91,7 +111,7 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
     mermaid.append(f"  {prev_node} --> End((End))")
     return "\n".join(mermaid)
 
-def generate_html_report(scenario: dict, results: list) -> Path:
+def generate_html_report(scenario: dict, results: list, metadata: Optional[dict] = None) -> Path:
     """
     Generates a premium HTML report for the evaluation results.
     """
@@ -102,6 +122,19 @@ def generate_html_report(scenario: dict, results: list) -> Path:
     scenario_id = scenario.get("scenario_id", "unknown")
     filename = f"report_{scenario_id}_{timestamp}.html"
     filepath = report_dir / filename
+    
+    protocol = (metadata or {}).get("protocol", "unknown")
+    agent = (metadata or {}).get("agent", "unknown")
+    agent_name = (metadata or {}).get("agent_name")
+    
+    # Discovery: If not in metadata, scan results for a discovered name
+    if not agent_name:
+        for tr in results:
+            for entry in tr.get("conversation_history", []):
+                if entry.get("role") == "agent" and entry.get("agent_name"):
+                    agent_name = entry["agent_name"]
+                    break
+            if agent_name: break
     
     total_tasks = len(results)
     successful_tasks = sum(1 for tr in results if all(m["success"] for m in tr["metrics"]))
@@ -197,6 +230,14 @@ def generate_html_report(scenario: dict, results: list) -> Path:
             <span class="m-name">Industry</span>
             <span class="stat-val">{scenario.get('industry', 'N/A').title()}</span>
         </div>
+        <div class="stat">
+            <span class="m-name">Protocol</span>
+            <span class="stat-val" style="color: var(--accent);">{protocol.upper()}</span>
+        </div>
+        <div class="stat">
+            <span class="m-name">Agent {"Name" if agent_name else "Target"}</span>
+            <span class="stat-val" style="font-size: 1rem; overflow-wrap: break-word;">{agent_name or agent}</span>
+        </div>
     </div>
 
     {tasks_html}
@@ -208,16 +249,30 @@ def generate_html_report(scenario: dict, results: list) -> Path:
     
     return filepath
 
-def generate_report(scenario: dict, results: list, export_trajectory: bool = False, export_html: bool = True):
+def generate_report(scenario: dict, results: list, export_trajectory: bool = False, export_html: bool = True, metadata: Optional[dict] = None):
     """
     Generates and prints a summary report of the evaluation results.
     """
     print("\n" + "=" * 50)
     print("EVALUATION REPORT")
     print("=" * 50)
-    print(f"Scenario: {scenario.get('title')} ({scenario.get('scenario_id')})")
-    print(f"Industry: {scenario.get('industry')}")
-    print(f"Description: {scenario.get('description')}")
+    scenario_id = scenario.get('scenario_id')
+    print(f"Scenario: {scenario.get('title')} ({scenario_id})")
+    
+    agent_target = (metadata or {}).get("agent", "Unknown")
+    agent_name = (metadata or {}).get("agent_name")
+    
+    # Discovery: Scan results if not in metadata
+    if not agent_name:
+        for tr in results:
+            for entry in tr.get("conversation_history", []):
+                if entry.get("role") == "agent" and entry.get("agent_name"):
+                    agent_name = entry["agent_name"]
+                    break
+            if agent_name: break
+            
+    print(f"Protocol: {(metadata or {}).get('protocol', 'N/A').upper()}")
+    print(f"Agent: {agent_name or agent_target}")
     print("-" * 50)
 
     total_tasks = len(results)
@@ -266,5 +321,5 @@ def generate_report(scenario: dict, results: list, export_trajectory: bool = Fal
         save_trajectory(scenario, results)
         
     if export_html:
-        html_path = generate_html_report(scenario, results)
+        html_path = generate_html_report(scenario, results, metadata=metadata)
         print(f"[Reporter] HTML report generated: {html_path}")

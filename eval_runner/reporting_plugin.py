@@ -33,7 +33,6 @@ class ReportingPlugin(BaseEvalPlugin):
                 summaries.append(summary)
             
             consistency_score = metrics.calculate_consistency_score(summaries)
-            with open("plugin_debug.txt", "a") as f: f.write(f"DEBUG: Task {t_idx} consistency: {consistency_score}\n")
             
             # Inject consistency metric into the last attempt's results for backward compat with tests
             last_task_res = all_attempt_results[-1][t_idx]
@@ -70,7 +69,7 @@ class ReportingPlugin(BaseEvalPlugin):
 
         # 1. Standard Summary Report
         print("\n   [ReportingPlugin] Generating summary report...")
-        reporter.generate_report(scenario, display_results, export_trajectory=True)
+        reporter.generate_report(scenario, display_results, export_trajectory=True, metadata=context.metadata)
         
         # 2. Reproduction Script (Mock implementation)
         self.generate_repro_script(context)

@@ -72,6 +72,9 @@ def main():
         "--agent", help="Unified agent endpoint URL or command (e.g., http://localhost:5001, autogen://localhost:5002)"
     )
     eval_parser.add_argument(
+        "--agent-name", help="Human-readable name for the agent (for leaderboards and reports)"
+    )
+    eval_parser.add_argument(
         "--agent-cmd", help="Command to run the local agent (for protocol=local)"
     )
     eval_parser.add_argument(
@@ -558,7 +561,8 @@ async def run_evaluate(args):
             results = await engine.run_evaluation(scenario, metadata={
                 "args": args,
                 "protocol": args.protocol,
-                "agent": args.agent
+                "agent": args.agent,
+                "agent_name": getattr(args, "agent_name", None)
             })
             scenario_tries.append(results)
             
