@@ -182,3 +182,18 @@ The Admin Console uses a **Token-Exchange Protocol** to ensure Enterprise featur
 3. **Security**: Plugin iframes are constrained via `sandbox="allow-scripts allow-forms allow-popups"` to prevent top-level session hijacking.
 4. **Communication**: Components communicate with the core UI via `window.postMessage` using origin-validated listeners for sanctioned actions like `NOTIFY`.
 
+## Visual Suite Migration: From Mermaid to React Flow
+
+The current Admin Console uses **Mermaid.js** for passive trajectory visualization. While effective for basic charts, the enterprise roadmap requires a shift to **React Flow** for professional-grade interactivity and aesthetics.
+
+### Rationale for Migration
+- **Interactivity**: React Flow supports zooming, panning, and node dragging, which are essential for long, complex agent trajectories.
+- **Custom Styling**: Native React components can be used as nodes, allowing for "Glassmorphism" and rich tool-preview overlays that match the premium console design.
+- **Performance**: Mermaid generates static SVGs which can become unperformant and unreadable for $N > 20$ nodes. React Flow uses a highly optimized viewport for thousands of items.
+
+### Implementation Roadmap
+1. **Model Parity**: Map the internal `FlightRecorder` events to React Flow's `nodes` and `edges` format in `LiveBridgePlugin`.
+2. **Custom Node Definitions**: Create specialized React components for `AGENT_PROMPT`, `TOOL_CALL`, and `LUNA_JUDGE` events.
+3. **Mobile/Responsive Logic**: Leverage React Flow's `fitView` and zoom-sensitivity to provide a first-class experience on mobile devices (via Expo).
+4. **Interactive Debugging**: Allow users to "click through" nodes to view the exact tool sandbox state (VFS) at that specific moment in time.
+

@@ -10,7 +10,7 @@ def test_benchmark_uri_loading():
     scenarios = loader.load_scenario("gaia://test_2023")
     assert isinstance(scenarios, list)
     assert len(scenarios) > 0
-    assert scenarios[0]["id"].startswith("gaia_")
+    assert scenarios[0]["scenario_id"].startswith("gaia_")
 
 def test_adapter_plugin_loading():
     """Test that internal adapters are loaded as plugins."""
