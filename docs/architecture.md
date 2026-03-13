@@ -1,6 +1,11 @@
-# Architecture Overview
+## Foundation: Zero-Touch Core Architecture
 
-This document describes the system architecture of the AI Agent Evaluation Harness, following the "Advanced Core 2.0" evolution.
+The "Zero-Touch Core" is a design philosophy ensuring the central evaluation engine remains framework-agnostic. All industry-specific logic, communication protocols (adapters), and evaluation metrics are implemented as plugins.
+
+### Unified Command-Line Interface
+The CLI (`cli.py`) now features **Dynamic Discovery**. Before parsing arguments, the harness triggers the `on_discover_adapters` hook across all registered plugins. This allows ecosystem-specific protocols like `autogen://` or `langgraph://` to be recognized as first-class citizens in the `--protocol` argument without hardcoding.
+
+Furthermore, the unified `--agent` flag provides a single point of entry for specifying target endpoints, which are intelligently routed to the appropriate adapter via the `metadata` context.
 
 ## High-Level Data Flow
 

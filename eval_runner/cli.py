@@ -23,6 +23,11 @@ from . import config
 
 def main():
     """Main CLI entry point."""
+    # Discover dynamic adapters before configuring the parser
+    # to ensure all plugin-registered protocols are available in choices.
+    engine.AgentAdapterRegistry._discover()
+    available_protocols = list(engine.AgentAdapterRegistry._adapters.keys())
+
     parser = argparse.ArgumentParser(
         description="AI Agent Evaluation Harness (OpenCore)",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -61,7 +66,10 @@ def main():
         "--master-log", action="store_true", default=None, help="Append all events to a master run.jsonl"
     )
     eval_parser.add_argument(
-        "--protocol", default="http", choices=["http", "local", "socket"], help="Communication protocol for the agent"
+        "--protocol", default="http", choices=available_protocols, help="Communication protocol for the agent"
+    )
+    eval_parser.add_argument(
+        "--agent", help="Unified agent endpoint URL or command (e.g., http://localhost:5001, autogen://localhost:5002)"
     )
     eval_parser.add_argument(
         "--agent-cmd", help="Command to run the local agent (for protocol=local)"
@@ -203,9 +211,17 @@ def main():
             return sub
 
     plugin_handlers = {}
+    seen_plugin_ids = set()
     for plugin in plugins.manager.plugins:
-        if hasattr(plugin, "on_register_commands"):
+        # Only register if the plugin has actually overridden the registration hook
+        # and we haven't seen this plugin ID yet in this CLI session
+        if plugin.__class__.on_register_commands != plugins.BaseEvalPlugin.on_register_commands:
             plugin_id = plugin.__class__.__name__.lower().replace("plugin", "")
+            
+            if plugin_id in seen_plugin_ids:
+                continue
+            seen_plugin_ids.add(plugin_id)
+            
             p_subparser = plugin_subparsers.add_parser(plugin_id, help=f"Commands for {plugin_id}")
             cmd_subparsers = p_subparser.add_subparsers(dest="plugin_cmd")
             registry = CommandRegistry(cmd_subparsers)
@@ -541,7 +557,8 @@ async def run_evaluate(args):
             # Ensure protocol is passed to engine
             results = await engine.run_evaluation(scenario, metadata={
                 "args": args,
-                "protocol": args.protocol
+                "protocol": args.protocol,
+                "agent": args.agent
             })
             scenario_tries.append(results)
             

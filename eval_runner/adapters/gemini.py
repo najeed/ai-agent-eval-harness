@@ -16,14 +16,14 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering Gemini adapter via on_discover_adapters hook.")
         registry.register("gemini", self.execute_gemini_query)
 
-    async def execute_gemini_query(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_gemini_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Executes a query against the Google Gemini API.
         """
         api_key = payload.get("api_key") or os.getenv("GEMINI_API_KEY")
         model = payload.get("model", "gemini-1.5-pro")
         # Google Generative AI endpoint
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        url = url or f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
 
         prompt = payload.get("task") or ""
         if "messages" in payload:

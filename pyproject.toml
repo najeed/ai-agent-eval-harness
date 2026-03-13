@@ -1,6 +1,18 @@
 [project]
-name = "eval_runner"
-version = "0.1.0"
+name = "ai-agent-eval-harness"
+version = "0.1.1"
+description = "Enterprise-grade reliability framework for AI agents."
+readme = "README.md"
+authors = [
+    { name = "Najeed Ahmed Khan", email = "ai.eval.harness.contact@gmail.com" }
+]
+license = "Apache-2.0"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Intended Audience :: Developers",
+]
 dependencies = [
     "aiohttp>=3.8.0",
     "Flask>=2.0.0",
@@ -10,6 +22,7 @@ dependencies = [
     "PyYAML>=6.0",
     "sentence-transformers",
     "numpy",
+    "datasets",
     "PyJWT>=2.0.0",
 ]
 

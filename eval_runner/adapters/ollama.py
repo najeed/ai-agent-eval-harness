@@ -15,12 +15,12 @@ class OllamaAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering Ollama adapter via on_discover_adapters hook.")
         registry.register("ollama", self.execute_ollama_query)
 
-    async def execute_ollama_query(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_ollama_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Executes a query against a local Ollama instance.
         Expects payload to contain 'model' and 'task' (or 'messages').
         """
-        base_url = payload.get("ollama_url", "http://localhost:11434/api/chat")
+        base_url = url or payload.get("ollama_url") or "http://localhost:11434/api/chat"
         model = payload.get("model", "llama3")
         
         # Translate harness task into Ollama chat format

@@ -15,12 +15,12 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering AutoGen adapter via on_discover_adapters hook.")
         registry.register("autogen", self.execute_autogen_query)
     
-    async def execute_autogen_query(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_autogen_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Calls the AutoGen agent endpoint.
         Standardizes the input to AutoGen's expected format.
         """
-        url = payload.get("url") or config.AUTOGEN_API_URL
+        url = url or payload.get("url") or config.AUTOGEN_API_URL
         
         async with aiohttp.ClientSession() as session:
             try:

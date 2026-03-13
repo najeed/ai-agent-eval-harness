@@ -14,8 +14,9 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering CrewAI adapter via on_discover_adapters hook.")
         registry.register("crewai", self.execute_crewai_task)
 
-    async def execute_crewai_task(self, task_id: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_crewai_task(self, payload: Dict[str, Any], endpoint: str = None) -> Dict[str, Any]:
         """Mock execution of a CrewAI agent task."""
+        task_id = payload.get("task_id", "default_task")
         print(f"      [Adapter] Executing CrewAI task: {task_id}")
         return {
             "status": "success",

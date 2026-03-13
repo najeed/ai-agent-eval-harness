@@ -72,7 +72,8 @@ class SessionManager:
                         }
                         
                         protocol = self.metadata.get("protocol", "http")
-                        agent_response = await AgentAdapterRegistry.call_agent(payload, protocol=protocol)
+                        endpoint = self.metadata.get("agent")
+                        agent_response = await AgentAdapterRegistry.call_agent(payload, protocol=protocol, endpoint=endpoint)
                         turns_taken += 1
                         # Support immutable TurnContext
                         turn_ctx = replace(turn_ctx, agent_response=agent_response)

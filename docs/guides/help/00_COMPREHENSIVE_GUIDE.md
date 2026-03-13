@@ -60,11 +60,12 @@ eval-harness quickstart
 ## 3) Developer Guide (Zero-Touch Core Architecture)
 
 ### 3.1 Architecture Overview
-The harness uses a decoupled, event-driven design:
+The harness uses a **Zero-Touch Core** design, where all major capabilities are hot-swappable via the **Modular Plugin Bus**:
 1. **Runner**: Orchestrates high-level loop (e.g., pass@k).
 2. **Session**: Manages multi-turn conversation and context.
 3. **EventEmitter**: Broadcasts state changes through a central bus.
-4. **Plugins**: Lifecycle listeners and interceptors.
+4. **AgentAdapterRegistry**: Dynamically discovers and registers agent protocols at runtime.
+5. **Plugins**: Standard lifecycle listeners and interceptors.
 
 ### 3.2 Extensibility
 - **Interception**: Use `on_tool_request` to block or proxy tool calls.

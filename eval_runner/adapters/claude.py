@@ -16,13 +16,13 @@ class ClaudeAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering Claude adapter via on_discover_adapters hook.")
         registry.register("claude", self.execute_claude_query)
 
-    async def execute_claude_query(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_claude_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Executes a query against the Anthropic Claude Messages API.
         """
         api_key = payload.get("api_key") or os.getenv("ANTHROPIC_API_KEY")
         model = payload.get("model", "claude-3-5-sonnet-20240620")
-        url = "https://api.anthropic.com/v1/messages"
+        url = url or "https://api.anthropic.com/v1/messages"
 
         headers = {
             "x-api-key": api_key,

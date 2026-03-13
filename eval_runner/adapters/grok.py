@@ -15,7 +15,7 @@ class GrokAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering Grok adapter via on_discover_adapters hook.")
         registry.register("grok", self.execute_grok_query)
 
-    async def execute_grok_query(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_grok_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Calls the xAI Grok API.
         Standardizes the output to match the harness expectations.
@@ -25,6 +25,7 @@ class GrokAdapterPlugin(BaseEvalPlugin):
             return {"status": "error", "message": "xAI API key missing."}
             
         model = payload.get("model") or config.XAI_MODEL
+        endpoint = url or (config.XAI_BASE_URL + "/chat/completions")
         prompt = payload.get("task") or str(payload)
         
         async with aiohttp.ClientSession() as session:
@@ -34,7 +35,7 @@ class GrokAdapterPlugin(BaseEvalPlugin):
                     "Content-Type": "application/json"
                 }
                 async with session.post(
-                    config.XAI_BASE_URL + "/chat/completions",
+                    endpoint,
                     headers=headers,
                     json={
                         "model": model,

@@ -14,8 +14,9 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering LangGraph adapter via on_discover_adapters hook.")
         registry.register("langgraph", self.execute_langgraph_node)
 
-    async def execute_langgraph_node(self, node_id: str, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_langgraph_node(self, payload: Dict[str, Any], endpoint: str = None) -> Dict[str, Any]:
         """Mock execution of a LangGraph node."""
+        node_id = payload.get("node_id", "default_node")
         print(f"      [Adapter] Executing LangGraph node: {node_id}")
         return {
             "status": "success",

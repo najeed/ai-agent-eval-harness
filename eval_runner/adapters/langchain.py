@@ -15,12 +15,12 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering LangChain adapter via on_discover_adapters hook.")
         registry.register("langchain", self.execute_langserve_query)
 
-    async def execute_langserve_query(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_langserve_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Executes a query against a LangServe remote endpoint.
         Expects payload to contain 'url' and 'input'.
         """
-        url = payload.get("url") or payload.get("base_url")
+        url = url or payload.get("url") or payload.get("base_url")
         if not url:
             return {"status": "error", "message": "Missing 'url' or 'base_url' in payload for langchain adapter"}
             

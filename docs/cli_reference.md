@@ -30,9 +30,10 @@ eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 | `AUTOGEN_API_URL` | `http://localhost:5002/execute_task` | Endpoint for `autogen` protocol |
 | `DEFAULT_ADAPTER_TIMEOUT`| `30` | Network timeout for agent adapters |
 
-- `--protocol`: Agent protocol (`http`, `local`, `socket`, `claude`, `openai`, `ollama`, `gemini`, `crewai`, `langchain`, `langgraph`, `autogen`, `grok`).
-- `--agent-cmd`: Shell command for `local` protocol.
-- `--agent-socket`: Socket address (e.g., `localhost:9000`) or path for `socket` protocol.
+- `--protocol`: Agent protocol (e.g., `http`, `local`, `socket`, `autogen`, `langgraph`, etc.). **Note:** All ecosystem adapters are discovery-driven; the CLI dynamically populates these choices from available plugins.
+- `--agent`: Unified agent target. Can be a URL (for `http`, `autogen`, `langgraph`), a shell command (for `local`), or an address (for `socket`).
+- `--agent-cmd`: (Legacy) Shell command for `local` protocol.
+- `--agent-socket`: (Legacy) Socket address for `socket` protocol.
 - `--format`: Dataset format (`jsonl` or `csv`).
 
 **Research Summary Output:**

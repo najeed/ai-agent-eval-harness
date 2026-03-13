@@ -16,12 +16,12 @@ class OpenAIAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering OpenAI adapter via on_discover_adapters hook.")
         registry.register("openai", self.execute_openai_query)
 
-    async def execute_openai_query(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_openai_query(self, payload: Dict[str, Any], base_url: str = None) -> Dict[str, Any]:
         """
         Executes a query against an OpenAI-compatible endpoint.
         """
         api_key = payload.get("api_key") or os.getenv("OPENAI_API_KEY")
-        base_url = payload.get("base_url", "https://api.openai.com/v1/chat/completions")
+        base_url = base_url or payload.get("base_url") or "https://api.openai.com/v1/chat/completions"
         model = payload.get("model", "gpt-4-turbo-preview")
         
         messages = payload.get("messages", [])

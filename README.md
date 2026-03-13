@@ -13,7 +13,7 @@
 | Attribute | Specification |
 | :--- | :--- |
 | **Architect** | [Najeed Ahmed Khan](https://github.com/najeed) |
-| **License** | **Apache License 2.0** |
+| **License** | Apache License 2.0 |
 | **Status** | Production-Ready Framework |
 | **Core Goal** | Eliminating the "Agentic Reliability Gap" |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [Advanced Update](#the-advanced-update-v11) • [Architecture](#zero-touch-core-architecture) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
