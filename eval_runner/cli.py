@@ -218,9 +218,8 @@ def main():
     for plugin in plugins.manager.plugins:
         # Only register if the plugin has actually overridden the registration hook
         # and we haven't seen this plugin ID yet in this CLI session
+        plugin_id = plugin.__class__.__name__.lower().replace("plugin", "")
         if plugin.__class__.on_register_commands != plugins.BaseEvalPlugin.on_register_commands:
-            plugin_id = plugin.__class__.__name__.lower().replace("plugin", "")
-            
             if plugin_id in seen_plugin_ids:
                 continue
             seen_plugin_ids.add(plugin_id)

@@ -23,6 +23,23 @@
         "command": "eval-harness.openConsole",
         "title": "Eval: Open Admin Console"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "eval-harness.openConsole",
+        "key": "f5",
+        "when": "editorTextFocus"
+      }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          "scenarios/*.json",
+          "industries/**/*.json",
+          "enterprise/packs/*.json"
+        ],
+        "url": "./aes.schema.json"
+      }
     ]
   },
   "scripts": {
