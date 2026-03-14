@@ -142,13 +142,14 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
 - **Benchmark Ecosystem**: Native loaders and adapters for community benchmarks like GAIA and AssistantBench.
-- **Pluggable Architecture**: Extend anything via Python plugins, with out-of-the-box framework adapters for **LangGraph**, **CrewAI**, and **Microsoft AutoGen**.
+- **Pluggable Architecture**: Extend anything via Python plugins, with out-of-the-box framework adapters for **LangGraph**, **CrewAI**, **Microsoft AutoGen**, and **xAI Grok**.
 - **Tool Sandbox**: Governance-controlled execution of real or mock tools.
 - **Visual Admin Console**: Integrated React Native (Expo) dashboard for live trace replay and visual debugging.
 - **Semantic Bridge & Distribution**: Ingest production traces (`import-drift`), analyze failures (`triage`), and export datasets to HuggingFace (`export`).
 - **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
 - **Robust Metrics**: 12+ built-in metrics (Tool Correctness, State Parity, Policy Compliance, and LLM-Judged Clarity).
 - **Multi-Model LLM Judge (Luna-Judge)**: Advanced scoring via pluggable providers (OpenAI, Gemini, Claude, Ollama, xAI Grok).
+- **Core Compliance Layer**: Integrated `ArtifactPlugin` for Source of Truth bundling and SHA-256 integrity verification.
 - **Centralized Configuration**: All system constants and environment defaults managed via `eval_runner/config.py`.
 
 ## The Advanced Update (v1.1)

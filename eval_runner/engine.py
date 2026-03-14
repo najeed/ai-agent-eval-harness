@@ -93,6 +93,7 @@ async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[d
     # Load internal plugins if not already loaded (like FlightRecorder and ReportingPlugin)
     from .flight_recorder import FlightRecorderPlugin
     from .reporting_plugin import ReportingPlugin
+    from .publication_plugin import PublicationPlugin
     if not any(isinstance(p, FlightRecorderPlugin) for p in plugins.manager.plugins):
         plugins.manager.plugins.append(FlightRecorderPlugin())
     if not any(isinstance(p, ReportingPlugin) for p in plugins.manager.plugins):

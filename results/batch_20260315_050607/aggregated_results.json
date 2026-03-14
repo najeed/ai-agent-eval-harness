@@ -1,0 +1,42 @@
+{
+  "fingerprint": "c4e6b4e96bde",
+  "agent": "Local-Mock-Beta",
+  "scenarios": {
+    "luna_demo.json": {
+      "pass_rate": 0.0,
+      "confidence_interval_95": 0.24495001020199958,
+      "avg_latency": 2.5,
+      "avg_cost": 0.0,
+      "failure_distribution": {
+        "unknown_failure": 1.0
+      }
+    },
+    "mutated_refund.json": {
+      "pass_rate": 0.0,
+      "confidence_interval_95": 0.21724574737604052,
+      "avg_latency": 2.5,
+      "avg_cost": 0.0,
+      "failure_distribution": {
+        "unknown_failure": 1.0
+      }
+    },
+    "new_from_demo.json": {
+      "pass_rate": 0.0,
+      "confidence_interval_95": 0.21724574737604052,
+      "avg_latency": 2.5,
+      "avg_cost": 0.0,
+      "failure_distribution": {
+        "unknown_failure": 1.0
+      }
+    },
+    "research_verification.json": {
+      "pass_rate": 0.0,
+      "confidence_interval_95": 0.21724574737604052,
+      "avg_latency": 2.5,
+      "avg_cost": 0.0,
+      "failure_distribution": {
+        "unknown_failure": 1.0
+      }
+    }
+  }
+}

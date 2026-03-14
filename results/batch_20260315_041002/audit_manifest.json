@@ -1,0 +1,17 @@
+{
+  "files": [
+    {
+      "filename": "aggregated_results.json",
+      "sha256": "8b5e7b6f7cbd157a23d225f6496906446bcb7262daf143e45f5da365f3b1d1cc"
+    },
+    {
+      "filename": "pilot_preview.html",
+      "sha256": "4e75d2a2a574b4dc6d206d74ff3f81ff9381807717c0d411f8bd8e6a856494db"
+    },
+    {
+      "filename": "manifest.json",
+      "sha256": "d5bb92b9a8b63f9e42cc7ca6d1fbb95c2fceba787dfc57a0cf8032be9fd8bfe3"
+    }
+  ],
+  "timestamp": "batch_20260315_041002"
+}

@@ -93,6 +93,7 @@ Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the eval
 | Mutator | `eval_runner/mutator.py` | Adversarial Mutation Engine for robustness red-teaming |
 | Triage | `eval_runner/triage.py`| Heuristic failure pattern matching and tagging |
 | Exporter | `eval_runner/exporter.py`| Conversion from internal `run.jsonl` to external formats (e.g., HuggingFace) |
+| Artifact Provider | `eval_runner/artifact_plugin.py`| Core compliance utility for SHA-256 manifest and Source-of-Truth bundling |
 | Benchmarks | `eval_runner/benchmarks/`| Native integrations for community datasets (GAIA, AssistantBench) |
 | Adapters | `eval_runner/adapters/`| Native plugin shims for external frameworks (LangGraph, CrewAI, AutoGen, Grok) |
 | Analyzer | `eval_runner/analyzer.py`| Proactive GitHub repo scanning and AES scenario scaffolding |

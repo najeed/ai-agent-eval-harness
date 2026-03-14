@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-03-15T04:52:31.218267",
+  "batch_id": "batch_20260315_045029",
+  "files": [
+    {
+      "name": "aggregated_results.json",
+      "sha256": "856d890c3a96b3c688bae53bba582e885dc4487550cf235da9d48db4e228406e"
+    },
+    {
+      "name": "pilot_preview.html",
+      "sha256": "4e75d2a2a574b4dc6d206d74ff3f81ff9381807717c0d411f8bd8e6a856494db"
+    },
+    {
+      "name": "manifest.json",
+      "sha256": "375253cb996444a71ca6674339ba39634818acb988536d51e8d9c931726d428b"
+    }
+  ]
+}

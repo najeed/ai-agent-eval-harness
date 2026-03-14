@@ -80,6 +80,15 @@ def main():
     eval_parser.add_argument(
         "--agent-socket", help="Socket address (unix:/path or tcp:host:port) (for protocol=socket)"
     )
+    eval_parser.add_argument(
+        "--pilot", action="store_true", help="Quick-run pilot mode (limits scenarios and attempts)"
+    )
+    eval_parser.add_argument(
+        "--seed", type=int, help="Random seed for reproducibility"
+    )
+    eval_parser.add_argument(
+        "--retry-failed", action="store_true", help="Retry previously failed scenarios"
+    )
     
     # --- LIST COMMAND ---
     list_parser = subparsers.add_parser("list", help="List and search available scenarios")
@@ -529,6 +538,11 @@ async def run_evaluate(args):
         os.environ["RUN_LOG_PER_RUN"] = "true" if args.per_run_logs else "false"
     if args.master_log is not None:
         os.environ["RUN_LOG_MASTER"] = "true" if args.master_log else "false"
+    
+    if args.seed is not None:
+        import random
+        random.seed(args.seed)
+        print(f"[CLI] Set random seed to: {args.seed}")
     
     if args.protocol == "local" and args.agent_cmd:
         os.environ["AGENT_LOCAL_CMD"] = args.agent_cmd

@@ -1,0 +1,143 @@
+{
+  "fingerprint": "c1df4103fbf8",
+  "timestamp": "20260315_045008",
+  "agent_name": "Verified-Adapter-v1",
+  "base_dir": "results\\batch_20260315_045008",
+  "runs": [
+    {
+      "run_id": "run_000",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_001",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_002",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_003",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_004",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_005",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_006",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_007",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_008",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_009",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_010",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_011",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_012",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_013",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_014",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_015",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_016",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_017",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_018",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_019",
+      "success": false,
+      "error": "No log file generated"
+    },
+    {
+      "run_id": "run_020",
+      "success": true,
+      "log_path": "results\\batch_20260315_045008\\run_020.jsonl",
+      "scenario": "research_verification.json",
+      "seed": 62
+    },
+    {
+      "run_id": "run_021",
+      "success": true,
+      "log_path": "results\\batch_20260315_045008\\run_021.jsonl",
+      "scenario": "research_verification.json",
+      "seed": 63
+    },
+    {
+      "run_id": "run_022",
+      "success": true,
+      "log_path": "results\\batch_20260315_045008\\run_022.jsonl",
+      "scenario": "research_verification.json",
+      "seed": 64
+    },
+    {
+      "run_id": "run_023",
+      "success": true,
+      "log_path": "results\\batch_20260315_045008\\run_023.jsonl",
+      "scenario": "research_verification.json",
+      "seed": 65
+    },
+    {
+      "run_id": "run_024",
+      "success": true,
+      "log_path": "results\\batch_20260315_045008\\run_024.jsonl",
+      "scenario": "research_verification.json",
+      "seed": 66
+    }
+  ]
+}

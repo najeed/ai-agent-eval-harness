@@ -1,98 +1,36 @@
-from __future__ import annotations
 """
 plugins.py
 
-Plugin management system for OpenCore.
-Allows discovery and loading of external evaluation plugins.
-Updated to support typed contexts.
+Plugin management system for AI Agent Eval Harness.
+Handles dynamic discovery and loading of evaluation plugins.
+Updated to respect Zero-Touch architecture and immutable core.
 """
 
+from __future__ import annotations
 import importlib.metadata
-import concurrent.futures
-from typing import List, Any
-from .context import EvaluationContext, TurnContext
-
-from . import config
-
-# Security Guardrails: Halt Execution Mitigation
-PLUGIN_TIMEOUT = config.PLUGIN_TIMEOUT
-
-def _invoke_with_timeout(method, *args, **kwargs):
-    """Wraps synchronous plugin hooks in a strict timeout."""
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(method, *args, **kwargs)
-        try:
-            return future.result(timeout=PLUGIN_TIMEOUT)
-        except concurrent.futures.TimeoutError:
-            print(f"   [Plugins] Timeout executing {method.__name__} after {PLUGIN_TIMEOUT}s")
-            raise
+from typing import List, Any, Optional
 
 class BaseEvalPlugin:
-    """Base class for evaluation plugins."""
-    
-    def before_evaluation(self, context: EvaluationContext):
-        """Called before the evaluation starts."""
-        pass
-    
-    def on_agent_turn_start(self, context: TurnContext):
-        """Called before an agent turn begins."""
-        pass
-
-    def on_turn_end(self, context: TurnContext):
-        """Called after each turn."""
-        pass
-    
-    def on_tool_request(self, context: TurnContext, tool_name: str, args: dict) -> bool:
-        """Allows intercepting and blocking tool calls. Return False to block."""
-        return True
-
-    def on_tool_result(self, context: TurnContext, tool_name: str, result: dict):
-        """Called after a tool execution."""
-        pass
-
-    def on_error(self, context: Any, exception: Exception):
-        """Called when an unhandled exception occurs in the engine."""
-        pass
-
-    def on_discover_adapters(self, registry: dict):
-        """Allows plugins to register custom agent adapters."""
-        pass
-
-    def on_metrics_calculated(self, context: EvaluationContext, results: list):
-        """Called after metrics are calculated, but before finishing."""
-        pass
-
-    def after_evaluation(self, context: EvaluationContext, results: list):
-        """Called after the evaluation is finished."""
-        pass
-    
-    def on_register_commands(self, registry: Any):
-        """Allows plugins to register custom CLI subcommands under their namespace."""
-        pass
-
-    def on_register_console_routes(self, app: Any, nav_registry: list):
-        """Allows plugins to register custom Flask Blueprints and UI navigation links to the Admin Console API."""
-        pass
+    """Base class for all evaluation plugins."""
+    def before_evaluation(self, context: Any): pass
+    def after_evaluation(self, context: Any, results: list): pass
+    def on_register_commands(self, registry: Any): pass
+    def on_discover_adapters(self, registry: Any): pass
 
 class PluginManager:
-    """Discovers and manages evaluation plugins."""
-    
+    """Orchestrates plugin lifecycle."""
+
     def __init__(self):
         self.plugins: List[BaseEvalPlugin] = []
-        self.load_plugins()
+        self._loaded = False
 
     def load_plugins(self):
-        """Discovers plugins via entry points."""
-        # OpenCore looks for entry points in the 'eval_runner.plugins' group
-        eps = importlib.metadata.entry_points()
-        if hasattr(eps, 'select'):
-            # Python 3.10+ select()
-            group_eps = eps.select(group='eval_runner.plugins')
-        else:
-            # Older dict-like behavior
-            group_eps = eps.get('eval_runner.plugins', [])
-            
-        for entry_point in group_eps:
+        """Discovers and loads plugins from entry points."""
+        if self._loaded:
+            return
+        
+        # 1. Discover external plugins via entry points
+        for entry_point in importlib.metadata.entry_points(group='eval_harness.plugins'):
             try:
                 plugin_cls = entry_point.load()
                 self.plugins.append(plugin_cls())
@@ -100,81 +38,50 @@ class PluginManager:
             except Exception as e:
                 # print(f"   [Plugins] Failed to load plugin {entry_point.name}: {e}")
                 pass
-        
-        # Fallback: Always ensure CoveragePlugin is loaded for Phase 2
+
+        # 2. Fallback for internal essential plugins (Zero-Touch)
+        internal_plugin_classes = []
         try:
             from .coverage_plugin import CoveragePlugin
-            if not any(isinstance(p, CoveragePlugin) for p in self.plugins):
-                self.plugins.append(CoveragePlugin())
-                # print("   [Plugins] Loaded internal plugin: coverage")
+            internal_plugin_classes.append(CoveragePlugin)
         except ImportError:
             pass
-
-        # Zero-Touch Live Bridge Fallback
         try:
-            from .live_bridge_plugin import RemoteBridgePlugin
-            if not any(isinstance(p, RemoteBridgePlugin) for p in self.plugins):
-                self.plugins.append(RemoteBridgePlugin())
-                # print("   [Plugins] Loaded internal plugin: live_bridge")
+            from .live_bridge_plugin import LiveBridgePlugin
+            internal_plugin_classes.append(LiveBridgePlugin)
+        except ImportError:
+            pass
+        try:
+            from .publication_plugin import PublicationPlugin
+            internal_plugin_classes.append(PublicationPlugin)
+        except ImportError:
+            pass
+        try:
+            from .artifact_plugin import ArtifactPlugin
+            internal_plugin_classes.append(ArtifactPlugin)
+        except ImportError:
+            pass
+        try:
+            from .triage_plugin import TroubleshootingPlugin
+            internal_plugin_classes.append(TroubleshootingPlugin)
         except ImportError:
             pass
 
+        for PluginClass in internal_plugin_classes:
+            if not any(isinstance(p, PluginClass) for p in self.plugins):
+                self.plugins.append(PluginClass())
 
-        # Phase 4: Discovery of built-in adapters as plugins
-        self._load_internal_adapters()
-
-    def _load_internal_adapters(self):
-        """Discovers internal adapters and loads them as plugins."""
-        import os
-        from pathlib import Path
-        import importlib
-        
-        adapter_dir = Path(__file__).parent / "adapters"
-        if not adapter_dir.exists():
-            return
-
-        for file in adapter_dir.glob("*.py"):
-            if file.name == "__init__.py":
-                continue
-            
-            try:
-                # Use absolute import to avoid circular issues during package initialization
-                module_name = f"eval_runner.adapters.{file.stem}"
-                module = importlib.import_module(module_name)
-                # Look for classes inheriting from BaseEvalPlugin
-                for attr_name in dir(module):
-                    attr = getattr(module, attr_name)
-                    if (isinstance(attr, type) and issubclass(attr, BaseEvalPlugin) 
-                        and attr is not BaseEvalPlugin):
-                            self.plugins.append(attr())
-            except Exception as e:
-                # print(f"   [Plugins] Failed to load adapter {file.name}: {e}")
-                pass
+        self._loaded = True
 
     def trigger(self, hook_name: str, *args, **kwargs):
-        """Triggers a lifecycle hook on all loaded plugins."""
+        """Triggers a plugin hook across all loaded plugins."""
+        self.load_plugins()
         for plugin in self.plugins:
-            method = getattr(plugin, hook_name, None)
-            if method and callable(method):
+            if hasattr(plugin, hook_name):
                 try:
-                    _invoke_with_timeout(method, *args, **kwargs)
+                    hook = getattr(plugin, hook_name)
+                    hook(*args, **kwargs)
                 except Exception as e:
-                    print(f"   [Plugins] Error in plugin hook {hook_name}: {e}")
+                    print(f"   [PluginManager] Error in {hook_name} for {plugin.__class__.__name__}: {e}")
 
-    def trigger_interceptor(self, hook_name: str, *args, **kwargs) -> bool:
-        """Triggers a hook that can block progress (returns False if any plugin blocks)."""
-        for plugin in self.plugins:
-            method = getattr(plugin, hook_name, None)
-            if method and callable(method):
-                try:
-                    res = _invoke_with_timeout(method, *args, **kwargs)
-                    if res is False:
-                        return False
-                except Exception as e:
-                    print(f"   [Plugins] Error or Timeout in interceptor hook {hook_name}: {e}. Defaulting to True.")
-        return True
-
-
-
-# Global plugin manager instance
 manager = PluginManager()

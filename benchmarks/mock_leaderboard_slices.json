@@ -1,0 +1,32 @@
+{
+  "slices": {
+    "by_industry": {
+      "telecom": [
+        { "rank": 1, "agent": "Enterprise-Alpha", "score": 98.2, "reliability": "99.9%" },
+        { "rank": 2, "agent": "OpenSource-Llama3-Tuned", "score": 85.5, "reliability": "92.1%" }
+      ],
+      "finance": [
+        { "rank": 1, "agent": "Enterprise-Beta", "score": 99.1, "reliability": "100.0%" },
+        { "rank": 2, "agent": "Enterprise-Alpha", "score": 97.4, "reliability": "98.5%" }
+      ]
+    },
+    "by_use_case": {
+      "customer_support": [
+        { "rank": 1, "agent": "Claude-3-Opus-Adapter", "score": 94.2, "latency": "1.2s" },
+        { "rank": 2, "agent": "GPT-4-Turbo-Adapter", "score": 93.8, "latency": "0.9s" }
+      ],
+      "security_audit": [
+        { "rank": 1, "agent": "Brahma-Guardian-v1", "score": 100.0, "vulnerability_detection": "100%" },
+        { "rank": 2, "agent": "Enterprise-Alpha", "score": 88.2, "vulnerability_detection": "82%" }
+      ]
+    },
+    "by_adapter": {
+      "autogen": [
+        { "rank": 1, "agent": "AutoGen-Stock", "score": 72.1, "stability": "High" }
+      ],
+      "langgraph": [
+        { "rank": 1, "agent": "LangGraph-Enterprise", "score": 91.5, "stability": "Critical" }
+      ]
+    }
+  }
+}

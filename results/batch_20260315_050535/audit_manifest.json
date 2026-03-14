@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-03-15T05:06:43.510785",
+  "batch_id": "batch_20260315_050535",
+  "files": [
+    {
+      "name": "aggregated_results.json",
+      "sha256": "309d5b9989fc732d0a481caad4112075adbee1a9b2c6834e74504529e95c5c16"
+    },
+    {
+      "name": "manifest.json",
+      "sha256": "aa22fef8abcb3052aea027614f93f89d877cbb488400299aa95a9066c0025d72"
+    }
+  ]
+}
