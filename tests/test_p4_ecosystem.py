@@ -15,6 +15,7 @@ def test_benchmark_uri_loading():
 def test_adapter_plugin_loading():
     """Test that internal adapters are loaded as plugins."""
     mgr = plugins.PluginManager()
+    mgr.load_plugins()
     plugin_names = [p.__class__.__name__ for p in mgr.plugins]
     assert "LangGraphAdapterPlugin" in plugin_names
     assert "CrewAIAdapterPlugin" in plugin_names

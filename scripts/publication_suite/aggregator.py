@@ -20,7 +20,8 @@ class Aggregator:
         self.config = self._load_config()
 
     def _load_config(self):
-        config_path = Path("config.yaml")
+        suite_dir = Path(__file__).parent.absolute()
+        config_path = suite_dir / "config.yaml"
         if config_path.exists():
             with open(config_path, "r") as f:
                 return yaml.safe_load(f)

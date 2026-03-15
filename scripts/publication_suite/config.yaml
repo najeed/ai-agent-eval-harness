@@ -1,0 +1,31 @@
+# AI Agent Eval Harness - Global Configuration
+
+# Evaluation Parameters
+default_runs: 100
+pilot_runs: 5
+parallel_workers: 4
+scenario_dir: scenarios/
+results_dir: results/
+export_dir: export/
+
+# Statistical Parameters
+confidence_level: 0.95
+regression_threshold: 0.03  # Flag if pass rate drops more than 3 points
+
+# Pricing Model (USD per 1M tokens - illustrative)
+# Note: Internal logic will convert these to per-token for calculation
+pricing:
+  openai_gpt4o: 5.0
+  claude_sonnet: 3.0
+  gemini_pro: 2.0
+  custom_adapter: 1.0
+
+# Pilot Mode Subsets
+# Define scenario IDs to use for pilot runs
+pilot_scenarios:
+  - starter_telecom
+  - starter_finance
+  - starter_healthcare
+  - starter_legal
+  - scenario-ee183321
+  # ... and others to make 10 total

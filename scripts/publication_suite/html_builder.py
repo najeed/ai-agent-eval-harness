@@ -120,7 +120,7 @@ HTML_TEMPLATE = """
         <div class="methodology">
             <h3>Methodology & Disclosure</h3>
             <p><strong>Environment:</strong> v1.20-Stable | <strong>Iterations:</strong> {{ run_count }} runs/scenario.</p>
-            <p><strong>Pricing:</strong> Mapped to <code>config.yaml</code> tokenized rates.</p>
+            <p><strong>Pricing:</strong> Mapped to <code>scripts/publication_suite/config.yaml</code> tokenized rates.</p>
         </div>
     </div>
 

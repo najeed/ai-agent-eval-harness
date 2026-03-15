@@ -24,10 +24,12 @@ class PublicationPlugin(BaseEvalPlugin):
         self.config = self._load_config()
 
     def _load_config(self):
-        config_path = Path("config.yaml")
-        if config_path.exists():
-            with open(config_path, "r") as f:
-                return yaml.safe_load(f)
+        # Check both root and publication_suite folder for self-containment
+        paths = [Path("config.yaml"), Path("scripts/publication_suite/config.yaml")]
+        for p in paths:
+            if p.exists():
+                with open(p, "r") as f:
+                    return yaml.safe_load(f)
         return {"pricing": {}, "confidence_level": 0.95}
 
     def after_evaluation(self, context: EvaluationContext, results: list):

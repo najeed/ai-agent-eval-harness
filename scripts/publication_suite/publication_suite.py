@@ -18,7 +18,7 @@ def main():
     parser.add_argument("--agent-name", default="Verified-Adapter-v1", help="Adapter name")
     parser.add_argument("--protocol", default="http", help="Protocol")
     parser.add_argument("--agent", default="http://localhost:5001/execute_task", help="Agent endpoint")
-    parser.add_argument("--compare", help="Path to agents_inventory.yaml for multi-agent benchmark")
+    parser.add_argument("--compare", help="Path to agents_inventory.yaml for multi-agent benchmark (Default: scripts/publication_suite/agents_inventory.yaml)")
     parser.add_argument("--parallel", type=int, default=4, help="Worker count")
     
     args = parser.parse_args()
@@ -37,6 +37,10 @@ def main():
     if args.compare:
         import yaml
         inventory_path = Path(args.compare)
+        if not inventory_path.exists():
+            # Fallback to suite-relative path
+            inventory_path = suite_dir / args.compare
+            
         if not inventory_path.exists():
             print(f"Error: Inventory file {inventory_path} not found.")
             return

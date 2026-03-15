@@ -144,7 +144,7 @@ Using consistent seeds across different adapters ensures that they are evaluated
 The suite supports **Model Wars** mode, allowing you to benchmark multiple agents against the same scenario library in a single pass. This produces a unified comparative leaderboard.
 
 ### 1. Define Agent Inventory
-Create an `agents_inventory.yaml` file to list your comparison targets:
+To use Model Wars, you must provide an **Agent Inventory** YAML file (Default: `scripts/publication_suite/agents_inventory.yaml`). This file defines the fleet of agents you wish to compare.
 ```yaml
 agents:
   - name: "GPT-4o"
@@ -159,7 +159,7 @@ agents:
 ### 2. Run Comparative Benchmark
 Use the `--compare` flag:
 ```bash
-python scripts/publication_suite/publication_suite.py --mode standard --compare agents_inventory.yaml
+python scripts/publication_suite/publication_suite.py --mode pilot --compare scripts/publication_suite/agents_inventory.yaml
 ```
 
 ### 3. Review Comparative Leaderboard
