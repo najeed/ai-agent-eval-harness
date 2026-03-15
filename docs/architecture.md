@@ -50,7 +50,7 @@ Furthermore, the unified `--agent` flag provides a single point of entry for spe
 │                                       │                                     │
 │  • catalog/: Optimized scenario indexing and faceted search                 │
 │  • linter/: AES compliance and quality scoring logic                        │
-│  • dashboard/: SPA Frontend (Unified React Admin Console)                   │
+│  • dashboard/: SPA Frontend (Integrated Visual Suite)                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -58,7 +58,7 @@ Furthermore, the unified `--agent` flag provides a single point of entry for spe
 
 | Module | File | Purpose |
 |--------|------|---------|
-| Admin Console | `eval_runner/console/` & `admin-console/` | Flask proxy API (Background Eval) and Unified React SPA |
+| Integrated Visual Suite | `eval_runner/console/` & `ui/visual-debugger/` | Flask proxy API (Background Eval) and Unified React SPA |
 | Rubrics | `eval_runner/rubrics.py` | Registry for industry-standard evaluation prompts |
 ### `EventEmitter` Bus: Passive Observation
 The core engine is built around a central `EventEmitter` (see `eval_runner/events.py`). Every state transition in the harness - from the start of a run to a tool call or an agent response - is emitted as an event. This allows plugins to observe the system's behavior without modifying the core logic.
@@ -105,7 +105,7 @@ Phase 1 establishes the "Standardized Evaluation" layer:
 - **AES (Agent Eval Specification)**: A framework-agnostic YAML format defining agent tasks, expected states, and safety policies. It enables benchmark sharing across repositories.
 - **`run.jsonl` (Flight Recorder)**: Every evaluation emits an append-only, deterministic log. This serves as the "source of truth" for replaying and debugging agent behavior without re-running the actual models.
 - **Agent Crash Replayer**: The `replay` CLI command reconstructs the agent's timeline from a `run.jsonl` file, enabling step-by-step inspection.
-- **Scenario Editor**: A visual drag-and-drop tool integrated into the Admin Console for authoring and modifying AES logic without writing JSON.
+- **Scenario Editor**: A visual drag-and-drop tool integrated into the Visual Suite for authoring and modifying AES logic without writing JSON.
 - **Failures Explainer**: The `explain` command analyzes `run.jsonl` to provide human-readable diagnostics for complex agent failures.
 
 ## Semantic Bridge & Drift Management
@@ -122,7 +122,7 @@ Phase 3 introduces advanced orchestration capabilities for research and complex 
 - **Non-Linear Trajectories**: `SessionManager.fork()` enables creators to explore multiple agent paths from a single checkpoint. This is essential for studying agent decision-making under ambiguity.
 - **Universal Agent Adapters**: The `AgentAdapterRegistry` allows switching between `http`, `local` (subprocess), and `socket` protocols. High-level metadata is propagated from the CLI to ensure the correct communication shim is used without scenario-level changes.
 - **Advanced Adapter Discovery**: The registry supports plugin-driven discovery. External plugins can register custom protocols (e.g., `mock_proto`, `proprietary_rpc`) using the `on_discover_adapters` hook.
-- **Scenario Catalog & Intelligence**: A centralized indexer (`catalog.py`) enables high-performance discovery across thousands of scenarios. It supports faceted search (industry, difficulty, tags) and powers the Admin Console "Scenario Explorer".
+- **Scenario Catalog & Intelligence**: A centralized indexer (`catalog.py`) enables high-performance discovery across thousands of scenarios. It supports faceted search (industry, difficulty, tags) and powers the Visual Suite "Scenario Explorer".
 - **AES Quality Linter**: The `linter.py` module implements automated quality scoring, ensuring scenarios have required metadata, balanced task counts, and no duplicates.
 - **Visual Debugger Hook**: A dedicated `DebuggerStateStore` in the console backend captures live world state and tool signals via the `EventEmitter` for real-time UI synchronization.
 
@@ -176,7 +176,7 @@ The following mitigations are enforced at the core level:
 
 ## Secure GUI Handoff Architecture
 
-The Admin Console uses a **Token-Exchange Protocol** to ensure Enterprise features are never exposed to unauthorized web requests:
+The Integrated Visual Suite uses a **Token-Exchange Protocol** to ensure Enterprise features are never exposed to unauthorized web requests:
 
 1. **Discovery**: The Flask backend exposes core and plugin routes via `/api/nav` with metadata (`type: internal | external | component`).
 2. **Handoff**: For internal routes, the React SPA uses standard routing. For `component` types, it renders a **Sandboxed Iframe**.
@@ -185,7 +185,7 @@ The Admin Console uses a **Token-Exchange Protocol** to ensure Enterprise featur
 
 ## Visual Suite Migration: From Mermaid to React Flow
 
-The current Admin Console uses **Mermaid.js** for passive trajectory visualization. While effective for basic charts, the enterprise roadmap requires a shift to **React Flow** for professional-grade interactivity and aesthetics.
+The current Visual Suite uses **Mermaid.js** for passive trajectory visualization. While effective for basic charts, the enterprise roadmap requires a shift to **React Flow** for professional-grade interactivity and aesthetics.
 
 ### Rationale for Migration
 - **Interactivity**: React Flow supports zooming, panning, and node dragging, which are essential for long, complex agent trajectories.

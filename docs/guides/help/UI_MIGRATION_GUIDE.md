@@ -83,4 +83,4 @@ The new frontend is located in `ui/visual-debugger/App.jsx`. It's a single-compo
 ---
 
 > [!IMPORTANT]
-> The React Native `admin-console/` is officially **DEPRECATED**. Support will be removed in v1.5. Please prioritize migration to the Integrated Visual Suite.
+> The React Native `admin-console/` has been officially **REMOVED** as of v1.2. All users must migrate to the Integrated Visual Suite. This guide remains for reference for those still porting custom plugin views.

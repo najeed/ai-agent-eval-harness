@@ -23,7 +23,7 @@ Entry point: `eval_runner/cli.py`
 ### Main commands
 - `evaluate` — Run a batch of scenarios
 - `quickstart` — End-to-end evaluation demo using `sample_agent`
-- `console` — Launch the Web Admin Console backend (with background execution and live visual debugging)
+- `console` — Launch the Integrated Visual Suite backend (with background execution and live visual debugging)
 - `doctor` — Validate environment health and dependencies
 - `init` — Scaffold new project directories with synthetic datasets
 - `report` — Generate a standalone **Premium HTML report** (reconstructed from any `.jsonl` trace)
@@ -102,7 +102,7 @@ Plugins are the primary extension point. They are discovered via `eval_runner.pl
 | `on_tool_result` | Observe tool outputs and world state side-effects. |
 | `on_metrics_calculated`| Post-process or inject custom metrics. |
 | `on_register_commands` | Securely register plugin CLI commands (replaces `extend_cli`). |
-| `on_register_console_routes` | Inject custom REST routes and React Native Expo UI navigation links. |
+| `on_register_console_routes` | Inject custom REST routes and React Visual Suite navigation links. |
 | `after_evaluation` | Final reporting or post-run notifications. |
 
 ### 4.2 Interception Example
@@ -114,8 +114,8 @@ def on_tool_request(self, context: TurnContext, tool_name: str, args: dict) -> b
     return True
 ```
 
-### 4.3 Extending the Web Admin Console (Native GUI)
-The Admin Console uses a **Secure Handoff** architecture and provides integrated high-level features like the **Visual Scenario Editor** (persists directly to disk) and the **Visual DNA Debugger** (taps into engine events).
+### 4.3 Extending the Integrated Visual Suite (Native GUI)
+The Visual Suite uses a **Secure Handoff** architecture and provides integrated high-level features like the **Visual Scenario Editor** (persists directly to disk) and the **Visual DNA Debugger** (taps into engine events).
 
 #### Secure Handoff Workflow:
 1. **JWT Issuance**: The frontend requests a short-lived (60s) handoff token from `/api/auth/handoff`.
@@ -130,6 +130,7 @@ from eval_runner.console.auth import handoff_required
 
 class EnterpriseConsolePlugin(BaseEvalPlugin):
     def on_register_console_routes(self, app, nav_registry):
+```python
         # 1. Register link with 'type' metadata ('internal' | 'external' | 'plugin')
         nav_registry.append({
             "id": "compliance_audit", 
@@ -138,23 +139,7 @@ class EnterpriseConsolePlugin(BaseEvalPlugin):
             "icon": "shield",
             "type": "plugin"
         })
-        
-        # 2. Register Secure Blueprint
-        bp = Blueprint("enterprise", __name__)
-        
-        @bp.route("/api/enterprise/audit")
-        @handoff_required
-        def audit_view():
-            # Mode A: Server-Driven UI (Native)
-            return jsonify({
-                "title": "Enterprise Audit",
-                "items": [
-                    {"label": "PII Leakage", "value": "0 Detected"},
-                    {"label": "Sanitization", "value": "100% Pass"}
-                ]
-            })
-            
-        app.register_blueprint(bp)
+```
 ```
 
 ---
@@ -169,7 +154,7 @@ The harness now includes a **VS Code Extension** scaffold (`vscode-extension/`) 
 
 ## 🛠️ 6) Visual Scenario Editor (AES Builder)
 
-The `admin-console/app/editor.tsx` provides a visual playground for constructing complex evaluation logic. Developers can add task nodes and validation expectations via a drag-and-drop interface, which then generates the underlying AES JSON.
+The Integrated Visual Suite provides a visual playground for constructing complex evaluation logic. Developers can add task nodes and validation expectations via a drag-and-drop interface, which then generates the underlying AES JSON.
 
 ---
 

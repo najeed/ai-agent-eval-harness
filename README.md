@@ -28,7 +28,7 @@
 - [The Advanced Update (v1.1)](#the-advanced-update-v11)
 - [Zero-Touch Core Architecture](#zero-touch-core-architecture)
     - [Advanced Utilities](#advanced-utilities)
-- [Web Admin Console (Native GUI)](#web-admin-console-native-gui)
+- [Integrated Visual Suite (Native GUI)](#integrated-visual-suite-native-gui)
 - [Security and Governance](#security-and-governance-audit-ready)
 - [Troubleshooting](#troubleshooting)
 - [How to Contribute](#how-to-contribute)
@@ -53,7 +53,6 @@ The harness is organized into the following key components:
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
 -   `/eval_runner/console`: Flask-based REST API for the **Integrated Visual Suite**.
 -   `/ui/visual-debugger`: Premium React-based Visual Debugger & Dashboard.
--   `/admin-console`: [DEPRECATED] Legacy React Native prototype.
 -   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
 -   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
 -   `/runs`: Local execution history (Flight Recorder logs).
@@ -97,7 +96,7 @@ The harness is organized into the following key components:
 > **What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich legacy HTML report in `reports/`.
 
 > [!TIP]
-> **Prefer a visual experience?** After running the quickstart, launch the **Admin Console** to replay the trace interactively: `eval-harness console`.
+> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `eval-harness console`.
 
 *(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker compose up --build`. If you don't have Docker, you can run services manually (see [Troubleshooting](#-troubleshooting)).
 
@@ -144,7 +143,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Benchmark Ecosystem**: Native loaders and adapters for community benchmarks like GAIA and AssistantBench.
 - **Pluggable Architecture**: Extend anything via Python plugins, with out-of-the-box framework adapters for **LangGraph**, **CrewAI**, **Microsoft AutoGen**, and **xAI Grok**.
 - **Tool Sandbox**: Governance-controlled execution of real or mock tools.
-- **Visual Admin Console**: Integrated React Native (Expo) dashboard for live trace replay and visual debugging.
+- **Integrated Visual Suite**: Unified dashboard for live trace replay and visual debugging.
 - **Semantic Bridge & Distribution**: Ingest production traces (`import-drift`), analyze failures (`triage`), and export datasets to HuggingFace (`export`).
 - **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
 - **Robust Metrics**: 12+ built-in metrics (Tool Correctness, State Parity, Policy Compliance, and LLM-Judged Clarity).
@@ -167,7 +166,7 @@ The latest release introduces a new suite of high-level automation and visual to
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 
 #### Premium UX Tools
-- **Scenario Editor**: A visual React Native interface for constructing real-world AES logic—saves production-ready JSON directly to the catalog.
+- **Scenario Editor**: A visual interface for constructing real-world AES logic—saves production-ready JSON directly to the catalog.
 - **VS Code Extension**: Run evaluations and visualize timelines directly within your IDE.
 - **Visual Debugger**: Real-time trajectory playback with interactive state inspection (Live Engine Hook).
 
@@ -198,9 +197,9 @@ Beyond the advanced suite, the harness provides a robust toolkit for professiona
 - **`mutate`**: Adversarial scenario generator (typos, injections, ambiguity).
 - **`import-drift`**: Convert production logs into regression test cases.
 
-## Web Admin Console (Native GUI)
+## Integrated Visual Suite (Native GUI)
 
-The harness includes a unified **React-powered SPA** Admin Console that simplifies management of scenarios, runs, and visual debugging across all industries.
+The harness includes a unified **React-powered SPA** that simplifies management of scenarios, runs, and visual debugging across all industries.
 
 **Key Feature Hubs:**
 - **Scenario Explorer**: Browse the catalog with faceted filters, global search, and real-time **Quality Badges** (Lint scores).
