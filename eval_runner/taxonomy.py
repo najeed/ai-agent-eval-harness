@@ -24,7 +24,7 @@ class FailureTaxonomy:
     def classify(task_result: Dict[str, Any]) -> str:
         """Determines the specific failure category for a non-successful run."""
         metrics = task_result.get("metrics", [])
-        history = tax_result.get("conversation_history", [])
+        history = task_result.get("conversation_history", [])
         
         # 1. Partial Pass Detection
         success_count = sum(1 for m in metrics if m.get("success", False))
