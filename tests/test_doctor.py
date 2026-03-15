@@ -1,5 +1,6 @@
 import sys
 import pytest
+from collections import namedtuple
 from unittest.mock import MagicMock, AsyncMock, patch
 from eval_runner.doctor import check_agent_reachable, run_doctor
 
@@ -22,12 +23,11 @@ async def test_check_agent_reachable_failure():
 @pytest.mark.asyncio
 async def test_run_doctor_smoke(capsys):
     """Smoke test for the doctor command."""
-    mock_sys = MagicMock()
-    mock_sys.major = 3
-    mock_sys.minor = 11
-    mock_sys.micro = 0
+    # Use a namedtuple to accurately mock sys.version_info
+    VersionInfo = namedtuple("VersionInfo", ["major", "minor", "micro"])
+    mock_version = VersionInfo(major=3, minor=11, micro=0)
     
-    with patch("sys.version_info", mock_sys), \
+    with patch("sys.version_info", mock_version), \
          patch("builtins.__import__", side_effect=lambda name, *args: MagicMock()), \
          patch("pathlib.Path.exists", return_value=True), \
          patch("eval_runner.doctor.check_agent_reachable", new_callable=AsyncMock) as mock_reachable:
