@@ -218,7 +218,7 @@ def file():
 ### Mocking External APIs
 
 ```python
-@patch('eval_runner.engine.requests.post')
+@patch('eval_runner.cli.requests.post')
 def test_agent_api_integration(mock_post):
     """Test integration with agent API."""
     # Arrange
@@ -312,7 +312,7 @@ class TestErrorHandling:
     def test_agent_api_timeout(self):
         """Test handling of agent API timeout."""
         # Arrange
-        with patch('eval_runner.engine.requests.post') as mock_post:
+        with patch('eval_runner.cli.requests.post') as mock_post:
             mock_post.side_effect = requests.exceptions.Timeout()
             
             scenario = {"tasks": [{"description": "test"}]}
@@ -327,7 +327,7 @@ class TestErrorHandling:
     def test_invalid_json_response(self):
         """Test handling of invalid JSON response from agent."""
         # Arrange
-        with patch('eval_runner.engine.requests.post') as mock_post:
+        with patch('eval_runner.cli.requests.post') as mock_post:
             mock_response = Mock()
             mock_response.json.side_effect = json.JSONDecodeError("", "", 0)
             mock_post.return_value = mock_response

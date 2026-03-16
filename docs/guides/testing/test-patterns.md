@@ -120,7 +120,7 @@ class TestNetworkErrorHandling:
     def test_agent_api_error_handling(self, exception_class):
         """Test handling of various API errors."""
         # Arrange
-        with patch('eval_runner.engine.requests.post') as mock_post:
+        with patch('eval_runner.cli.requests.post') as mock_post:
             mock_post.side_effect = exception_class("Test error")
             
             scenario = {
@@ -139,7 +139,7 @@ class TestNetworkErrorHandling:
     def test_agent_api_timeout_specific_handling(self):
         """Test specific timeout error handling."""
         # Arrange
-        with patch('eval_runner.engine.requests.post') as mock_post:
+        with patch('eval_runner.cli.requests.post') as mock_post:
             mock_post.side_effect = requests.exceptions.Timeout("Request timed out")
             
             scenario = {
@@ -337,7 +337,7 @@ class TestEndToEndIntegration:
     @pytest.fixture
     def mock_agent_service(self):
         """Mock agent service for integration testing."""
-        with patch('eval_runner.engine.requests.post') as mock_post:
+        with patch('eval_runner.cli.requests.post') as mock_post:
             mock_response = Mock()
             mock_response.json.return_value = {"tool_name": "search"}
             mock_response.raise_for_status.return_value = None
@@ -536,7 +536,7 @@ class TestAdvancedMocking:
             else:
                 raise requests.exceptions.Timeout("Timeout on retry")
         
-        with patch('eval_runner.engine.requests.post', side_effect=side_effect):
+        with patch('eval_runner.cli.requests.post', side_effect=side_effect):
             scenario = {
                 "scenario_id": "mock_test",
                 "tasks": [{"task_id": "task_1", "description": "Test"}]
@@ -558,7 +558,7 @@ class TestAdvancedMocking:
         }
         
         # Act & Assert
-        with patch('eval_runner.engine.requests.post') as mock_post:
+        with patch('eval_runner.cli.requests.post') as mock_post:
             mock_response = Mock()
             mock_response.json.return_value = {"tool_name": "search"}
             mock_post.return_value = mock_response

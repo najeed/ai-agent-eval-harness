@@ -18,7 +18,7 @@ pytest
 
 ### Run with Coverage
 ```bash
-pytest --cov=eval-runner --cov-report=html
+pytest --cov=eval_runner --cov-report=html
 ```
 
 ## Test Categories
@@ -26,9 +26,9 @@ pytest --cov=eval-runner --cov-report=html
 | Category | Command | Description |
 |----------|---------|-------------|
 | **All Tests** | `pytest` | Run complete test suite |
-| **Unit Tests** | `pytest tests/test_eval_runner.py` | Core functionality tests |
-| **Schema Validation** | `pytest tests/test_schema_validation.py` | Validate all scenario files |
-| **Coverage Report** | `pytest --cov=eval-runner` | Generate coverage analysis |
+| **Unit Tests** | `pytest tests/test_cli.py` | Core CLI functionality tests |
+| **Linter Check** | `python -m flake8 .` | Verify code quality and syntax |
+| **Coverage Report** | `pytest --cov=eval_runner` | Generate coverage analysis |
 | **Performance** | `pytest --benchmark-only` | Run performance benchmarks |
 
 ## Test Structure
@@ -36,21 +36,21 @@ pytest --cov=eval-runner --cov-report=html
 ```
 tests/
 ├── __init__.py                 # Python package marker
-├── test_eval_runner.py        # Core evaluation engine tests
-└── test_schema_validation.py  # Schema validation tests
+├── test_cli.py        # Core evaluation engine tests
+└── test_taxonomy.py  # Schema validation tests
 ```
 
 ## Key Testing Areas
 
-### 1. Evaluation Engine
-- **File**: `tests/test_eval_runner.py`
-- **Purpose**: Test core evaluation functionality
-- **Coverage**: Scenario loading, metric calculation, result generation
+### 1. CLI Entry Points
+- **File**: `tests/test_cli.py`
+- **Purpose**: Test core CLI command handling
+- **Coverage**: Scenario execution, replay logic, plugin discovery
 
-### 2. Schema Validation
-- **File**: `tests/test_schema_validation.py`
-- **Purpose**: Validate all scenario JSON files
-- **Coverage**: All industries and scenarios
+### 2. Failure Taxonomy
+- **File**: `tests/test_taxonomy.py`
+- **Purpose**: Verify classification of agent failures
+- **Coverage**: Root cause analysis and classification accuracy
 
 ### 3. Integration Testing
 - **Purpose**: Test component interactions
@@ -76,22 +76,22 @@ pytest
 pytest -v
 
 # Run specific test file
-pytest tests/test_eval_runner.py
+pytest tests/test_cli.py
 
 # Run specific test function
-pytest tests/test_eval_runner.py::test_scenario_loading
+pytest tests/test_cli.py::test_scenario_loading
 ```
 
 ### Coverage Analysis
 ```bash
 # Generate coverage report
-pytest --cov=eval-runner --cov-report=html
+pytest --cov=eval_runner --cov-report=html
 
 # Show missing lines
-pytest --cov=eval-runner --cov-report=term-missing
+pytest --cov=eval_runner --cov-report=term-missing
 
 # Fail if coverage is low
-pytest --cov=eval-runner --cov-fail-under=80
+pytest --cov=eval_runner --cov-fail-under=80
 ```
 
 ### Performance Testing
@@ -132,7 +132,7 @@ def test_with_fixture(sample_data):
 
 ### Mocking External Dependencies
 ```python
-@patch('eval_runner.engine.requests.post')
+@patch('eval_runner.cli.requests.post')
 def test_api_integration(mock_post):
     """Test API integration with mock."""
     mock_post.return_value = Mock(json=lambda: {"result": "success"})
@@ -158,7 +158,7 @@ def test_api_integration(mock_post):
 3. **Schema Validation Failures**
    ```bash
    # Check specific scenario files
-   pytest tests/test_schema_validation.py -v
+   pytest tests/test_taxonomy.py -v
    ```
 
 ### Debug Mode
@@ -191,7 +191,7 @@ jobs:
     - name: Install dependencies
       run: pip install pytest pytest-cov pytest-mock jsonschema
     - name: Run tests
-      run: pytest --cov=eval-runner --cov-report=xml
+      run: pytest --cov=eval_runner --cov-report=xml
 ```
 
 ## Documentation Links
@@ -219,10 +219,10 @@ For detailed information, see:
 pytest
 
 # Check coverage
-pytest --cov=eval-runner --cov-fail-under=80
+pytest --cov=eval_runner --cov-fail-under=80
 
 # Run schema validation
-pytest tests/test_schema_validation.py
+pytest tests/test_taxonomy.py
 ```
 
 ## Support

@@ -9,9 +9,10 @@ The AI Agent Evaluation Harness uses a comprehensive testing strategy to ensure 
 ```
 tests/
 ├── __init__.py                 # Makes tests a Python package
-├── test_eval_runner.py        # Core evaluation engine tests
-├── test_schema_validation.py  # Schema validation tests
-└── [future test files]        # Additional test modules
+├── test_cli.py                 # Core CLI integration tests
+├── test_doctor.py              # Environment doctor tests
+├── test_taxonomy.py            # Taxonomy classification tests
+└── test_explainer.py           # Trace explainer tests
 ```
 
 ## Test Categories
@@ -34,10 +35,10 @@ tests/
   - Agent API integration testing
   - Report generation workflows
 
-### 3. Schema Validation Tests
-- **Purpose**: Ensure all scenario files conform to the defined schema
-- **Location**: `tests/test_schema_validation.py`
-- **Scope**: All JSON scenario files across all industries
+### 3. Environment Health Tests
+- **Purpose**: Ensure the local environment and agent are ready
+- **Location**: `tests/test_doctor.py`
+- **Scope**: Python versions, deps, and connectivity
 - **Examples**:
   - Validating scenario structure
   - Checking required fields

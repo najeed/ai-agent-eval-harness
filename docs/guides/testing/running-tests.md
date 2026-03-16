@@ -55,10 +55,10 @@ Run only unit tests (fast execution):
 
 ```bash
 # Run specific test file
-pytest tests/test_eval_runner.py
+pytest tests/test_cli.py
 
 # Run specific test function
-pytest tests/test_eval_runner.py::test_scenario_loading
+pytest tests/test_cli.py::test_scenario_loading
 
 # Run tests matching a pattern
 pytest -k "scenario"
@@ -70,10 +70,10 @@ Run schema validation tests (validates all scenario files):
 
 ```bash
 # Run schema validation tests
-pytest tests/test_schema_validation.py
+pytest tests/test_taxonomy.py
 
 # Run with detailed output
-pytest tests/test_schema_validation.py -v
+pytest tests/test_taxonomy.py -v
 ```
 
 ### Integration Tests
@@ -96,13 +96,13 @@ Generate coverage reports:
 
 ```bash
 # Run tests with coverage
-pytest --cov=eval-runner
+pytest --cov=eval_runner
 
 # Generate HTML coverage report
-pytest --cov=eval-runner --cov-report=html
+pytest --cov=eval_runner --cov-report=html
 
 # Generate XML coverage report (for CI/CD)
-pytest --cov=eval-runner --cov-report=xml
+pytest --cov=eval_runner --cov-report=xml
 ```
 
 ### Coverage Configuration
@@ -111,7 +111,7 @@ Create a `.coveragerc` file for custom coverage settings:
 
 ```ini
 [run]
-source = eval-runner
+source = eval_runner
 omit = 
     */tests/*
     */__pycache__/*
@@ -131,10 +131,10 @@ Analyze coverage results:
 
 ```bash
 # Show coverage summary
-pytest --cov=eval-runner --cov-report=term-missing
+pytest --cov=eval_runner --cov-report=term-missing
 
 # Generate detailed HTML report
-pytest --cov=eval-runner --cov-report=html
+pytest --cov=eval_runner --cov-report=html
 # Open htmlcov/index.html in your browser
 ```
 
@@ -230,7 +230,7 @@ jobs:
         pip install pytest pytest-cov pytest-mock jsonschema
     - name: Run tests
       run: |
-        pytest --cov=eval-runner --cov-report=xml
+        pytest --cov=eval_runner --cov-report=xml
     - name: Upload coverage
       uses: codecov/codecov-action@v1
 ```
@@ -244,7 +244,7 @@ Simulate CI environment locally:
 python -m pytest --strict-markers
 
 # Run with coverage and fail if coverage is low
-pytest --cov=eval-runner --cov-fail-under=80
+pytest --cov=eval_runner --cov-fail-under=80
 ```
 
 ## Troubleshooting
