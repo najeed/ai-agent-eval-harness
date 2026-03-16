@@ -1,37 +1,87 @@
 import pytest
 import json
+import asyncio
+from unittest.mock import MagicMock, patch, AsyncMock
 from pathlib import Path
-from unittest.mock import AsyncMock, patch
 from eval_runner.trace_recorder import record_interaction
 
 @pytest.mark.asyncio
-async def test_record_interaction_logic(tmp_path, monkeypatch):
-    """Verifies that the trace recorder captures interactions and saves them to a file."""
-    # Mock inputs: 'task 1' then 'exit'
-    inputs = iter(["task 1", "exit"])
-    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
-    
+async def test_record_interaction_flow(tmp_path, monkeypatch):
+    """Test the full flow of record_interaction with mocks."""
+    # 1. Setup paths and mocks
     monkeypatch.chdir(tmp_path)
+    agent_url = "http://localhost:5001/execute_task"
     
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.get_json.return_value = {"summary": "Captured response"}
-        mock_post.return_value.__aenter__.return_value = mock_response
+    # Mock 'input' to return a task then 'exit'
+    inputs = ["Tell me a joke", "exit"]
+    input_mock = MagicMock(side_effect=inputs)
+    
+    # Mock aiohttp ClientSession and response
+    mock_response = AsyncMock()
+    mock_response.status = 200
+    mock_response.get_json = AsyncMock(return_value={"summary": "This is a joke", "action": "final_answer"})
+    mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+    mock_response.__aexit__ = AsyncMock(return_value=None)
+    
+    mock_session = MagicMock()
+    mock_session.post = MagicMock(return_value=mock_response)
+    mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+    mock_session.__aexit__ = AsyncMock(return_value=None)
+    
+    with patch("builtins.input", input_mock), \
+         patch("aiohttp.ClientSession", return_value=mock_session):
         
-        await record_interaction("http://test-agent")
+        # We need to handle the infinite loop and the fact that record_interaction 
+        # might print things we want to suppress or capture.
+        with patch("builtins.print"):
+            await record_interaction(agent_url)
+
+    # 2. Verify results
+    # Check if a log file was created in 'runs'
+    runs_dir = tmp_path / "runs"
+    assert runs_dir.exists()
+    
+    log_file = list(runs_dir.glob("run-*.jsonl"))[0]
+    assert log_file.exists()
+    
+    with open(log_file, "r") as f:
+        events = [json.loads(line) for line in f]
+    
+    # Expected events: run_start, agent_request, agent_response
+    event_types = [e["event"] for e in events]
+    assert "run_start" in event_types
+    assert "agent_request" in event_types
+    assert "agent_response" in event_types
+    
+    # Verify content of agent_request
+    request_event = next(e for e in events if e["event"] == "agent_request")
+    assert request_event["task"] == "Tell me a joke"
+    
+    # Verify content of agent_response
+    response_event = next(e for e in events if e["event"] == "agent_response")
+    assert response_event["content"]["summary"] == "This is a joke"
+
+@pytest.mark.asyncio
+async def test_record_interaction_error(tmp_path, monkeypatch):
+    """Test error handling in record_interaction."""
+    monkeypatch.chdir(tmp_path)
+    agent_url = "http://localhost:5001/execute_task"
+    
+    # Mock 'input' to return a task then 'exit'
+    inputs = ["Break it", "exit"]
+    input_mock = MagicMock(side_effect=inputs)
+    
+    # Mock aiohttp to raise an exception
+    mock_session = MagicMock()
+    mock_session.post = MagicMock(side_effect=Exception("Connection failed"))
+    mock_session.__aenter__ = AsyncMock(return_value=mock_session)
+    mock_session.__aexit__ = AsyncMock(return_value=None)
+    
+    with patch("builtins.input", input_mock), \
+         patch("aiohttp.ClientSession", return_value=mock_session), \
+         patch("builtins.print") as mock_print:
         
-        # Verify that a run file was created in tmp_path/runs/
-        run_files = list((tmp_path / "runs").glob("*.jsonl"))
-        assert len(run_files) == 1
+        await record_interaction(agent_url)
         
-        # Verify content
-        with open(run_files[0], "r") as f:
-            lines = f.readlines()
-            events = [json.loads(l) for l in lines]
-            
-            assert events[0]["event"] == "run_start"
-            assert events[1]["event"] == "agent_request"
-            assert events[1]["task"] == "task 1"
-            assert events[2]["event"] == "agent_response"
-            assert events[2]["content"]["summary"] == "Captured response"
+        # Verify error message was printed
+        mock_print.assert_any_call("  ❌ Error: Failed to contact agent: Connection failed")

@@ -28,6 +28,7 @@ pytest --cov=eval_runner --cov-report=html
 | **All Tests** | `pytest` | Run complete test suite |
 | **Unit Tests** | `pytest tests/test_cli.py` | Core CLI functionality tests |
 | **Linter Check** | `python -m flake8 .` | Verify code quality and syntax |
+| **Compliance** | `pytest tests/test_scenario_compliance.py` | AES schema and protocol verification |
 | **Coverage Report** | `pytest --cov=eval_runner` | Generate coverage analysis |
 | **Performance** | `pytest --benchmark-only` | Run performance benchmarks |
 
@@ -35,22 +36,37 @@ pytest --cov=eval_runner --cov-report=html
 
 ```
 tests/
-├── __init__.py                 # Python package marker
-├── test_cli.py        # Core evaluation engine tests
-└── test_taxonomy.py  # Schema validation tests
+├── __init__.py                     # Python package marker
+├── test_cli.py                     # Unified CLI command tests
+├── test_engine.py                  # Core engine and Model Wars logic
+├── test_metrics.py                 # Core metrics and Luna-Judge scoring
+├── test_loader.py                  # Dataset and scenario loading
+├── test_scenario_compliance.py     # Scenario schema and compliance validation
+├── test_core_infrastructure.py     # Architecture and integration logic
+├── test_session_advanced.py        # Advanced session and forking logic
+├── test_tool_sandbox.py            # Tool execution and state permissions
+├── test_trace_recorder.py          # Real-time interaction recording
+├── test_playground.py              # Interactive playground tests
+├── test_quickstart.py              # Quickstart flow automation
+└── test_taxonomy.py                # Failure classification taxonomy
 ```
 
 ## Key Testing Areas
 
-### 1. CLI Entry Points
-- **File**: `tests/test_cli.py`
-- **Purpose**: Test core CLI command handling
-- **Coverage**: Scenario execution, replay logic, plugin discovery
+### 1. Core Engine & Metrics
+- **Files**: `tests/test_engine.py`, `tests/test_metrics.py`
+- **Purpose**: Test the multi-turn loop, pass@k, and multi-model judge logic.
+- **Coverage**: Evaluator states, consistency scores, and OpenAI/Gemini/Ollama judge providers.
 
-### 2. Failure Taxonomy
-- **File**: `tests/test_taxonomy.py`
-- **Purpose**: Verify classification of agent failures
-- **Coverage**: Root cause analysis and classification accuracy
+### 2. Infrastructure & Compliance
+- **Files**: `tests/test_core_infrastructure.py`, `tests/test_scenario_compliance.py`
+- **Purpose**: Verify system integrity and scenario adherence to the AES spec.
+- **Coverage**: Plugin gateway, EventEmitter bus, and schema enforcement.
+
+### 3. CLI & Adapters
+- **Files**: `tests/test_cli.py`, `tests/test_adapters_extended.py`
+- **Purpose**: Test the modular CLI suite and third-party integrations (LangGraph, CrewAI).
+- **Coverage**: `run`, `list`, `lint`, and `analyze` commands.
 
 ### 3. Integration Testing
 - **Purpose**: Test component interactions
@@ -76,10 +92,10 @@ pytest
 pytest -v
 
 # Run specific test file
-pytest tests/test_cli.py
+pytest tests/test_engine.py
 
 # Run specific test function
-pytest tests/test_cli.py::test_scenario_loading
+pytest tests/test_loader.py::test_load_scenario
 ```
 
 ### Coverage Analysis
@@ -158,7 +174,7 @@ def test_api_integration(mock_post):
 3. **Schema Validation Failures**
    ```bash
    # Check specific scenario files
-   pytest tests/test_taxonomy.py -v
+   pytest tests/test_scenario_compliance.py -v
    ```
 
 ### Debug Mode
@@ -221,8 +237,8 @@ pytest
 # Check coverage
 pytest --cov=eval_runner --cov-fail-under=80
 
-# Run schema validation
-pytest tests/test_taxonomy.py
+# Run scenario compliance
+pytest tests/test_scenario_compliance.py
 ```
 
 ## Support

@@ -1,8 +1,0 @@
-{"event": "run_start", "timestamp": "2026-03-11T04:31:02.570697Z", "run_id": "run-state-test-213886", "scenario": "state-test", "k_attempts": 1}
-{"event": "task_start", "timestamp": "2026-03-11T04:31:02.571533Z", "task_id": "task-1", "attempt": 1}
-{"event": "agent_request", "timestamp": "2026-03-11T04:31:02.571999Z", "role": "user", "content": ""}
-{"event": "turn_start", "timestamp": "2026-03-11T04:31:02.572349Z", "turn": 1, "task_id": "task-1"}
-{"event": "error", "timestamp": "2026-03-11T04:31:02.572704Z", "message": "Agent Error: cannot assign to field 'agent_response'"}
-{"event": "evaluation", "timestamp": "2026-03-11T04:31:02.573332Z", "metric": "state_verification", "value": 0.0, "attempt": 1}
-{"event": "task_end", "timestamp": "2026-03-11T04:31:02.573732Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [], "metrics": [{"metric": "state_verification", "score": 0.0, "threshold": 1.0, "success": false}]}}
-{"event": "run_end", "timestamp": "2026-03-11T04:31:02.574777Z", "pass_at_k": 0.0, "successful_attempts": 0, "total_attempts": 1}

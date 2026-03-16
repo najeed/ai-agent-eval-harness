@@ -9,7 +9,17 @@ The AI Agent Evaluation Harness uses a comprehensive testing strategy to ensure 
 ```
 tests/
 ├── __init__.py                 # Makes tests a Python package
-├── test_cli.py                 # Core CLI integration tests
+├── test_cli.py                 # Unified CLI integration tests
+├── test_engine.py              # Core engine and Model Wars tests
+├── test_metrics.py              # Metrics and Judge provider tests
+├── test_loader.py              # Dataset loading and scenario tests
+├── test_scenario_compliance.py # AES schema and compliance tests
+├── test_core_infrastructure.py # Plugin and architecture tests
+├── test_session_advanced.py    # Session management and forking
+├── test_tool_sandbox.py        # Sandbox and state permissions
+├── test_trace_recorder.py      # Trace recording tests
+├── test_playground.py          # Playground interaction tests
+├── test_quickstart.py          # Quickstart demo tests
 ├── test_doctor.py              # Environment doctor tests
 ├── test_taxonomy.py            # Taxonomy classification tests
 └── test_explainer.py           # Trace explainer tests

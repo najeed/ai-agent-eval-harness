@@ -1,8 +1,0 @@
-{"event": "run_start", "timestamp": "2026-03-11T05:42:17.227170Z", "run_id": "run-accuracy-test-218161", "scenario": "accuracy-test", "k_attempts": 1}
-{"event": "task_start", "timestamp": "2026-03-11T05:42:17.227947Z", "task_id": "task-1", "attempt": 1}
-{"event": "agent_request", "timestamp": "2026-03-11T05:42:17.228424Z", "role": "user", "content": "Retrieve info."}
-{"event": "turn_start", "timestamp": "2026-03-11T05:42:17.228692Z", "turn": 1, "task_id": "task-1"}
-{"event": "agent_response", "timestamp": "2026-03-11T05:42:17.228971Z", "step": 1, "response": {"action": "final_answer", "summary": "The customer is on the 100 Mbps plan."}}
-{"event": "evaluation", "timestamp": "2026-03-11T05:42:17.230764Z", "metric": "information_retrieval_accuracy", "value": 1.0, "attempt": 1}
-{"event": "task_end", "timestamp": "2026-03-11T05:42:17.231417Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "The customer is on the 100 Mbps plan."}}], "metrics": [{"metric": "information_retrieval_accuracy", "score": 1.0, "threshold": 0.8, "success": true}]}}
-{"event": "run_end", "timestamp": "2026-03-11T05:42:17.276896Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}

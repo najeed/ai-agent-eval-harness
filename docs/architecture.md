@@ -155,7 +155,7 @@ Phase 4 elevates the Harness from an isolated tool to an integrated participant 
 
 15+ test files covering core engine, metrics, drift ingestion, and triage. Run with:
 ```bash
-python -m pytest tests/ -v -p no:plugin_gateway
+python -m pytest
 ```
 
 ## Security Guardrails (Enterprise Audit)

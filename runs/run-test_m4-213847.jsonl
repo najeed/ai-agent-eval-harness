@@ -1,7 +1,0 @@
-{"event": "run_start", "timestamp": "2026-03-11T04:30:23.328836Z", "run_id": "run-test_m4-213847", "scenario": "test_m4", "k_attempts": 1}
-{"event": "task_start", "timestamp": "2026-03-11T04:30:23.330985Z", "task_id": "t1", "attempt": 1}
-{"event": "agent_request", "timestamp": "2026-03-11T04:30:23.331441Z", "role": "user", "content": "Call update_status"}
-{"event": "turn_start", "timestamp": "2026-03-11T04:30:23.331818Z", "turn": 1, "task_id": "t1"}
-{"event": "error", "timestamp": "2026-03-11T04:30:23.332171Z", "message": "Agent Error: cannot assign to field 'agent_response'"}
-{"event": "task_end", "timestamp": "2026-03-11T04:30:23.332836Z", "task_id": "t1", "results": {"task_id": "t1", "attempt": 1, "turns_taken": 1, "conversation_history": [], "metrics": []}}
-{"event": "run_end", "timestamp": "2026-03-11T04:30:23.334758Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}

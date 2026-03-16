@@ -65,9 +65,26 @@ def test_sandbox_state_mutation():
     sandbox.execute("update_plan", {"current_plan": "Premium"})
     assert sandbox.state["current_plan"] == "Premium"
 
-def test_sandbox_lifecycle():
-    """Verify setup/teardown exist (even if noop in ToolSandbox)."""
-    sandbox = ToolSandbox({"tasks": []})
     sandbox.setup()
     sandbox.teardown()
     assert True # Just verifying they are callable
+
+
+def test_shared_state_registry_permissions():
+    """Verify namespaced read/write permissions in SharedStateRegistry. (Migrated from test_eval_runner.py)"""
+    from eval_runner.tool_sandbox import SharedStateRegistry
+    topology = {
+        "agent_a": {"writes": ["namespace_1"], "reads": ["namespace_2"]},
+        "agent_b": {"writes": ["namespace_2"], "reads": ["namespace_1"]}
+    }
+    registry = SharedStateRegistry(topology)
+    
+    # Agent A writes to allowed namespace
+    assert registry.write("agent_a", "namespace_1:key", "val1") is True
+    # Agent B cannot write to namespace_1
+    assert registry.write("agent_b", "namespace_1:key", "val2") is False
+    
+    # Agent B can read from namespace_1
+    assert registry.read("agent_b", "namespace_1:key") == "val1"
+    # Agent A cannot read from namespace_1 (it only reads namespace_2)
+    assert registry.read("agent_a", "namespace_1:key") is None

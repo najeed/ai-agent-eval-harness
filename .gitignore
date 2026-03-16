@@ -100,6 +100,7 @@ docs/build/
 
 # --- Execution Artifacts ---
 runs/
+results/
 reports/
 tmp/
 

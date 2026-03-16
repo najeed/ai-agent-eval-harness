@@ -19,7 +19,7 @@ body:
     attributes:
       label: How can we reproduce it?
       description: Provide a minimal scenario or CLI command.
-      placeholder: "eval-harness evaluate --path industries/..."
+      placeholder: "python -m eval_runner run --scenario industries/telecom/scenario_1.json"
   - type: textarea
     id: logs
     attributes:

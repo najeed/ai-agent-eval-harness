@@ -217,7 +217,7 @@ eval-harness console
 ### Running Tests
 
 ```bash
-pytest tests/ -v -p no:plugin_gateway
+python -m pytest
 ```
 
 ### Centralized Configuration

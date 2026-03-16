@@ -1,8 +1,0 @@
-{"event": "run_start", "timestamp": "2026-03-11T23:24:51.378908Z", "run_id": "run-clarity-test-55282", "scenario": "clarity-test", "k_attempts": 1}
-{"event": "task_start", "timestamp": "2026-03-11T23:24:51.381367Z", "task_id": "task-1", "attempt": 1}
-{"event": "agent_request", "timestamp": "2026-03-11T23:24:51.381930Z", "role": "user", "content": "Explain the issue."}
-{"event": "turn_start", "timestamp": "2026-03-11T23:24:51.382837Z", "turn": 1, "task_id": "task-1"}
-{"event": "agent_response", "timestamp": "2026-03-11T23:24:51.384265Z", "step": 1, "response": {"action": "final_answer", "summary": "The issue is with the customer's local Wi-Fi network."}}
-{"event": "evaluation", "timestamp": "2026-03-11T23:24:51.384807Z", "metric": "communication_clarity", "value": 1.0, "attempt": 1}
-{"event": "task_end", "timestamp": "2026-03-11T23:24:51.385180Z", "task_id": "task-1", "results": {"task_id": "task-1", "attempt": 1, "turns_taken": 1, "conversation_history": [{"role": "agent", "content": {"action": "final_answer", "summary": "The issue is with the customer's local Wi-Fi network."}}], "metrics": [{"metric": "communication_clarity", "score": 1.0, "threshold": 1.0, "success": true}]}}
-{"event": "run_end", "timestamp": "2026-03-11T23:24:51.391427Z", "pass_at_k": 1.0, "successful_attempts": 1, "total_attempts": 1}

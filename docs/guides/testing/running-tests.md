@@ -64,16 +64,16 @@ pytest tests/test_cli.py::test_scenario_loading
 pytest -k "scenario"
 ```
 
-### Schema Validation Tests
+### Scenario Compliance Tests
 
-Run schema validation tests (validates all scenario files):
+Run compliance and schema validation tests (validates all scenario files against AES spec):
 
 ```bash
-# Run schema validation tests
-pytest tests/test_taxonomy.py
+# Run scenario compliance tests
+pytest tests/test_scenario_compliance.py
 
 # Run with detailed output
-pytest tests/test_taxonomy.py -v
+pytest tests/test_scenario_compliance.py -v
 ```
 
 ### Integration Tests

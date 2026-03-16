@@ -14,6 +14,69 @@ from unittest.mock import patch, MagicMock, AsyncMock
 from eval_runner import engine
 from eval_runner import metrics
 
+
+@pytest.mark.asyncio
+async def test_pass_at_k_protocol():
+    """Verify that engine runs k attempts and calculates pass@k. (Migrated from test_phase3.py)"""
+    scenario = {
+        "scenario_id": "test-k",
+        "tasks": [{
+            "task_id": "task-1",
+            "description": "Do something",
+            "success_criteria": [{"metric": "generic_accuracy", "threshold": 0.5}]
+        }]
+    }
+    
+    # Mock agent to succeed in 1 out of 2 attempts
+    attempt_count = 0
+    async def mock_agent_call(payload, protocol="http", endpoint=None): 
+        nonlocal attempt_count
+        attempt_count += 1
+        if attempt_count == 1:
+            return {"action": "final_answer", "summary": "Success"}
+        else:
+            return {"action": "final_answer", "summary": ""} # Fails generic_accuracy (length > 0)
+            
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_agent:
+        mock_agent.side_effect = mock_agent_call
+        results = await engine.run_evaluation(scenario, attempts=2)
+        
+        assert len(results) == 2
+        
+        successes = 0
+        for attempt in results:
+            if all(all(m["success"] for m in tr["metrics"] if m["metric"] != "consistency_score") for tr in attempt):
+                successes += 1
+        
+        assert successes == 1
+
+
+@pytest.mark.asyncio
+async def test_consistency_score_integration():
+    """Verify that consistency score is calculated across attempts. (Migrated from test_phase3.py)"""
+    scenario = {
+        "scenario_id": "test-consistency",
+        "tasks": [{
+            "task_id": "task-1",
+            "description": "Do something",
+            "success_criteria": []
+        }]
+    }
+    
+    # Mock agent to give same answer twice
+    async def mock_agent_call(payload, protocol="http", endpoint=None):
+        return {"action": "final_answer", "summary": "Identical result"}
+            
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", side_effect=mock_agent_call):
+        results = await engine.run_evaluation(scenario, attempts=2)
+        
+        # Check task metrics in the last attempt
+        task_res = results[-1][0]
+        consistency_metric = next((m for m in task_res["metrics"] if m["metric"] == "consistency_score"), None)
+        
+        assert consistency_metric is not None
+        assert consistency_metric["score"] == 1.0
+
 # --- Helpers ---
 
 def _make_scenario(required_tools=None):

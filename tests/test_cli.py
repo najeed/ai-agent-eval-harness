@@ -49,6 +49,42 @@ def test_detect_framework_custom(tmp_path):
     with patch("eval_runner.cli.Path.cwd", return_value=tmp_path):
         assert cli.detect_framework() == "Custom"
 
+
+def test_install_command():
+    """Verify install command handler. (Migrated from test_visionary_cli.py)"""
+    with patch("eval_runner.cli.handle_install") as mock_install:
+        with patch("sys.argv", ["eval-harness", "install", "telecom-pack"]):
+            cli.main()
+            mock_install.assert_called_once()
+
+def test_analyze_command():
+    """Verify analyze command handler. (Migrated from test_visionary_cli.py)"""
+    with patch("eval_runner.cli.handle_analyze") as mock_analyze:
+        with patch("sys.argv", ["eval-harness", "analyze", "https://github.com/test"]):
+            cli.main()
+            mock_analyze.assert_called_once()
+
+def test_ci_generate_command():
+    """Verify CI generate command handler. (Migrated from test_visionary_cli.py)"""
+    with patch("eval_runner.cli.handle_ci_generate") as mock_ci:
+        with patch("sys.argv", ["eval-harness", "ci", "generate"]):
+            cli.main()
+            mock_ci.assert_called_once()
+
+def test_explain_command():
+    """Verify explain command handler. (Migrated from test_visionary_cli.py)"""
+    with patch("eval_runner.cli.handle_explain") as mock_explain:
+        with patch("sys.argv", ["eval-harness", "explain", "runs/run.jsonl"]):
+            cli.main()
+            mock_explain.assert_called_once()
+
+def test_failures_search_command():
+    """Verify failures search command handler. (Migrated from test_visionary_cli.py)"""
+    with patch("eval_runner.cli.handle_failures_search") as mock_failures:
+        with patch("sys.argv", ["eval-harness", "failures", "search", "pii"]):
+            cli.main()
+            mock_failures.assert_called_once()
+
 def test_handle_init_scaffolding(tmp_path, monkeypatch):
     """Tests the init wizard's file generation."""
     # Mock inputs: Industry '1' (accounting), API URL (default)

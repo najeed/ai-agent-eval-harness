@@ -21,7 +21,47 @@ import pytest
 import sys
 from pathlib import Path
 
+from unittest.mock import patch, MagicMock, AsyncMock
 from eval_runner import metrics
+
+
+@pytest.mark.asyncio
+async def test_calculate_luna_judge_score_mock():
+    """Verify Luna-Judge calls Ollama. (Migrated from test_phase3.py)"""
+    criterion = {"expected_outcome": "The user is happy"}
+    agent_summary = "User expressed happiness"
+    
+    # Mock successful Ollama response
+    mock_ollama_resp = AsyncMock()
+    mock_ollama_resp.status = 200
+    mock_ollama_resp.json.return_value = {"response": "0.9"}
+    
+    # Patch ClientSession
+    with patch("aiohttp.ClientSession") as mock_session_cls:
+        mock_session = MagicMock()
+        mock_session_cls.return_value.__aenter__.return_value = mock_session
+        
+        # session.post returns an object that supports 'async with'
+        mock_resp_cm = MagicMock()
+        mock_resp_cm.__aenter__ = AsyncMock(return_value=mock_ollama_resp)
+        mock_resp_cm.__aexit__ = AsyncMock()
+        mock_session.post.return_value = mock_resp_cm
+        
+        score = await metrics.calculate_luna_judge_score(criterion, agent_summary)
+        assert score == 0.9
+
+
+@pytest.mark.asyncio
+async def test_calculate_luna_judge_score_fallback():
+    """Verify Luna-Judge fallback to Jaccard when Ollama fails. (Migrated from test_phase3.py)"""
+    criterion = {"expected_outcome": "apple banana"}
+    agent_summary = "apple orange"
+    
+    # Mock failed Ollama response
+    with patch("aiohttp.ClientSession", side_effect=Exception("Connection Refused")):
+        score = await metrics.calculate_luna_judge_score(criterion, agent_summary)
+        # Jaccard: intersection={apple}, union={apple, banana, orange} -> 1/3 = 0.33
+        assert 0.33 < score < 0.34
 from eval_runner.metrics import MetricRegistry
 from unittest.mock import patch, MagicMock
 
