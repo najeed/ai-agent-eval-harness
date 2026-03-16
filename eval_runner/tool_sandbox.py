@@ -58,6 +58,10 @@ class AbstractSandbox(ABC):
         self.shared_state = SharedStateRegistry(scenario.get("agent_topology", {}))
         self.current_agent = "default_agent" # Can be updated per turn
         
+        # Workspace management
+        from pathlib import Path
+        self.workspace_dir = Path("workspace") / self.scenario.get("scenario_id", "default")
+        
         # Phase 2: Grounding Coverage Tracking
         # Stores hit counts for 'policies' and 'tools' (KB/Grounding)
         self.grounding_hits: Dict[str, Dict[str, int]] = {
@@ -67,21 +71,20 @@ class AbstractSandbox(ABC):
 
     def setup(self):
         """Perform one-time setup: Create workspace directory."""
-        import os
         from pathlib import Path
-        workspace = Path("workspace") / self.scenario.get("scenario_id", "default")
-        workspace.mkdir(parents=True, exist_ok=True)
-        print(f"      [Sandbox] Workspace initialized at: {workspace}")
+        Path(self.workspace_dir).mkdir(parents=True, exist_ok=True)
+        print(f"      [Sandbox] Workspace initialized at: {self.workspace_dir}")
 
     def teardown(self):
         """Perform one-time teardown: Clean up workspace (optional)."""
         import shutil
         from pathlib import Path
-        workspace = Path("workspace") / self.scenario.get("scenario_id", "default")
-        # Only clean up if explicitly requested in scenario or if it's a test run
-        if self.scenario.get("cleanup_workspace", False):
-            if workspace.exists():
-                shutil.rmtree(workspace)
+        # Only clean up if explicitly requested in scenario metadata or if it's a test run
+        metadata = self.scenario.get("metadata", {})
+        if metadata.get("cleanup_workspace", self.scenario.get("cleanup_workspace", False)):
+            ws_path = Path(self.workspace_dir)
+            if ws_path.exists():
+                shutil.rmtree(ws_path)
                 print(f"      [Sandbox] Workspace cleaned up.")
 
     @abstractmethod

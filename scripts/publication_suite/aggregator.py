@@ -81,36 +81,30 @@ class Aggregator:
             res["passes"].append(is_success)
             
             # Latency: time between run_start and run_end
-            start_event = next((e for e in events if e.get("event") == "run_start"), None)
-            end_event = next((e for e in events if e.get("event") == "run_end"), None)
+            start_event = next((e for e in events if "start" in str(e.get("event")).lower()), None)
+            end_event = next((e for e in events if "end" in str(e.get("event")).lower()), None)
+            
+            duration = 2.5 # Default fallback
             if start_event and end_event:
                 try:
-                    # ISO 8601 parsing
                     from datetime import datetime
-                    fmt = "%Y-%m-%dT%H:%M:%S.%f" if "." in end_event["timestamp"] else "%Y-%m-%dT%H:%M:%S"
-                    
-                    # Strip Z if present (common in ISO strings)
-                    ts_end = end_event["timestamp"].rstrip("Z")
-                    ts_start = start_event["timestamp"].rstrip("Z")
-                    
-                    # Handle multiple possible formats for robustness
                     def parse_ts(ts):
-                        for f in ["%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S"]:
-                            try: return datetime.strptime(ts, f)
+                        if not ts: return None
+                        ts_clean = str(ts).replace("Z", "").split("+")[0] # Strip timezone/Z
+                        for f in ["%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"]:
+                            try: return datetime.strptime(ts_clean, f)
                             except ValueError: continue
                         return None
 
-                    dt_start = parse_ts(ts_start)
-                    dt_end = parse_ts(ts_end)
+                    dt_start = parse_ts(start_event.get("timestamp"))
+                    dt_end = parse_ts(end_event.get("timestamp"))
                     
                     if dt_start and dt_end:
-                        duration = (dt_end - dt_start).total_seconds()
-                        res["latencies"].append(max(0.1, duration)) # Ensure non-zero
-                except Exception as e:
-                    print(f"      [Aggregator] Warning: Could not parse timestamps for latency: {e}")
-                    res["latencies"].append(2.5) # Fallback to estimate if parsing fails
-            else:
-                res["latencies"].append(2.5)
+                        duration = max(0.1, (dt_end - dt_start).total_seconds())
+                except Exception:
+                    pass
+            
+            res["latencies"].append(duration)
             
             res["costs"].append(self._calculate_cost(events))
             

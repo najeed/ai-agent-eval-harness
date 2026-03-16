@@ -1,3 +1,11 @@
 # Reproduction script for test_m4
-# ONLY execute this manually after review.
-eval-harness run scenarios/test_m4.json
+# Generated on 2026-03-16 21:37:37
+# 
+# Usage:
+# 1. Ensure you have the eval-harness installed: pip install .
+# 2. Set your environment variables (AGENT_API_URL, etc.)
+# 3. RUN: eval-harness run --path scenarios/test_m4.json
+#
+# SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
+
+eval-harness run --path scenarios/test_m4.json

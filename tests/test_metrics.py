@@ -298,3 +298,14 @@ async def test_luna_judge_with_mock_ollama():
     with patch("aiohttp.ClientSession", return_value=mock_session):
         score = await metrics.calculate_luna_judge_score(criterion, "Partial Success")
         assert score == 0.85
+
+def test_consistency_score_standard():
+    """Verify consistency (Outcome Stability) calculation via Jaccard overlap."""
+    # identical results should be 1.0
+    assert metrics.calculate_consistency_score(["hello", "hello"]) == 1.0
+    # varying results
+    # "hello" vs "world" -> intersection=0, union=2 -> 0.0
+    assert metrics.calculate_consistency_score(["hello", "world"]) == 0.0
+    # Partial overlap: "a b" vs "a c" -> intersection=1, union=3 -> 0.33
+    score = metrics.calculate_consistency_score(["a b", "a c"])
+    assert 0.33 < score < 0.34

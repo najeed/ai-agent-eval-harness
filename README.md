@@ -14,7 +14,7 @@
 | :--- | :--- |
 | **Architect** | [Najeed Ahmed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
-| **Status** | Production-Ready Framework |
+| **Status** | 🟢 Production-Ready Framework |
 | **Core Goal** | Eliminating the "Agentic Reliability Gap" |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [Advanced Update](#the-advanced-update-v11) • [Architecture](#zero-touch-core-architecture) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
@@ -142,7 +142,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
 - **Benchmark Ecosystem**: Native loaders and adapters for community benchmarks like GAIA and AssistantBench.
 - **Pluggable Architecture**: Extend anything via Python plugins, with out-of-the-box framework adapters for **LangGraph**, **CrewAI**, **Microsoft AutoGen**, and **xAI Grok**.
-- **Tool Sandbox**: Governance-controlled execution of real or mock tools.
+- **Tool Sandbox**: Governance-controlled execution of real or mock tools with full workspace lifecycle management (`setup`/`teardown`).
 - **Integrated Visual Suite**: Unified dashboard for live trace replay and visual debugging.
 - **Semantic Bridge & Distribution**: Ingest production traces (`import-drift`), analyze failures (`triage`), and export datasets to HuggingFace (`export`).
 - **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.

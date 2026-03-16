@@ -54,6 +54,7 @@ The core has been refactored into a decoupled, event-driven architecture to supp
 2. **SessionManager (`session.py`)**: Manages individual evaluation attempts, conversation trajectories, and tool execution.
 3. **EventEmitter (`events.py`)**: A centralized bus that emits state transitions. 
 4. **Plugins (`plugins.py`)**: Flexible hooks that can observe or intercept core behavior.
+5. **ToolSandbox (`tool_sandbox.py`)**: Managed execution environment with automated workspace lifecycle.
 
 ### 3.2 Immutability
 `EvaluationContext` and `TurnContext` are **frozen** dataclasses. You cannot modify them directly inside hooks; instead, use `dataclasses.replace` if you need to pass a modified state upstream.
@@ -183,6 +184,28 @@ def my_score(criterion, summary):
 
 MetricRegistry.register("my_score", my_score)
 ```
+
+---
+
+## 🛠️ 8) Sandbox Workspace Lifecycle
+
+The `ToolSandbox` now supports automated environment management via lifecycle hooks:
+
+### 8.1 Setup & Teardown
+- **`setup()`**: Initializes a fresh workspace directory (under `workspaces/`) for the scenario.
+- **`teardown()`**: Cleans up the workspace directory after execution.
+
+### 8.2 Configuration
+Cleanup is conditional based on the scenario metadata:
+```json
+{
+  "scenario_id": "example-123",
+  "metadata": {
+    "cleanup_workspace": true
+  }
+}
+```
+If `cleanup_workspace` is `false` (default for many research scenarios), the directory is preserved for forensic analysis.
 
 ---
 

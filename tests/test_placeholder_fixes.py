@@ -17,7 +17,7 @@ async def test_hitl_interactive_input():
     }
     
     # Mock agent response with hitl_pause
-    with patch("eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.return_value = {
             "action": "hitl_pause", 
             "prompt": "Custom HITL Prompt"
@@ -49,7 +49,7 @@ async def test_hitl_ci_auto_resume():
         "tasks": [{"task_id": "task1"}]
     }
     
-    with patch("eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call, \
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call, \
          patch.dict(os.environ, {"CI": "true"}):
         
         mock_call.return_value = {"action": "hitl_pause"}
@@ -94,7 +94,7 @@ async def test_reporting_plugin_notifications():
         mock_post.assert_called()
         args, kwargs = mock_post.call_args
         assert args[0] == "http://fake-webhook"
-        assert "Success Rate: 1/1" in kwargs["json"]["text"]
+        assert "Success Rate*: 1/1" in kwargs["json"]["text"]
 
 @pytest.mark.asyncio
 async def test_adapter_guards():

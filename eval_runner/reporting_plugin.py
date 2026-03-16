@@ -129,7 +129,11 @@ eval-harness run --path scenarios/{scenario_id}.json
         
         # Simple summary
         total = len(results)
-        successes = sum(1 for r in results if r.get("metrics") and all(m.get("success", False) for m in r["metrics"]))
+        successes = 0
+        for attempt_res in results:
+            # Check if all tasks in this attempt succeeded
+            if all(all(m.get("success", False) for m in tr.get("metrics", [])) for tr in attempt_res):
+                successes += 1
         
         payload = {
             "text": f"🚀 *Evaluation Complete*\n*Scenario*: {context.scenario_id}\n*Success Rate*: {successes}/{total} tasks passed.",

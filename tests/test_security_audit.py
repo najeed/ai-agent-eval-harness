@@ -1,7 +1,7 @@
 """
 test_security_audit.py
 
-Comprehensive test suite validating all 8 Enterprise Security Audit mitigations.
+Comprehensive test suite validating all 9 Enterprise Security Audit mitigations.
 Each test maps to one or more numbered audit points from the implementation plan.
 """
 
@@ -273,3 +273,47 @@ def test_repro_script_rce_strip(tmp_path, monkeypatch):
     content = repro.read_text()
     assert "os.system" not in content
     assert "subprocess" not in content
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Audit Point #9 — Plugin GUI Hijacking / JWT Handoff
+# ──────────────────────────────────────────────────────────────────────────────
+
+def test_auth_jwt_generation():
+    """Verify that generate_handoff_token creates a short-lived HS256 JWT."""
+    from eval_runner.console.auth import generate_handoff_token, SECRET_KEY
+    import jwt
+    
+    token = generate_handoff_token()
+    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    
+    assert decoded["sub"] == "admin-user"
+    assert decoded["scope"] == "console-handoff"
+    assert "exp" in decoded
+
+def test_auth_handoff_decorator():
+    """Verify that @handoff_required enforces token presence and validity."""
+    from eval_runner.console.auth import handoff_required, generate_handoff_token
+    from flask import Flask, request, jsonify
+    
+    app = Flask(__name__)
+    
+    @app.route("/test")
+    @handoff_required
+    def protected():
+        return jsonify({"status": "ok"})
+    
+    with app.test_request_context("/test"):
+        # No token
+        response, status = protected()
+        assert status == 401
+        
+    with app.test_request_context("/test?token=invalid"):
+        # Invalid token
+        response, status = protected()
+        assert status == 401
+        
+    valid_token = generate_handoff_token()
+    with app.test_request_context(f"/test?token={valid_token}"):
+        # Valid token
+        response = protected()
+        assert response.json["status"] == "ok"

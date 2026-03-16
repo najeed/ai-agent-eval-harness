@@ -1,3 +1,11 @@
 # Reproduction script for dos-test
-# ONLY execute this manually after review.
-eval-harness run scenarios/dos-test.json
+# Generated on 2026-03-16 21:37:50
+# 
+# Usage:
+# 1. Ensure you have the eval-harness installed: pip install .
+# 2. Set your environment variables (AGENT_API_URL, etc.)
+# 3. RUN: eval-harness run --path scenarios/dos-test.json
+#
+# SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
+
+eval-harness run --path scenarios/dos-test.json

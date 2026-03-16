@@ -7,6 +7,7 @@ Aligned with OpenCore modular architecture and explicit tool definitions.
 
 import pytest
 import sys
+import shutil
 from pathlib import Path
 
 from eval_runner.tool_sandbox import ToolSandbox
@@ -29,8 +30,6 @@ def test_sandbox_known_tool():
 
 def test_sandbox_unknown_tool():
     """Test that an unknown tool returns a default or success message (per current impl)."""
-    # Current implementation returns a default success if not found.
-    # To test 'error', we can define a tool that returns error or change ToolSandbox.
     scenario = {"tasks": [{"required_tools": ["get_customer_details"]}]}
     sandbox = ToolSandbox(scenario)
 
@@ -61,17 +60,45 @@ def test_sandbox_state_mutation():
     }
     sandbox = ToolSandbox(scenario)
 
-    # update_plan
     sandbox.execute("update_plan", {"current_plan": "Premium"})
     assert sandbox.state["current_plan"] == "Premium"
 
+def test_sandbox_lifecycle(tmp_path):
+    """Verify setup/teardown with a controlled tmp directory."""
+    test_ws = tmp_path / "sandbox_test_ws"
+    scenario = {
+        "scenario_id": "lifecycle-test",
+        "metadata": {"cleanup_workspace": True}
+    }
+    sandbox = ToolSandbox(scenario)
+    # Inject temp path to avoid polluting real workspaces/ dir
+    sandbox.workspace_dir = str(test_ws)
+    
     sandbox.setup()
+    assert Path(sandbox.workspace_dir).exists()
+    
     sandbox.teardown()
-    assert True # Just verifying they are callable
+    assert not Path(sandbox.workspace_dir).exists()
 
+def test_sandbox_cleanup_persistence(tmp_path):
+    """Verify that cleanup_workspace=False preserves the directory."""
+    test_ws = tmp_path / "persist_test_ws"
+    scenario = {
+        "scenario_id": "persist-test",
+        "metadata": {"cleanup_workspace": False}
+    }
+    sandbox = ToolSandbox(scenario)
+    sandbox.workspace_dir = str(test_ws)
+    
+    sandbox.setup()
+    ws_dir = sandbox.workspace_dir
+    assert Path(ws_dir).exists()
+    
+    sandbox.teardown()
+    assert Path(ws_dir).exists() # Should still exist
 
 def test_shared_state_registry_permissions():
-    """Verify namespaced read/write permissions in SharedStateRegistry. (Migrated from test_eval_runner.py)"""
+    """Verify namespaced read/write permissions in SharedStateRegistry."""
     from eval_runner.tool_sandbox import SharedStateRegistry
     topology = {
         "agent_a": {"writes": ["namespace_1"], "reads": ["namespace_2"]},
