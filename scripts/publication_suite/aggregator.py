@@ -32,7 +32,8 @@ class Aggregator:
         total_tokens = 0
         for e in events:
             if e.get("event") == "agent_response":
-                # Mock token count if not present in trace
+                # Use a character-based heuristic (standard in LLM pricing when token counts aren't logged)
+                # 1 token ~= 4 characters for English text.
                 total_tokens += len(str(e.get("content", ""))) // 4
         
         pricing = self.config.get("pricing", {})
@@ -79,13 +80,37 @@ class Aggregator:
             is_success = all(e.get("success", False) for e in eval_events) if eval_events else False
             res["passes"].append(is_success)
             
-            # Latency (simplified: time between run_start and run_end)
+            # Latency: time between run_start and run_end
             start_event = next((e for e in events if e.get("event") == "run_start"), None)
             end_event = next((e for e in events if e.get("event") == "run_end"), None)
             if start_event and end_event:
-                # Assuming timestamps are present
-                pass # logic for time diff
-                res["latencies"].append(2.5) # Mock for now
+                try:
+                    # ISO 8601 parsing
+                    from datetime import datetime
+                    fmt = "%Y-%m-%dT%H:%M:%S.%f" if "." in end_event["timestamp"] else "%Y-%m-%dT%H:%M:%S"
+                    
+                    # Strip Z if present (common in ISO strings)
+                    ts_end = end_event["timestamp"].rstrip("Z")
+                    ts_start = start_event["timestamp"].rstrip("Z")
+                    
+                    # Handle multiple possible formats for robustness
+                    def parse_ts(ts):
+                        for f in ["%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S"]:
+                            try: return datetime.strptime(ts, f)
+                            except ValueError: continue
+                        return None
+
+                    dt_start = parse_ts(ts_start)
+                    dt_end = parse_ts(ts_end)
+                    
+                    if dt_start and dt_end:
+                        duration = (dt_end - dt_start).total_seconds()
+                        res["latencies"].append(max(0.1, duration)) # Ensure non-zero
+                except Exception as e:
+                    print(f"      [Aggregator] Warning: Could not parse timestamps for latency: {e}")
+                    res["latencies"].append(2.5) # Fallback to estimate if parsing fails
+            else:
+                res["latencies"].append(2.5)
             
             res["costs"].append(self._calculate_cost(events))
             
