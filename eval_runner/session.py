@@ -6,6 +6,7 @@ Manages the state and trajectory of an evaluation session.
 Handles conversation history, tool results, and plugin interception.
 """
 
+import os
 import json
 import asyncio
 import copy
@@ -144,10 +145,30 @@ class SessionManager:
                     elif action == "hitl_pause":
                         # HITL logic
                         EventEmitter.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "turn": turn})
-                        print(f"   [Session] HITL Pause at turn {turn}. Waiting for resume...")
-                        # In a real system, we'd wait for an external signal or human input.
-                        # For this implementation, we'll simulate a resume with a fixed message.
-                        user_input = "Human has reviewed and approved. Proceed." 
+                        
+                        prompt = agent_response.get("prompt", "Human intervention required.")
+                        print(f"\n   ✋ [HITL PAUSE] Task: {task_id} | Turn: {turn}")
+                        print(f"      Context: {prompt}")
+
+                        # 1. Check CI/Non-Interactive environment
+                        if os.getenv("CI") or os.getenv("EVAL_BATCH_MODE") == "true":
+                            user_input = "Auto-approved in batch/CI mode."
+                            print("      [Session] CI/Batch mode detected. Auto-resuming...")
+                        # 2. Try interactive input
+                        else:
+                            try:
+                                import sys
+                                if sys.stdin.isatty():
+                                    user_input = input("      > Provide guidance or press Enter to approve: ").strip()
+                                    if not user_input:
+                                        user_input = "Human has reviewed and approved. Proceed."
+                                else:
+                                    user_input = "Non-interactive shell. Auto-approving."
+                            except (EOFError, KeyboardInterrupt):
+                                user_input = "Human intervention aborted. Stopping task."
+                                EventEmitter.emit(CoreEvents.ERROR, {"message": "HITL Aborted by user."})
+                                break
+
                         conversation_history.append({"role": "human", "content": user_input})
                         current_message = user_input
                         EventEmitter.emit(CoreEvents.HITL_RESUME, {"task_id": task_id})

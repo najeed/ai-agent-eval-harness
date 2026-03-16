@@ -139,7 +139,7 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
                     <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input 
                         type="text"
-                        placeholder="Local filter..."
+                        placeholder="Filter traces by event or data..."
                         className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-200"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
@@ -309,7 +309,7 @@ const ScenarioEditor = () => {
                                     </div>
                                     <input 
                                         type="text"
-                                        placeholder="Describe the expected agent behavior or task..."
+                                        placeholder="e.g., The agent should calculate the net profit after tax..."
                                         value={task.description}
                                         onChange={(e) => {
                                             const newTasks = [...scenario.tasks];
@@ -719,7 +719,7 @@ const Dashboard = ({ onNavigate, navItems }) => {
                 <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input 
                     type="text"
-                    placeholder="Search console..."
+                    placeholder="Filter console logs (error, info, debug)..."
                     className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-80 text-slate-200"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -900,7 +900,7 @@ const App = () => {
                             <input 
                                 autoFocus
                                 type="text"
-                                placeholder="Global search..."
+                                placeholder="Search industry scenarios (e.g., Medical, FinTech)..."
                                 value={globalSearch}
                                 onChange={(e) => setGlobalSearch(e.target.value)}
                                 onBlur={() => !globalSearch && setSearching(false)}

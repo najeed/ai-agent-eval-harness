@@ -66,12 +66,23 @@ class AbstractSandbox(ABC):
         }
 
     def setup(self):
-        """Perform one-time setup (e.g., spinning up Docker, init DB)."""
-        pass
+        """Perform one-time setup: Create workspace directory."""
+        import os
+        from pathlib import Path
+        workspace = Path("workspace") / self.scenario.get("scenario_id", "default")
+        workspace.mkdir(parents=True, exist_ok=True)
+        print(f"      [Sandbox] Workspace initialized at: {workspace}")
 
     def teardown(self):
-        """Perform one-time teardown (e.g., stopping containers)."""
-        pass
+        """Perform one-time teardown: Clean up workspace (optional)."""
+        import shutil
+        from pathlib import Path
+        workspace = Path("workspace") / self.scenario.get("scenario_id", "default")
+        # Only clean up if explicitly requested in scenario or if it's a test run
+        if self.scenario.get("cleanup_workspace", False):
+            if workspace.exists():
+                shutil.rmtree(workspace)
+                print(f"      [Sandbox] Workspace cleaned up.")
 
     @abstractmethod
     def execute(self, tool_name: str, params: dict, agent_name: Optional[str] = None) -> dict:

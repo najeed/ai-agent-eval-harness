@@ -141,14 +141,14 @@ HTML_TEMPLATE = """
             options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } }
         });
 
-        // Consistency Chart (Placeholder calculation)
+        // Consistency Chart (Outcome Stability)
         new Chart(document.getElementById('consistencyChart'), {
             type: 'radar',
             data: {
                 labels: agents.map(a => a.name),
                 datasets: [{
-                    label: 'Robustness Score',
-                    data: agents.map(a => 85 + (Math.random() * 10)), // Simulated consistency metric
+                    label: 'Robustness Score (%)',
+                    data: agents.map(a => (a.avg_consistency || 0) * 100),
                     borderColor: '#39cccc',
                     backgroundColor: 'rgba(57, 204, 204, 0.2)'
                 }]
@@ -183,13 +183,23 @@ class HTMLBuilder:
             total_pass = sum(s["pass_rate"] for s in scenarios.values())
             total_lat = sum(s["avg_latency"] for s in scenarios.values())
             total_cost = sum(s["avg_cost"] for s in scenarios.values())
+            
+            # Extract consistency score if present in metrics
+            consistency_scores = []
+            for s_val in scenarios.values():
+                for m in s_val.get("metrics", []):
+                    if m.get("metric") == "consistency_score":
+                        consistency_scores.append(m.get("score", 0))
+            
             count = len(scenarios) or 1
+            avg_consistency = sum(consistency_scores) / len(consistency_scores) if consistency_scores else 0
             
             prepared_agents.append({
                 "name": data.get("agent", "Unknown"),
                 "avg_pass_rate": total_pass / count,
                 "avg_latency": total_lat / count,
                 "avg_cost": total_cost / count,
+                "avg_consistency": avg_consistency,
                 "scenarios": scenarios
             })
 

@@ -11,6 +11,7 @@ from . import reporter
 from . import triage
 from . import metrics
 from pathlib import Path
+from datetime import datetime
 
 class ReportingPlugin(BaseEvalPlugin):
     """Orchestrates report generation and notifications after evaluation."""
@@ -78,7 +79,14 @@ class ReportingPlugin(BaseEvalPlugin):
         # We can check CLI args if we store them in a shared location, 
         # but for now we'll check context metadata.
         if context.metadata.get("args") and getattr(context.metadata["args"], "notify", False):
-            self.dispatch_notifications(context, display_results)
+            import asyncio
+            # We are in a sync hook, but need to call async dispatcher
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # Already in a loop, create task
+                loop.create_task(self.dispatch_notifications(context, display_results))
+            else:
+                loop.run_until_complete(self.dispatch_notifications(context, display_results))
 
     def generate_repro_script(self, context: EvaluationContext):
         """Creates a standalone script to reproduce the evaluation."""
@@ -91,15 +99,55 @@ class ReportingPlugin(BaseEvalPlugin):
         repro_path = repro_dir / f"repro_{scenario_id}.txt"
         
         # Strip potential arbitrary execution
-        content = f"# Reproduction script for {scenario_id}\n# ONLY execute this manually after review.\neval-harness run scenarios/{scenario_id}.json\n"
+        content = f"""# Reproduction script for {scenario_id}
+# Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+# 
+# Usage:
+# 1. Ensure you have the eval-harness installed: pip install .
+# 2. Set your environment variables (AGENT_API_URL, etc.)
+# 3. RUN: eval-harness run --path scenarios/{scenario_id}.json
+#
+# SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
+
+eval-harness run --path scenarios/{scenario_id}.json
+"""
+        # Additional safety for scenarios that might contain shell commands
         content = content.replace("os.system", "[REDACTED]").replace("subprocess", "[REDACTED]")
         
         with open(repro_path, "w") as f:
             f.write(content)
         print(f"   [ReportingPlugin] Inert repro instructions generated: {repro_path}")
 
-    def dispatch_notifications(self, context: EvaluationContext, results: list):
-        """Mock notification dispatcher."""
-        print("   [ReportingPlugin] Dispatching notifications to Jira/Slack...")
-        # Mock logic
-        pass
+    async def dispatch_notifications(self, context: EvaluationContext, results: list):
+        """Dispatches results to external webhooks (Slack/Discord/Custom)."""
+        webhook_url = context.metadata.get("webhook_url")
+        if not webhook_url:
+            print("   [ReportingPlugin] Skip: No 'webhook_url' provided in metadata.")
+            return
+
+        print(f"   [ReportingPlugin] Dispatching notification to: {webhook_url[:20]}...")
+        
+        # Simple summary
+        total = len(results)
+        successes = sum(1 for r in results if r.get("metrics") and all(m.get("success", False) for m in r["metrics"]))
+        
+        payload = {
+            "text": f"🚀 *Evaluation Complete*\n*Scenario*: {context.scenario_id}\n*Success Rate*: {successes}/{total} tasks passed.",
+            "attachments": [
+                {
+                    "title": "View Report",
+                    "text": f"Reproduction script generated: reports/repro/repro_{context.scenario_id}.txt"
+                }
+            ]
+        }
+
+        try:
+            import aiohttp
+            async with aiohttp.ClientSession() as session:
+                async with session.post(webhook_url, json=payload, timeout=5) as response:
+                    if response.status < 300:
+                        print("   [ReportingPlugin] Notification sent successfully.")
+                    else:
+                        print(f"   [ReportingPlugin] Webhook failed: {response.status}")
+        except Exception as e:
+            print(f"   [ReportingPlugin] Error dispatching notification: {e}")

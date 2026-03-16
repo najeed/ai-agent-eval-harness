@@ -50,8 +50,32 @@ class HFExporter:
 
     @staticmethod
     def push_to_hf(dataset_path: str, repo_id: str):
-        """Placeholder for pushing a dataset to HuggingFace Hub."""
+        """Pushes a dataset to HuggingFace Hub using huggingface_hub SDK."""
         print(f"      [Exporter] Preparing to push {dataset_path} to HF Hub: {repo_id}...")
-        print("      [HINT] Ensure 'huggingface_hub' is installed and you are logged in via 'huggingface-cli login'.")
-        # In actual implementation: api = HfApi(); api.upload_file(...)
-        print(f"      [Exporter] Successfully staged {dataset_path} for {repo_id}")
+        
+        try:
+            from huggingface_hub import HfApi
+            api = HfApi()
+            
+            # Check if dataset exists
+            path = Path(dataset_path)
+            if not path.exists():
+                print(f"      [Exporter] Error: {dataset_path} not found.")
+                return
+
+            print(f"      [Exporter] Uploading {path.name} to {repo_id}...")
+            api.upload_file(
+                path_or_fileobj=str(path),
+                path_in_repo=path.name,
+                repo_id=repo_id,
+                repo_type="dataset",
+            )
+            print(f"      [Exporter] Success! Dataset pushed to https://huggingface.co/datasets/{repo_id}")
+            
+        except ImportError:
+            print("      [Exporter] Error: 'huggingface_hub' SDK not found.")
+            print("      [HINT] Run 'pip install huggingface_hub' and 'huggingface-cli login' to enable this feature.")
+        except Exception as e:
+            print(f"      [Exporter] Failed to push to HF Hub: {e}")
+            if "not logged in" in str(e).lower() or "unauthorized" in str(e).lower():
+                print("      [HINT] Please run 'huggingface-cli login' to authenticate.")

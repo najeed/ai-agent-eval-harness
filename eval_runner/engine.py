@@ -56,9 +56,13 @@ class AgentAdapterRegistry:
         
     @classmethod
     async def _human_adapter(cls, payload: dict):
-        """Placeholder for Human-In-The-Loop intervention."""
-        # This will be handled by the session execution loop
-        return {"action": "hitl_pause", "message": "Waiting for human intervention."}
+        """Standard adapter for Human-In-The-Loop intervention."""
+        # Provides structured metadata to the session loop
+        return {
+            "action": "hitl_pause", 
+            "message": "Waiting for human intervention.",
+            "prompt": payload.get("task_description", "Please review the current state and provide guidance.")
+        }
         
     @classmethod
     async def call_agent(cls, payload: dict, protocol="http", endpoint: Optional[str] = None):
