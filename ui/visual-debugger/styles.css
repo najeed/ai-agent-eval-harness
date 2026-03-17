@@ -103,14 +103,34 @@ body {
 }
 
 .react-flow__controls {
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 8px;
-  top: 24px;
-  right: 24px;
-  left: auto;
-  bottom: auto;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  top: 10px !important;
+  right: 10px !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: fit-content !important;
+  height: fit-content !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  z-index: 10 !important;
+  pointer-events: none; /* Container is transparent to clicks */
+}
+
+.react-flow__controls-button {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  border-radius: 4px !important;
+  margin-bottom: 2px !important;
+  pointer-events: auto !important; /* Buttons are clickable */
+  color: #94a3b8 !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #334155 !important;
+  color: #f1f5f9 !important;
 }
 
 .react-flow__attribution {

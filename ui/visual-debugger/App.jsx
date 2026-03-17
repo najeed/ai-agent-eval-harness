@@ -303,9 +303,30 @@ const ScenarioEditor = () => {
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block">Task Sequence (State Nodes)</label>
                         <div className="space-y-3">
                             {scenario.tasks.map((task, idx) => (
-                                <div key={task.id} className="flex gap-4 items-center bg-[#161b22] border border-slate-800 rounded-xl p-4 group hover:border-slate-600 transition-all">
-                                    <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-blue-500 border border-slate-700 flex-shrink-0">
-                                        {idx + 1}
+                                <div 
+                                    key={task.id} 
+                                    draggable="true"
+                                    onDragStart={(e) => e.dataTransfer.setData('text/plain', idx)}
+                                    onDragOver={(e) => e.preventDefault()}
+                                    onDrop={(e) => {
+                                        e.preventDefault();
+                                        const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+                                        const toIdx = idx;
+                                        if (fromIdx === toIdx) return;
+                                        const newTasks = [...scenario.tasks];
+                                        const [movedTask] = newTasks.splice(fromIdx, 1);
+                                        newTasks.splice(toIdx, 0, movedTask);
+                                        setScenario({ ...scenario, tasks: newTasks });
+                                    }}
+                                    className="flex gap-4 items-center bg-[#161b22] border border-slate-800 rounded-xl p-4 group hover:border-slate-600 transition-all cursor-grab active:cursor-grabbing"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="text-slate-600 group-hover:text-slate-400 transition-colors">
+                                            <Icon name="activity" size={14} /> {/* Using activity as a placeholder for drag handle */}
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-blue-500 border border-slate-700 flex-shrink-0">
+                                            {idx + 1}
+                                        </div>
                                     </div>
                                     <input 
                                         type="text"
