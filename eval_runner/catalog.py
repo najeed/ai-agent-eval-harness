@@ -39,13 +39,14 @@ class ScenarioCatalog:
                 
                 if not industry:
                     # Fallback to folder structure if possible
-                    if p.parent.name == "scenarios" and p.parent.parent.parent.name == "ai-agent-eval-harness":
+                    if p.parent.name == "scenarios" and "ai-agent-eval-harness" in str(p.absolute()).lower():
                         industry = p.parent.parent.name
                     else:
                         industry = "unclassified"
-                        tags.append("local")
+                        if "local" not in tags:
+                            tags.append("local")
                 
-                if "local" not in tags and "ai-agent-eval-harness" not in str(p.absolute()):
+                if "local" not in tags and "ai-agent-eval-harness" not in str(p.absolute()).lower():
                     tags.append("local")
 
                 self.scenarios.append({
