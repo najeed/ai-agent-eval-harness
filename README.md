@@ -116,7 +116,7 @@ Comprehensive coverage for **50+ sectors** including:
 
 *All scenarios are 100% compliant with the [AES Specification](docs/guides/04_AES_SPECIFICATION.md).*
 
-*(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker compose up --build`. If you don't have Docker, you can run services manually (see [Troubleshooting](#-troubleshooting)).
+*(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker compose up --build`. If you don't have Docker, you can run services manually (see [Troubleshooting](#troubleshooting)).
 
 ### Manual Evaluation (Running the Sample Agent)
 

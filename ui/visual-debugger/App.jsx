@@ -356,11 +356,238 @@ const ScenarioEditor = () => {
     );
 };
 
+// --- New Components for UX Overhaul ---
+
+const HumanFriendlyDetail = ({ event, onNotify }) => {
+    const [showRaw, setShowRaw] = useState(false);
+    if (!event) return null;
+
+    const renderAgentRequest = (e) => (
+        <div className="space-y-4">
+            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">User / User Proxy Request</h4>
+                <p className="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">{e.content || (e.payload && e.payload.task_description)}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-800/30 rounded-lg p-3">
+                    <span className="text-[10px] text-slate-500 block uppercase font-bold mb-1">Target Agent</span>
+                    <span className="text-sm text-slate-200">{e.agent_name || e.agent || "System Dispatcher"}</span>
+                </div>
+                <div className="bg-slate-800/30 rounded-lg p-3">
+                    <span className="text-[10px] text-slate-500 block uppercase font-bold mb-1">Protocol</span>
+                    <span className="text-sm text-slate-200 uppercase">{e.protocol || "Internal"}</span>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderPrompt = (e) => (
+        <div className="space-y-4">
+            <div className="bg-sky-500/5 border border-sky-500/20 rounded-xl p-4">
+                <h4 className="text-xs font-bold text-sky-400 uppercase tracking-widest mb-2">Instructions / Prompt</h4>
+                <p className="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">{e.content}</p>
+            </div>
+            {e.scenario && (
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-slate-800/30 rounded-lg p-3">
+                        <span className="text-[10px] text-slate-500 block uppercase font-bold mb-1">Scenario</span>
+                        <span className="text-sm text-slate-200">{e.scenario}</span>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+
+    const renderToolCall = (e) => (
+        <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+                <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500">
+                    <Icon name="box" size={16} />
+                </div>
+                <h4 className="text-lg font-bold text-white font-mono">{e.tool}(...)</h4>
+            </div>
+            <div className="space-y-2">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Arguments</span>
+                <pre className="json-block text-amber-400">{JSON.stringify(e.arguments || e.params || {}, null, 2)}</pre>
+            </div>
+            {e.response && (
+                <div className="space-y-2">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Response</span>
+                    <pre className="json-block text-emerald-400">{JSON.stringify(e.response, null, 2)}</pre>
+                </div>
+            )}
+        </div>
+    );
+
+    const renderAgentResponse = (e) => (
+        <div className="space-y-4">
+            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
+                <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">Agent Thought / Output</h4>
+                <p className="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">{e.content || (e.response && e.response.content)}</p>
+            </div>
+            {e.response && e.response.action && (
+                <div className="bg-slate-800/30 rounded-lg p-3 flex justify-between items-center">
+                    <div>
+                        <span className="text-[10px] text-slate-500 block uppercase font-bold mb-1">Action Taken</span>
+                        <span className="text-sm text-blue-400 font-mono font-bold">{e.response.action}</span>
+                    </div>
+                    {e.response.confidence && (
+                        <div className="text-right">
+                            <span className="text-[10px] text-slate-500 block uppercase font-bold mb-1">Confidence</span>
+                            <span className="text-sm text-emerald-500 font-bold">{(e.response.confidence * 100).toFixed(0)}%</span>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+
+    const renderWorldState = (e) => (
+        <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-2">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Modified State Paths</span>
+                    <div className="flex flex-wrap gap-2">
+                        {Object.keys(e.state || {}).map(path => (
+                            <span key={path} className="px-2 py-1 bg-blue-500/10 text-blue-400 text-[10px] font-mono rounded border border-blue-500/20">{path}</span>
+                        ))}
+                        {Object.keys(e.state || {}).length === 0 && <span className="text-slate-600 italic text-xs">No state modifications in this step</span>}
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Full State Diff</span>
+                    <pre className="json-block text-sky-400 max-h-64">{JSON.stringify(e.state, null, 2)}</pre>
+                </div>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="detail-card animate-in fade-in zoom-in-95 duration-300">
+            <div className="detail-header">
+                <div className="flex items-center gap-3">
+                    <span className={`label-pill ${
+                        event.event === 'prompt' ? 'bg-sky-500/10 text-sky-400' :
+                        event.event === 'agent_response' ? 'bg-emerald-500/10 text-emerald-400' :
+                        event.event === 'tool_call' ? 'bg-amber-500/10 text-amber-400' :
+                        event.event === 'agent_request' ? 'bg-slate-500/20 text-slate-300' :
+                        'bg-slate-500/10 text-slate-400'
+                    }`}>
+                        {event.event.replace('_', ' ')}
+                    </span>
+                    <span className="text-xs text-slate-500 font-mono">{new Date(event.timestamp).toLocaleTimeString()}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                    <button 
+                        onClick={() => setShowRaw(!showRaw)}
+                        className="text-[10px] text-slate-500 hover:text-white uppercase font-bold tracking-widest flex items-center gap-1 transition-colors"
+                    >
+                        <Icon name={showRaw ? 'eye_off' : 'eye'} size={12} /> {showRaw ? 'Hide JSON' : 'Show JSON'}
+                    </button>
+                    <button 
+                        onClick={() => {
+                            navigator.clipboard.writeText(JSON.stringify(event, null, 2));
+                            if (onNotify) onNotify("Event JSON copied");
+                        }}
+                        className="text-[10px] text-slate-500 hover:text-white uppercase font-bold tracking-widest flex items-center gap-1 transition-colors"
+                    >
+                        <Icon name="box" size={12} /> Copy JSON
+                    </button>
+                </div>
+            </div>
+            
+            <div className="detail-body">
+                {showRaw ? (
+                    <pre className="json-block text-slate-400">{JSON.stringify(event, null, 2)}</pre>
+                ) : (
+                    <React.Fragment>
+                        {event.event === 'prompt' && renderPrompt(event)}
+                        {event.event === 'agent_request' && renderAgentRequest(event)}
+                        {event.event === 'tool_call' && renderToolCall(event)}
+                        {event.event === 'agent_response' && renderAgentResponse(event)}
+                        {event.event === 'world_state_change' && renderWorldState(event)}
+                        {!['prompt', 'agent_request', 'tool_call', 'agent_response', 'world_state_change'].includes(event.event) && (
+                            <pre className="json-block text-slate-400">{JSON.stringify(event, null, 2)}</pre>
+                        )}
+                    </React.Fragment>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const FlowView = ({ events, onNodeSelect }) => {
+    const { ReactFlow, Controls, Background } = ReactFlowRenderer;
+
+    const initialNodes = useMemo(() => {
+        const nodes = [];
+        let y = 0;
+        
+        events.forEach((e, idx) => {
+            nodes.push({
+                id: `node-${idx}`,
+                type: 'default',
+                data: { 
+                    label: (
+                        <div className="flex flex-col items-center gap-1 text-center">
+                            <span className="text-[10px] font-black text-white leading-tight">
+                                {e.tool || (e.event === 'agent_response' ? (e.response?.action || 'Thoughts') : e.content?.substring(0, 24) || "System Event")}
+                            </span>
+                            <span className="text-[7px] uppercase opacity-60 font-bold tracking-tighter">{e.event.replace('_', ' ')}</span>
+                        </div>
+                    )
+                },
+                position: { x: 250, y: y },
+                className: `react-flow__node-${e.event === 'prompt' ? 'prompt' : e.event === 'tool_call' || e.event === 'agent_response' ? 'agent' : 'environment'}`,
+                sourcePosition: 'bottom',
+                targetPosition: 'top',
+            });
+            y += 100;
+        });
+        return nodes;
+    }, [events]);
+
+    const initialEdges = useMemo(() => {
+        const edges = [];
+        for (let i = 0; i < events.length - 1; i++) {
+            edges.push({
+                id: `edge-${i}`,
+                source: `node-${i}`,
+                target: `node-${i+1}`,
+                animated: events[i+1].event === 'tool_call',
+                style: { stroke: '#475569', strokeWidth: 2 },
+            });
+        }
+        return edges;
+    }, [events]);
+
+    const onNodeClick = (event, node) => {
+        const idx = parseInt(node.id.split('-')[1]);
+        onNodeSelect(events[idx]);
+    };
+
+    return (
+        <div className="flex-1 h-full w-full bg-[#0d1117]">
+            <ReactFlow
+                nodes={initialNodes}
+                edges={initialEdges}
+                onNodeClick={onNodeClick}
+                fitView
+                className="bg-dot-white/[0.05]"
+            >
+                <Background color="#334155" variant="dots" gap={20} size={1} />
+                <Controls showInteractive={false} />
+            </ReactFlow>
+        </div>
+    );
+};
+
 const VisualDebugger = ({ runId, onNotify }) => {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isLive, setIsLive] = useState(!runId || runId === 'live');
+    const [viewMode, setViewMode] = useState('flow'); // Default to 'flow' map
 
     const loadTrace = (id) => {
         setLoading(true);
@@ -374,8 +601,10 @@ const VisualDebugger = ({ runId, onNotify }) => {
             .then(data => {
                 if (data.data && data.data.timeline) {
                     setEvents(data.data.timeline);
+                    if (data.data.timeline.length > 0) setSelectedEvent(data.data.timeline[0]);
                 } else if (Array.isArray(data)) {
                     setEvents(data);
+                    if (data.length > 0) setSelectedEvent(data[0]);
                 }
                 setLoading(false);
             })
@@ -423,10 +652,18 @@ const VisualDebugger = ({ runId, onNotify }) => {
                 <div className="p-4 border-b border-slate-800 sticky top-0 bg-[#0b0e14]/80 backdrop-blur-md z-10 flex justify-between items-center">
                     <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Execution Trace</h3>
                     <div className="flex gap-2">
-                        <button onClick={() => loadTrace()} title="Reload Trace" className="text-slate-500 hover:text-blue-400">
-                            <Icon name="activity" size={14} />
+                        <button 
+                            onClick={() => setViewMode(viewMode === 'list' ? 'flow' : 'list')} 
+                            title={viewMode === 'flow' ? "Switch to List View" : "Switch to Flow Map"} 
+                            className={`p-1.5 rounded-lg border transition-all ${viewMode === 'flow' ? 'text-blue-400 bg-blue-400/10 border-blue-400/20' : 'text-slate-500 hover:text-blue-400 border-slate-800'}`}
+                        >
+                            <Icon name={viewMode === 'flow' ? 'list' : 'activity'} size={14} />
                         </button>
-                        <button onClick={handleExport} title="Export Trace" className="text-slate-500 hover:text-emerald-400">
+                        <div className="w-px h-4 bg-slate-800 mx-1 self-center" />
+                        <button onClick={() => loadTrace()} title="Reload Trace" className="p-1.5 text-slate-500 hover:text-blue-400">
+                            <Icon name="check" size={14} />
+                        </button>
+                        <button onClick={handleExport} title="Export Trace" className="p-1.5 text-slate-500 hover:text-emerald-400">
                             <Icon name="box" size={14} />
                         </button>
                     </div>
@@ -443,7 +680,7 @@ const VisualDebugger = ({ runId, onNotify }) => {
                             onClick={() => setSelectedEvent(e)}
                             className={`p-3 rounded-xl cursor-pointer border transition-all ${
                                 selectedEvent === e 
-                                ? 'bg-blue-600/10 border-blue-500/30 ring-1 ring-blue-500/20' 
+                                ? 'bg-blue-600/10 border-blue-500/30' 
                                 : 'bg-[#161b22] border-slate-800 hover:border-slate-700'
                             }`}
                         >
@@ -470,43 +707,23 @@ const VisualDebugger = ({ runId, onNotify }) => {
             </div>
 
             {/* Content Column */}
-            <div className="flex-1 overflow-y-auto bg-slate-900/10 p-8">
-                {selectedEvent ? (
-                    <div className="max-w-3xl mx-auto space-y-6">
-                        <div className="flex items-center gap-4 border-b border-slate-800 pb-6 mb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center text-blue-500 border border-slate-700">
-                                <Icon name="debugger" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-white capitalize">{selectedEvent.event.replace('_', ' ')}</h3>
-                                <p className="text-sm text-slate-500">Raw event data from Flight Recorder</p>
-                            </div>
-                        </div>
-
-                        <div className="bg-[#161b22] border border-slate-800 rounded-2xl overflow-hidden">
-                            <div className="px-6 py-3 border-b border-slate-800 bg-slate-800/20 flex justify-between items-center">
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">JSON Payload</span>
-                                <button 
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(JSON.stringify(selectedEvent, null, 2));
-                                        if (onNotify) onNotify("Event JSON copied to clipboard");
-                                    }}
-                                    className="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-2 py-1 rounded transition-colors uppercase tracking-widest"
-                                >
-                                    Copy
-                                </button>
-                            </div>
-                            <pre className="p-6 text-emerald-400 font-mono text-sm leading-relaxed overflow-x-auto selection:bg-emerald-500/20">
-                                {JSON.stringify(selectedEvent, null, 2)}
-                            </pre>
-                        </div>
-                    </div>
+            <div className="flex-1 overflow-hidden flex flex-col bg-[#0d1117] relative">
+                {viewMode === 'flow' ? (
+                    <FlowView events={events} onNodeSelect={(e) => { setSelectedEvent(e); setViewMode('list'); }} />
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center space-y-4 opacity-50">
-                        <div className="w-16 h-16 rounded-3xl bg-slate-800 flex items-center justify-center text-slate-600 scale-110">
-                            <Icon name="debugger" size={32} />
-                        </div>
-                        <p className="text-sm font-medium text-slate-500">Select an event from the timeline to inspect trace state</p>
+                    <div className="flex-1 overflow-y-auto p-12">
+                        {selectedEvent ? (
+                            <div className="max-w-4xl mx-auto">
+                                <HumanFriendlyDetail event={selectedEvent} onNotify={onNotify} />
+                            </div>
+                        ) : (
+                            <div className="h-full flex flex-col items-center justify-center space-y-4 opacity-50">
+                                <div className="w-16 h-16 rounded-3xl bg-slate-800 flex items-center justify-center text-slate-600 scale-110">
+                                    <Icon name="debugger" size={32} />
+                                </div>
+                                <p className="text-sm font-medium text-slate-500">Select an event from the timeline to inspect trace state</p>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -938,4 +1155,6 @@ const App = () => {
 };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+// Inject ReactFlow for UMD usage
+window.ReactFlowRenderer = ReactFlow;
 root.render(<App />);

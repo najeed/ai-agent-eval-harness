@@ -85,7 +85,16 @@ class SessionManager:
                         
                         protocol = self.session_metadata.get("protocol", "http")
                         endpoint = self.session_metadata.get("agent")
+                        
+                        # Resolve endpoint defaults if still missing
+                        if not endpoint:
+                            from . import config
+                            if protocol == "http": endpoint = config.AGENT_API_URL
+                            elif protocol == "local": endpoint = os.getenv("AGENT_LOCAL_CMD")
+                            elif protocol == "socket": endpoint = os.getenv("AGENT_SOCKET_ADDR")
+
                         agent_name = self.session_metadata.get("agent_name")
+                        
                         EventEmitter.emit(CoreEvents.AGENT_REQUEST, {
                             "turn": turn,
                             "protocol": protocol,
@@ -98,20 +107,18 @@ class SessionManager:
                         
                         # Zero-Touch Name Discovery: Prioritize self-reported name if no CLI override exists
                         if not agent_name:
-                            # Check top-level first, then nested metadata
                             discovered_name = (
                                 agent_response.get("name") or 
                                 agent_response.get("agent_name") or
                                 agent_response.get("metadata", {}).get("name") or
                                 agent_response.get("metadata", {}).get("agent_name")
                             )
-                            # Fallback to model name if available (common in LLM-direct adapters)
                             if not discovered_name:
                                 discovered_name = agent_response.get("metadata", {}).get("model")
 
                             if discovered_name:
                                 agent_name = discovered_name
-                                self.session_metadata["agent_name"] = discovered_name  # Persist for subsequent tasks/turns
+                                self.session_metadata["agent_name"] = discovered_name
 
                         # Support immutable TurnContext
                         turn_ctx = replace(turn_ctx, agent_response=agent_response)

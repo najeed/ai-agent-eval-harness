@@ -132,7 +132,10 @@ eval-harness run --path scenarios/{scenario_id}.json
         successes = 0
         for attempt_res in results:
             # Check if all tasks in this attempt succeeded
-            if all(all(m.get("success", False) for m in tr.get("metrics", [])) for tr in attempt_res):
+            # results is [ [task1_res, task2_res], [task1_res, task2_res] ] for attempts
+            # If it's a single attempt, it might be just [task1_res, task2_res]
+            tasks = attempt_res if isinstance(attempt_res, list) else [attempt_res]
+            if all(all(m.get("success", False) for m in tr.get("metrics", [])) for tr in tasks):
                 successes += 1
         
         payload = {

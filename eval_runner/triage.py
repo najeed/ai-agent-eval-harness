@@ -15,7 +15,8 @@ class TriageEngine:
         """
         Heuristic-based categorization of a failed task.
         """
-        if all(m.get("success", False) for m in task_result.get("metrics", [])):
+        metrics = task_result.get("metrics", [])
+        if metrics and all(m.get("success", False) for m in metrics):
             return "SUCCESS"
 
         history = task_result.get("conversation_history", [])
@@ -62,7 +63,8 @@ class TriageEngine:
     def apply_triage(cls, all_results: List[Dict[str, Any]]):
         """Adds triage tags to all failed results."""
         for result in all_results:
-            if not all(m.get("success", False) for m in result.get("metrics", [])):
+            metrics = result.get("metrics", [])
+            if not metrics or not all(m.get("success", False) for m in metrics):
                 result["triage_tag"] = cls.categorize_failure(result)
             else:
                 result["triage_tag"] = "SUCCESS"

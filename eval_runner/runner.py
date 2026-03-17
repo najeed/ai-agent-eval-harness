@@ -61,7 +61,8 @@ class DefaultRunner(BaseRunner):
         # Calculate pass@k
         successful_attempts = 0
         for attempt_res in all_attempt_results:
-            if all(all(m.get("success", False) for m in tr.get("metrics", [])) for tr in attempt_res):
+            # A run is successful only if there are metrics and ALL of them passed
+            if all(len(tr.get("metrics", [])) > 0 and all(m.get("success", False) for m in tr.get("metrics", [])) for tr in attempt_res):
                 successful_attempts += 1
         
         pass_at_k = successful_attempts / attempts if attempts > 0 else 0.0

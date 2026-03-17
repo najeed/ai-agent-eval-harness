@@ -102,7 +102,7 @@ class TestMetricCalculation:
                 is_success = metric_score >= threshold
                 assert is_success == expected
 
-## Advanced Open Core Patterns (v1.1+)
+## Advanced Open Core Patterns
 
 ### 1. Nested State Verification (Dot-Notation)
 

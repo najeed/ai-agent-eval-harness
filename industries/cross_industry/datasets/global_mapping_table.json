@@ -1,1 +1,0 @@
-{"mappings": [{"source": "FID", "target": "HEAL_ID", "logic": "checksum_v4"}, {"source": "LOG_REF", "target": "SHIP_REF", "logic": "prefix_strip"}]}

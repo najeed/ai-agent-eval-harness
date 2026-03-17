@@ -90,8 +90,10 @@ class PublicationPlugin(BaseEvalPlugin):
         pricing = self.config.get("pricing", {})
         # Find matching pricing key
         rate = 0.0
+        # Ensure agent_name is a string to avoid NoneType.lower() error
+        safe_name = (agent_name or "unknown").lower()
         for k, v in pricing.items():
-            if k in agent_name.lower():
+            if k in safe_name:
                 rate = v / 1000000.0 # Convert from 1M to per-token
                 break
         return tokens * rate

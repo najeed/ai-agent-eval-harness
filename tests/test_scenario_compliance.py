@@ -120,7 +120,9 @@ def test_all_scenarios_are_valid(scenario_schema):
             
     print(f"\n[DEBUG] Validated {count} scenario files.")
     if errors:
+        print(f"\n[ERROR] Found {len(errors)} validation failure(s):")
         for p, err in errors:
-            print(f"Validation error in {p}: {err}")
+            print(f"  - File: {p}")
+            print(f"    Error: {err}\n")
         pytest.fail(f"{len(errors)} scenario file(s) failed schema validation")
     assert count > 0, "No scenario files were found for validation!"

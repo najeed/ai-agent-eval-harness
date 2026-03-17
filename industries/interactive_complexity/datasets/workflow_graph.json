@@ -1,1 +1,0 @@
-{"nodes": ["start", "audit_v1", "verify_v2", "finalize"], "edges": [{"from": "start", "to": "audit_v1"}, {"from": "audit_v1", "to": "verify_v2"}]}

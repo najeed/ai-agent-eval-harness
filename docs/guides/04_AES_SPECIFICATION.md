@@ -61,7 +61,7 @@ Define heuristics for "Success".
 - `factual_reference`: Verification against a source.
 - `state_verification`: Parity check against sandbox state.
 
-#### Advanced Evaluation Options (v1.1+)
+#### Advanced Evaluation Options
 - **Dot-Notation**: Supports deep nested parity checks (e.g., `user.profile.balance`).
 - **Required Metrics**: Add `required: true` to any success criterion to treat failure (or judge misconfiguration) as a terminal error rather than a warning.
 - **Judge Overrides**: Specific scenarios can override global judge settings via `judge_config`.

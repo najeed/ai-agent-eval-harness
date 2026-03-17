@@ -36,6 +36,7 @@ class PluginManager:
 
     def __init__(self):
         self.plugins: List[BaseEvalPlugin] = []
+        self._plugins = self.plugins # Alias for diagnostic visibility
         self._loaded = False
 
     def load_plugins(self):

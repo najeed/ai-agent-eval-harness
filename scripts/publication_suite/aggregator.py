@@ -10,7 +10,7 @@ import math
 import yaml
 from pathlib import Path
 from typing import List, Dict, Any
-from taxonomy import FailureTaxonomy
+from .taxonomy import FailureTaxonomy
 
 class Aggregator:
     def __init__(self, manifest_path: str):
