@@ -4,6 +4,14 @@
 
 This guide explains the philosophy behind our evaluation scenarios and how to interpret them.
 
+## The Scenario Corpus
+
+The harness ships with a production-grade corpus of **5,000+ scenarios** across 45+ industries. This includes specialized high-stakes categories:
+- **Cross-Industry**: Inter-sector policy negotiation.
+- **Ethical Guardrails**: Hardened safety and PII tests.
+- **Interactive Complexity**: Multi-turn flows with HITL.
+- **Simulations**: High-fidelity lab environments.
+
 ## Scenario Structure
 
 Each evaluation is defined by a `.json` file in an industry's `scenarios` directory. The file has the following top-level keys:

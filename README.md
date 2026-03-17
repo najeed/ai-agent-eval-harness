@@ -49,7 +49,7 @@ Our goal is to create a standardized, community-driven benchmark for AI agent pe
 
 The harness is organized into the following key components:
 
--   `/industries`: Evaluation assets (4,600+ scenarios) categorized by 44 industries.
+-   `/industries`: Evaluation assets (5,000+ scenarios) categorized by 45+ industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
 -   `/eval_runner/console`: Flask-based REST API for the **Integrated Visual Suite**.
 -   `/ui/visual-debugger`: Premium React-based Visual Debugger & Dashboard.
@@ -97,6 +97,24 @@ The harness is organized into the following key components:
 
 > [!TIP]
 > **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `eval-harness console`.
+
+## 📂 The Global Scenario Corpus (v1.1)
+
+The harness now ships with a massive, validated corpus of **5,000+ scenarios** designed to stress-test agents across every dimension:
+
+### 🏛️ Industry-Specific (4,000+ Scenarios)
+Comprehensive coverage for **50+ sectors** including:
+- **Finance & Banking**: Loan processing, fraud detection, and regulatory audits.
+- **Healthcare**: PII handling, insurance reconciliation, and diagnostic workflows.
+- **Telecom & Energy**: Network troubleshooting, grid optimization, and billing.
+
+### 🧠 Advanced Categories (1,000+ Scenarios)
+- **Cross-Industry Negotiation**: Scenarios where agents must bridge data and policy gaps between two distinct sectors (e.g., Legal & Healthcare).
+- **Ethical & Safety Guardrails**: Hardened tests for PII leakage, prompt injection, and bias.
+- **Interactive Complexity**: Multi-turn flows involving conflicting human-in-the-loop (HITL) requirements.
+- **Simulations**: High-fidelity sector labs (e.g., Bank, EHR/HL7, CRM) for testing agents in realistic, isolated environments.
+
+*All scenarios are 100% compliant with the [AES Specification](docs/guides/04_AES_SPECIFICATION.md).*
 
 *(Optional Full Lab Mode):* For the complete dashboard and database experience, you can use `docker compose up --build`. If you don't have Docker, you can run services manually (see [Troubleshooting](#-troubleshooting)).
 
@@ -158,7 +176,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 The latest release introduces a new suite of high-level automation and visual tools designed for 10x developer productivity.
 
 #### Advanced CLI Suite
-- **`list`**: Faceted search filtering across 4,600+ industry scenarios.
+- **`list`**: Faceted search filtering across 5,000+ industry scenarios.
 - **`lint`**: Automated quality scoring and AES compliance verification.
 - **`install <pack>`**: Rapid deployment of curated, industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
 - **`analyze <url>`**: Proactive agent repo scanning; auto-generates AES stubs by identifying tools and endpoints.
@@ -304,7 +322,7 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | Feature Module | Community Edition (OSS) | Enterprise Edition |
 | :--- | :--- | :--- |
 | **Core Architecture** | ✅ Eval Engine, Hooks, JSON Schemas | ✅ Enterprise Service Bus Integration |
-| **Industry Benchmark Set** | ✅ 4,600+ Scenarios | ✅ Prioritized Scenario Updates |
+| **Industry Benchmark Set** | ✅ 5,000+ Scenarios | ✅ Prioritized Scenario Updates |
 | **Reliability Metrics** | ✅ `pass@k` multi-attempt scoring | ✅ Persistent Leaderboards & Consensus |
 | **Scenario Mutations** | 🔶 Basic (Typos & Ambiguity) | ✅ Adversarial Fuzzing & Prompt Injections |
 | **Execution Security** | 🔶 Basic Path/Shell Gating | ✅ Tool Sandboxing & Context Payload Caps |
