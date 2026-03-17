@@ -140,5 +140,6 @@ Inspect results natively using the **Admin Console**. The console provides a uni
 
 - ✅ Read the **User Manual** (`docs/guides/help/02_USER_MANUAL.md`).
 - 🧠 Read the **Developer Guide** (`docs/guides/help/03_DEVELOPER_GUIDE.md`) for adapters and plugins.
+- 📂 **Path Decoupling (v1.1+)**: You don't have to keep scenarios in `industries/`. You can now run `eval-harness evaluate --path <any_folder>` and it will work out of the box!
 
 Happy evaluating!

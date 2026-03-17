@@ -101,6 +101,35 @@ class TestMetricCalculation:
             with self.subTest(f"threshold_{threshold}"):
                 is_success = metric_score >= threshold
                 assert is_success == expected
+
+## Advanced Open Core Patterns (v1.1+)
+
+### 1. Nested State Verification (Dot-Notation)
+
+When testing scenarios with deep object state, use dot-notation in your assertions to target specific fields.
+
+```python
+def test_nested_state_verification():
+    actual_state = {"user": {"profile": {"balance": 100}}}
+    expected_changes = {"user.profile.balance": 100}
+    
+    # The get_nested_value utility handles recursion
+    score = metrics.calculate_state_correctness(expected_changes, actual_state)
+    assert score == 1.0
+```
+
+### 2. Judge Guarding (Required Metrics)
+
+Verify that critical metrics correctly trigger termination when providers are missing.
+
+```python
+async def test_judge_required_guard():
+    criterion = {"metric": "luna_judge_score", "required": true}
+    
+    # Should raise RuntimeError if JUDGE_PROVIDER is misconfigured/missing
+    with pytest.raises(RuntimeError, match="Judge provider .* is required"):
+        await metrics.calculate_luna_judge_score(criterion, ...)
+```
 ```
 
 ## Error Condition Testing Patterns

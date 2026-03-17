@@ -28,7 +28,7 @@ git commit -s -m "Your commit message"
 - **Schema Compliance**: All JSON files must pass the validation checks via `eval-harness aes validate <path>`.
 - **Scaffolding**: Use `eval-harness init --dir <name> --industry <ind>` to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.
 - **Quality Verification**: All scenarios must pass the quality linter (`eval-harness lint <path>`). We target a score of **90+** for all official industry libraries.
-- **Execution**: Ensure your scenario runs correctly with `eval-harness evaluate --path industries/<ind>`.
+- **Execution**: Ensure your scenario runs correctly with `eval-harness evaluate --path <your_path>`. The harness now supports **Path Decoupling**, allowing you to host and run benchmarks from any directory without repository-internal dependencies.
 
 ### 2. The Zero-Touch Core Philosophy
 We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests that modify the core orchestration (`eval_runner/runner.py`, `eval_runner/metrics.py`) to handle edge cases or custom platforms will generally be rejected.

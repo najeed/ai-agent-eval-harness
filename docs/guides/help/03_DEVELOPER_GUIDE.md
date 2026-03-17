@@ -52,9 +52,10 @@ The core has been refactored into a decoupled, event-driven architecture to supp
 ### 3.1 Architectural Components
 1. **Runner (`runner.py`)**: Orchestrates the high-level evaluation loop, handling multi-attempt (`pass@k`) logic.
 2. **SessionManager (`session.py`)**: Manages individual evaluation attempts, conversation trajectories, and tool execution.
-3. **EventEmitter (`events.py`)**: A centralized bus that emits state transitions. 
-4. **Plugins (`plugins.py`)**: Flexible hooks that can observe or intercept core behavior.
-5. **ToolSandbox (`tool_sandbox.py`)**: Managed execution environment with automated workspace lifecycle.
+4. **AgentAdapterRegistry** (`adapter_registry.py`): Dynamically discovers and registers agent protocols at runtime.
+5. **Plugins (`plugins.py`)**: Flexible hooks that can observe or intercept core behavior.
+6. **ToolSandbox (`tool_sandbox.py`)**: Managed execution environment with automated workspace lifecycle.
+7. **Loader & Catalog (`loader.py`, `catalog.py`)**: Support for **Path Decoupling**, enabling scenarios to be loaded from any location with relative dataset resolution and automatic industry tagging (`local`, `unclassified`).
 
 ### 3.2 Immutability
 `EvaluationContext` and `TurnContext` are **frozen** dataclasses. You cannot modify them directly inside hooks; instead, use `dataclasses.replace` if you need to pass a modified state upstream.
@@ -131,7 +132,6 @@ from eval_runner.console.auth import handoff_required
 
 class EnterpriseConsolePlugin(BaseEvalPlugin):
     def on_register_console_routes(self, app, nav_registry):
-```python
         # 1. Register link with 'type' metadata ('internal' | 'external' | 'plugin')
         nav_registry.append({
             "id": "compliance_audit", 
@@ -140,7 +140,6 @@ class EnterpriseConsolePlugin(BaseEvalPlugin):
             "icon": "shield",
             "type": "plugin"
         })
-```
 ```
 
 ---
@@ -173,9 +172,23 @@ def audit_logger(payload):
 
 ---
 
-## 📊 6) Metrics System
+## 📊 8) Metrics System
 
-Metrics live in `eval_runner/metrics.py`. Register a new metric:
+Metrics live in `eval_runner/metrics.py`. 
+
+### 8.1 State Verification (Nested Paths)
+The `calculate_state_correctness` metric supports **dot-notation** for deep object inspection. This is implemented via the `get_nested_value` utility, which recursively traverses dictionaries.
+
+### 8.2 Judge Guarding
+Metrics using `calculate_luna_judge_score` can now specify a `required: true` flag. 
+- **Behavior**: If a required judge provider fails to initialize (e.g., missing API key or unknown provider), the engine raises a `RuntimeError` (wrapped as a `JudgeConfigurationError` in the UI).
+- **Fallback**: If not required, the engine logs a warning and falls back to **Jaccard similarity** to prevent crashing the evaluation.
+
+### 8.3 Hardened Metric Loop
+The `SessionManager` now wraps metric calculations in a try-except block. A single malformed metric or a transient failure during judging will no longer terminate the entire multi-scenario run.
+
+### 8.4 Custom Metrics
+Register a new metric:
 ```python
 from eval_runner.metrics import MetricRegistry
 
@@ -187,15 +200,15 @@ MetricRegistry.register("my_score", my_score)
 
 ---
 
-## 🛠️ 8) Sandbox Workspace Lifecycle
+## 🛠️ 9) Sandbox Workspace Lifecycle
 
 The `ToolSandbox` now supports automated environment management via lifecycle hooks:
 
-### 8.1 Setup & Teardown
+### 9.1 Setup & Teardown
 - **`setup()`**: Initializes a fresh workspace directory (under `workspaces/`) for the scenario.
 - **`teardown()`**: Cleans up the workspace directory after execution.
 
-### 8.2 Configuration
+### 9.2 Configuration
 Cleanup is conditional based on the scenario metadata:
 ```json
 {
@@ -209,7 +222,7 @@ If `cleanup_workspace` is `false` (default for many research scenarios), the dir
 
 ---
 
-## 🤝 7) Contribution Flow
+## 🤝 10) Contribution Flow
 1. Add scenario JSON in `industries/<industry>/scenarios/`.
 2. Run with `eval-harness run <path>`.
 3. Add specialized metrics or plugins as needed.

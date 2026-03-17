@@ -117,11 +117,14 @@ The harness is organized into the following key components:
     eval-harness evaluate --path industries/telecom
 
     # Local Subprocess (stdin/stdout)
-    eval-harness evaluate --path industries/telecom --protocol local --agent-cmd "python my_agent.py"
+    eval-harness evaluate --path my_scenarios/ --protocol local --agent-cmd "python my_agent.py"
 
     # Socket (TCP/Unix)
-    eval-harness evaluate --path industries/telecom --protocol socket --agent-socket "localhost:9000"
+    eval-harness evaluate --path tests/scenarios --protocol socket --agent-socket "localhost:9000"
     ```
+
+> [!NOTE]
+> **Path Decoupling**: The harness now supports ad-hoc evaluations anywhere on your filesystem. Metadata like `industry` is inferred from the file content or folder structure, defaulting to `local` and `unclassified` for external files.
 
 ---
 
@@ -145,10 +148,9 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Tool Sandbox**: Governance-controlled execution of real or mock tools with full workspace lifecycle management (`setup`/`teardown`).
 - **Integrated Visual Suite**: Unified dashboard for live trace replay and visual debugging.
 - **Semantic Bridge & Distribution**: Ingest production traces (`import-drift`), analyze failures (`triage`), and export datasets to HuggingFace (`export`).
-- **Research-Grade Orchestration**: Support for `pass@k`, non-linear trajectories (`fork()`), and HITL.
-- **Robust Metrics**: 12+ built-in metrics (Tool Correctness, State Parity, Policy Compliance, and LLM-Judged Clarity).
-- **Multi-Model LLM Judge (Luna-Judge)**: Advanced scoring via pluggable providers (OpenAI, Gemini, Claude, Ollama, xAI Grok).
-- **Core Compliance Layer**: Integrated `ArtifactPlugin` for Source of Truth bundling and SHA-256 integrity verification.
+- **Interception Hooks**: Plugins can now intercept and block tool calls (`on_tool_request`) or register custom adapters.
+- **Enhanced Metrics**: Support for **dot-notation** in state verification (e.g., `user.profile.balance`) for deep-object inspection.
+- **Judge Guarding**: Metrics can now be marked as `required`. If a required LLM judge is misconfigured, the engine raises a critical `JudgeConfigurationError` rather than silently failing.
 - **Centralized Configuration**: All system constants and environment defaults managed via `eval_runner/config.py`.
 
 ## The Advanced Update (v1.1)
@@ -166,7 +168,7 @@ The latest release introduces a new suite of high-level automation and visual to
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 
 #### Premium UX Tools
-- **Scenario Editor**: A visual interface for constructing real-world AES logic—saves production-ready JSON directly to the catalog.
+- **Scenario Editor**: A visual interface for constructing real-world AES logic; saves production-ready JSON directly to the catalog.
 - **VS Code Extension**: Run evaluations and visualize timelines directly within your IDE.
 - **Visual Debugger**: Real-time trajectory playback with interactive state inspection (Live Engine Hook).
 
@@ -192,7 +194,7 @@ Beyond the advanced suite, the harness provides a robust toolkit for professiona
 - **`doctor`**: Environment health checker.
 - **`report`**: Rich HTML reporting with interactive Mermaid trajectories.
 - **`record` & `playground`**: Interaction capture and REPL experimentation for rapid prototyping.
-- **`spec-to-eval`**: Convert Markdown PRDs/Specs into executable JSON scenarios.
+- **`spec-to-eval`**: Convert Markdown PRDs/Specs into executable JSON scenarios. Supports `--fill-defaults` to rapidly generate lint-compliant stubs.
 - **`scenario generate`**: Interactive scaffolding for manual test authoring.
 - **`mutate`**: Adversarial scenario generator (typos, injections, ambiguity).
 - **`import-drift`**: Convert production logs into regression test cases.
@@ -260,7 +262,6 @@ All evaluation execution logs are appended to `runs/run.jsonl`. Because this act
 ### Troubleshooting
 
 - **`ConnectionRefusedError`**: The harness cannot reach the agent. Ensure `AGENT_API_URL` is set correctly and the agent API is running.
-- **`GoException: no routes for location`**: Occurs in the Flutter UI dashboard if the router isn't rebuilt. Re-run `flutter pub run build_runner build`.
 - **`PluginTimeoutError`**: A registered plugin took too long to execute a hook. Check your plugin logic or increase the timeout.
 - **`Invalid JSON Error (LLM)`**: The `auto-translate` command expects strict JSON. Ensure your local Ollama model (e.g., `llama3`) is running and capable of JSON mode.
 - **`docker: command not found`**: You need to install Docker. Follow the [Official Installation Guide](https://docs.docker.com/get-docker/).

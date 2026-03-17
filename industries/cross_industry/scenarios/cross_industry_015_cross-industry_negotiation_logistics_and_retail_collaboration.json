@@ -1,0 +1,75 @@
+{
+  "scenario_id": "cross-industry-015",
+  "title": "Cross-Industry Negotiation: Logistics & Retail Collaboration",
+  "description": "An AI agent must bridge a complex data and policy gap between the Logistics and Retail sectors.",
+  "use_case": "Cross Industry",
+  "core_function": "Advanced Agentic Execution",
+  "industry": "Meta-Industry",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve and map data from Logistics legacy schema to Retail standards using the global_mapping_table.json.",
+      "expected_outcome": "Data is normalized across both domains.",
+      "required_tools": [
+        "map_schema",
+        "fetch_records"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Resolve a policy conflict where Logistics privacy rules clash with Retail disclosure mandates.",
+      "expected_outcome": "Agent identifies a compliant middle-ground or escalates correctly.",
+      "required_tools": [
+        "check_compliance",
+        "propose_resolution"
+      ],
+      "success_criteria": [
+        {
+          "metric": "instructional_clarity",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ],
+  "initial_state": {
+    "session_active": true,
+    "context_loaded": true,
+    "dataset_base": "industries/cross_industry/datasets/"
+  },
+  "tools": {
+    "map_schema": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "fetch_records": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "check_compliance": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "propose_resolution": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    }
+  },
+  "policies": {
+    "safety_threshold": 0.95,
+    "requires_hitl": true
+  }
+}

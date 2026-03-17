@@ -21,7 +21,7 @@ A scenario is the unit of evaluation. It's a JSON file that defines:
 - `scenario_id` — unique identifier
 - `title` — human-friendly name
 - `industry` — category for grouping
-- `dataset` — (optional) path to a synthetic CSV/JSONL dataset to ground the scenario
+- `dataset` — (optional) path to a synthetic CSV/JSONL dataset to ground the scenario. **Path Decoupling (v1.1+)**: Relative paths (e.g., `./data.csv`) are resolved relative to the scenario file itself.
 - `tasks` — list of tasks to run
 - `tools` — mock tool behaviors (optional)
 - `policies` — rules and governance checks (optional)
@@ -49,7 +49,7 @@ AES is a standardized YAML/JSON schema for defining benchmarks, tasks, expected 
 Metrics score an agent’s performance. Built-in metrics include:
 - `policy_compliance` — avoids policy violations
 - `path_parsimony` — prefers fewer turns (efficiency)
-- `state_verification` — validates expected state changes
+- `state_verification` — validates expected state changes. Supports **dot-notation** (e.g., `user.profile.balance`) for nested object verification.
 - `tool_call_correctness` — checks the correct tools were used
 - `consistency_score` — checks stability across multiple runs
 

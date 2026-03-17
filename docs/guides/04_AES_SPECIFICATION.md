@@ -59,6 +59,19 @@ Define heuristics for "Success".
 - `tool_called`: Specified tool was executed.
 - `output_contains`: Specific text present in final answer.
 - `factual_reference`: Verification against a source.
+- `state_verification`: Parity check against sandbox state.
+
+#### Advanced Evaluation Options (v1.1+)
+- **Dot-Notation**: Supports deep nested parity checks (e.g., `user.profile.balance`).
+- **Required Metrics**: Add `required: true` to any success criterion to treat failure (or judge misconfiguration) as a terminal error rather than a warning.
+- **Judge Overrides**: Specific scenarios can override global judge settings via `judge_config`.
+
+---
+
+## 4. Path Decoupling & Portability
+AES benchmarks are now fully portable. 
+- **Relative Datasets**: `dataset.path` can now be relative to the scenario file (e.g., `./records.csv`), allowing you to share scenario bundles easily.
+- **Auto-Industry**: If `industry` is omitted from metadata, the harness will attempt to infer it from the parent directory or tag it as `local`.
 
 ---
 

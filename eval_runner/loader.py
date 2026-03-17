@@ -100,6 +100,15 @@ def load_scenario(path: Union[str, Path]) -> Union[Dict[str, Any], List[Dict[str
                 f"Error decoding JSON from {file_path}: {e.msg}", e.doc, e.pos
             )
 
+    # 3. Resolve Relative Dataset Paths (Path Decoupling)
+    if "dataset" in scenario_data and isinstance(scenario_data["dataset"], dict):
+        ds_path = scenario_data["dataset"].get("path")
+        if ds_path and (ds_path.startswith("./") or ds_path.startswith("../")):
+            # Resolve relative to the scenario file's directory
+            absolute_ds_path = (file_path.parent / ds_path).resolve()
+            scenario_data["dataset"]["path"] = str(absolute_ds_path)
+            print(f"      [Loader] Resolved relative dataset path: {ds_path} -> {absolute_ds_path}")
+
     # Note: validation is only for standard scenario files
     validate(instance=scenario_data, schema=_get_schema())
     return scenario_data

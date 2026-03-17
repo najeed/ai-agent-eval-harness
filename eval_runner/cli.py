@@ -117,6 +117,7 @@ def main():
     spec_parser = subparsers.add_parser("spec-to-eval", help="Convert Markdown PRD/Spec to Scenario JSON")
     spec_parser.add_argument("--input", required=True, help="Path to .md file")
     spec_parser.add_argument("--output", help="Path to save generated .json")
+    spec_parser.add_argument("--fill-defaults", action="store_true", help="Auto-fill mandatory fields with 'unclassified' to pass lint")
 
     # --- AUTO-TRANSLATE COMMAND ---
     trans_parser = subparsers.add_parser("auto-translate", help="Translate raw documents to JSON via a local LLM (Ollama required)")
@@ -801,27 +802,41 @@ async def handle_auto_translate(args):
 def handle_spec_to_eval(args):
     """Handler for 'spec-to-eval' command."""
     from . import spec_parser
+    import json
     input_path = Path(args.input)
     if not input_path.exists():
         print(f"[FAIL] Error: Markdown file not found at {input_path}")
         return
 
+    print(f"[CLI] Translating spec: {input_path.name}")
     with open(input_path, "r", encoding="utf-8") as f:
         md_content = f.read()
 
     scenario = spec_parser.parse_markdown_to_scenario(md_content)
     
+    # 3. Apply Placeholder / Default Logic
+    if "industry" not in scenario or not scenario["industry"]:
+        scenario["industry"] = "unclassified" if args.fill_defaults else "TODO: Set Industry"
+    
+    if "use_case" not in scenario or not scenario["use_case"]:
+        scenario["use_case"] = "Order Management & Fulfillment" if args.fill_defaults else "TODO: Set Use Case"
+        
+    if "core_function" not in scenario or not scenario["core_function"]:
+        scenario["core_function"] = "Payment & Invoicing" if args.fill_defaults else "TODO: Set Core Function"
+
     # Determine default output path if not provided
     if args.output:
         output_path = Path(args.output)
     else:
         # industries/[industry]/scenarios/[scenario_id].json
-        industry = scenario.get("industry", "generic")
+        industry = scenario.get("industry", "generic").replace("TODO: ", "").lower()
         scenario_id = scenario.get("scenario_id", "new_scenario")
         output_path = Path("industries") / industry / "scenarios" / f"{scenario_id}.json"
 
     spec_parser.save_scenario_stub(scenario, output_path)
     print(f"[OK] Successfully converted {input_path} to {output_path}")
+    if not args.fill_defaults:
+        print("💡 Tip: Use `eval-harness lint` to identify missing fields, or re-run with `--fill-defaults` to auto-fill.")
 
 def handle_import_drift(args):
     """Handler for 'import-drift' command."""

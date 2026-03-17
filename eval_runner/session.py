@@ -285,30 +285,43 @@ class SessionManager:
             criteria.append({"metric": "state_verification", "threshold": 1.0})
         
         for criterion in criteria:
-            m_name = criterion.get("metric")
-            threshold = criterion.get("threshold", 1.0)
-            metric_func = metrics.MetricRegistry.get(m_name)
-            
-            score = 0.0
-            if m_name == "tool_call_correctness" and metric_func:
-                score = metric_func(task.get("required_tools", []), actions["used_tools"])
-            elif m_name == "state_verification" and metric_func:
-                score = metric_func(task.get("expected_state_changes", []), sandbox.state)
-            elif m_name == "policy_compliance" and metric_func:
-                score = metric_func(history)
-            elif m_name == "path_parsimony" and metric_func:
-                score = metric_func(criterion, turns, self.max_turns)
-            elif metric_func is not None:
-                summary = self._extract_agent_summary(history)
-                if inspect.iscoroutinefunction(metric_func):
-                    score = await metric_func(criterion, summary)
+            try:
+                m_name = criterion.get("metric")
+                threshold = criterion.get("threshold", 1.0)
+                metric_func = metrics.MetricRegistry.get(m_name)
+                
+                score = 0.0
+                if m_name == "tool_call_correctness" and metric_func:
+                    score = metric_func(task.get("required_tools", []), actions["used_tools"])
+                elif m_name == "state_verification" and metric_func:
+                    score = metric_func(task.get("expected_state_changes", []), sandbox.state)
+                elif m_name == "policy_compliance" and metric_func:
+                    score = metric_func(history)
+                elif m_name == "path_parsimony" and metric_func:
+                    score = metric_func(criterion, turns, self.max_turns)
+                elif metric_func is not None:
+                    summary = self._extract_agent_summary(history)
+                    if inspect.iscoroutinefunction(metric_func):
+                        score = await metric_func(criterion, summary)
+                    else:
+                        score = metric_func(criterion, summary)
                 else:
-                    score = metric_func(criterion, summary)
+                    print(f"      [Session] Warning: Metric '{m_name}' not found.")
+                    continue
 
-            results["metrics"].append({
-                "metric": m_name, "score": score, "threshold": threshold, "success": score >= threshold
-            })
-            EventEmitter.emit(CoreEvents.EVALUATION, {"metric": m_name, "value": score, "attempt": k})
+                results["metrics"].append({
+                    "metric": m_name, "score": score, "threshold": threshold, "success": score >= threshold
+                })
+                EventEmitter.emit(CoreEvents.EVALUATION, {"metric": m_name, "value": score, "attempt": k})
+            except Exception as e:
+                print(f"      [Session] Error calculating metric '{criterion.get('metric')}': {e}")
+                results["metrics"].append({
+                    "metric": criterion.get("metric"), 
+                    "score": 0.0, 
+                    "threshold": criterion.get("threshold", 0.5), 
+                    "success": False,
+                    "error": str(e)
+                })
 
         return results
 

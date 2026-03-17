@@ -1,0 +1,82 @@
+{
+  "scenario_id": "interactive-complexity-008",
+  "title": "Multi-Turn Recursive Workflow: Level 10",
+  "description": "A deep, multi-step workflow requiring state persistence and recursive error handling.",
+  "use_case": "Interactive Complexity",
+  "core_function": "Advanced Agentic Execution",
+  "industry": "Meta-Industry",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Initialize multi-step audit and spawn sub-tasks using workflow_graph.json.",
+      "expected_outcome": "Audit state is recorded.",
+      "required_tools": [
+        "init_audit",
+        "save_state"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Handle asynchronous response from sub-module and synthesize results.",
+      "expected_outcome": "Long-term context is correctly integrated.",
+      "required_tools": [
+        "wait_for_signal",
+        "pull_metadata",
+        "finalize_report"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ],
+  "initial_state": {
+    "session_active": true,
+    "context_loaded": true,
+    "dataset_base": "industries/interactive_complexity/datasets/"
+  },
+  "tools": {
+    "init_audit": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "save_state": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "wait_for_signal": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "pull_metadata": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "finalize_report": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    }
+  },
+  "policies": {
+    "safety_threshold": 0.95,
+    "requires_hitl": true
+  }
+}

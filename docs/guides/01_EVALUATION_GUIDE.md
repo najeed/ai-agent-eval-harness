@@ -14,8 +14,8 @@ Each evaluation is defined by a `.json` file in an industry's `scenarios` direct
 -   `use_case`: The specific business function being tested (e.g., `Customer Service`).
 -   `industry`: The industry this scenario belongs to.
 -   `core_function`: The category within the use case this scenario belongs to.
--   `dataset`: (Optional) Path and format of a synthetic or real dataset required for this scenario (e.g., `{"path": "../datasets/records.csv", "format": "csv"}`).
--   `initial_state`: (Optional) The starting state for the sandbox.
+-   `dataset`: (Optional) Path and format of a synthetic or real dataset required for this scenario. **Supports Path Decoupling (v1.1+)**: Relative paths (e.g., `./data.csv`) are resolved relative to the scenario file itself, allowing for portable scenario bundles.
+-   `initial_state`: (Optional) The starting state for the sandbox. Supports nested dictionaries with dot-notation verification.
 -   `policies`: (Optional) Governance rules to enforce during execution.
 -   `tasks`: An array of task objects that represent the steps an agent must take.
 
@@ -30,15 +30,20 @@ Each object in the `tasks` array represents a single step and contains:
 -   `expected_state_changes`: (Optional) A list of state paths and values that should be true after the task.
 -   `success_criteria`: An array defining how to measure success.
 
-### LLM-as-Judge & Rubrics (v3.1)
+### LLM-as-Judge & Rubrics
 For semantic or safety-critical evaluations, you can use the `luna_judge_score` metric. This metric can be customized using a `judge_config` object within the criterion:
 
 - **`judge_rubric`**: Select a specialized rubric (e.g., `clinical_safety`, `fiduciary_accuracy`, `policy_adherence`).
 - **`judge_provider`**: Override the global judge model (e.g., `openai`, `gemini`).
+- **`required`: Setting this to `true` (v1.1+)** ensures that if the judge fails to initialize (e.g., missing API key), the evaluation terminates immediately with a clear error rather than falling back to weak heuristics.
 
 A task is only considered successful if **all** of its success criteria are met.
 
-## Advanced Orchestration (Phase 3)
+## State Verification
+The `state_verification` metric now supports **dot-notation** for inspecting nested objects in the sandbox state.
+- **Example**: A path of `user.profile.balance` will correctly navigate through nested dictionaries in the `actual_state` to verify the final value.
+
+## Advanced Orchestration
 
 - **HITL (Human-In-The-Loop)**: Pause evaluations for manual intervention via the `human` adapter.
 
@@ -56,7 +61,7 @@ eval-harness console
 ```
 
 
-## Available Metrics (v3.0)
+## Available Metrics
 
 | Metric | Function | Description |
 |---|---|---|
@@ -71,7 +76,7 @@ eval-harness console
 | `performance_efficiency` | `calculate_efficiency` | Weighted score of turns taken vs. goal reached |
 | `security_guardrail` | `calculate_guardrail_violation` | Detection of prompt injection or sensitive data leaks |
 
-## Community Benchmarks (Phase 4)
+## Community Benchmarks
 
 Instead of relying solely on local `.json` or `.aes.yaml` files, the `eval-harness` can now pull and format datasets from major community benchmarks on-the-fly using URIs.
 
@@ -84,7 +89,7 @@ eval-harness evaluate --path assistantbench://dev
 ```
 The universal loader will dynamically download these datasets, wrap them in compatible `Scenario` objects, and apply the correct specific evaluation metrics.
 
-## Multi-Agent Scenario Schema (v2.0)
+## Multi-Agent Scenario Schema
 
 Scenarios now support complex topologies. Example snippet:
 
@@ -97,6 +102,6 @@ Scenarios now support complex topologies. Example snippet:
 }
 ```
 
-## Schema Validation (Phase 2)
+## Schema Validation
 
 Scenarios are validated against `schemas/scenario.schema.json` at load time. Any scenario that fails validation will raise a `ValueError` with a clear error message.

@@ -70,9 +70,21 @@ def calculate_communication_clarity(criterion: dict, agent_summary: str) -> floa
     return 0.0
 
 
+def get_nested_value(data: Dict[str, Any], path: str) -> Any:
+    """Retrieves a value from a nested dictionary using dot-notation."""
+    keys = path.split('.')
+    current = data
+    for key in keys:
+        if isinstance(current, dict):
+            current = current.get(key)
+        else:
+            return None
+    return current
+
+
 @MetricRegistry.register("state_verification")
 def calculate_state_correctness(expected_changes: list, actual_state: dict) -> float:
-    """Verifies if the sandbox state matches the expected changes."""
+    """Verifies if the sandbox state matches the expected changes using dot-notation."""
     if not expected_changes:
         return 1.0
 
@@ -82,7 +94,8 @@ def calculate_state_correctness(expected_changes: list, actual_state: dict) -> f
     for change in expected_changes:
         path = change.get("path")
         expected_val = change.get("value")
-        actual_val = actual_state.get(path)
+        # Use dot-notation for nested lookup
+        actual_val = get_nested_value(actual_state, path) if "." in path else actual_state.get(path)
 
         if actual_val == expected_val:
             print(f"         [Metrics] State '{path}' matches expected value: {expected_val}")
@@ -246,14 +259,24 @@ async def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> flo
         temperature = float(judge_config.get("judge_temperature", config.LUNA_JUDGE_TEMPERATURE))
         rubric_name = judge_config.get("judge_rubric", "generic")
         
+        # Essential Fix: Required Judge Guard
+        is_required = criterion.get("required", False)
+
+        try:
+            provider = LLMProviderFactory.create(provider_name)
+        except Exception as e:
+            if is_required:
+                raise RuntimeError(f"Judge Configuration Error: Required provider '{provider_name}' failed to initialize. {e}")
+            else:
+                print(f"      [Metrics] [Luna-Judge] Warning: Provider '{provider_name}' unavailable. Falling back to Jaccard.")
+                raise e # Trigger the fallback catch below
+
         # Select rubric
         rubric_template = RubricRegistry.get(rubric_name)
         prompt = rubric_template.format(
             expected_outcome=expected_outcome, 
             agent_summary=agent_summary
         )
-
-        provider = LLMProviderFactory.create(provider_name)
         
         # Handle model override if provided
         if hasattr(provider, "model") and model_name:
@@ -274,9 +297,12 @@ async def calculate_luna_judge_score(criterion: dict, agent_summary: str) -> flo
         except ValueError:
             print(f"      [Metrics] [Luna-Judge] Provider returned non-float: '{response_text}'")
     except Exception as e:
-        print(f"      [Metrics] [Luna-Judge] Provider failed: {e}")
+        if isinstance(e, RuntimeError) and "Judge Configuration Error" in str(e):
+            raise e
+        print(f"      [Metrics] [Luna-Judge] Evaluation failed: {e}")
 
-    # Fallback to Jaccard Similarity
+    # Fallback to Jaccard Similarity (Only if not required)
+    print("      [Metrics] [Luna-Judge] Executing Jaccard Fallback...")
     def get_tokens(text):
         return set(str(text).lower().split())
 

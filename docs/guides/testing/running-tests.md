@@ -74,6 +74,14 @@ pytest tests/test_scenario_compliance.py
 
 # Run with detailed output
 pytest tests/test_scenario_compliance.py -v
+
+### Stability & Hardening Tests (v1.1+)
+
+Run the dedicated suite for verifying core stability fixes (dot-notation, judge guarding, etc.):
+
+```bash
+pytest tests/test_stability.py
+```
 ```
 
 ### Integration Tests

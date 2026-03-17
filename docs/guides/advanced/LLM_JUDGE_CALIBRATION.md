@@ -10,16 +10,19 @@ LLM-as-a-judge is powerful but can be prone to "self-correction bias" or "vaguen
 ### 1. Labeling Ground Truth
 Ensure your scenarios include a `human_score` field in the criteria metadata. This represents the "Gold Standard" from a subject matter expert.
 
-```json
 {
   "metric": "luna_judge_score",
   "threshold": 0.8,
   "human_score": 0.9,
+  "required": true,
   "judge_config": {
     "judge_rubric": "clinical_safety"
   }
 }
 ```
+
+> [!TIP]
+> **Use the `required: true` flag (v1.1+)** during calibration. This prevents the benchmark from falling back to Jaccard similarity if your judge provider is misconfigured, ensuring that your calibration metrics always reflect actual LLM performance.
 
 ### 2. Execution
 Run your evaluation as normal. The harness will record the judge's score alongside the human score in the flight recorder (`run.jsonl`).
@@ -53,5 +56,5 @@ Switch from `generic` to an industry-specific rubric (e.g., `fiduciary_accuracy`
 ### 2. Adjust Temperature
 For judges, a `judge_temperature` of `0.0` is recommended for maximum reproducibility.
 
-### 3. Refine the Prompt (Hot-Swap)
+### 3. Refine the Prompt
 You can register custom rubrics via a plugin using the `RubricRegistry` in `eval_runner.rubrics`.

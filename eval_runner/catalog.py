@@ -30,17 +30,30 @@ class ScenarioCatalog:
                     data = json.load(f)
                     
                 # Extract metadata
-                # Note: OpenCore uses a slightly different structure than raw AES sometimes
                 meta = data.get("metadata", {})
                 scenario_id = data.get("scenario_id", p.stem)
-                industry = data.get("industry", p.parent.parent.name if p.parent.name == "scenarios" else "generic")
                 
+                # Industry Inference Logic (Decoupled)
+                industry = data.get("industry")
+                tags = meta.get("tags", [])
+                
+                if not industry:
+                    # Fallback to folder structure if possible
+                    if p.parent.name == "scenarios" and p.parent.parent.parent.name == "ai-agent-eval-harness":
+                        industry = p.parent.parent.name
+                    else:
+                        industry = "unclassified"
+                        tags.append("local")
+                
+                if "local" not in tags and "ai-agent-eval-harness" not in str(p.absolute()):
+                    tags.append("local")
+
                 self.scenarios.append({
                     "id": scenario_id,
                     "title": data.get("title", scenario_id),
                     "industry": industry,
                     "difficulty": meta.get("difficulty", 1),
-                    "tags": meta.get("tags", []),
+                    "tags": list(set(tags)), # Deduplicate
                     "path": str(p),
                     "description": data.get("description", meta.get("description", ""))
                 })

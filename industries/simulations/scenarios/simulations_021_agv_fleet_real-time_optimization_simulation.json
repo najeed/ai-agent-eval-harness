@@ -1,0 +1,75 @@
+{
+  "scenario_id": "simulations-021",
+  "title": "AGV Fleet Real-time Optimization Simulation",
+  "description": "Agent must manage a high-fidelity AGV Fleet simulation with streaming telemetry.",
+  "use_case": "Simulations",
+  "core_function": "Advanced Agentic Execution",
+  "industry": "Meta-Industry",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Analyze telemetry batch from AGV Fleet (telemetry_stream.csv) and identify anomalies.",
+      "expected_outcome": "Agent flags the correct sensor drift or failure point.",
+      "required_tools": [
+        "analyze_telemetry",
+        "query_sensor_history"
+      ],
+      "success_criteria": [
+        {
+          "metric": "problem_resolution_effectiveness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Execute state changes in AGV Fleet to restore nominal operations.",
+      "expected_outcome": "Simulated system returns to stable state.",
+      "required_tools": [
+        "adjust_parameters",
+        "restart_component"
+      ],
+      "success_criteria": [
+        {
+          "metric": "state_verification",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ],
+  "initial_state": {
+    "session_active": true,
+    "context_loaded": true,
+    "dataset_base": "industries/simulations/datasets/"
+  },
+  "tools": {
+    "analyze_telemetry": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "query_sensor_history": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "adjust_parameters": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    },
+    "restart_component": {
+      "output": {
+        "status": "success"
+      },
+      "state_changes": []
+    }
+  },
+  "policies": {
+    "safety_threshold": 0.95,
+    "requires_hitl": true
+  }
+}

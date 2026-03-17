@@ -1,0 +1,66 @@
+{
+  "scenario_id": "ecommerce-refund-narrative",
+  "title": "The Case of the Missing Refund",
+  "description": "Customer Jane Doe is frustrated because she returned her item two weeks ago but hasn't seen a refund for Order #OM-5566.",
+  "use_case": "Order Management & Fulfillment",
+  "core_function": "Payment & Invoicing",
+  "industry": "Ecommerce",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Locate order #OM-5566 and check its status.",
+      "expected_outcome": "Order is found, status is 'Returned', total is $129.99.",
+      "required_tools": [
+        "get_order_details"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Check the refund history for order #OM-5566.",
+      "expected_outcome": "Confirm no refund has been processed yet.",
+      "required_tools": [
+        "get_refund_status"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Issue a full refund of $129.99.",
+      "expected_outcome": "Refund is successfully processed.",
+      "required_tools": [
+        "issue_refund"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    },
+    {
+      "task_id": "task-4",
+      "description": "Notify Jane Doe (jane.doe@example.com) that her refund has been issued and apologize for the delay.",
+      "expected_outcome": "Email is sent with the transaction details.",
+      "required_tools": [
+        "send_email_notification"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

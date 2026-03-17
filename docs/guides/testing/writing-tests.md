@@ -151,6 +151,27 @@ class TestMetrics:
         
         # Assert
         assert result == 0.0
+
+    def test_state_verification_nested_path(self):
+        """Test state verification with nested dot-notation paths (v1.1+)."""
+        # Arrange
+        expected = {"user.profile.status": "active"}
+        actual = {"user": {"profile": {"status": "active"}}}
+        
+        # Act
+        result = metrics.calculate_state_correctness(expected, actual)
+        
+        # Assert
+        assert result == 1.0
+
+    async def test_judge_required_guard(self):
+        """Test judge guarding for required metrics (v1.1+)."""
+        # Arrange
+        criterion = {"metric": "luna_judge_score", "required": True}
+        
+        # Act & Assert
+        with pytest.raises(RuntimeError, match="Judge provider .* is required"):
+            await metrics.calculate_luna_judge_score(criterion, {})
 ```
 
 ## Naming Conventions

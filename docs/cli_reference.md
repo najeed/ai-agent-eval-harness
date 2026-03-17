@@ -9,7 +9,7 @@ Run evaluations on one or more scenarios.
 ```bash
 eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 ```
-- `--path`: Path to a single Scenario JSON file or a directory containing scenarios.
+- `--path`: Path to a single Scenario JSON file or a directory containing scenarios. **Supports Path Decoupling**: If a scenario is located outside the standard `/industries` directory, the harness automatically resolves relative dataset paths and tags the scenario as `local`/`unclassified`.
 - `--attempts`: Number of attempts (K) per scenario for `pass@k` calculation.
 - `--limit`: Max number of scenarios to run.
 - `--agent-name`: Human-readable name for the agent (for reports and leaderboards). Priority: CLI Flag > Zero-Touch Discovery > Endpoint URL.
@@ -96,9 +96,11 @@ eval-harness aes validate <path>
 ### `spec-to-eval`
 Convert a Markdown PRD/Spec file into a structured Scenario JSON.
 ```bash
-eval-harness spec-to-eval --input <prd.md> [--output <scenario.json>]
+eval-harness spec-to-eval --input <prd.md> [--output <scenario.json>] [--fill-defaults]
 ```
-**Example:** Converts a Markdown spec (e.g., *“The agent must verify patient ID and schedule a follow-up if urgent”*) into an AES-compliant `tasks` and `validations` JSON array.
+- `--input`: Path to the Markdown specification file.
+- `--output`: Optional. Custom output path for the generated JSON.
+- `--fill-defaults`: Optional. Automatically populates mandatory AES fields (Industry, Use Case, Core Function) with sensible defaults to ensure the output passes linting immediately.
 
 ### `auto-translate`
 Translate raw, unstructured documents (TXT, MD, PDF, DOCX) into structured Scenario JSON files using a local LLM.
