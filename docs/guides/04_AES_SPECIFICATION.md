@@ -75,7 +75,7 @@ AES benchmarks are now fully portable.
 
 ---
 
-## 4. Replaying Execution (`run.jsonl`)
+## 5. Replaying Execution (`run.jsonl`)
 Every AES evaluation produces a `run.jsonl` flight recorder log. You can replay this log to debug specific "crashes" or "wrong turns":
 ```bash
 eval-harness replay runs/run.jsonl

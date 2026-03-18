@@ -51,11 +51,10 @@ eval-harness run --scenario <path>
 ### `list`
 Search the scenario catalog with keyword and faceted filtering.
 ```bash
-eval-harness list [--search <query>] [--industry <name>] [--difficulty <level>]
+eval-harness list [--search <query>]
 ```
-- `--search`: Keyword search across titles, IDs, and descriptions.
-- `--industry`: Filter by industry (e.g., `telecom`, `finance`).
-- `--difficulty`: Filter by difficulty level (1-5).
+- `--search`: Search scenarios by title, industry, or tags.
+- `--refresh`: Rebuild the scenario index from source.
 
 ### `lint`
 Verify scenario quality and AES specification compliance.

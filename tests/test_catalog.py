@@ -2,7 +2,8 @@ import pytest
 import os
 from pathlib import Path
 import json
-from eval_runner.catalog import ScenarioCatalog
+from eval_runner import catalog
+ScenarioCatalog = catalog.ScenarioCatalog
 
 def test_catalog_indexing(tmp_path):
     # Setup mock industries directory

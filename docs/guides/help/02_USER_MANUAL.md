@@ -50,8 +50,8 @@ Metrics score an agent’s performance. Built-in metrics include:
 - `policy_compliance` — avoids policy violations
 - `path_parsimony` — prefers fewer turns (efficiency)
 - `state_verification` — validates expected state changes. Supports **dot-notation** (e.g., `user.profile.balance`) for nested object verification.
-- `tool_call_correctness` — checks the correct tools were used
 - `consistency_score` — checks stability across multiple runs
+- `luna_judge_score` — semantic and behavioral evaluation via LLM-Judge (calibratable to human ground truth)
 
 ---
 
@@ -98,7 +98,7 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness auto-translate` | `--input`, `--model`, `--industry` | Translate raw documents (PDF, DOCX) into scenario JSON via a local LLM |
 | `eval-harness import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |
 | `eval-harness mutate` | `--input`, `--type`, `--output` | Generate adversarial scenario variants |
-| `eval-harness list` | `--search`, `--industry`, `--difficulty` | Search and explore the scenario catalog |
+| `eval-harness list` | `--search` | Search and explore the scenario catalog |
 | `eval-harness lint` | `path` | Score and validate scenario quality/compliance |
 | `eval-harness plugin` | `<plugin_name> <cmd>` | Secure namespace for executing 3rd-party plugin commands |
 
@@ -146,7 +146,7 @@ eval-harness quickstart
 Launch a high-fidelity visual dashboard to run scenarios, inspect trace lines chronologically, and review system documentation locally.
 
 #### Key Features:
-- **Scenario Explorer**: Browse the catalog with faceted filters (industry, difficulty, tags). View real-time **Lint Scores** and quality status badges.
+- **Scenario Explorer**: Browse the catalog with search filters. View real-time **Lint Scores** and quality status badges.
 - **Background Execution**: Trigger evaluations directly from the UI; monitor progress in real-time.
 - **Visual DNA Debugger**: Live trajectory playback, state inspection, and trace export via the `DebuggerStateStore` hook.
 - **API Reference**: Integrated technical documentation drawer for one-click access to guides.
@@ -188,7 +188,7 @@ eval-harness playground --agent http://localhost:5001/execute_task
 ### 🔍 `list` — Scenario Catalog Search
 Discover scenarios across the built-in and downloaded libraries.
 ```bash
-eval-harness list --search "telecom" --difficulty 3
+eval-harness list --search "telecom"
 ```
 
 ### 🧹 `lint` — Quality Scoring

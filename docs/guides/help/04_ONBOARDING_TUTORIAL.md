@@ -66,7 +66,7 @@ Before running an evaluation, discover what's available:
 eval-harness list --search "telecom"
 ```
 
-> ✅ Expected output: A table of matching scenarios with IDs, industries, and difficulty levels.
+> ✅ Expected output: A table of matching scenarios with IDs and titles.
 
 ---
 
@@ -130,7 +130,7 @@ Inspect results natively using the **Admin Console**. The console provides a uni
 - **Scenario Editor**: Design and save scenarios directly to the industry libraries.
 - **Background Runner**: Trigger evaluations and monitor them via the UI.
 - **Visual DNA Debugger**: Live trajectory playback, state inspection, and trace export.
-- **Faceted Search**: Use the sidebar to filter by industry (e.g., Telecom) or difficulty.
+- **Search**: Use the sidebar to search for scenarios by title or tags.
 - **Quality Badges**: Look for the "Lint Score" on each scenario. Scenarios with a score of **90+** are considered high-fidelity benchmarks.
 - **Documentation Drawer**: Click the "API Reference" icon to see these guides directly within the app.
 

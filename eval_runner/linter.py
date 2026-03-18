@@ -37,28 +37,39 @@ class ScenarioLinter:
             results["score"] = 0
             return results
 
-        # 1. Metadata Checks (Phase 13 Compliance)
+        # 1. Metadata & Identity Checks
         if not isinstance(data, dict):
             results["status"] = "fail"
             results["errors"].append(f"Scenario file must be a JSON object, found {type(data).__name__}")
             results["score"] = 0
             return results
 
-        meta = data.get("metadata", {})
-        required_meta = ["difficulty", "industry"]
-        for field in required_meta:
-            if field not in meta:
-                results["warnings"].append(f"Missing recommended metadata: '{field}'")
-                results["score"] -= 10
+        # Mandatory Top-Level Fields
+        mandatory_fields = ["scenario_id", "title", "description", "use_case", "core_function", "industry", "tasks"]
+        for field in mandatory_fields:
+            if field not in data or not data[field]:
+                results["errors"].append(f"Missing mandatory field: '{field}'")
+                results["status"] = "fail"
+                results["score"] -= 15
+
+        # Recommend complexity_level instead of difficulty
+        if "complexity_level" not in data:
+            results["warnings"].append("Missing recommended field: 'complexity_level' (low/medium/high)")
+            results["score"] -= 5
         
         # 2. Structure Checks
-        if "tasks" not in data or not isinstance(data["tasks"], list):
-            results["errors"].append("Scenario has no 'tasks' list")
-            results["status"] = "fail"
-            results["score"] -= 50
-        elif len(data["tasks"]) == 0:
-            results["warnings"].append("Scenario has 0 tasks")
-            results["score"] -= 20
+        if "tasks" in data and isinstance(data["tasks"], list):
+            if len(data["tasks"]) == 0:
+                results["warnings"].append("Scenario has 0 tasks")
+                results["score"] -= 20
+            else:
+                for i, task in enumerate(data["tasks"]):
+                    task_reqs = ["task_id", "description", "expected_outcome", "success_criteria"]
+                    for tr in task_reqs:
+                        if tr not in task:
+                            results["errors"].append(f"Task {i} ({task.get('task_id', 'unknown')}): Missing '{tr}'")
+                            results["status"] = "fail"
+                            results["score"] -= 10
             
         # 3. Complexity Calculation
         tool_use_count = 0

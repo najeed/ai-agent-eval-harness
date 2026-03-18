@@ -123,7 +123,6 @@ def main():
     trans_parser = subparsers.add_parser("auto-translate", help="Translate raw documents to JSON via a local LLM (Ollama required)")
     trans_parser.add_argument("--input", required=True, help="Path to the source document")
     trans_parser.add_argument("--model", default="llama3", help="Local Ollama model to use (Ollama must be running)")
-    trans_parser.add_argument("--industry", help="Target industry folder override")
     trans_parser.add_argument("--output", help="Explicit path to save the generated JSON")
 
     # --- IMPORT-DRIFT COMMAND ---
@@ -336,7 +335,7 @@ def handle_list(args):
     else:
         cat.load_index()
     
-    catalog.list_scenarios(args.search)
+    catalog.list_scenarios(query=args.search)
 
 def handle_lint(args):
     """Handler for 'lint' command."""
