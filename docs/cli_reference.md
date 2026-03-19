@@ -9,7 +9,7 @@ Run evaluations on one or more scenarios.
 ```bash
 eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 ```
-- `--path`: Path to a single Scenario JSON file or a directory containing scenarios. **Supports Path Decoupling**: If a scenario is located outside the standard `/industries` directory, the harness automatically resolves relative dataset paths and tags the scenario as `local`/`unclassified`.
+- `--path`: Path to a single Scenario JSON file, a directory containing scenarios, or a Benchmark URI (e.g., `gaia://2023`). Supports Path Decoupling: If a scenario is located outside the standard `/industries` directory, the harness automatically resolves relative dataset paths and tags the scenario as `local`/`unclassified`.
 - `--attempts`: Number of attempts (K) per scenario for `pass@k` calculation.
 - `--limit`: Max number of scenarios to run.
 - `--agent-name`: Human-readable name for the agent (for reports and leaderboards). Priority: CLI Flag > Zero-Touch Discovery > Endpoint URL.
@@ -43,10 +43,11 @@ When `--attempts` > 1, the harness generates:
 - `reports/research_summary.md`: A formatted Markdown table of Pass@k, Success Consistency, and Semantic Stability.
 
 ### `run`
-Execute a single scenario file.
+Execute a single scenario file or a Benchmark URI.
 ```bash
-eval-harness run --scenario <path>
+eval-harness run --scenario <path_or_uri>
 ```
+**Example (Benchmark):** `eval-harness run --scenario gaia://2023` (Executes all scenarios in the GAIA 2023 benchmark).
 
 ### `list`
 Search the scenario catalog with keyword and faceted filtering.
@@ -210,6 +211,7 @@ eval-harness report --path <path/to/run.jsonl>
 **Feature Highlights:**
 - **Trace Reconstruction**: Automatically reconstructs hierarchical task results, metrics, and triage tags from historical JSONL events.
 - **Visual Trajectories**: Generates interactive Mermaid maps for every task in the trace.
+- **Reproduction Scripts**: After every evaluation run, the harness generates an inert reproduction script in `reports/repro/repro_<id>.txt` containing exact CLI instructions to re-run the scenario.
 
 ### `scenario generate`
 Interactively workspace to generate new test scenarios via a terminal wizard.

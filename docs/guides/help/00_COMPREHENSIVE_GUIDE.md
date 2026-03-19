@@ -33,6 +33,7 @@ eval-harness quickstart
 - `eval-harness lint --path <path>`: Verify scenario quality and AES specification compliance.
 - `eval-harness spec-to-eval --fill-defaults`: Convert rough specs into valid, lint-passable scenarios.
 - `eval-harness auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
+- `eval-harness run --scenario <benchmark-uri>`: Zero-config execution for community benchmarks (GAIA, AssistantBench).
 - `eval-harness report --path <path>`: Generate a standalone **Premium HTML report** (reconstructed from any `.jsonl` trace).
 - `eval-harness replay --path <path>`: View the step-by-step history of a run in terminal.
 - **Advanced Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain`.

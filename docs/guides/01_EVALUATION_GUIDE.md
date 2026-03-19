@@ -90,10 +90,10 @@ Instead of relying solely on local `.json` or `.aes.yaml` files, the `eval-harne
 
 ```bash
 # Load the 2023 GAIA validation set
-eval-harness evaluate --path gaia://test_2023
+eval-harness evaluate --path gaia://2023
 
 # Load AssistantBench tasks
-eval-harness evaluate --path assistantbench://dev
+eval-harness evaluate --path assistantbench://v1
 ```
 The universal loader will dynamically download these datasets, wrap them in compatible `Scenario` objects, and apply the correct specific evaluation metrics.
 

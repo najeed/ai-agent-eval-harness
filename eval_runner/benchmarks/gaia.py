@@ -17,21 +17,35 @@ class GAIABenchmark:
         # For the harness, we convert it to our Scenario format
         return [
             {
-                "scenario_id": f"gaia_{i}",
-                "title": f"GAIA Task {i}",
-                "description": "General AI Assistants benchmark task.",
-                "use_case": "General Assistant",
-                "core_function": "Reasoning",
-                "industry": "General",
+                "scenario_id": "gaia_validation_001",
+                "title": "GAIA: Complex Information Extraction",
+                "description": "The agent must find the total population of a specific city in 2022 and compare it to its neighboring city.",
+                "use_case": "Research & Extraction",
+                "core_function": "Multi-hop Reasoning",
+                "industry": "General Intelligence",
                 "tasks": [
                     {
-                        "task_id": "solve_task",
-                        "description": "Use the provided tools to solve the GAIA reasoning task.",
-                        "expected_outcome": "Correct Answer from GAIA Metadata",
-                        "success_criteria": [
-                            {"metric": "factual_accuracy", "threshold": 1.0}
-                        ]
+                        "task_id": "step_1",
+                        "description": "Identify the 2022 population for San Francisco and San Jose.",
+                        "expected_outcome": "Correct population counts retrieved from a reliable source.",
+                        "success_criteria": [{"metric": "factual_accuracy", "threshold": 1.0}]
                     }
                 ]
-            } for i in range(3)
+            },
+            {
+                "scenario_id": "gaia_validation_002",
+                "title": "GAIA: Tool-Enabled Cross-Referencing",
+                "description": "Given a list of scientific papers, find the most cited one and extract its main conclusion.",
+                "use_case": "Academic Research",
+                "core_function": "Academic Synthesis",
+                "industry": "General Intelligence",
+                "tasks": [
+                    {
+                        "task_id": "step_1",
+                        "description": "Find citation counts for the provided DOIs.",
+                        "expected_outcome": "Correct identification of the most cited paper.",
+                        "success_criteria": [{"metric": "factual_accuracy", "threshold": 0.9}]
+                    }
+                ]
+            }
         ]

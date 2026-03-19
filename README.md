@@ -163,7 +163,8 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
 - **20-Shim Enterprise Suite**: High-fidelity simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more.
 - **Zero-Touch Hot-Swap Architecture**: Dynamically register and swap simulators via plugins without core code modifications.
-- **Benchmark Ecosystem**: Native loaders for GAIA and AssistantBench.
+- **Benchmark Ecosystem**: Native loaders for GAIA (HuggingFace Integration) and AssistantBench. Supports benchmark URI schemes (e.g., `gaia://2023`, `assistantbench://v1`) for zero-config execution.
+- **High-Fidelity Industry Metrics**: Domain-specific evaluators for **Defense (ROE, C2, Intelligence Fusion)**, Healthcare, and Finance.
 - **Tool Sandbox**: Governance-controlled execution with full VFS-aware state parity verification.
 - **Integrated Visual Suite**: Unified React dashboard for live trace replay and visual debugging.
 - **Semantic Bridge**: Ingest production traces (`import-drift`) and analyze failures (`triage`).

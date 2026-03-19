@@ -527,17 +527,29 @@ def handle_replay(args):
 
 async def run_scenario(args):
     """Loads a scenario and executes the evaluation."""
-    scenario_path = Path(args.scenario)
-    if not scenario_path.exists():
-        print(f"Error: Scenario file {scenario_path} not found.")
-        return
+    path_input = args.scenario
+    if "://" in path_input:
+        # Benchmark URI - bypass Path() normalization and exists() check
+        scenario_to_load = path_input
+    else:
+        scenario_path = Path(path_input)
+        if not scenario_path.exists():
+            print(f"Error: Scenario file {scenario_path} not found.")
+            return
+        scenario_to_load = scenario_path
 
     try:
-        scenario = loader.load_scenario(scenario_path)
-        results = await engine.run_evaluation(scenario, attempts=args.attempts, metadata={"args": vars(args)})
+        loaded = loader.load_scenario(scenario_to_load)
         
-        # Determination of results is handled by the runner and ReportingPlugin handles the output.
-        print(f"\n   [CLI] Evaluation complete for {scenario_path.name}")
+        # Benchmarks like GAIA return a list, but 'run' expects one. 
+        # We'll support iterating through them if it's a list.
+        scenarios = loaded if isinstance(loaded, list) else [loaded]
+        
+        for scenario in scenarios:
+            results = await engine.run_evaluation(scenario, attempts=args.attempts, metadata={"args": vars(args)})
+            scenario_name = scenario.get("title", scenario.get("scenario_id", "Unknown Scenario"))
+            print(f"\n   [CLI] Evaluation complete for {scenario_name}")
+            
     except Exception as e:
         print(f"Error during evaluation: {e}")
         import traceback

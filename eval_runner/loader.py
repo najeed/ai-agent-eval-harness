@@ -111,6 +111,10 @@ def load_scenario(path: Union[str, Path]) -> Union[Dict[str, Any], List[Dict[str
 
     # Note: validation is only for standard scenario files
     validate(instance=scenario_data, schema=_get_schema())
+    
+    # Inject path for traceability in repro scripts/reports
+    scenario_data["path"] = path_str
+    
     return scenario_data
 
 

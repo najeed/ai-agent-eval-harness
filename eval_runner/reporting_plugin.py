@@ -97,7 +97,19 @@ class ReportingPlugin(BaseEvalPlugin):
 
         # Attempt to get the actual path from CLI args for more accurate repro instructions
         args = context.metadata.get("args", {})
-        scenario_path = args.get("scenario") or f"scenarios/{scenario_id}.json"
+        
+        # 1. Check if we have a benchmark URI
+        if "://" in str(args.get("path", "")):
+             scenario_path = args.get("path")
+        # 2. Check if we have an explicit scenario arg
+        elif args.get("scenario"):
+             scenario_path = args.get("scenario")
+        # 3. Check if the scenario data itself contains the path (injected during load)
+        elif context.scenario_data.get("path"):
+             scenario_path = context.scenario_data.get("path")
+        # 4. Smart fallback: try to find the scenario in the default location
+        else:
+             scenario_path = f"scenarios/{scenario_id}.json"
 
         # Security Guardrails: RCE Prevention
         # Generate as inert .txt to prevent auto-execution
