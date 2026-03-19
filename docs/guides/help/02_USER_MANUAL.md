@@ -50,8 +50,11 @@ Metrics score an agent’s performance. Built-in metrics include:
 - `policy_compliance` — avoids policy violations
 - `path_parsimony` — prefers fewer turns (efficiency)
 - `state_verification` — validates expected state changes. Supports **dot-notation** (e.g., `user.profile.balance`) for nested object verification.
+- `calculation_accuracy` — High-Fidelity: extracts and validates numerical results within a configurable tolerance.
+- `planning_quality` — evaluates strategic sequencing and decision-making logic.
+- `root_cause_analysis_correctness` — assesses the accuracy of agent diagnostics.
 - `consistency_score` — checks stability across multiple runs
-- `luna_judge_score` — semantic and behavioral evaluation via LLM-Judge (calibratable to human ground truth)
+- `luna_judge_score` — semantic and behavioral evaluation via LLM-Judge (calibratable to human ground truth, with required provider guards).
 
 ---
 
@@ -358,6 +361,12 @@ Validates that the sandbox state matches expected changes.
 
 ### 🧰 `tool_call_correctness`
 Ensures the agent called required tools.
+
+### 📐 `calculation_accuracy`
+High-Fidelity: Uses regex to extract numerical values from the agent's summary and compares them against the expected values with a 0.01 tolerance.
+
+### 🧠 `planning_quality` & `root_cause_analysis`
+Advanced cognitive metrics using domain-specific LLM rubrics to evaluate the quality of an agent's planning and diagnostic accuracy.
 
 ### 🔁 `consistency_score`
 Used when `--attempts > 1` to measure stability across runs.

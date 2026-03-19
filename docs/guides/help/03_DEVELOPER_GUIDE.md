@@ -174,7 +174,7 @@ def audit_logger(payload):
 
 ## 📊 8) Metrics System
 
-Metrics live in `eval_runner/metrics.py`. 
+Metrics live in the `eval_runner/metrics/` package. 
 
 ### 8.1 State Verification (Nested Paths)
 The `calculate_state_correctness` metric supports **dot-notation** for deep object inspection. This is implemented via the `get_nested_value` utility, which recursively traverses dictionaries.
@@ -187,15 +187,15 @@ Metrics using `calculate_luna_judge_score` can now specify a `required: true` fl
 ### 8.3 Hardened Metric Loop
 The `SessionManager` now wraps metric calculations in a try-except block. A single malformed metric or a transient failure during judging will no longer terminate the entire multi-scenario run.
 
-### 8.4 Custom Metrics
 Register a new metric:
 ```python
 from eval_runner.metrics import MetricRegistry
 
+@MetricRegistry.register("my_score")
 def my_score(criterion, summary):
     return 1.0 if "pass" in summary else 0.0
 
-MetricRegistry.register("my_score", my_score)
+# Ensure the module containing this function is imported in eval_runner/metrics/__init__.py
 ```
 
 ---

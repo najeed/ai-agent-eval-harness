@@ -22,20 +22,20 @@ Furthermore, the unified `--agent` flag provides a single point of entry for spe
                │                          │                         │
                └──────────────────────────┼─────────────────────────┘
                                           ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            Engine (eval_runner/engine.py)                   │
-│                                                                             │
-│  ┌────────────────────────────────────────────────────────────────────────┐ │
-│  │     Multi-turn Conversation Loop (with hooks)                          │ │
-│  │  [before_evaluation] -> [on_turn_end] -> [after_eval]                  │ │
-│  └───────────────────────────────────┬────────────────────────────────────┘ │
-│                                      │                                      │
-│  ┌───────────────────────────┐       ▼        ┌──────────────────────────┐  │
-│  │ Metrics (metrics.py)      │◀─────────────▶│ Tool Sandbox (sandbox.py)│  │
-│  │ • Pluggable Logic         │                │ • Governance Policies    │  │
-│  │ • Path Efficiency         │                │ • SharedStateRegistry    │  │
-│  └───────────────────────────┘                └──────────────────────────┘  │
-└──────────────────────┬──────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                            Engine (eval_runner/engine.py)                    │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │     Multi-turn Conversation Loop (with hooks)                          │  │
+│  │  [before_evaluation] -> [on_turn_end] -> [after_eval]                  │  │
+│  └───────────────────────────────────┬────────────────────────────────────┘  │
+│                                      │                                       │
+│  ┌────────────────────────────┐       ▼        ┌──────────────────────────┐  │
+│  │ Metrics (/metrics)         │◀─────────────▶│ Tool Sandbox (sandbox.py)│  │
+│  │ • Modular Category Modules │                │ • Governance Policies    │  │
+│  │ • High-Fidelity Judging    │                │ • SharedStateRegistry    │  │
+│  └────────────────────────────┘                └──────────────────────────┘  │
+└──────────────────────┬───────────────────────────────────────────────────────┘
                        │ 
                        ▼ 
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -86,7 +86,7 @@ Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the eval
 | Tool Sandbox | `eval_runner/tool_sandbox.py`| Stateful mock executor with policy guardrails and observer signals |
 | Reporting | `eval_runner/reporting_plugin.py`| Decoupled report generation (HTML/Console) and triage automation |
 | Flight Recorder | `eval_runner/flight_recorder.py`| Passive event logger subscribing to the core event bus |
-| Metrics | `eval_runner/metrics.py` | Research-grade scoring: Consenus, PII, and Consistency Scoring |
+| Metrics | `eval_runner/metrics/` | Modular, high-fidelity evaluators: Accuracy, Planning, and Defense |
 | Simulators | `eval_runner/simulators.py`| World Shim suite (20+ simulators) for high-fidelity testing |
 | Triage | `eval_runner/triage.py`| High-fidelity trajectory forensics and confidence-based root cause isolation |
 | Visual Suite | `ui/visual-debugger/` | React Flow powered dashboard for real-time trajectory analysis |
@@ -122,7 +122,7 @@ Phase 3 introduces advanced orchestration capabilities for research and complex 
 
 ## Simulation Lab & Research metrics
 
-- **Simulation Shims**: State-aware mocks (Git Simulator) that enable testing complex agentic tasks (clone -> hack -> commit) without real infrastructure.
+- **High-Fidelity Metrics**: Decoupled framework with specialized modules for Calculation, Strategic Planning, and Causal Inference. Features robust numerical extraction and domain-specific LLM rubrics.
 - **Research Metrics**: Native support for `pass@k` (robustness across attempts) and `Success Consistency`. The harness now generates a `research_summary.md` and ASCII table for multi-attempt evaluations, capturing semantic stability and outcome variance.
 - **Adversarial Red-Teaming**: The `mutator` engine injects typos, prompt-injection, and ambiguity into scenarios to test agent edge-resistance.
 

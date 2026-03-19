@@ -164,7 +164,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **20-Shim Enterprise Suite**: High-fidelity simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more.
 - **Zero-Touch Hot-Swap Architecture**: Dynamically register and swap simulators via plugins without core code modifications.
 - **Benchmark Ecosystem**: Native loaders for GAIA (HuggingFace Integration) and AssistantBench. Supports benchmark URI schemes (e.g., `gaia://2023`, `assistantbench://v1`) for zero-config execution.
-- **High-Fidelity Industry Metrics**: Domain-specific evaluators for **Defense (ROE, C2, Intelligence Fusion)**, Healthcare, and Finance.
+- **High-Fidelity Industry Metrics**: Modular, pluggable evaluators for Defense (ROE, C2, Intelligence Fusion), Healthcare, and Finance. Features high-precision numerical extraction and domain-specific LLM rubrics.
 - **Tool Sandbox**: Governance-controlled execution with full VFS-aware state parity verification.
 - **Integrated Visual Suite**: Unified React dashboard for live trace replay and visual debugging.
 - **Semantic Bridge**: Ingest production traces (`import-drift`) and analyze failures (`triage`).
@@ -195,7 +195,8 @@ The harness is built on a decoupled, event-driven architecture that allows Enter
 
 - **EventEmitter Bus**: Passive observation of every turn, tool call, and state change.
 - **🧩 Pluggable Judge Layer**: Configurable model-based scoring with support for OpenAI, Gemini, Claude, and Ollama.
-- **🏥 Industry-Standard Rubrics**: Specialized evaluators for Clinical Safety, Fiduciary Accuracy, and Policy Adherence.
+- **🏥 High-Fidelity Metrics Framework**: Decoupled, category-based evaluators (Accuracy, Planning, Defense, Technical) with extensible registration.
+- **Industry-Standard Rubrics**: Specialized evaluators for Clinical Safety, Fiduciary Accuracy, Strategic Planning, and Causal Inference.
 - **Native HITL Support**: built-in pausing for human intervention via the `human` adapter.
 - **Advanced Discovery**: Plugin-driven registry for third-party agent adapters (LangGraph, CrewAI, AutoGen, Grok).
 - **Pluggable World Shims**: Register custom environment simulators through the `on_register_simulators` hook.
