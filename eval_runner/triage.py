@@ -58,8 +58,6 @@ class TriageEngine:
             return "TIMEOUT"
 
     @staticmethod
-    @staticmethod
-    @staticmethod
     def identify_root_cause(history: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Pinpoints the root cause with a confidence score and explanation.

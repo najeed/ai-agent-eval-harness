@@ -12,6 +12,9 @@ def create_app():
     CORS(app)
     app.register_blueprint(auth_bp)
     
+    # Load external hooks for zero-touch discovery
+    manager.load_plugins()
+    
     @app.route("/")
     @app.route("/scenarios")
     @app.route("/reports")

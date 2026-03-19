@@ -14,6 +14,14 @@ from unittest.mock import patch, MagicMock, AsyncMock
 from eval_runner import engine
 from eval_runner import metrics
 
+@pytest.fixture(autouse=True)
+def reset_global_state():
+    from eval_runner.events import EventEmitter
+    from eval_runner.plugins import manager
+    EventEmitter.listeners = {}
+    manager.plugins = []
+    yield
+
 
 @pytest.mark.asyncio
 async def test_pass_at_k_protocol():

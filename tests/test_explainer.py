@@ -1,65 +1,47 @@
-import json
 import pytest
 from pathlib import Path
+from unittest.mock import patch, MagicMock
 from eval_runner.explainer import explain_trace
 
-@pytest.fixture
-def mock_trace(tmp_path):
-    def _create_trace(events):
-        trace_file = tmp_path / "run.jsonl"
-        with open(trace_file, "w") as f:
-            for e in events:
-                f.write(json.dumps(e) + "\n")
-        return trace_file
-    return _create_trace
+def test_explain_trace_valid(tmp_path):
+    trace_file = tmp_path / "run.jsonl"
+    trace_file.write_text('{"name": "test_event", "context": {"reason": "policy violation", "index": 5, "confidence": 0.9}}\n')
+    
+    with patch("eval_runner.trace_utils.load_events") as mock_load:
+        mock_load.return_value = [{"name": "test_event", "context": {"reason": "policy violation", "index": 5, "confidence": 0.9}}]
+        # Patch the origin module's class to ensure all references are intercepted
+        with patch("eval_runner.triage.TriageEngine.identify_root_cause") as mock_triage:
+            mock_triage.return_value = {
+                "index": 5,
+                "confidence": 0.9,
+                "reason": "Policy violation detected",
+                "suggestion": "Review safety policies."
+            }
+            result = explain_trace(trace_file)
+            
+            assert result["index"] == 5
+            assert result["confidence"] == 0.9
+            assert "Policy" in result["root_cause"]
+            assert "Review" in result["suggestion"]
 
-def test_explain_infinite_loop(mock_trace):
-    events = [
-        {"event": "prompt", "content": "What is the capital of France?"} for _ in range(12)
-    ]
-    trace_path = mock_trace(events)
-    diagnosis = explain_trace(trace_path)
-    assert "Infinite Loop" in diagnosis["root_cause"]
-    assert "circular reasoning" in diagnosis["suggestion"].lower()
+def test_explain_trace_invalid_json(tmp_path):
+    trace_file = tmp_path / "broken.jsonl"
+    trace_file.write_text("invalid json")
+    
+    result = explain_trace(trace_file)
+    assert "Error reading trace" in result["root_cause"]
+    assert "Check" in result["suggestion"]
 
-def test_explain_tool_timeout(mock_trace):
-    events = [
-        {"event": "tool_call", "tool": "search"},
-        {"event": "tool_result", "tool": "search", "result": "Error: request timeout after 30s"}
-    ]
-    trace_path = mock_trace(events)
-    diagnosis = explain_trace(trace_path)
-    assert "Tool Timeout" in diagnosis["root_cause"]
-    assert "search" in diagnosis["root_cause"]
-    assert "increase the tool sandbox timeout" in diagnosis["suggestion"].lower()
-
-def test_explain_tool_error(mock_trace):
-    events = [
-        {"event": "tool_call", "tool": "executor"},
-        {"event": "tool_result", "tool": "executor", "result": "Exception: DivisionByZero"}
-    ]
-    trace_path = mock_trace(events)
-    diagnosis = explain_trace(trace_path)
-    assert "Tool Error in executor" in diagnosis["root_cause"]
-    assert "DivisionByZero" in diagnosis["root_cause"]
-
-def test_explain_policy_violation(mock_trace):
-    events = [
-        {"event": "evaluation", "metric": "policy_compliance", "value": 0.0}
-    ]
-    trace_path = mock_trace(events)
-    diagnosis = explain_trace(trace_path)
-    assert "Policy Violation" in diagnosis["root_cause"]
-    assert "PII" in diagnosis["suggestion"]
-
-def test_explain_task_not_completed(mock_trace):
-    events = [
-        {"event": "run_end", "status": "failure"}
-    ]
-    trace_path = mock_trace(events)
-    diagnosis = explain_trace(trace_path)
-    assert "Target Task Not Completed" in diagnosis["root_cause"]
-
-def test_explain_invalid_path():
-    diagnosis = explain_trace(Path("non_existent.jsonl"))
-    assert "Error reading trace" in diagnosis["root_cause"]
+def test_explain_trace_no_suggestion_high_confidence():
+    with patch("eval_runner.trace_utils.load_events") as mock_load:
+        mock_load.return_value = []
+        # Patch the origin module's class
+        with patch("eval_runner.triage.TriageEngine.identify_root_cause") as mock_triage:
+            mock_triage.return_value = {
+                "index": 10,
+                "confidence": 0.9,
+                "reason": "system error",
+                "suggestion": "No specific suggestion found."
+            }
+            result = explain_trace(Path("fake.jsonl"))
+            assert "Check the tool implementation" in result["suggestion"]

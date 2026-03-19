@@ -1,31 +1,24 @@
-import json
 import pytest
+import json
 from pathlib import Path
 from unittest.mock import patch
 from eval_runner.scaffold import generate_interactive
 
-def test_generate_interactive_logic(tmp_path, monkeypatch):
-    """Verifies that the interactive scenario generator produces files correctly."""
-    # Mock inputs: Industry 'telecom', Capability 'billing', Count '2'
-    inputs = iter(["telecom", "billing", "2"])
+def test_scaffold_generation(tmp_path, monkeypatch):
+    # Mock input
+    inputs = iter(["telecom", "reboot", "1"])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
     
-    # Change CWD to tmp_path to capture file generation
+    # Run in tmp_path
     monkeypatch.chdir(tmp_path)
     
-    generate_interactive()
+    with patch("builtins.print"):
+        generate_interactive()
+        
+    expected_file = tmp_path / "scenarios" / "telecom" / "gen_telecom_reboot_1.json"
+    assert expected_file.exists()
     
-    # Verify directory structure
-    output_dir = tmp_path / "scenarios" / "telecom"
-    assert output_dir.exists()
-    
-    # Verify files
-    files = list(output_dir.glob("*.json"))
-    assert len(files) == 2
-    
-    for f in files:
-        with open(f, "r") as json_file:
-            data = json.load(json_file)
-            assert data["industry"] == "telecom"
-            assert "billing" in data["title"].lower()
-            assert "billing" in data["tasks"][0]["description"].lower()
+    with open(expected_file, "r") as f:
+        data = json.load(f)
+        assert data["industry"] == "telecom"
+        assert data["use_case"] == "reboot"

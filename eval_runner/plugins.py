@@ -62,7 +62,7 @@ class PluginManager:
             return
         
         # 1. Discover external plugins via entry points
-        for entry_point in importlib.metadata.entry_points(group='eval_harness.plugins'):
+        for entry_point in importlib.metadata.entry_points(group='eval_runner.plugins'):
             try:
                 plugin_cls = entry_point.load()
                 self.plugins.append(plugin_cls())
