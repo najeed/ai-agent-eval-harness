@@ -24,13 +24,29 @@ def _invoke_with_timeout(func, *args, **kwargs):
             print(f"   [PluginManager] Timeout (>{PLUGIN_TIMEOUT}s) in hook execution.")
             raise
 
-class BaseEvalPlugin:
+from abc import ABC, abstractmethod
+
+class BaseEvalPlugin(ABC):
     """Base class for all evaluation plugins."""
-    def before_evaluation(self, context: Any): pass
-    def after_evaluation(self, context: Any, results: list): pass
-    def on_register_commands(self, registry: Any): pass
-    def on_discover_adapters(self, registry: Any): pass
-    def on_register_simulators(self, registry: dict): pass
+    def before_evaluation(self, context: Any): 
+        """Hook called before the evaluation scenario begins."""
+        pass
+
+    def after_evaluation(self, context: Any, results: list): 
+        """Hook called after the evaluation scenario completes."""
+        pass
+
+    def on_register_commands(self, registry: Any): 
+        """Hook to register custom CLI commands."""
+        pass
+
+    def on_discover_adapters(self, registry: Any): 
+        """Hook to register custom agent adapters."""
+        pass
+
+    def on_register_simulators(self, registry: dict): 
+        """Hook to register custom world simulators."""
+        pass
 
 class PluginManager:
     """Orchestrates plugin lifecycle."""

@@ -10,7 +10,9 @@ import asyncio
 import sys
 import os
 import json
+import logging
 from pathlib import Path
+from typing import Dict, Any, List, Optional
 from . import loader
 from . import engine
 from . import reporter
@@ -835,6 +837,79 @@ async def handle_auto_translate(args):
         
     auto_translate.save_scenario(scenario, output_path)
 
+def classify_scenario(scenario: Dict[str, Any]) -> Dict[str, str]:
+    """Semantic-based classifier for scenarios using sentence-transformers."""
+    text = (scenario.get("title", "") + " " + scenario.get("description", "")).strip()
+    if not text:
+        return {"industry": "generic", "use_case": "General Support", "core_function": "Inquiry Handling"}
+
+    try:
+        from sentence_transformers import SentenceTransformer, util
+        import torch
+        
+        # Load a small, fast model
+        model = SentenceTransformer('all-MiniLM-L6-v2')
+        
+        # Define high-fidelity industry descriptors
+        industries = ["finance", "healthcare", "telecom", "legal", "ecommerce", "generic"]
+        industry_labels = [
+            "Financial services, banking, loans, taxation, and payments",
+            "Healthcare, medical services, patient care, and clinical trials",
+            "Telecommunications, networking, mobile phones, and bandwidth",
+            "Legal services, contracts, court cases, and attorneys",
+            "Ecommerce, online shopping, orders, shipping, and retail",
+            "General support and miscellaneous tasks"
+        ]
+        
+        # Define use case descriptors
+        use_cases = ["Order Management & Fulfillment", "Policy & Compliance", "Technical Troubleshooting", "General Support"]
+        use_case_labels = [
+            "Handling customer orders, shipping, logistics, and fulfillment",
+            "Enforcing rules, policies, regulatory compliance, and governance",
+            "Technical support, debugging, fixing issues, and system maintenance",
+            "General customer inquiries and basic information sharing"
+        ]
+        
+        # Compute embeddings
+        text_emb = model.encode(text, convert_to_tensor=True)
+        ind_embs = model.encode(industry_labels, convert_to_tensor=True)
+        uc_embs = model.encode(use_case_labels, convert_to_tensor=True)
+        
+        # Find best industry
+        ind_scores = util.cos_sim(text_emb, ind_embs)
+        best_ind_idx = torch.argmax(ind_scores).item()
+        
+        # Find best use case
+        uc_scores = util.cos_sim(text_emb, uc_embs)
+        best_uc_idx = torch.argmax(uc_scores).item()
+        
+        # Core function fallback (still keyword-based for now as it's very specific)
+        core_function = "Inquiry Handling"
+        lower_text = text.lower()
+        if "payment" in lower_text or "refund" in lower_text: core_function = "Payment & Invoicing"
+        elif "update" in lower_text or "change" in lower_text: core_function = "Account Management"
+        
+        return {
+            "industry": industries[best_ind_idx],
+            "use_case": use_cases[best_uc_idx],
+            "core_function": core_function
+        }
+        
+    except Exception as e:
+        # Lightweight keyword-based fallback if model fails
+        print(f"   [Classifier] Note: Falling back to keyword matching ({e})")
+        lower_text = text.lower()
+        industry = "generic"
+        if any(k in lower_text for k in ["loan", "bank", "finance", "payment", "invoice", "tax"]): industry = "finance"
+        elif any(k in lower_text for k in ["patient", "doctor", "health", "medical", "clinic"]): industry = "healthcare"
+        elif any(k in lower_text for k in ["network", "telecom", "sim", "phone", "bandwidth"]): industry = "telecom"
+        
+        use_case = "General Support"
+        if "order" in lower_text or "fulfillment" in lower_text: use_case = "Order Management & Fulfillment"
+        elif "technical" in lower_text or "debug" in lower_text: use_case = "Technical Troubleshooting"
+        
+        return {"industry": industry, "use_case": use_case, "core_function": "Inquiry Handling"}
+
 def handle_spec_to_eval(args):
     """Handler for 'spec-to-eval' command."""
     from . import spec_parser
@@ -850,27 +925,35 @@ def handle_spec_to_eval(args):
 
     scenario = spec_parser.parse_markdown_to_scenario(md_content)
     
-    # 3. Apply Placeholder / Default Logic
-    if "industry" not in scenario or not scenario["industry"]:
-        scenario["industry"] = "unclassified" if args.fill_defaults else "TODO: Set Industry"
+    # 3. Apply Heuristic Classification
+    classification = classify_scenario(scenario)
     
-    if "use_case" not in scenario or not scenario["use_case"]:
-        scenario["use_case"] = "Order Management & Fulfillment" if args.fill_defaults else "TODO: Set Use Case"
+    if "industry" not in scenario or not scenario["industry"] or "TODO" in str(scenario["industry"]):
+        scenario["industry"] = classification["industry"]
+    
+    if "use_case" not in scenario or not scenario["use_case"] or "TODO" in str(scenario["use_case"]):
+        scenario["use_case"] = classification["use_case"]
         
-    if "core_function" not in scenario or not scenario["core_function"]:
-        scenario["core_function"] = "Payment & Invoicing" if args.fill_defaults else "TODO: Set Core Function"
+    if "core_function" not in scenario or not scenario["core_function"] or "TODO" in str(scenario["core_function"]):
+        scenario["core_function"] = classification["core_function"]
+
+    # Ensure mandatory description field exists for schema compliance
+    if "description" not in scenario or not scenario["description"]:
+        scenario["description"] = f"Auto-generated scenario for {scenario.get('title', 'Untitled')}"
 
     # Determine default output path if not provided
     if args.output:
         output_path = Path(args.output)
     else:
         # industries/[industry]/scenarios/[scenario_id].json
-        industry = scenario.get("industry", "generic").replace("TODO: ", "").lower()
+        industry = scenario.get("industry", "generic").lower()
         scenario_id = scenario.get("scenario_id", "new_scenario")
         output_path = Path("industries") / industry / "scenarios" / f"{scenario_id}.json"
 
     spec_parser.save_scenario_stub(scenario, output_path)
     print(f"[OK] Successfully converted {input_path} to {output_path}")
+    print(f"   -> Guessed Industry: {scenario['industry']}")
+    print(f"   -> Guessed Use Case: {scenario['use_case']}")
     if not args.fill_defaults:
         print("💡 Tip: Use `eval-harness lint` to identify missing fields, or re-run with `--fill-defaults` to auto-fill.")
 

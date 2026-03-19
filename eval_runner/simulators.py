@@ -6,6 +6,7 @@ Standard simulation shims for common agent environments (Git, API).
 
 from typing import Any, Dict
 
+
 class GitSimulator:
     """Simulates a Git repository state."""
     def __init__(self):
@@ -26,6 +27,7 @@ class GitSimulator:
         elif action == "git_push":
             return {"status": "success", "message": "Pushed to origin main"}
         return {"status": "error", "message": f"Unknown git action: {action}"}
+
 
 class ApiSimulator:
     """Simulates a generic REST API."""
@@ -118,17 +120,30 @@ class CalendarSimulator:
 
 class JiraSimulator:
     """Simulates Jira/Issue tracking."""
-    def __init__(self):
-        self.issues = [{"id": "PROJ-1", "summary": "Fix login", "status": "Todo"}]
+    def __init__(self, initial_issues: list = None):
+        self.issues = initial_issues if initial_issues is not None else [
+            {"id": "PROJ-1", "summary": "Fix login bug", "status": "Todo"},
+            {"id": "PROJ-2", "summary": "Implement Auth", "status": "In Progress"}
+        ]
 
     def execute(self, action: str, params: dict) -> dict:
-        if action == "jira_update":
+        if action == "jira_create":
+            new_id = f"PROJ-{len(self.issues) + 1}"
+            self.issues.append({
+                "id": new_id,
+                "summary": params.get("summary", "New issue"),
+                "status": "Todo"
+            })
+            return {"status": "success", "id": new_id}
+        elif action == "jira_update":
             issue_id = params.get("id")
             for i in self.issues:
                 if i["id"] == issue_id:
                     i["status"] = params.get("status")
                     return {"status": "success"}
-        return {"status": "error", "message": "Issue not found"}
+        elif action == "jira_list":
+            return {"status": "success", "issues": self.issues}
+        return {"status": "error", "message": "Issue not found or unknown action"}
 
 class CloudSimulator:
     """Simulates AWS/GCP infrastructure."""

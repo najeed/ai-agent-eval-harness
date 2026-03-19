@@ -100,7 +100,8 @@ eval-harness spec-to-eval --input <prd.md> [--output <scenario.json>] [--fill-de
 ```
 - `--input`: Path to the Markdown specification file.
 - `--output`: Optional. Custom output path for the generated JSON.
-- `--fill-defaults`: Optional. Automatically populates mandatory AES fields (Industry, Use Case, Core Function) with sensible defaults to ensure the output passes linting immediately.
+- `--fill-defaults`: Optional. Automatically populates mandatory AES fields.
+- Intelligent Classification: The command includes a Semantic Similarity Classifier (using `sentence-transformers`) that automatically identifies `industry`, `use_case`, and `core_function` from the spec's conceptual context (e.g., distinguishing between `finance` and `legal` based on the nature of the request).
 
 ### `auto-translate`
 Translate raw, unstructured documents (TXT, MD, PDF, DOCX) into structured Scenario JSON files using a local LLM.

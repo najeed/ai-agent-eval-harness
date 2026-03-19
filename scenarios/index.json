@@ -38628,6 +38628,18 @@
     "status": "warning"
   },
   {
+    "id": "scenario-48fff5a6",
+    "title": "Scenario Specification: Healthcare Portal",
+    "industry": "healthcare",
+    "difficulty": 1,
+    "tags": [],
+    "path": "industries\\healthcare\\scenarios\\scenario-48fff5a6.json",
+    "mtime": 1773956132.22812,
+    "description": "This scenario tests an agent's ability to handle a medical appointment rescheduling request.",
+    "lint_score": 60,
+    "status": "fail"
+  },
+  {
     "id": "hc-as-11358",
     "title": "Receive Specimen in Lab",
     "industry": "Healthcare",
@@ -41038,6 +41050,18 @@
     "description": "An agent evaluates a loan application for a high-risk customer.",
     "lint_score": 95,
     "status": "warning"
+  },
+  {
+    "id": "scenario-39dd9c3d",
+    "title": "Financial Audit Request",
+    "industry": "finance",
+    "difficulty": 1,
+    "tags": [],
+    "path": "industries\\finance\\scenarios\\scenario-39dd9c3d.json",
+    "mtime": 1773956814.9400728,
+    "description": "",
+    "lint_score": 45,
+    "status": "fail"
   },
   {
     "id": "ethical-guardrails-001",

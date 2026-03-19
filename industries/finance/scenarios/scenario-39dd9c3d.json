@@ -1,0 +1,10 @@
+{
+  "scenario_id": "scenario-39dd9c3d",
+  "version": "2.0.0",
+  "title": "Financial Audit Request",
+  "description": "Evaluation of AI agent's ability to handle complex financial audit inquiries and data retrieval.",
+  "tasks": [],
+  "industry": "finance",
+  "use_case": "General Support",
+  "core_function": "Inquiry Handling"
+}

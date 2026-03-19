@@ -145,7 +145,7 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
                     <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input
                         type="text"
-                        placeholder="Search by ID, title, or industry..."
+                        placeholder="Search catalog by ID, title, or industry keywords..."
                         className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-200"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
@@ -955,7 +955,7 @@ const ReportsView = ({ onViewReport, searchQuery = "" }) => {
                     <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input
                         type="text"
-                        placeholder="Search by Run ID or Scenario..."
+                        placeholder="Filter historical runs by ID or scenario name..."
                         className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-200"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
@@ -1191,7 +1191,7 @@ const Dashboard = ({ onNavigate, navItems }) => {
                     <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input
                         type="text"
-                        placeholder="Search systems and navigation..."
+                        placeholder="Search dashboard systems, metrics and navigation..."
                         className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-80 text-slate-200"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
@@ -1422,7 +1422,7 @@ const App = () => {
                                     <input
                                         autoFocus
                                         type="text"
-                                        placeholder="Search documentation topics..."
+                                        placeholder="Search specifications, guides and API reference..."
                                         value={globalSearch}
                                         onChange={(e) => setGlobalSearch(e.target.value)}
                                         onBlur={() => !globalSearch && setSearching(false)}

@@ -1,0 +1,10 @@
+{
+  "scenario_id": "scenario-48fff5a6",
+  "version": "2.0.0",
+  "tasks": [],
+  "title": "Scenario Specification: Healthcare Portal",
+  "description": "This scenario tests an agent's ability to handle a medical appointment rescheduling request.",
+  "industry": "healthcare",
+  "use_case": "General Support",
+  "core_function": "Inquiry Handling"
+}

@@ -1,0 +1,1626 @@
+eval_runner/__init__.py:5:1: F401 '.cli' imported but unused
+eval_runner/__init__.py:5:1: F401 '.engine' imported but unused
+eval_runner/__init__.py:5:1: F401 '.loader' imported but unused
+eval_runner/__init__.py:5:1: F401 '.metrics' imported but unused
+eval_runner/__init__.py:5:1: F401 '.reporter' imported but unused
+eval_runner/__init__.py:5:1: F401 '.tool_sandbox' imported but unused
+eval_runner/__init__.py:5:1: F401 '.context' imported but unused
+eval_runner/__init__.py:5:1: F401 '.plugins' imported but unused
+eval_runner/__init__.py:5:1: F401 '.spec_parser' imported but unused
+eval_runner/__init__.py:5:1: F401 '.drift_importer' imported but unused
+eval_runner/__init__.py:5:1: F401 '.triage' imported but unused
+eval_runner/__init__.py:5:1: F401 '.catalog' imported but unused
+eval_runner/__init__.py:5:121: E501 line too long (130 > 120 characters)
+eval_runner/adapters\__init__.py:12:1: F401 'subprocess' imported but unused
+eval_runner/adapters\__init__.py:13:1: F401 'sys' imported but unused
+eval_runner/adapters\__init__.py:14:1: F401 'typing.Dict' imported but unused
+eval_runner/adapters\__init__.py:14:1: F401 'typing.Any' imported but unused
+eval_runner/adapters\__init__.py:14:1: F401 'typing.Optional' imported but unused
+eval_runner/adapters\__init__.py:17:1: E302 expected 2 blank lines, found 1
+eval_runner/adapters\__init__.py:27:1: E302 expected 2 blank lines, found 1
+eval_runner/adapters\__init__.py:51:1: E302 expected 2 blank lines, found 1
+eval_runner/adapters\__init__.py:75:14: E111 indentation is not a multiple of 4
+eval_runner/adapters\__init__.py:75:14: E117 over-indented
+eval_runner/adapters\__init__.py:83:1: W391 blank line at end of file
+eval_runner/adapters\autogen.py:1:1: F401 'json' imported but unused
+eval_runner/adapters\autogen.py:7:1: E302 expected 2 blank lines, found 1
+eval_runner/adapters\autogen.py:12:1: W293 blank line contains whitespace
+eval_runner/adapters\autogen.py:17:1: W293 blank line contains whitespace
+eval_runner/adapters\autogen.py:24:1: W293 blank line contains whitespace
+eval_runner/adapters\crewai.py:11:1: W293 blank line contains whitespace
+eval_runner/adapters\crewai.py:20:1: W293 blank line contains whitespace
+eval_runner/adapters\grok.py:7:1: E302 expected 2 blank lines, found 1
+eval_runner/adapters\grok.py:12:1: W293 blank line contains whitespace
+eval_runner/adapters\grok.py:26:1: W293 blank line contains whitespace
+eval_runner/adapters\grok.py:30:1: W293 blank line contains whitespace
+eval_runner/adapters\langchain.py:12:1: W293 blank line contains whitespace
+eval_runner/adapters\langchain.py:26:1: W293 blank line contains whitespace
+eval_runner/adapters\langchain.py:30:1: W293 blank line contains whitespace
+eval_runner/adapters\langchain.py:32:1: W293 blank line contains whitespace
+eval_runner/adapters\langchain.py:38:1: W293 blank line contains whitespace
+eval_runner/adapters\langgraph.py:11:1: W293 blank line contains whitespace
+eval_runner/adapters\langgraph.py:20:1: W293 blank line contains whitespace
+eval_runner/adapters\ollama.py:12:1: W293 blank line contains whitespace
+eval_runner/adapters\ollama.py:25:1: W293 blank line contains whitespace
+eval_runner/adapters\ollama.py:30:1: W293 blank line contains whitespace
+eval_runner/adapters\ollama.py:36:1: W293 blank line contains whitespace
+eval_runner/adapters\ollama.py:42:1: W293 blank line contains whitespace
+eval_runner/adapters\openai.py:13:1: W293 blank line contains whitespace
+eval_runner/adapters\openai.py:26:1: W293 blank line contains whitespace
+eval_runner/adapters\openai.py:35:1: W293 blank line contains whitespace
+eval_runner/adapters\openai.py:41:1: W293 blank line contains whitespace
+eval_runner/adapters\openai.py:48:1: W293 blank line contains whitespace
+eval_runner/analyzer.py:7:1: F401 're' imported but unused
+eval_runner/analyzer.py:8:1: F401 'os' imported but unused
+eval_runner/analyzer.py:12:1: E302 expected 2 blank lines, found 1
+eval_runner/analyzer.py:18:5: F841 local variable 'patterns' is assigned to but never used
+eval_runner/analyzer.py:24:1: W293 blank line contains whitespace
+eval_runner/analyzer.py:26:1: W293 blank line contains whitespace
+eval_runner/analyzer.py:29:1: W293 blank line contains whitespace
+eval_runner/analyzer.py:48:1: W293 blank line contains whitespace
+eval_runner/analyzer.py:67:1: W293 blank line contains whitespace
+eval_runner/analyzer.py:71:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:11:1: F401 'os' imported but unused
+eval_runner/artifact_plugin.py:13:1: F401 'typing.Optional' imported but unused
+eval_runner/artifact_plugin.py:17:1: E302 expected 2 blank lines, found 1
+eval_runner/artifact_plugin.py:22:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:36:31: W291 trailing whitespace
+eval_runner/artifact_plugin.py:37:24: E128 continuation line under-indented for visual indent
+eval_runner/artifact_plugin.py:37:40: W291 trailing whitespace
+eval_runner/artifact_plugin.py:38:24: E128 continuation line under-indented for visual indent
+eval_runner/artifact_plugin.py:38:52: W291 trailing whitespace
+eval_runner/artifact_plugin.py:39:24: E128 continuation line under-indented for visual indent
+eval_runner/artifact_plugin.py:40:24: E128 continuation line under-indented for visual indent
+eval_runner/artifact_plugin.py:52:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:54:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:67:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:73:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:88:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:91:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:94:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:101:1: W293 blank line contains whitespace
+eval_runner/artifact_plugin.py:108:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:4:82: W291 trailing whitespace
+eval_runner/auto_translate.py:14:1: F401 'typing.Optional' imported but unused
+eval_runner/auto_translate.py:18:1: E302 expected 2 blank lines, found 1
+eval_runner/auto_translate.py:21:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:25:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:37:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:45:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:49:1: E302 expected 2 blank lines, found 1
+eval_runner/auto_translate.py:49:121: E501 line too long (138 > 120 characters)
+eval_runner/auto_translate.py:51:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:53:121: E501 line too long (145 > 120 characters)
+eval_runner/auto_translate.py:55:121: E501 line too long (146 > 120 characters)
+eval_runner/auto_translate.py:55:147: W291 trailing whitespace
+eval_runner/auto_translate.py:66:121: E501 line too long (135 > 120 characters)
+eval_runner/auto_translate.py:68:121: E501 line too long (126 > 120 characters)
+eval_runner/auto_translate.py:83:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:90:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:93:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:98:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:100:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:108:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:110:1: W293 blank line contains whitespace
+eval_runner/auto_translate.py:116:1: E302 expected 2 blank lines, found 1
+eval_runner/benchmarks\assistantbench.py:4:1: E302 expected 2 blank lines, found 1
+eval_runner/benchmarks\assistantbench.py:6:1: W293 blank line contains whitespace
+eval_runner/benchmarks\gaia.py:2:1: F401 'json' imported but unused
+eval_runner/benchmarks\gaia.py:3:1: F401 'pathlib.Path' imported but unused
+eval_runner/benchmarks\gaia.py:6:1: E302 expected 2 blank lines, found 1
+eval_runner/benchmarks\gaia.py:8:1: W293 blank line contains whitespace
+eval_runner/benchmarks\gaia.py:15:1: W293 blank line contains whitespace
+eval_runner/benchmarks\gaia.py:22:121: E501 line too long (141 > 120 characters)
+eval_runner/benchmarks\gaia.py:38:121: E501 line too long (125 > 120 characters)
+eval_runner/catalog.py:8:1: F401 'os' imported but unused
+eval_runner/catalog.py:12:1: E302 expected 2 blank lines, found 1
+eval_runner/catalog.py:14:1: W293 blank line contains whitespace
+eval_runner/catalog.py:23:1: W293 blank line contains whitespace
+eval_runner/catalog.py:36:1: W293 blank line contains whitespace
+eval_runner/catalog.py:44:1: W293 blank line contains whitespace
+eval_runner/catalog.py:48:1: W293 blank line contains whitespace
+eval_runner/catalog.py:66:1: W293 blank line contains whitespace
+eval_runner/catalog.py:78:1: W293 blank line contains whitespace
+eval_runner/catalog.py:88:1: W293 blank line contains whitespace
+eval_runner/catalog.py:102:1: W293 blank line contains whitespace
+eval_runner/catalog.py:104:1: W293 blank line contains whitespace
+eval_runner/catalog.py:109:35: W291 trailing whitespace
+eval_runner/catalog.py:110:48: W291 trailing whitespace
+eval_runner/catalog.py:111:51: W291 trailing whitespace
+eval_runner/catalog.py:112:54: W291 trailing whitespace
+eval_runner/catalog.py:116:1: W293 blank line contains whitespace
+eval_runner/catalog.py:121:1: W293 blank line contains whitespace
+eval_runner/catalog.py:124:1: E302 expected 2 blank lines, found 1
+eval_runner/catalog.py:128:1: W293 blank line contains whitespace
+eval_runner/catalog.py:130:1: W293 blank line contains whitespace
+eval_runner/catalog.py:144:27: E261 at least two spaces before inline comment
+eval_runner/catalog.py:146:1: W293 blank line contains whitespace
+eval_runner/cli.py:16:1: F401 '.reporter' imported but unused
+eval_runner/cli.py:20:1: F401 '.doctor' imported but unused
+eval_runner/cli.py:21:1: F401 '.triage' imported but unused
+eval_runner/cli.py:25:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:36:1: W293 blank line contains whitespace
+eval_runner/cli.py:39:1: W293 blank line contains whitespace
+eval_runner/cli.py:93:1: W293 blank line contains whitespace
+eval_runner/cli.py:106:1: W293 blank line contains whitespace
+eval_runner/cli.py:109:1: W293 blank line contains whitespace
+eval_runner/cli.py:113:1: W293 blank line contains whitespace
+eval_runner/cli.py:121:121: E501 line too long (136 > 120 characters)
+eval_runner/cli.py:124:121: E501 line too long (132 > 120 characters)
+eval_runner/cli.py:137:1: W293 blank line contains whitespace
+eval_runner/cli.py:139:121: E501 line too long (128 > 120 characters)
+eval_runner/cli.py:179:1: W293 blank line contains whitespace
+eval_runner/cli.py:183:121: E501 line too long (133 > 120 characters)
+eval_runner/cli.py:185:1: W293 blank line contains whitespace
+eval_runner/cli.py:219:121: E501 line too long (124 > 120 characters)
+eval_runner/cli.py:220:121: E501 line too long (128 > 120 characters)
+eval_runner/cli.py:231:1: W293 blank line contains whitespace
+eval_runner/cli.py:247:1: W293 blank line contains whitespace
+eval_runner/cli.py:251:1: W293 blank line contains whitespace
+eval_runner/cli.py:253:1: W293 blank line contains whitespace
+eval_runner/cli.py:293:13: F811 redefinition of unused 'doctor' from line 20
+eval_runner/cli.py:341:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:349:1: W293 blank line contains whitespace
+eval_runner/cli.py:352:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:356:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:362:1: W293 blank line contains whitespace
+eval_runner/cli.py:367:1: W293 blank line contains whitespace
+eval_runner/cli.py:375:1: W293 blank line contains whitespace
+eval_runner/cli.py:377:1: W293 blank line contains whitespace
+eval_runner/cli.py:388:40: E701 multiple statements on one line (colon)
+eval_runner/cli.py:389:1: W293 blank line contains whitespace
+eval_runner/cli.py:399:1: W293 blank line contains whitespace
+eval_runner/cli.py:402:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:404:5: F811 redefinition of unused 'reporter' from line 16
+eval_runner/cli.py:416:1: W293 blank line contains whitespace
+eval_runner/cli.py:425:1: W293 blank line contains whitespace
+eval_runner/cli.py:433:1: W293 blank line contains whitespace
+eval_runner/cli.py:436:1: W293 blank line contains whitespace
+eval_runner/cli.py:445:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:475:1: W293 blank line contains whitespace
+eval_runner/cli.py:484:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:499:13: E117 over-indented
+eval_runner/cli.py:500:13: F841 local variable 'timestamp' is assigned to but never used
+eval_runner/cli.py:501:1: W293 blank line contains whitespace
+eval_runner/cli.py:528:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:543:1: W293 blank line contains whitespace
+eval_runner/cli.py:544:69: W291 trailing whitespace
+eval_runner/cli.py:547:1: W293 blank line contains whitespace
+eval_runner/cli.py:549:13: F841 local variable 'results' is assigned to but never used
+eval_runner/cli.py:552:1: W293 blank line contains whitespace
+eval_runner/cli.py:558:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:567:1: W293 blank line contains whitespace
+eval_runner/cli.py:572:1: W293 blank line contains whitespace
+eval_runner/cli.py:594:1: W293 blank line contains whitespace
+eval_runner/cli.py:601:1: W293 blank line contains whitespace
+eval_runner/cli.py:603:121: E501 line too long (127 > 120 characters)
+eval_runner/cli.py:612:1: W293 blank line contains whitespace
+eval_runner/cli.py:617:1: W293 blank line contains whitespace
+eval_runner/cli.py:623:1: W293 blank line contains whitespace
+eval_runner/cli.py:626:121: E501 line too long (121 > 120 characters)
+eval_runner/cli.py:627:1: W293 blank line contains whitespace
+eval_runner/cli.py:632:29: E701 multiple statements on one line (colon)
+eval_runner/cli.py:643:1: W293 blank line contains whitespace
+eval_runner/cli.py:645:1: W293 blank line contains whitespace
+eval_runner/cli.py:647:1: W293 blank line contains whitespace
+eval_runner/cli.py:656:1: W293 blank line contains whitespace
+eval_runner/cli.py:664:1: W293 blank line contains whitespace
+eval_runner/cli.py:667:1: W293 blank line contains whitespace
+eval_runner/cli.py:671:1: W293 blank line contains whitespace
+eval_runner/cli.py:672:121: E501 line too long (162 > 120 characters)
+eval_runner/cli.py:673:1: W293 blank line contains whitespace
+eval_runner/cli.py:680:1: W293 blank line contains whitespace
+eval_runner/cli.py:682:1: W293 blank line contains whitespace
+eval_runner/cli.py:685:1: W293 blank line contains whitespace
+eval_runner/cli.py:688:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:695:1: W293 blank line contains whitespace
+eval_runner/cli.py:700:34: E701 multiple statements on one line (colon)
+eval_runner/cli.py:701:31: E701 multiple statements on one line (colon)
+eval_runner/cli.py:702:1: W293 blank line contains whitespace
+eval_runner/cli.py:705:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:709:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:712:1: W293 blank line contains whitespace
+eval_runner/cli.py:720:1: W293 blank line contains whitespace
+eval_runner/cli.py:722:1: W293 blank line contains whitespace
+eval_runner/cli.py:728:1: W293 blank line contains whitespace
+eval_runner/cli.py:732:9: E722 do not use bare 'except'
+eval_runner/cli.py:736:1: W293 blank line contains whitespace
+eval_runner/cli.py:740:1: W293 blank line contains whitespace
+eval_runner/cli.py:748:1: W293 blank line contains whitespace
+eval_runner/cli.py:752:1: W293 blank line contains whitespace
+eval_runner/cli.py:770:1: W293 blank line contains whitespace
+eval_runner/cli.py:783:1: W293 blank line contains whitespace
+eval_runner/cli.py:785:121: E501 line too long (193 > 120 characters)
+eval_runner/cli.py:786:1: W293 blank line contains whitespace
+eval_runner/cli.py:797:1: W293 blank line contains whitespace
+eval_runner/cli.py:800:1: W293 blank line contains whitespace
+eval_runner/cli.py:801:11: F541 f-string is missing placeholders
+eval_runner/cli.py:802:11: F541 f-string is missing placeholders
+eval_runner/cli.py:804:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:808:1: W293 blank line contains whitespace
+eval_runner/cli.py:812:1: W293 blank line contains whitespace
+eval_runner/cli.py:820:1: W293 blank line contains whitespace
+eval_runner/cli.py:827:1: W293 blank line contains whitespace
+eval_runner/cli.py:835:1: W293 blank line contains whitespace
+eval_runner/cli.py:838:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:838:33: F821 undefined name 'Dict'
+eval_runner/cli.py:838:43: F821 undefined name 'Any'
+eval_runner/cli.py:838:52: F821 undefined name 'Dict'
+eval_runner/cli.py:847:1: W293 blank line contains whitespace
+eval_runner/cli.py:850:1: W293 blank line contains whitespace
+eval_runner/cli.py:861:1: W293 blank line contains whitespace
+eval_runner/cli.py:863:121: E501 line too long (125 > 120 characters)
+eval_runner/cli.py:870:1: W293 blank line contains whitespace
+eval_runner/cli.py:875:1: W293 blank line contains whitespace
+eval_runner/cli.py:879:1: W293 blank line contains whitespace
+eval_runner/cli.py:883:1: W293 blank line contains whitespace
+eval_runner/cli.py:887:61: E701 multiple statements on one line (colon)
+eval_runner/cli.py:888:62: E701 multiple statements on one line (colon)
+eval_runner/cli.py:889:1: W293 blank line contains whitespace
+eval_runner/cli.py:895:1: W293 blank line contains whitespace
+eval_runner/cli.py:901:98: E701 multiple statements on one line (colon)
+eval_runner/cli.py:902:96: E701 multiple statements on one line (colon)
+eval_runner/cli.py:903:95: E701 multiple statements on one line (colon)
+eval_runner/cli.py:904:1: W293 blank line contains whitespace
+eval_runner/cli.py:906:64: E701 multiple statements on one line (colon)
+eval_runner/cli.py:907:64: E701 multiple statements on one line (colon)
+eval_runner/cli.py:908:1: W293 blank line contains whitespace
+eval_runner/cli.py:911:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:914:5: F401 'json' imported but unused
+eval_runner/cli.py:925:1: W293 blank line contains whitespace
+eval_runner/cli.py:928:1: W293 blank line contains whitespace
+eval_runner/cli.py:931:1: W293 blank line contains whitespace
+eval_runner/cli.py:934:1: W293 blank line contains whitespace
+eval_runner/cli.py:952:121: E501 line too long (122 > 120 characters)
+eval_runner/cli.py:954:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:960:1: W293 blank line contains whitespace
+eval_runner/cli.py:967:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:974:1: W293 blank line contains whitespace
+eval_runner/cli.py:977:1: W293 blank line contains whitespace
+eval_runner/cli.py:979:1: W293 blank line contains whitespace
+eval_runner/cli.py:984:1: W293 blank line contains whitespace
+eval_runner/cli.py:988:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:994:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:1003:1: W293 blank line contains whitespace
+eval_runner/cli.py:1014:1: W293 blank line contains whitespace
+eval_runner/cli.py:1017:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:1027:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:1031:1: W293 blank line contains whitespace
+eval_runner/cli.py:1061:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:1072:9: E722 do not use bare 'except'
+eval_runner/cli.py:1074:1: W293 blank line contains whitespace
+eval_runner/cli.py:1085:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:1093:1: W293 blank line contains whitespace
+eval_runner/cli.py:1107:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:1117:1: W293 blank line contains whitespace
+eval_runner/cli.py:1133:1: W293 blank line contains whitespace
+eval_runner/cli.py:1149:1: W293 blank line contains whitespace
+eval_runner/cli.py:1153:1: W293 blank line contains whitespace
+eval_runner/cli.py:1157:1: W293 blank line contains whitespace
+eval_runner/cli.py:1167:1: W293 blank line contains whitespace
+eval_runner/cli.py:1176:1: E302 expected 2 blank lines, found 1
+eval_runner/cli.py:1186:1: W293 blank line contains whitespace
+eval_runner/cli.py:1215:1: E305 expected 2 blank lines after class or function definition, found 1
+eval_runner/config.py:25:39: E261 at least two spaces before inline comment
+eval_runner/config.py:28:121: E501 line too long (128 > 120 characters)
+eval_runner/console\app.py:8:1: E302 expected 2 blank lines, found 1
+eval_runner/console\app.py:14:1: W293 blank line contains whitespace
+eval_runner/console\app.py:26:1: W293 blank line contains whitespace
+eval_runner/console\app.py:29:1: W293 blank line contains whitespace
+eval_runner/console\app.py:36:13: F841 local variable 'e' is assigned to but never used
+eval_runner/console\app.py:38:1: W293 blank line contains whitespace
+eval_runner/console\app.py:47:1: E302 expected 2 blank lines, found 1
+eval_runner/console\app.py:51:1: E305 expected 2 blank lines after class or function definition, found 1
+eval_runner/console\auth.py:4:1: F401 'flask.current_app' imported but unused
+eval_runner/console\auth.py:11:1: E302 expected 2 blank lines, found 1
+eval_runner/console\auth.py:21:1: E302 expected 2 blank lines, found 1
+eval_runner/console\auth.py:25:1: W293 blank line contains whitespace
+eval_runner/console\auth.py:28:1: W293 blank line contains whitespace
+eval_runner/console\auth.py:35:1: W293 blank line contains whitespace
+eval_runner/console\auth.py:39:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:9:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:20:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:23:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:26:121: E501 line too long (146 > 120 characters)
+eval_runner/console\routes.py:28:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:32:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:36:5: F401 '..linter.ScenarioLinter' imported but unused
+eval_runner/console\routes.py:37:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:41:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:44:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:47:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:50:36: E261 at least two spaces before inline comment
+eval_runner/console\routes.py:54:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:69:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:73:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:87:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:94:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:100:14: E111 indentation is not a multiple of 4
+eval_runner/console\routes.py:100:14: E117 over-indented
+eval_runner/console\routes.py:119:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:121:33: W291 trailing whitespace
+eval_runner/console\routes.py:128:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:144:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:146:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:165:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:169:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:174:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:185:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:219:1: E305 expected 2 blank lines after class or function definition, found 1
+eval_runner/console\routes.py:219:1: E402 module level import not at top of file
+eval_runner/console\routes.py:222:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:225:26: W291 trailing whitespace
+eval_runner/console\routes.py:231:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:237:9: E306 expected 1 blank line before a nested definition, found 0
+eval_runner/console\routes.py:241:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:257:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:276:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:295:35: W291 trailing whitespace
+eval_runner/console\routes.py:296:35: W291 trailing whitespace
+eval_runner/console\routes.py:302:24: W291 trailing whitespace
+eval_runner/console\routes.py:303:47: W291 trailing whitespace
+eval_runner/console\routes.py:314:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:323:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:326:34: E701 multiple statements on one line (colon)
+eval_runner/console\routes.py:331:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:334:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:339:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:343:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:346:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:351:1: E302 expected 2 blank lines, found 1
+eval_runner/console\routes.py:355:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:357:22: E701 multiple statements on one line (colon)
+eval_runner/console\routes.py:358:27: E701 multiple statements on one line (colon)
+eval_runner/console\routes.py:359:24: E701 multiple statements on one line (colon)
+eval_runner/console\routes.py:360:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:362:1: W293 blank line contains whitespace
+eval_runner/console\routes.py:373:1: E302 expected 2 blank lines, found 1
+eval_runner/context.py:15:1: F401 'typing.List' imported but unused
+eval_runner/context.py:17:1: E302 expected 2 blank lines, found 1
+eval_runner/context.py:21:1: E302 expected 2 blank lines, found 1
+eval_runner/context.py:28:62: E261 at least two spaces before inline comment
+eval_runner/context.py:37:1: E302 expected 2 blank lines, found 1
+eval_runner/coverage_plugin.py:12:1: E302 expected 2 blank lines, found 1
+eval_runner/coverage_plugin.py:14:1: W293 blank line contains whitespace
+eval_runner/coverage_reporter.py:7:1: F401 'json' imported but unused
+eval_runner/coverage_reporter.py:9:1: F401 'typing.Dict' imported but unused
+eval_runner/coverage_reporter.py:9:1: F401 'typing.Any' imported but unused
+eval_runner/coverage_reporter.py:9:1: F401 'typing.List' imported but unused
+eval_runner/coverage_reporter.py:20:121: E501 line too long (133 > 120 characters)
+eval_runner/coverage_reporter.py:32:1: W293 blank line contains whitespace
+eval_runner/coverage_reporter.py:54:1: E302 expected 2 blank lines, found 1
+eval_runner/coverage_reporter.py:58:1: W293 blank line contains whitespace
+eval_runner/coverage_reporter.py:61:1: W293 blank line contains whitespace
+eval_runner/coverage_reporter.py:67:1: W293 blank line contains whitespace
+eval_runner/coverage_reporter.py:79:1: W293 blank line contains whitespace
+eval_runner/coverage_reporter.py:83:1: W293 blank line contains whitespace
+eval_runner/doctor.py:4:1: F401 'asyncio' imported but unused
+eval_runner/doctor.py:5:1: F401 'platform' imported but unused
+eval_runner/doctor.py:6:1: F401 'subprocess' imported but unused
+eval_runner/doctor.py:9:1: E302 expected 2 blank lines, found 1
+eval_runner/doctor.py:13:121: E501 line too long (136 > 120 characters)
+eval_runner/doctor.py:14:72: E261 at least two spaces before inline comment
+eval_runner/doctor.py:18:1: E302 expected 2 blank lines, found 1
+eval_runner/doctor.py:21:1: W293 blank line contains whitespace
+eval_runner/doctor.py:61:15: F541 f-string is missing placeholders
+eval_runner/drift_importer.py:11:1: F401 'typing.Optional' imported but unused
+eval_runner/drift_importer.py:11:1: F401 'typing.Dict' imported but unused
+eval_runner/drift_importer.py:11:1: F401 'typing.Any' imported but unused
+eval_runner/drift_importer.py:14:1: E302 expected 2 blank lines, found 1
+eval_runner/drift_importer.py:30:1: W293 blank line contains whitespace
+eval_runner/drift_importer.py:35:1: W293 blank line contains whitespace
+eval_runner/drift_importer.py:50:38: E261 at least two spaces before inline comment
+eval_runner/drift_importer.py:56:40: E261 at least two spaces before inline comment
+eval_runner/drift_importer.py:61:1: W293 blank line contains whitespace
+eval_runner/engine.py:10:1: F401 'json' imported but unused
+eval_runner/engine.py:11:1: F401 'aiohttp' imported but unused
+eval_runner/engine.py:12:1: F401 'asyncio' imported but unused
+eval_runner/engine.py:13:1: F401 'inspect' imported but unused
+eval_runner/engine.py:14:1: F401 'pathlib.Path' imported but unused
+eval_runner/engine.py:15:1: F401 'datetime.datetime' imported but unused
+eval_runner/engine.py:16:1: F401 'typing.Any' imported but unused
+eval_runner/engine.py:16:1: F401 'typing.List' imported but unused
+eval_runner/engine.py:18:1: F401 '.metrics' imported but unused
+eval_runner/engine.py:19:1: F401 '.context.EvaluationContext' imported but unused
+eval_runner/engine.py:19:1: F401 '.context.TurnContext' imported but unused
+eval_runner/engine.py:20:1: F401 '.tool_sandbox.ToolSandbox' imported but unused
+eval_runner/engine.py:29:1: E302 expected 2 blank lines, found 1
+eval_runner/engine.py:32:1: W293 blank line contains whitespace
+eval_runner/engine.py:42:1: W293 blank line contains whitespace
+eval_runner/engine.py:50:1: W293 blank line contains whitespace
+eval_runner/engine.py:54:1: W293 blank line contains whitespace
+eval_runner/engine.py:56:1: W293 blank line contains whitespace
+eval_runner/engine.py:62:36: W291 trailing whitespace
+eval_runner/engine.py:66:1: W293 blank line contains whitespace
+eval_runner/engine.py:73:1: W293 blank line contains whitespace
+eval_runner/engine.py:89:1: E302 expected 2 blank lines, found 1
+eval_runner/engine.py:92:1: W293 blank line contains whitespace
+eval_runner/engine.py:94:121: E501 line too long (138 > 120 characters)
+eval_runner/engine.py:96:1: W293 blank line contains whitespace
+eval_runner/engine.py:100:5: F401 '.publication_plugin.PublicationPlugin' imported but unused
+eval_runner/engine.py:108:1: W293 blank line contains whitespace
+eval_runner/events.py:6:66: W291 trailing whitespace
+eval_runner/events.py:10:1: F401 'json' imported but unused
+eval_runner/events.py:14:1: F401 'abc.ABC' imported but unused
+eval_runner/events.py:14:1: F401 'abc.abstractmethod' imported but unused
+eval_runner/events.py:16:1: E302 expected 2 blank lines, found 1
+eval_runner/events.py:18:1: W293 blank line contains whitespace
+eval_runner/events.py:36:1: W293 blank line contains whitespace
+eval_runner/events.py:45:1: W293 blank line contains whitespace
+eval_runner/events.py:48:1: E302 expected 2 blank lines, found 1
+eval_runner/events.py:62:1: E302 expected 2 blank lines, found 1
+eval_runner/events.py:85:1: E302 expected 2 blank lines, found 1
+eval_runner/explainer.py:1:1: F401 'json' imported but unused
+eval_runner/explainer.py:5:1: E302 expected 2 blank lines, found 1
+eval_runner/explainer.py:17:1: W293 blank line contains whitespace
+eval_runner/explainer.py:29:18: E111 indentation is not a multiple of 4
+eval_runner/explainer.py:29:18: E117 over-indented
+eval_runner/explainer.py:29:121: E501 line too long (159 > 120 characters)
+eval_runner/explainer.py:31:18: E111 indentation is not a multiple of 4
+eval_runner/explainer.py:31:18: E117 over-indented
+eval_runner/explainer.py:33:14: E111 indentation is not a multiple of 4
+eval_runner/explainer.py:33:14: E117 over-indented
+eval_runner/explainer.py:33:121: E501 line too long (142 > 120 characters)
+eval_runner/explainer.py:35:14: E111 indentation is not a multiple of 4
+eval_runner/explainer.py:35:14: E117 over-indented
+eval_runner/exporter.py:4:1: F401 'typing.List' imported but unused
+eval_runner/exporter.py:4:1: F401 'typing.Dict' imported but unused
+eval_runner/exporter.py:4:1: F401 'typing.Any' imported but unused
+eval_runner/exporter.py:7:1: E302 expected 2 blank lines, found 1
+eval_runner/exporter.py:9:1: W293 blank line contains whitespace
+eval_runner/exporter.py:15:1: W293 blank line contains whitespace
+eval_runner/exporter.py:19:9: E722 do not use bare 'except'
+eval_runner/exporter.py:21:1: W293 blank line contains whitespace
+eval_runner/exporter.py:28:1: W293 blank line contains whitespace
+eval_runner/exporter.py:56:1: W293 blank line contains whitespace
+eval_runner/exporter.py:60:1: W293 blank line contains whitespace
+eval_runner/exporter.py:75:1: W293 blank line contains whitespace
+eval_runner/flight_recorder.py:14:1: E302 expected 2 blank lines, found 1
+eval_runner/flight_recorder.py:32:1: W293 blank line contains whitespace
+eval_runner/flight_recorder.py:38:1: W293 blank line contains whitespace
+eval_runner/flight_recorder.py:45:1: W293 blank line contains whitespace
+eval_runner/flight_recorder.py:49:1: W293 blank line contains whitespace
+eval_runner/flight_recorder.py:61:1: W293 blank line contains whitespace
+eval_runner/flight_recorder.py:64:1: W293 blank line contains whitespace
+eval_runner/linter.py:12:1: E302 expected 2 blank lines, found 1
+eval_runner/linter.py:14:1: W293 blank line contains whitespace
+eval_runner/linter.py:25:1: W293 blank line contains whitespace
+eval_runner/linter.py:59:1: W293 blank line contains whitespace
+eval_runner/linter.py:73:1: W293 blank line contains whitespace
+eval_runner/linter.py:79:1: W293 blank line contains whitespace
+eval_runner/linter.py:89:1: W293 blank line contains whitespace
+eval_runner/linter.py:97:1: W293 blank line contains whitespace
+eval_runner/linter.py:102:1: W293 blank line contains whitespace
+eval_runner/linter.py:106:1: W293 blank line contains whitespace
+eval_runner/live_bridge_plugin.py:6:1: E302 expected 2 blank lines, found 1
+eval_runner/live_bridge_plugin.py:11:1: W293 blank line contains whitespace
+eval_runner/live_bridge_plugin.py:30:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:1:1: F401 'json' imported but unused
+eval_runner/llm_providers.py:4:1: F401 'typing.Dict' imported but unused
+eval_runner/llm_providers.py:4:1: F401 'typing.Any' imported but unused
+eval_runner/llm_providers.py:7:1: E302 expected 2 blank lines, found 1
+eval_runner/llm_providers.py:9:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:15:1: E302 expected 2 blank lines, found 1
+eval_runner/llm_providers.py:17:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:43:1: E302 expected 2 blank lines, found 1
+eval_runner/llm_providers.py:45:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:54:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:77:1: E302 expected 2 blank lines, found 1
+eval_runner/llm_providers.py:79:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:87:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:110:1: E302 expected 2 blank lines, found 1
+eval_runner/llm_providers.py:112:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:120:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:136:1: E302 expected 2 blank lines, found 1
+eval_runner/llm_providers.py:138:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:152:1: E302 expected 2 blank lines, found 1
+eval_runner/llm_providers.py:154:1: W293 blank line contains whitespace
+eval_runner/llm_providers.py:159:1: W293 blank line contains whitespace
+eval_runner/loader.py:13:1: F401 'jsonschema.ValidationError' imported but unused
+eval_runner/loader.py:13:49: E261 at least two spaces before inline comment
+eval_runner/loader.py:78:1: W293 blank line contains whitespace
+eval_runner/loader.py:114:1: W293 blank line contains whitespace
+eval_runner/loader.py:117:1: W293 blank line contains whitespace
+eval_runner/metrics.py:16:1: E302 expected 2 blank lines, found 1
+eval_runner/metrics.py:158:1: W293 blank line contains whitespace
+eval_runner/metrics.py:175:19: E261 at least two spaces before inline comment
+eval_runner/metrics.py:176:1: W293 blank line contains whitespace
+eval_runner/metrics.py:182:1: W293 blank line contains whitespace
+eval_runner/metrics.py:187:1: W293 blank line contains whitespace
+eval_runner/metrics.py:190:1: W293 blank line contains whitespace
+eval_runner/metrics.py:194:1: W293 blank line contains whitespace
+eval_runner/metrics.py:205:19: E261 at least two spaces before inline comment
+eval_runner/metrics.py:206:1: W293 blank line contains whitespace
+eval_runner/metrics.py:210:1: W293 blank line contains whitespace
+eval_runner/metrics.py:213:1: W293 blank line contains whitespace
+eval_runner/metrics.py:228:1: W293 blank line contains whitespace
+eval_runner/metrics.py:231:1: W293 blank line contains whitespace
+eval_runner/metrics.py:259:1: W293 blank line contains whitespace
+eval_runner/metrics.py:266:1: W293 blank line contains whitespace
+eval_runner/metrics.py:269:1: W293 blank line contains whitespace
+eval_runner/metrics.py:275:1: W293 blank line contains whitespace
+eval_runner/metrics.py:283:121: E501 line too long (127 > 120 characters)
+eval_runner/metrics.py:285:121: E501 line too long (128 > 120 characters)
+eval_runner/metrics.py:286:24: E261 at least two spaces before inline comment
+eval_runner/metrics.py:291:47: W291 trailing whitespace
+eval_runner/metrics.py:294:1: W293 blank line contains whitespace
+eval_runner/metrics.py:308:1: W293 blank line contains whitespace
+eval_runner/metrics.py:320:5: E306 expected 1 blank line before a nested definition, found 0
+eval_runner/metrics.py:325:1: W293 blank line contains whitespace
+eval_runner/metrics.py:328:1: W293 blank line contains whitespace
+eval_runner/metrics.py:332:1: E302 expected 2 blank lines, found 0
+eval_runner/metrics.py:340:1: W293 blank line contains whitespace
+eval_runner/metrics.py:350:1: W293 blank line contains whitespace
+eval_runner/metrics.py:353:1: W293 blank line contains whitespace
+eval_runner/metrics.py:357:1: W293 blank line contains whitespace
+eval_runner/mutator.py:11:1: E302 expected 2 blank lines, found 1
+eval_runner/mutator.py:15:1: W293 blank line contains whitespace
+eval_runner/mutator.py:32:31: E261 at least two spaces before inline comment
+eval_runner/mutator.py:37:1: W293 blank line contains whitespace
+eval_runner/mutator.py:47:22: E261 at least two spaces before inline comment
+eval_runner/mutator.py:49:1: W293 blank line contains whitespace
+eval_runner/mutator.py:52:1: E302 expected 2 blank lines, found 1
+eval_runner/mutator.py:54:52: E261 at least two spaces before inline comment
+eval_runner/mutator.py:55:1: W293 blank line contains whitespace
+eval_runner/mutator.py:67:1: W293 blank line contains whitespace
+eval_runner/mutator.py:73:1: W293 blank line contains whitespace
+eval_runner/mutator.py:76:1: E302 expected 2 blank lines, found 1
+eval_runner/playground.py:3:1: F401 'datetime.datetime' imported but unused
+eval_runner/playground.py:4:1: F401 '.engine' imported but unused
+eval_runner/playground.py:5:1: F401 '.reporter' imported but unused
+eval_runner/playground.py:7:1: E302 expected 2 blank lines, found 1
+eval_runner/playground.py:18:1: W293 blank line contains whitespace
+eval_runner/playground.py:21:1: W293 blank line contains whitespace
+eval_runner/playground.py:22:62: W291 trailing whitespace
+eval_runner/playground.py:31:1: W293 blank line contains whitespace
+eval_runner/plugins.py:12:1: F401 'typing.Optional' imported but unused
+eval_runner/plugins.py:17:1: E302 expected 2 blank lines, found 1
+eval_runner/plugins.py:27:1: F401 'abc.abstractmethod' imported but unused
+eval_runner/plugins.py:27:1: E305 expected 2 blank lines after class or function definition, found 1
+eval_runner/plugins.py:27:1: E402 module level import not at top of file
+eval_runner/plugins.py:29:1: E302 expected 2 blank lines, found 1
+eval_runner/plugins.py:31:47: W291 trailing whitespace
+eval_runner/plugins.py:35:61: W291 trailing whitespace
+eval_runner/plugins.py:39:51: W291 trailing whitespace
+eval_runner/plugins.py:43:51: W291 trailing whitespace
+eval_runner/plugins.py:47:54: W291 trailing whitespace
+eval_runner/plugins.py:51:1: E302 expected 2 blank lines, found 1
+eval_runner/plugins.py:56:37: E261 at least two spaces before inline comment
+eval_runner/plugins.py:63:1: W293 blank line contains whitespace
+eval_runner/plugins.py:70:13: F841 local variable 'e' is assigned to but never used
+eval_runner/plugins.py:101:1: W293 blank line contains whitespace
+eval_runner/plugins.py:106:27: E701 multiple statements on one line (colon)
+eval_runner/plugins.py:110:27: E701 multiple statements on one line (colon)
+eval_runner/plugins.py:114:27: E701 multiple statements on one line (colon)
+eval_runner/plugins.py:118:27: E701 multiple statements on one line (colon)
+eval_runner/plugins.py:122:27: E701 multiple statements on one line (colon)
+eval_runner/plugins.py:126:27: E701 multiple statements on one line (colon)
+eval_runner/plugins.py:130:27: E701 multiple statements on one line (colon)
+eval_runner/plugins.py:134:27: E701 multiple statements on one line (colon)
+eval_runner/plugins.py:138:27: E701 multiple statements on one line (colon)
+eval_runner/plugins.py:174:1: E305 expected 2 blank lines after class or function definition, found 1
+eval_runner/publication_plugin.py:17:1: F401 '.config' imported but unused
+eval_runner/publication_plugin.py:19:1: E302 expected 2 blank lines, found 1
+eval_runner/publication_plugin.py:38:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:41:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:51:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:56:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:62:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:84:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:97:37: E261 at least two spaces before inline comment
+eval_runner/publication_plugin.py:109:18: E701 multiple statements on one line (colon)
+eval_runner/publication_plugin.py:110:17: E261 at least two spaces before inline comment
+eval_runner/publication_plugin.py:114:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:117:35: E261 at least two spaces before inline comment
+eval_runner/publication_plugin.py:124:21: E701 multiple statements on one line (colon)
+eval_runner/publication_plugin.py:130:20: E701 multiple statements on one line (colon)
+eval_runner/publication_plugin.py:142:38: E701 multiple statements on one line (colon)
+eval_runner/publication_plugin.py:143:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:147:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:153:1: W293 blank line contains whitespace
+eval_runner/publication_plugin.py:156:9: E722 do not use bare 'except'
+eval_runner/publication_plugin.py:156:15: E701 multiple statements on one line (colon)
+eval_runner/quickstart.py:1:1: F401 'os' imported but unused
+eval_runner/quickstart.py:5:1: F401 'asyncio' imported but unused
+eval_runner/quickstart.py:6:1: F401 'signal' imported but unused
+eval_runner/quickstart.py:11:1: E302 expected 2 blank lines, found 1
+eval_runner/quickstart.py:17:1: W293 blank line contains whitespace
+eval_runner/quickstart.py:30:1: E302 expected 2 blank lines, found 1
+eval_runner/quickstart.py:35:1: W293 blank line contains whitespace
+eval_runner/quickstart.py:39:1: W293 blank line contains whitespace
+eval_runner/quickstart.py:45:1: W293 blank line contains whitespace
+eval_runner/quickstart.py:47:1: W293 blank line contains whitespace
+eval_runner/quickstart.py:51:1: W293 blank line contains whitespace
+eval_runner/quickstart.py:53:1: W293 blank line contains whitespace
+eval_runner/quickstart.py:56:1: W293 blank line contains whitespace
+eval_runner/quickstart.py:61:1: W293 blank line contains whitespace
+eval_runner/quickstart.py:68:1: W293 blank line contains whitespace
+eval_runner/reporter.py:16:1: E302 expected 2 blank lines, found 1
+eval_runner/reporter.py:25:1: W293 blank line contains whitespace
+eval_runner/reporter.py:27:1: W293 blank line contains whitespace
+eval_runner/reporter.py:31:1: W293 blank line contains whitespace
+eval_runner/reporter.py:41:1: W293 blank line contains whitespace
+eval_runner/reporter.py:45:1: W293 blank line contains whitespace
+eval_runner/reporter.py:48:1: E302 expected 2 blank lines, found 1
+eval_runner/reporter.py:55:1: W293 blank line contains whitespace
+eval_runner/reporter.py:58:1: W293 blank line contains whitespace
+eval_runner/reporter.py:61:1: W293 blank line contains whitespace
+eval_runner/reporter.py:67:1: W293 blank line contains whitespace
+eval_runner/reporter.py:69:1: W293 blank line contains whitespace
+eval_runner/reporter.py:76:1: W293 blank line contains whitespace
+eval_runner/reporter.py:83:1: W293 blank line contains whitespace
+eval_runner/reporter.py:92:1: W293 blank line contains whitespace
+eval_runner/reporter.py:99:1: W293 blank line contains whitespace
+eval_runner/reporter.py:106:1: W293 blank line contains whitespace
+eval_runner/reporter.py:110:1: W293 blank line contains whitespace
+eval_runner/reporter.py:114:1: E302 expected 2 blank lines, found 1
+eval_runner/reporter.py:120:1: W293 blank line contains whitespace
+eval_runner/reporter.py:125:1: W293 blank line contains whitespace
+eval_runner/reporter.py:137:1: W293 blank line contains whitespace
+eval_runner/reporter.py:145:26: E701 multiple statements on one line (colon)
+eval_runner/reporter.py:146:1: W293 blank line contains whitespace
+eval_runner/reporter.py:150:1: W293 blank line contains whitespace
+eval_runner/reporter.py:158:1: W293 blank line contains whitespace
+eval_runner/reporter.py:168:1: W293 blank line contains whitespace
+eval_runner/reporter.py:170:1: W293 blank line contains whitespace
+eval_runner/reporter.py:195:121: E501 line too long (133 > 120 characters)
+eval_runner/reporter.py:198:121: E501 line too long (146 > 120 characters)
+eval_runner/reporter.py:199:121: E501 line too long (129 > 120 characters)
+eval_runner/reporter.py:201:121: E501 line too long (128 > 120 characters)
+eval_runner/reporter.py:205:121: E501 line too long (131 > 120 characters)
+eval_runner/reporter.py:207:121: E501 line too long (141 > 120 characters)
+eval_runner/reporter.py:214:121: E501 line too long (136 > 120 characters)
+eval_runner/reporter.py:215:121: E501 line too long (124 > 120 characters)
+eval_runner/reporter.py:226:121: E501 line too long (139 > 120 characters)
+eval_runner/reporter.py:228:1: W293 blank line contains whitespace
+eval_runner/reporter.py:258:1: W293 blank line contains whitespace
+eval_runner/reporter.py:261:1: E302 expected 2 blank lines, found 1
+eval_runner/reporter.py:261:121: E501 line too long (143 > 120 characters)
+eval_runner/reporter.py:270:1: W293 blank line contains whitespace
+eval_runner/reporter.py:273:1: W293 blank line contains whitespace
+eval_runner/reporter.py:284:1: W293 blank line contains whitespace
+eval_runner/reporter.py:292:26: E701 multiple statements on one line (colon)
+eval_runner/reporter.py:293:1: W293 blank line contains whitespace
+eval_runner/reporter.py:321:1: W293 blank line contains whitespace
+eval_runner/reporter.py:340:1: W293 blank line contains whitespace
+eval_runner/reporter.py:343:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:16:1: E302 expected 2 blank lines, found 1
+eval_runner/reporting_plugin.py:24:15: F541 f-string is missing placeholders
+eval_runner/reporting_plugin.py:25:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:35:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:37:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:49:26: E701 multiple statements on one line (colon)
+eval_runner/reporting_plugin.py:62:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:74:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:77:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:79:71: W291 trailing whitespace
+eval_runner/reporting_plugin.py:100:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:103:14: E111 indentation is not a multiple of 4
+eval_runner/reporting_plugin.py:103:14: E117 over-indented
+eval_runner/reporting_plugin.py:106:14: E111 indentation is not a multiple of 4
+eval_runner/reporting_plugin.py:106:14: E117 over-indented
+eval_runner/reporting_plugin.py:109:14: E111 indentation is not a multiple of 4
+eval_runner/reporting_plugin.py:109:14: E117 over-indented
+eval_runner/reporting_plugin.py:112:14: E111 indentation is not a multiple of 4
+eval_runner/reporting_plugin.py:112:14: E117 over-indented
+eval_runner/reporting_plugin.py:117:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:121:2: W291 trailing whitespace
+eval_runner/reporting_plugin.py:133:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:146:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:157:1: W293 blank line contains whitespace
+eval_runner/reporting_plugin.py:159:121: E501 line too long (133 > 120 characters)
+eval_runner/rubrics.py:1:1: F401 'typing.Optional' imported but unused
+eval_runner/rubrics.py:3:1: E302 expected 2 blank lines, found 1
+eval_runner/rubrics.py:7:121: E501 line too long (128 > 120 characters)
+eval_runner/rubrics.py:37:121: E501 line too long (121 > 120 characters)
+eval_runner/runner.py:11:1: F401 'typing.Dict' imported but unused
+eval_runner/runner.py:12:1: F401 '.context.TurnContext' imported but unused
+eval_runner/runner.py:15:1: F401 '.metrics' imported but unused
+eval_runner/runner.py:17:1: E302 expected 2 blank lines, found 1
+eval_runner/runner.py:19:1: W293 blank line contains whitespace
+eval_runner/runner.py:24:1: E302 expected 2 blank lines, found 1
+eval_runner/runner.py:28:9: F401 '.engine.AgentAdapterRegistry' imported but unused
+eval_runner/runner.py:29:9: F401 '.tool_sandbox.ToolSandbox' imported but unused
+eval_runner/runner.py:32:1: W293 blank line contains whitespace
+eval_runner/runner.py:38:1: W293 blank line contains whitespace
+eval_runner/runner.py:41:30: W291 trailing whitespace
+eval_runner/runner.py:42:41: W291 trailing whitespace
+eval_runner/runner.py:47:1: W293 blank line contains whitespace
+eval_runner/runner.py:49:1: W293 blank line contains whitespace
+eval_runner/runner.py:60:1: W293 blank line contains whitespace
+eval_runner/runner.py:65:121: E501 line too long (137 > 120 characters)
+eval_runner/runner.py:67:1: W293 blank line contains whitespace
+eval_runner/runner.py:70:36: W291 trailing whitespace
+eval_runner/runner.py:71:56: W291 trailing whitespace
+eval_runner/scaffold.py:2:1: F401 'os' imported but unused
+eval_runner/scaffold.py:6:1: E302 expected 2 blank lines, found 1
+eval_runner/scaffold.py:9:1: W293 blank line contains whitespace
+eval_runner/scaffold.py:29:121: E501 line too long (127 > 120 characters)
+eval_runner/scaffold.py:55:47: W291 trailing whitespace
+eval_runner/scaffold.py:65:1: W293 blank line contains whitespace
+eval_runner/scaffold.py:79:1: W293 blank line contains whitespace
+eval_runner/scaffold.py:80:9: E303 too many blank lines (2)
+eval_runner/scaffold.py:91:1: E305 expected 2 blank lines after class or function definition, found 1
+eval_runner/session.py:11:1: F401 'asyncio' imported but unused
+eval_runner/session.py:26:1: E302 expected 2 blank lines, found 1
+eval_runner/session.py:40:1: W293 blank line contains whitespace
+eval_runner/session.py:44:1: W293 blank line contains whitespace
+eval_runner/session.py:49:1: W293 blank line contains whitespace
+eval_runner/session.py:60:36: W291 trailing whitespace
+eval_runner/session.py:85:1: W293 blank line contains whitespace
+eval_runner/session.py:88:1: W293 blank line contains whitespace
+eval_runner/session.py:92:50: E701 multiple statements on one line (colon)
+eval_runner/session.py:93:53: E701 multiple statements on one line (colon)
+eval_runner/session.py:94:54: E701 multiple statements on one line (colon)
+eval_runner/session.py:97:1: W293 blank line contains whitespace
+eval_runner/session.py:105:121: E501 line too long (125 > 120 characters)
+eval_runner/session.py:107:1: W293 blank line contains whitespace
+eval_runner/session.py:111:62: W291 trailing whitespace
+eval_runner/session.py:125:1: W293 blank line contains whitespace
+eval_runner/session.py:127:42: W291 trailing whitespace
+eval_runner/session.py:138:41: W291 trailing whitespace
+eval_runner/session.py:147:121: E501 line too long (130 > 120 characters)
+eval_runner/session.py:150:121: E501 line too long (135 > 120 characters)
+eval_runner/session.py:155:1: W293 blank line contains whitespace
+eval_runner/session.py:186:121: E501 line too long (165 > 120 characters)
+eval_runner/session.py:189:121: E501 line too long (160 > 120 characters)
+eval_runner/session.py:195:121: E501 line too long (129 > 120 characters)
+eval_runner/session.py:200:1: W293 blank line contains whitespace
+eval_runner/session.py:205:121: E501 line too long (141 > 120 characters)
+eval_runner/session.py:217:1: W293 blank line contains whitespace
+eval_runner/session.py:227:1: W293 blank line contains whitespace
+eval_runner/session.py:231:1: W293 blank line contains whitespace
+eval_runner/session.py:233:1: W293 blank line contains whitespace
+eval_runner/session.py:235:35: W291 trailing whitespace
+eval_runner/session.py:245:1: W293 blank line contains whitespace
+eval_runner/session.py:248:1: W293 blank line contains whitespace
+eval_runner/session.py:263:35: W291 trailing whitespace
+eval_runner/session.py:270:23: E701 multiple statements on one line (colon)
+eval_runner/session.py:293:1: W293 blank line contains whitespace
+eval_runner/session.py:299:1: W293 blank line contains whitespace
+eval_runner/session.py:326:55: W291 trailing whitespace
+eval_runner/session.py:327:34: W291 trailing whitespace
+eval_runner/session.py:328:66: W291 trailing whitespace
+eval_runner/session.py:337:26: E701 multiple statements on one line (colon)
+eval_runner/session.py:342:47: W291 trailing whitespace
+eval_runner/session.py:343:52: W291 trailing whitespace
+eval_runner/session.py:344:47: W291 trailing whitespace
+eval_runner/simulators.py:7:1: F401 'typing.Any' imported but unused
+eval_runner/simulators.py:7:1: F401 'typing.Dict' imported but unused
+eval_runner/simulators.py:9:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:30:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:41:1: W293 blank line contains whitespace
+eval_runner/simulators.py:49:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:60:29: E701 multiple statements on one line (colon)
+eval_runner/simulators.py:61:30: W291 trailing whitespace
+eval_runner/simulators.py:66:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:79:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:94:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:108:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:119:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:146:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:157:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:164:23: E701 multiple statements on one line (colon)
+eval_runner/simulators.py:165:24: W291 trailing whitespace
+eval_runner/simulators.py:170:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:181:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:192:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:203:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:213:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:227:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:238:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:248:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:259:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:271:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:282:1: E305 expected 2 blank lines after class or function definition, found 1
+eval_runner/simulators.py:305:1: E302 expected 2 blank lines, found 1
+eval_runner/simulators.py:311:1: W293 blank line contains whitespace
+eval_runner/simulators.py:314:1: W293 blank line contains whitespace
+eval_runner/simulators.py:317:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:12:1: F401 'typing.List' imported but unused
+eval_runner/spec_parser.py:14:1: E302 expected 2 blank lines, found 1
+eval_runner/spec_parser.py:18:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:24:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:32:22: E701 multiple statements on one line (colon)
+eval_runner/spec_parser.py:33:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:35:22: E701 multiple statements on one line (colon)
+eval_runner/spec_parser.py:38:23: E701 multiple statements on one line (colon)
+eval_runner/spec_parser.py:42:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:45:21: E701 multiple statements on one line (colon)
+eval_runner/spec_parser.py:48:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:58:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:61:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:66:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:69:30: E701 multiple statements on one line (colon)
+eval_runner/spec_parser.py:83:43: E701 multiple statements on one line (colon)
+eval_runner/spec_parser.py:101:34: E701 multiple statements on one line (colon)
+eval_runner/spec_parser.py:103:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:106:27: E701 multiple statements on one line (colon)
+eval_runner/spec_parser.py:107:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:110:27: E701 multiple statements on one line (colon)
+eval_runner/spec_parser.py:111:1: W293 blank line contains whitespace
+eval_runner/spec_parser.py:126:21: E722 do not use bare 'except'
+eval_runner/spec_parser.py:127:51: E261 at least two spaces before inline comment
+eval_runner/spec_parser.py:134:1: E302 expected 2 blank lines, found 1
+eval_runner/taxonomy.py:9:1: F401 'typing.List' imported but unused
+eval_runner/taxonomy.py:13:29: W291 trailing whitespace
+eval_runner/taxonomy.py:20:1: E302 expected 2 blank lines, found 1
+eval_runner/taxonomy.py:28:1: W293 blank line contains whitespace
+eval_runner/taxonomy.py:53:31: E261 at least two spaces before inline comment
+eval_runner/tool_sandbox.py:9:1: F401 'json' imported but unused
+eval_runner/tool_sandbox.py:14:1: E302 expected 2 blank lines, found 1
+eval_runner/tool_sandbox.py:24:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:27:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:36:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:39:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:47:26: E701 multiple statements on one line (colon)
+eval_runner/tool_sandbox.py:52:1: E302 expected 2 blank lines, found 1
+eval_runner/tool_sandbox.py:59:45: E261 at least two spaces before inline comment
+eval_runner/tool_sandbox.py:60:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:64:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:88:23: F541 f-string is missing placeholders
+eval_runner/tool_sandbox.py:95:1: E302 expected 2 blank lines, found 1
+eval_runner/tool_sandbox.py:107:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:111:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:150:121: E501 line too long (123 > 120 characters)
+eval_runner/tool_sandbox.py:157:121: E501 line too long (121 > 120 characters)
+eval_runner/tool_sandbox.py:158:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:165:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:167:9: F401 '.events.CoreEvents' imported but unused
+eval_runner/tool_sandbox.py:168:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:176:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:196:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:201:1: W293 blank line contains whitespace
+eval_runner/tool_sandbox.py:206:1: W293 blank line contains whitespace
+eval_runner/trace_recorder.py:2:1: F401 'os' imported but unused
+eval_runner/trace_recorder.py:8:1: E302 expected 2 blank lines, found 1
+eval_runner/trace_recorder.py:18:1: W293 blank line contains whitespace
+eval_runner/trace_recorder.py:20:1: W293 blank line contains whitespace
+eval_runner/trace_recorder.py:36:1: W293 blank line contains whitespace
+eval_runner/trace_recorder.py:46:1: W293 blank line contains whitespace
+eval_runner/trace_recorder.py:52:1: W293 blank line contains whitespace
+eval_runner/trace_recorder.py:70:1: W293 blank line contains whitespace
+eval_runner/trace_utils.py:5:1: E302 expected 2 blank lines, found 1
+eval_runner/trace_utils.py:12:1: W293 blank line contains whitespace
+eval_runner/trace_utils.py:17:1: W293 blank line contains whitespace
+eval_runner/trace_utils.py:29:1: W293 blank line contains whitespace
+eval_runner/triage.py:10:1: E302 expected 2 blank lines, found 1
+eval_runner/triage.py:35:50: W291 trailing whitespace
+eval_runner/triage.py:57:31: E261 at least two spaces before inline comment
+eval_runner/triage.py:71:9: F841 local variable 'has_failure' is assigned to but never used
+eval_runner/triage.py:75:1: W293 blank line contains whitespace
+eval_runner/triage.py:78:121: E501 line too long (125 > 120 characters)
+eval_runner/triage.py:90:121: E501 line too long (130 > 120 characters)
+eval_runner/triage.py:93:121: E501 line too long (124 > 120 characters)
+eval_runner/triage.py:100:18: E111 indentation is not a multiple of 4
+eval_runner/triage.py:100:18: E117 over-indented
+eval_runner/triage.py:104:17: E122 continuation line missing indentation or outdented
+eval_runner/triage.py:114:36: W291 trailing whitespace
+eval_runner/triage.py:115:44: W291 trailing whitespace
+eval_runner/triage.py:123:121: E501 line too long (123 > 120 characters)
+eval_runner/triage.py:124:30: E111 indentation is not a multiple of 4
+eval_runner/triage.py:124:30: E117 over-indented
+eval_runner/triage.py:125:45: W291 trailing whitespace
+eval_runner/triage.py:126:53: W291 trailing whitespace
+eval_runner/triage.py:128:121: E501 line too long (122 > 120 characters)
+eval_runner/triage.py:130:121: E501 line too long (173 > 120 characters)
+eval_runner/triage.py:146:121: E501 line too long (129 > 120 characters)
+eval_runner/triage.py:151:121: E501 line too long (128 > 120 characters)
+eval_runner/triage.py:163:121: E501 line too long (128 > 120 characters)
+tests/conftest.py:15:1: E302 expected 2 blank lines, found 1
+tests/mock_agent_api.py:14:1: E302 expected 2 blank lines, found 1
+tests/mock_agent_api.py:20:1: W293 blank line contains whitespace
+tests/mock_agent_api.py:22:121: E501 line too long (128 > 120 characters)
+tests/mock_agent_api.py:39:1: W293 blank line contains whitespace
+tests/mock_agent_api.py:43:38: W291 trailing whitespace
+tests/mock_agent_api.py:46:1: W293 blank line contains whitespace
+tests/mock_agent_api.py:50:38: W291 trailing whitespace
+tests/mock_agent_api.py:53:1: W293 blank line contains whitespace
+tests/mock_agent_api.py:56:1: E305 expected 2 blank lines after class or function definition, found 1
+tests/test_adapters_discovery.py:3:1: F401 'eval_runner.plugins' imported but unused
+tests/test_adapters_discovery.py:5:1: E302 expected 2 blank lines, found 1
+tests/test_adapters_discovery.py:9:1: W293 blank line contains whitespace
+tests/test_adapters_discovery.py:11:1: W293 blank line contains whitespace
+tests/test_adapters_discovery.py:14:1: W293 blank line contains whitespace
+tests/test_adapters_discovery.py:24:1: E302 expected 2 blank lines, found 1
+tests/test_adapters_discovery.py:31:1: W293 blank line contains whitespace
+tests/test_adapters_extended.py:7:1: E302 expected 2 blank lines, found 1
+tests/test_adapters_extended.py:11:1: W293 blank line contains whitespace
+tests/test_adapters_extended.py:17:1: W293 blank line contains whitespace
+tests/test_adapters_extended.py:22:1: E302 expected 2 blank lines, found 1
+tests/test_adapters_extended.py:27:1: W293 blank line contains whitespace
+tests/test_adapters_extended.py:35:1: W293 blank line contains whitespace
+tests/test_adapters_unit.py:4:1: F401 'asyncio' imported but unused
+tests/test_adapters_unit.py:8:1: E302 expected 2 blank lines, found 1
+tests/test_adapters_unit.py:12:1: W293 blank line contains whitespace
+tests/test_adapters_unit.py:18:1: W293 blank line contains whitespace
+tests/test_adapters_unit.py:23:1: E302 expected 2 blank lines, found 1
+tests/test_adapters_unit.py:27:1: W293 blank line contains whitespace
+tests/test_adapters_unit.py:30:121: E501 line too long (138 > 120 characters)
+tests/test_adapters_unit.py:33:1: W293 blank line contains whitespace
+tests/test_adapters_unit.py:38:1: E302 expected 2 blank lines, found 1
+tests/test_adapters_unit.py:42:1: W293 blank line contains whitespace
+tests/test_adapters_unit.py:45:121: E501 line too long (129 > 120 characters)
+tests/test_adapters_unit.py:46:1: W293 blank line contains whitespace
+tests/test_adapters_unit.py:48:40: E261 at least two spaces before inline comment
+tests/test_adapters_unit.py:51:1: W293 blank line contains whitespace
+tests/test_adapters_unit.py:53:1: W293 blank line contains whitespace
+tests/test_aes.py:1:1: F401 'pytest' imported but unused
+tests/test_aes.py:2:1: F401 'json' imported but unused
+tests/test_aes.py:4:1: F401 'pathlib.Path' imported but unused
+tests/test_aes.py:7:1: E302 expected 2 blank lines, found 1
+tests/test_aes.py:12:1: E302 expected 2 blank lines, found 1
+tests/test_aes.py:33:1: E302 expected 2 blank lines, found 1
+tests/test_aes.py:35:34: E261 at least two spaces before inline comment
+tests/test_aes.py:36:23: E261 at least two spaces before inline comment
+tests/test_aes.py:48:1: E302 expected 2 blank lines, found 1
+tests/test_aes.py:67:1: E302 expected 2 blank lines, found 1
+tests/test_aes.py:89:1: E302 expected 2 blank lines, found 1
+tests/test_aes.py:108:1: E302 expected 2 blank lines, found 1
+tests/test_agents.py:21:1: F401 'pytest' imported but unused
+tests/test_agents.py:30:1: W293 blank line contains whitespace
+tests/test_agents.py:36:1: W293 blank line contains whitespace
+tests/test_agents.py:39:1: W293 blank line contains whitespace
+tests/test_agents.py:42:1: W293 blank line contains whitespace
+tests/test_agents.py:45:1: W293 blank line contains whitespace
+tests/test_agents.py:61:1: W293 blank line contains whitespace
+tests/test_agents.py:67:1: W293 blank line contains whitespace
+tests/test_agents.py:70:1: W293 blank line contains whitespace
+tests/test_agents.py:73:1: W293 blank line contains whitespace
+tests/test_agents.py:76:1: W293 blank line contains whitespace
+tests/test_agents.py:91:1: W293 blank line contains whitespace
+tests/test_agents.py:97:1: W293 blank line contains whitespace
+tests/test_agents.py:100:1: W293 blank line contains whitespace
+tests/test_agents.py:103:1: W293 blank line contains whitespace
+tests/test_agents.py:106:1: W293 blank line contains whitespace
+tests/test_agents.py:115:55: W291 trailing whitespace
+tests/test_agents.py:115:56: W292 no newline at end of file
+tests/test_aggregator.py:10:1: F401 'os' imported but unused
+tests/test_aggregator.py:11:1: F401 'pathlib.Path' imported but unused
+tests/test_aggregator.py:15:1: E302 expected 2 blank lines, found 1
+tests/test_aggregator.py:22:1: W293 blank line contains whitespace
+tests/test_aggregator.py:26:121: E501 line too long (122 > 120 characters)
+tests/test_aggregator.py:30:1: W293 blank line contains whitespace
+tests/test_aggregator.py:34:1: W293 blank line contains whitespace
+tests/test_aggregator.py:44:1: W293 blank line contains whitespace
+tests/test_aggregator.py:47:1: W293 blank line contains whitespace
+tests/test_aggregator.py:50:1: E302 expected 2 blank lines, found 1
+tests/test_aggregator.py:55:1: W293 blank line contains whitespace
+tests/test_aggregator.py:58:1: W293 blank line contains whitespace
+tests/test_aggregator.py:62:1: W293 blank line contains whitespace
+tests/test_aggregator.py:64:39: W291 trailing whitespace
+tests/test_aggregator.py:68:1: E302 expected 2 blank lines, found 1
+tests/test_aggregator.py:72:66: E261 at least two spaces before inline comment
+tests/test_aggregator.py:73:1: W293 blank line contains whitespace
+tests/test_aggregator.py:75:42: E261 at least two spaces before inline comment
+tests/test_aggregator.py:81:1: E302 expected 2 blank lines, found 1
+tests/test_aggregator.py:84:1: W293 blank line contains whitespace
+tests/test_aggregator.py:91:1: W293 blank line contains whitespace
+tests/test_aggregator.py:97:1: W293 blank line contains whitespace
+tests/test_aggregator.py:100:1: W293 blank line contains whitespace
+tests/test_aggregator.py:103:1: W293 blank line contains whitespace
+tests/test_analyzer.py:2:1: F401 'json' imported but unused
+tests/test_analyzer.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_analyzer.py:10:1: W293 blank line contains whitespace
+tests/test_analyzer.py:14:1: W293 blank line contains whitespace
+tests/test_analyzer.py:19:1: E302 expected 2 blank lines, found 1
+tests/test_analyzer.py:23:1: W293 blank line contains whitespace
+tests/test_auto_translate.py:8:1: F401 'json' imported but unused
+tests/test_auto_translate.py:9:1: F401 'unittest.mock.MagicMock' imported but unused
+tests/test_auto_translate.py:10:1: F401 'pathlib.Path' imported but unused
+tests/test_auto_translate.py:19:1: W293 blank line contains whitespace
+tests/test_auto_translate.py:27:1: W293 blank line contains whitespace
+tests/test_auto_translate.py:35:1: W293 blank line contains whitespace
+tests/test_auto_translate.py:44:1: W293 blank line contains whitespace
+tests/test_auto_translate.py:47:1: W293 blank line contains whitespace
+tests/test_auto_translate.py:49:1: W293 blank line contains whitespace
+tests/test_catalog.py:1:1: F401 'pytest' imported but unused
+tests/test_catalog.py:2:1: F401 'os' imported but unused
+tests/test_catalog.py:3:1: F401 'pathlib.Path' imported but unused
+tests/test_catalog.py:8:1: E302 expected 2 blank lines, found 1
+tests/test_catalog.py:13:1: W293 blank line contains whitespace
+tests/test_catalog.py:21:1: W293 blank line contains whitespace
+tests/test_catalog.py:25:1: W293 blank line contains whitespace
+tests/test_catalog.py:28:1: W293 blank line contains whitespace
+tests/test_catalog.py:34:1: E302 expected 2 blank lines, found 1
+tests/test_catalog.py:37:121: E501 line too long (132 > 120 characters)
+tests/test_catalog.py:38:121: E501 line too long (133 > 120 characters)
+tests/test_catalog.py:39:121: E501 line too long (131 > 120 characters)
+tests/test_catalog.py:41:1: W293 blank line contains whitespace
+tests/test_catalog.py:45:1: W293 blank line contains whitespace
+tests/test_catalog.py:50:1: W293 blank line contains whitespace
+tests/test_cli.py:9:1: F401 'os' imported but unused
+tests/test_cli.py:10:1: F401 'pytest' imported but unused
+tests/test_cli.py:12:1: F401 'pathlib.Path' imported but unused
+tests/test_cli.py:15:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:21:1: W293 blank line contains whitespace
+tests/test_cli.py:25:1: W293 blank line contains whitespace
+tests/test_cli.py:31:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:37:1: W293 blank line contains whitespace
+tests/test_cli.py:41:1: W293 blank line contains whitespace
+tests/test_cli.py:47:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:60:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:67:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:74:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:81:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:88:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:95:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:102:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:109:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:116:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:123:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:130:1: E302 expected 2 blank lines, found 1
+tests/test_cli.py:135:1: W293 blank line contains whitespace
+tests/test_cli.py:138:1: W293 blank line contains whitespace
+tests/test_cli.py:144:1: W293 blank line contains whitespace
+tests/test_cli.py:151:1: W293 blank line contains whitespace
+tests/test_console.py:2:1: F401 'flask.Flask' imported but unused
+tests/test_console.py:5:1: F401 'unittest.mock.patch' imported but unused
+tests/test_console.py:5:1: F401 'unittest.mock.MagicMock' imported but unused
+tests/test_console.py:5:1: F401 'unittest.mock.AsyncMock' imported but unused
+tests/test_console.py:9:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:17:1: W293 blank line contains whitespace
+tests/test_console.py:20:9: E306 expected 1 blank line before a nested definition, found 0
+tests/test_console.py:25:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:30:1: W293 blank line contains whitespace
+tests/test_console.py:33:1: W293 blank line contains whitespace
+tests/test_console.py:35:1: W293 blank line contains whitespace
+tests/test_console.py:39:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:42:5: F841 local variable 'original_thread' is assigned to but never used
+tests/test_console.py:43:5: E306 expected 1 blank line before a nested definition, found 0
+tests/test_console.py:47:1: W293 blank line contains whitespace
+tests/test_console.py:51:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:55:1: W293 blank line contains whitespace
+tests/test_console.py:58:1: W293 blank line contains whitespace
+tests/test_console.py:60:1: W293 blank line contains whitespace
+tests/test_console.py:66:1: W293 blank line contains whitespace
+tests/test_console.py:70:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:80:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:86:1: W293 blank line contains whitespace
+tests/test_console.py:92:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:98:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:104:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:110:1: W293 blank line contains whitespace
+tests/test_console.py:115:1: E302 expected 2 blank lines, found 1
+tests/test_console.py:123:1: E302 expected 2 blank lines, found 1
+tests/test_console_handoff.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_console_handoff.py:13:1: E302 expected 2 blank lines, found 1
+tests/test_console_handoff.py:20:1: E302 expected 2 blank lines, found 1
+tests/test_console_handoff.py:26:1: E302 expected 2 blank lines, found 1
+tests/test_console_handoff.py:37:1: E302 expected 2 blank lines, found 1
+tests/test_console_handoff.py:44:5: E306 expected 1 blank line before a nested definition, found 0
+tests/test_console_handoff.py:53:1: W293 blank line contains whitespace
+tests/test_core_infrastructure.py:8:1: F401 'asyncio' imported but unused
+tests/test_core_infrastructure.py:15:1: E302 expected 2 blank lines, found 1
+tests/test_core_infrastructure.py:19:5: E306 expected 1 blank line before a nested definition, found 0
+tests/test_core_infrastructure.py:21:1: W293 blank line contains whitespace
+tests/test_core_infrastructure.py:24:1: W293 blank line contains whitespace
+tests/test_core_infrastructure.py:27:1: E302 expected 2 blank lines, found 1
+tests/test_core_infrastructure.py:37:1: W293 blank line contains whitespace
+tests/test_core_infrastructure.py:42:1: W293 blank line contains whitespace
+tests/test_core_infrastructure.py:45:1: W293 blank line contains whitespace
+tests/test_core_infrastructure.py:49:1: E302 expected 2 blank lines, found 1
+tests/test_core_infrastructure.py:54:1: W293 blank line contains whitespace
+tests/test_core_infrastructure.py:59:1: W293 blank line contains whitespace
+tests/test_core_infrastructure.py:62:1: W293 blank line contains whitespace
+tests/test_coverage.py:1:1: F401 'pytest' imported but unused
+tests/test_coverage.py:4:1: E302 expected 2 blank lines, found 1
+tests/test_coverage.py:14:1: W293 blank line contains whitespace
+tests/test_coverage.py:17:1: W293 blank line contains whitespace
+tests/test_coverage.py:20:1: W293 blank line contains whitespace
+tests/test_coverage.py:26:1: E302 expected 2 blank lines, found 1
+tests/test_coverage.py:34:1: W293 blank line contains whitespace
+tests/test_debugger_integration.py:2:1: F401 'json' imported but unused
+tests/test_debugger_integration.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_debugger_integration.py:15:1: E302 expected 2 blank lines, found 1
+tests/test_debugger_integration.py:30:1: W293 blank line contains whitespace
+tests/test_debugger_integration.py:33:1: W293 blank line contains whitespace
+tests/test_debugger_integration.py:39:1: E302 expected 2 blank lines, found 1
+tests/test_debugger_integration.py:46:1: W293 blank line contains whitespace
+tests/test_doctor.py:1:1: F401 'sys' imported but unused
+tests/test_doctor.py:7:1: E302 expected 2 blank lines, found 1
+tests/test_doctor.py:13:1: W293 blank line contains whitespace
+tests/test_doctor.py:17:1: E302 expected 2 blank lines, found 1
+tests/test_doctor.py:23:1: E302 expected 2 blank lines, found 1
+tests/test_doctor.py:29:1: W293 blank line contains whitespace
+tests/test_doctor.py:34:1: W293 blank line contains whitespace
+tests/test_doctor.py:37:1: W293 blank line contains whitespace
+tests/test_drift_importer.py:3:1: F401 'pathlib.Path' imported but unused
+tests/test_drift_importer.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_drift_importer.py:15:1: W293 blank line contains whitespace
+tests/test_drift_importer.py:18:1: W293 blank line contains whitespace
+tests/test_drift_importer.py:21:1: W293 blank line contains whitespace
+tests/test_drift_importer.py:26:1: W293 blank line contains whitespace
+tests/test_drift_importer.py:31:121: E501 line too long (138 > 120 characters)
+tests/test_drift_importer.py:33:1: E302 expected 2 blank lines, found 1
+tests/test_drift_importer.py:36:1: W293 blank line contains whitespace
+tests/test_drift_importer.py:38:1: W293 blank line contains whitespace
+tests/test_ecosystem_compatibility.py:2:1: F401 'pytest' imported but unused
+tests/test_ecosystem_compatibility.py:4:1: F401 'pathlib.Path' imported but unused
+tests/test_ecosystem_compatibility.py:8:1: E302 expected 2 blank lines, found 1
+tests/test_ecosystem_compatibility.py:15:1: E302 expected 2 blank lines, found 1
+tests/test_ecosystem_compatibility.py:23:1: E302 expected 2 blank lines, found 1
+tests/test_ecosystem_compatibility.py:27:1: W293 blank line contains whitespace
+tests/test_ecosystem_compatibility.py:31:1: W293 blank line contains whitespace
+tests/test_ecosystem_compatibility.py:33:1: W293 blank line contains whitespace
+tests/test_engine.py:9:1: F401 'json' imported but unused
+tests/test_engine.py:11:1: F401 'pathlib.Path' imported but unused
+tests/test_engine.py:12:1: F401 'unittest.mock.MagicMock' imported but unused
+tests/test_engine.py:15:1: F401 'eval_runner.metrics' imported but unused
+tests/test_engine.py:29:1: W293 blank line contains whitespace
+tests/test_engine.py:32:5: E306 expected 1 blank line before a nested definition, found 0
+tests/test_engine.py:32:72: W291 trailing whitespace
+tests/test_engine.py:38:61: E261 at least two spaces before inline comment
+tests/test_engine.py:39:1: W293 blank line contains whitespace
+tests/test_engine.py:43:1: W293 blank line contains whitespace
+tests/test_engine.py:45:1: W293 blank line contains whitespace
+tests/test_engine.py:50:1: W293 blank line contains whitespace
+tests/test_engine.py:65:1: W293 blank line contains whitespace
+tests/test_engine.py:69:1: W293 blank line contains whitespace
+tests/test_engine.py:72:1: W293 blank line contains whitespace
+tests/test_engine.py:76:1: W293 blank line contains whitespace
+tests/test_engine.py:82:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:106:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:130:1: W293 blank line contains whitespace
+tests/test_engine.py:136:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:159:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:178:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:182:1: W293 blank line contains whitespace
+tests/test_engine.py:201:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:211:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:221:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:251:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:281:1: E302 expected 2 blank lines, found 1
+tests/test_engine.py:316:1: E302 expected 2 blank lines, found 1
+tests/test_engine_adapters.py:7:1: E302 expected 2 blank lines, found 1
+tests/test_engine_adapters.py:9:45: W291 trailing whitespace
+tests/test_engine_adapters.py:15:1: E302 expected 2 blank lines, found 1
+tests/test_engine_adapters.py:20:1: W293 blank line contains whitespace
+tests/test_engine_adapters.py:22:121: E501 line too long (132 > 120 characters)
+tests/test_engine_adapters.py:26:1: E302 expected 2 blank lines, found 1
+tests/test_engine_adapters.py:31:1: W293 blank line contains whitespace
+tests/test_engine_adapters.py:33:121: E501 line too long (140 > 120 characters)
+tests/test_events.py:4:73: W291 trailing whitespace
+tests/test_events.py:8:1: F401 'pytest' imported but unused
+tests/test_events.py:11:1: E302 expected 2 blank lines, found 1
+tests/test_events.py:14:1: W293 blank line contains whitespace
+tests/test_events.py:17:1: W293 blank line contains whitespace
+tests/test_events.py:19:1: W293 blank line contains whitespace
+tests/test_events.py:22:1: W293 blank line contains whitespace
+tests/test_events.py:26:1: W293 blank line contains whitespace
+tests/test_events.py:32:1: E302 expected 2 blank lines, found 1
+tests/test_events.py:36:1: W293 blank line contains whitespace
+tests/test_events.py:39:1: W293 blank line contains whitespace
+tests/test_events.py:41:1: W293 blank line contains whitespace
+tests/test_events.py:48:1: E302 expected 2 blank lines, found 1
+tests/test_events.py:52:1: W293 blank line contains whitespace
+tests/test_events.py:54:1: W293 blank line contains whitespace
+tests/test_explainer.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_explainer.py:16:1: E302 expected 2 blank lines, found 1
+tests/test_explainer.py:25:1: E302 expected 2 blank lines, found 1
+tests/test_explainer.py:36:1: E302 expected 2 blank lines, found 1
+tests/test_explainer.py:46:1: E302 expected 2 blank lines, found 1
+tests/test_explainer.py:55:1: E302 expected 2 blank lines, found 1
+tests/test_explainer.py:63:1: E302 expected 2 blank lines, found 1
+tests/test_generation.py:11:1: E302 expected 2 blank lines, found 1
+tests/test_generation.py:16:1: E302 expected 2 blank lines, found 1
+tests/test_generation.py:24:1: W293 blank line contains whitespace
+tests/test_generation.py:27:1: W293 blank line contains whitespace
+tests/test_generation.py:30:1: W293 blank line contains whitespace
+tests/test_generation.py:35:1: W293 blank line contains whitespace
+tests/test_generation.py:39:1: W293 blank line contains whitespace
+tests/test_generation.py:42:1: W293 blank line contains whitespace
+tests/test_linter.py:1:1: F401 'pytest' imported but unused
+tests/test_linter.py:3:1: F401 'pathlib.Path' imported but unused
+tests/test_linter.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_linter.py:8:1: W293 blank line contains whitespace
+tests/test_linter.py:20:121: E501 line too long (178 > 120 characters)
+tests/test_linter.py:22:1: W293 blank line contains whitespace
+tests/test_linter.py:24:121: E501 line too long (127 > 120 characters)
+tests/test_linter.py:25:121: E501 line too long (127 > 120 characters)
+tests/test_linter.py:26:1: W293 blank line contains whitespace
+tests/test_linter.py:38:121: E501 line too long (168 > 120 characters)
+tests/test_linter.py:40:1: W293 blank line contains whitespace
+tests/test_linter.py:42:121: E501 line too long (133 > 120 characters)
+tests/test_linter.py:48:121: E501 line too long (148 > 120 characters)
+tests/test_linter.py:49:1: W293 blank line contains whitespace
+tests/test_linter.py:54:1: E302 expected 2 blank lines, found 1
+tests/test_linter.py:56:1: W293 blank line contains whitespace
+tests/test_linter.py:59:1: W293 blank line contains whitespace
+tests/test_linter.py:61:1: W293 blank line contains whitespace
+tests/test_linter.py:66:1: W293 blank line contains whitespace
+tests/test_live_bridge.py:2:1: F401 'unittest.mock.MagicMock' imported but unused
+tests/test_live_bridge.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_live_bridge.py:14:1: E302 expected 2 blank lines, found 1
+tests/test_live_bridge.py:21:1: E302 expected 2 blank lines, found 1
+tests/test_live_bridge.py:24:1: W293 blank line contains whitespace
+tests/test_live_bridge.py:30:1: E302 expected 2 blank lines, found 1
+tests/test_live_bridge.py:33:1: W293 blank line contains whitespace
+tests/test_live_bridge.py:36:1: W293 blank line contains whitespace
+tests/test_live_bridge.py:43:1: E302 expected 2 blank lines, found 1
+tests/test_live_bridge.py:46:1: W293 blank line contains whitespace
+tests/test_live_bridge.py:50:1: W293 blank line contains whitespace
+tests/test_live_bridge.py:52:1: W293 blank line contains whitespace
+tests/test_llm_providers.py:2:1: F401 'os' imported but unused
+tests/test_llm_providers.py:5:24: W291 trailing whitespace
+tests/test_llm_providers.py:6:20: W291 trailing whitespace
+tests/test_llm_providers.py:7:20: W291 trailing whitespace
+tests/test_llm_providers.py:8:23: W291 trailing whitespace
+tests/test_llm_providers.py:13:1: E302 expected 2 blank lines, found 1
+tests/test_llm_providers.py:21:1: W293 blank line contains whitespace
+tests/test_llm_providers.py:25:1: E302 expected 2 blank lines, found 1
+tests/test_llm_providers.py:35:1: W293 blank line contains whitespace
+tests/test_llm_providers.py:39:1: E302 expected 2 blank lines, found 1
+tests/test_llm_providers.py:49:1: W293 blank line contains whitespace
+tests/test_llm_providers.py:53:1: E302 expected 2 blank lines, found 1
+tests/test_llm_providers.py:63:1: W293 blank line contains whitespace
+tests/test_llm_providers.py:67:1: E302 expected 2 blank lines, found 1
+tests/test_llm_providers.py:68:5: F401 'eval_runner.config' imported but unused
+tests/test_llm_providers.py:69:1: W293 blank line contains whitespace
+tests/test_llm_providers.py:73:1: W293 blank line contains whitespace
+tests/test_loader.py:21:1: F401 'sys' imported but unused
+tests/test_loader.py:32:1: W293 blank line contains whitespace
+tests/test_loader.py:37:1: W293 blank line contains whitespace
+tests/test_loader.py:40:1: W293 blank line contains whitespace
+tests/test_loader.py:43:1: W293 blank line contains whitespace
+tests/test_loader.py:46:1: W293 blank line contains whitespace
+tests/test_loader.py:54:69: W291 trailing whitespace
+tests/test_loader.py:85:1: W293 blank line contains whitespace
+tests/test_loader.py:90:1: W293 blank line contains whitespace
+tests/test_loader.py:93:1: W293 blank line contains whitespace
+tests/test_loader.py:96:1: W293 blank line contains whitespace
+tests/test_loader.py:99:1: W293 blank line contains whitespace
+tests/test_loader.py:114:1: W293 blank line contains whitespace
+tests/test_loader.py:119:1: W293 blank line contains whitespace
+tests/test_loader.py:122:1: W293 blank line contains whitespace
+tests/test_loader.py:125:1: W293 blank line contains whitespace
+tests/test_loader.py:128:1: W293 blank line contains whitespace
+tests/test_loader.py:135:44: W291 trailing whitespace
+tests/test_loader.py:138:1: E302 expected 2 blank lines, found 1
+tests/test_loader.py:246:1: W293 blank line contains whitespace
+tests/test_loader.py:247:61: W291 trailing whitespace
+tests/test_loader.py:253:1: E302 expected 2 blank lines, found 1
+tests/test_loader.py:255:121: E501 line too long (155 > 120 characters)
+tests/test_loader.py:258:121: E501 line too long (155 > 120 characters)
+tests/test_loader.py:261:1: W293 blank line contains whitespace
+tests/test_metrics.py:21:1: F401 'sys' imported but unused
+tests/test_metrics.py:22:1: F401 'pathlib.Path' imported but unused
+tests/test_metrics.py:33:1: W293 blank line contains whitespace
+tests/test_metrics.py:38:1: W293 blank line contains whitespace
+tests/test_metrics.py:43:1: W293 blank line contains whitespace
+tests/test_metrics.py:49:1: W293 blank line contains whitespace
+tests/test_metrics.py:59:1: W293 blank line contains whitespace
+tests/test_metrics.py:65:1: F401 'eval_runner.metrics.MetricRegistry' imported but unused
+tests/test_metrics.py:65:1: E402 module level import not at top of file
+tests/test_metrics.py:66:1: F811 redefinition of unused 'patch' from line 24
+tests/test_metrics.py:66:1: F811 redefinition of unused 'MagicMock' from line 24
+tests/test_metrics.py:66:1: E402 module level import not at top of file
+tests/test_metrics.py:68:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:71:1: W293 blank line contains whitespace
+tests/test_metrics.py:77:1: W293 blank line contains whitespace
+tests/test_metrics.py:80:1: W293 blank line contains whitespace
+tests/test_metrics.py:83:1: W293 blank line contains whitespace
+tests/test_metrics.py:86:1: W293 blank line contains whitespace
+tests/test_metrics.py:97:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:100:1: W293 blank line contains whitespace
+tests/test_metrics.py:106:1: W293 blank line contains whitespace
+tests/test_metrics.py:109:1: W293 blank line contains whitespace
+tests/test_metrics.py:112:1: W293 blank line contains whitespace
+tests/test_metrics.py:115:1: W293 blank line contains whitespace
+tests/test_metrics.py:126:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:129:1: W293 blank line contains whitespace
+tests/test_metrics.py:140:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:143:1: W293 blank line contains whitespace
+tests/test_metrics.py:193:1: E302 expected 2 blank lines, found 0
+tests/test_metrics.py:197:117: E261 at least two spaces before inline comment
+tests/test_metrics.py:197:121: E501 line too long (135 > 120 characters)
+tests/test_metrics.py:207:1: E302 expected 2 blank lines, found 0
+tests/test_metrics.py:214:61: E261 at least two spaces before inline comment
+tests/test_metrics.py:216:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:219:74: E261 at least two spaces before inline comment
+tests/test_metrics.py:222:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:236:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:247:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:258:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:262:1: W293 blank line contains whitespace
+tests/test_metrics.py:269:1: W293 blank line contains whitespace
+tests/test_metrics.py:271:8: E114 indentation is not a multiple of 4 (comment)
+tests/test_metrics.py:272:8: E111 indentation is not a multiple of 4
+tests/test_metrics.py:273:8: E114 indentation is not a multiple of 4 (comment)
+tests/test_metrics.py:274:8: E111 indentation is not a multiple of 4
+tests/test_metrics.py:276:1: E302 expected 2 blank lines, found 1
+tests/test_metrics.py:280:1: W293 blank line contains whitespace
+tests/test_metrics.py:284:1: W293 blank line contains whitespace
+tests/test_metrics.py:289:1: W293 blank line contains whitespace
+tests/test_metrics.py:293:1: W293 blank line contains whitespace
+tests/test_metrics.py:302:1: E302 expected 2 blank lines, found 1
+tests/test_metrics_trajectory.py:8:1: F401 'os' imported but unused
+tests/test_metrics_trajectory.py:11:1: F401 'pathlib.Path' imported but unused
+tests/test_metrics_trajectory.py:15:1: E302 expected 2 blank lines, found 1
+tests/test_metrics_trajectory.py:26:1: E302 expected 2 blank lines, found 1
+tests/test_metrics_trajectory.py:47:1: W293 blank line contains whitespace
+tests/test_metrics_trajectory.py:54:1: W293 blank line contains whitespace
+tests/test_metrics_trajectory.py:62:1: W293 blank line contains whitespace
+tests/test_metrics_trajectory.py:65:1: W293 blank line contains whitespace
+tests/test_metrics_trajectory.py:73:1: E302 expected 2 blank lines, found 1
+tests/test_metrics_trajectory.py:87:1: E302 expected 2 blank lines, found 1
+tests/test_metrics_trajectory.py:91:1: W293 blank line contains whitespace
+tests/test_metrics_trajectory.py:94:1: W293 blank line contains whitespace
+tests/test_metrics_trajectory.py:97:1: W293 blank line contains whitespace
+tests/test_mutator.py:7:1: F401 'pytest' imported but unused
+tests/test_mutator.py:9:1: F401 'pathlib.Path' imported but unused
+tests/test_mutator.py:12:1: E302 expected 2 blank lines, found 1
+tests/test_mutator.py:21:1: E302 expected 2 blank lines, found 1
+tests/test_mutator.py:30:1: E302 expected 2 blank lines, found 1
+tests/test_mutator.py:37:1: E302 expected 2 blank lines, found 1
+tests/test_placeholder_fixes.py:2:1: F401 'asyncio' imported but unused
+tests/test_placeholder_fixes.py:4:1: F401 'unittest.mock.MagicMock' imported but unused
+tests/test_placeholder_fixes.py:9:1: F401 'eval_runner.engine.AgentAdapterRegistry' imported but unused
+tests/test_placeholder_fixes.py:11:1: E302 expected 2 blank lines, found 1
+tests/test_placeholder_fixes.py:18:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:22:36: W291 trailing whitespace
+tests/test_placeholder_fixes.py:25:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:29:49: E261 at least two spaces before inline comment
+tests/test_placeholder_fixes.py:30:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:33:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:35:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:38:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:44:1: E302 expected 2 blank lines, found 1
+tests/test_placeholder_fixes.py:51:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:54:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:59:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:64:1: E302 expected 2 blank lines, found 1
+tests/test_placeholder_fixes.py:68:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:70:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:72:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:80:1: E302 expected 2 blank lines, found 1
+tests/test_placeholder_fixes.py:84:121: E501 line too long (124 > 120 characters)
+tests/test_placeholder_fixes.py:85:51: E261 at least two spaces before inline comment
+tests/test_placeholder_fixes.py:86:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:91:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:93:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:99:1: E302 expected 2 blank lines, found 1
+tests/test_placeholder_fixes.py:104:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:107:1: W293 blank line contains whitespace
+tests/test_placeholder_fixes.py:113:1: W293 blank line contains whitespace
+tests/test_playground.py:2:1: F401 'asyncio' imported but unused
+tests/test_playground.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_playground.py:10:1: W293 blank line contains whitespace
+tests/test_playground.py:14:1: W293 blank line contains whitespace
+tests/test_playground.py:19:34: W291 trailing whitespace
+tests/test_playground.py:27:1: W293 blank line contains whitespace
+tests/test_playground.py:32:1: W293 blank line contains whitespace
+tests/test_playground.py:37:1: W293 blank line contains whitespace
+tests/test_playground.py:39:1: W293 blank line contains whitespace
+tests/test_playground.py:46:1: E302 expected 2 blank lines, found 1
+tests/test_playground.py:50:1: W293 blank line contains whitespace
+tests/test_playground.py:53:1: W293 blank line contains whitespace
+tests/test_playground.py:58:1: W293 blank line contains whitespace
+tests/test_playground.py:62:1: W293 blank line contains whitespace
+tests/test_playground.py:64:1: W293 blank line contains whitespace
+tests/test_policy_guardrails.py:2:1: F401 'pytest' imported but unused
+tests/test_policy_guardrails.py:5:1: E302 expected 2 blank lines, found 1
+tests/test_policy_guardrails.py:23:1: E302 expected 2 blank lines, found 1
+tests/test_quickstart.py:2:1: F401 'asyncio' imported but unused
+tests/test_quickstart.py:3:1: F401 'subprocess' imported but unused
+tests/test_quickstart.py:5:1: F401 'pathlib.Path' imported but unused
+tests/test_quickstart.py:8:1: E302 expected 2 blank lines, found 1
+tests/test_quickstart.py:13:1: W293 blank line contains whitespace
+tests/test_quickstart.py:18:1: W293 blank line contains whitespace
+tests/test_quickstart.py:22:1: E302 expected 2 blank lines, found 1
+tests/test_quickstart.py:27:1: W293 blank line contains whitespace
+tests/test_quickstart.py:30:1: W293 blank line contains whitespace
+tests/test_quickstart.py:33:1: W293 blank line contains whitespace
+tests/test_quickstart.py:42:1: W293 blank line contains whitespace
+tests/test_quickstart.py:44:1: W293 blank line contains whitespace
+tests/test_quickstart.py:48:1: W293 blank line contains whitespace
+tests/test_reporter.py:11:1: F401 'pytest' imported but unused
+tests/test_reporter.py:12:1: F401 'sys' imported but unused
+tests/test_reporter.py:14:1: F401 'pathlib.Path' imported but unused
+tests/test_reporting_plugin.py:7:1: E302 expected 2 blank lines, found 1
+tests/test_reporting_plugin.py:12:1: W293 blank line contains whitespace
+tests/test_reporting_plugin.py:18:1: W293 blank line contains whitespace
+tests/test_reporting_plugin.py:20:1: W293 blank line contains whitespace
+tests/test_reporting_plugin.py:23:1: W293 blank line contains whitespace
+tests/test_reporting_plugin.py:27:1: W293 blank line contains whitespace
+tests/test_reporting_plugin.py:38:1: W293 blank line contains whitespace
+tests/test_reporting_plugin.py:40:1: W293 blank line contains whitespace
+tests/test_reporting_plugin.py:43:1: W293 blank line contains whitespace
+tests/test_reporting_plugin.py:48:1: E305 expected 2 blank lines after class or function definition, found 1
+tests/test_scaffold.py:2:1: F401 'pytest' imported but unused
+tests/test_scaffold.py:3:1: F401 'pathlib.Path' imported but unused
+tests/test_scaffold.py:4:1: F401 'unittest.mock.patch' imported but unused
+tests/test_scaffold.py:7:1: E302 expected 2 blank lines, found 1
+tests/test_scaffold.py:12:1: W293 blank line contains whitespace
+tests/test_scaffold.py:15:1: W293 blank line contains whitespace
+tests/test_scaffold.py:17:1: W293 blank line contains whitespace
+tests/test_scaffold.py:21:1: W293 blank line contains whitespace
+tests/test_scaffold.py:25:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:25:49: E261 at least two spaces before inline comment
+tests/test_scenario_compliance.py:32:1: E302 expected 2 blank lines, found 1
+tests/test_scenario_compliance.py:36:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:40:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:43:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:46:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:50:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:58:1: E302 expected 2 blank lines, found 1
+tests/test_scenario_compliance.py:61:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:65:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:68:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:71:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:82:1: E302 expected 2 blank lines, found 1
+tests/test_scenario_compliance.py:85:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:90:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:93:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:96:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:99:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:105:1: W293 blank line contains whitespace
+tests/test_scenario_compliance.py:120:1: W293 blank line contains whitespace
+tests/test_security_audit.py:9:1: F401 'asyncio' imported but unused
+tests/test_security_audit.py:10:1: F401 'copy' imported but unused
+tests/test_security_audit.py:13:1: F401 'unittest.mock.MagicMock' imported but unused
+tests/test_security_audit.py:14:1: F401 'pathlib.Path' imported but unused
+tests/test_security_audit.py:281:1: E302 expected 2 blank lines, found 1
+tests/test_security_audit.py:285:1: W293 blank line contains whitespace
+tests/test_security_audit.py:288:1: W293 blank line contains whitespace
+tests/test_security_audit.py:293:1: E302 expected 2 blank lines, found 1
+tests/test_security_audit.py:296:5: F401 'flask.request' imported but unused
+tests/test_security_audit.py:297:1: W293 blank line contains whitespace
+tests/test_security_audit.py:299:1: W293 blank line contains whitespace
+tests/test_security_audit.py:304:1: W293 blank line contains whitespace
+tests/test_security_audit.py:309:1: W293 blank line contains whitespace
+tests/test_security_audit.py:314:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:2:1: F401 'asyncio' imported but unused
+tests/test_session_advanced.py:3:1: F401 'eval_runner.engine.run_evaluation' imported but unused
+tests/test_session_advanced.py:8:1: E302 expected 2 blank lines, found 1
+tests/test_session_advanced.py:11:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:15:1: E302 expected 2 blank lines, found 1
+tests/test_session_advanced.py:20:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:29:1: E302 expected 2 blank lines, found 1
+tests/test_session_advanced.py:37:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:40:5: E306 expected 1 blank line before a nested definition, found 0
+tests/test_session_advanced.py:46:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:48:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:50:5: E306 expected 1 blank line before a nested definition, found 0
+tests/test_session_advanced.py:52:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:54:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:57:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:62:1: E302 expected 2 blank lines, found 1
+tests/test_session_advanced.py:70:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:76:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:78:1: W293 blank line contains whitespace
+tests/test_session_advanced.py:83:1: W293 blank line contains whitespace
+tests/test_spec_parser.py:1:1: F401 'pytest' imported but unused
+tests/test_spec_parser.py:4:1: E302 expected 2 blank lines, found 1
+tests/test_spec_parser.py:27:1: W293 blank line contains whitespace
+tests/test_spec_parser.py:38:1: E302 expected 2 blank lines, found 1
+tests/test_stability.py:1:1: W391 blank line at end of file
+tests/test_taxonomy.py:4:1: E302 expected 2 blank lines, found 1
+tests/test_taxonomy.py:6:1: W293 blank line contains whitespace
+tests/test_taxonomy.py:48:1: E302 expected 2 blank lines, found 1
+tests/test_tool_sandbox.py:8:1: F401 'pytest' imported but unused
+tests/test_tool_sandbox.py:9:1: F401 'sys' imported but unused
+tests/test_tool_sandbox.py:10:1: F401 'shutil' imported but unused
+tests/test_tool_sandbox.py:15:1: E302 expected 2 blank lines, found 1
+tests/test_tool_sandbox.py:31:1: E302 expected 2 blank lines, found 1
+tests/test_tool_sandbox.py:37:41: E261 at least two spaces before inline comment
+tests/test_tool_sandbox.py:40:1: E302 expected 2 blank lines, found 1
+tests/test_tool_sandbox.py:49:1: E302 expected 2 blank lines, found 1
+tests/test_tool_sandbox.py:66:1: E302 expected 2 blank lines, found 1
+tests/test_tool_sandbox.py:76:1: W293 blank line contains whitespace
+tests/test_tool_sandbox.py:79:1: W293 blank line contains whitespace
+tests/test_tool_sandbox.py:83:1: E302 expected 2 blank lines, found 1
+tests/test_tool_sandbox.py:92:1: W293 blank line contains whitespace
+tests/test_tool_sandbox.py:96:1: W293 blank line contains whitespace
+tests/test_tool_sandbox.py:98:33: E261 at least two spaces before inline comment
+tests/test_tool_sandbox.py:100:1: E302 expected 2 blank lines, found 1
+tests/test_tool_sandbox.py:108:1: W293 blank line contains whitespace
+tests/test_tool_sandbox.py:113:1: W293 blank line contains whitespace
+tests/test_trace_loading.py:3:1: F401 'pathlib.Path' imported but unused
+tests/test_trace_loading.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_trace_loading.py:16:1: W293 blank line contains whitespace
+tests/test_trace_loading.py:21:1: E302 expected 2 blank lines, found 1
+tests/test_trace_loading.py:30:1: W293 blank line contains whitespace
+tests/test_trace_loading.py:35:1: E302 expected 2 blank lines, found 1
+tests/test_trace_loading.py:39:1: W293 blank line contains whitespace
+tests/test_trace_loading.py:43:1: E302 expected 2 blank lines, found 1
+tests/test_trace_loading.py:47:1: W293 blank line contains whitespace
+tests/test_trace_loading.py:53:1: E302 expected 2 blank lines, found 1
+tests/test_trace_recorder.py:3:1: F401 'asyncio' imported but unused
+tests/test_trace_recorder.py:5:1: F401 'pathlib.Path' imported but unused
+tests/test_trace_recorder.py:8:1: E302 expected 2 blank lines, found 1
+tests/test_trace_recorder.py:14:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:18:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:25:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:30:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:33:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:34:83: W291 trailing whitespace
+tests/test_trace_recorder.py:43:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:46:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:49:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:55:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:59:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:64:1: E302 expected 2 blank lines, found 1
+tests/test_trace_recorder.py:69:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:73:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:79:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:83:1: W293 blank line contains whitespace
+tests/test_trace_recorder.py:85:1: W293 blank line contains whitespace
+tests/test_triage.py:1:1: F401 'pytest' imported but unused
+tests/test_triage.py:3:1: E302 expected 2 blank lines, found 1
+tests/test_triage.py:17:1: E302 expected 2 blank lines, found 1
+tests/test_triage.py:31:1: E302 expected 2 blank lines, found 1
+tests/test_triage.py:45:1: E302 expected 2 blank lines, found 1
+tests/test_triage.py:55:1: E302 expected 2 blank lines, found 0
+tests/test_triage.py:64:1: E302 expected 2 blank lines, found 1
+tests/test_triage.py:67:60: E261 at least two spaces before inline comment
+tests/test_triage.py:68:64: E261 at least two spaces before inline comment
+tests/test_triage.py:72:1: E302 expected 2 blank lines, found 1
+tests/test_triage.py:75:66: E261 at least two spaces before inline comment
+tests/test_triage.py:76:48: E261 at least two spaces before inline comment
+tests/test_triage.py:80:1: E305 expected 2 blank lines after class or function definition, found 1
+tests/test_utilities.py:2:1: F401 'os' imported but unused
+tests/test_utilities.py:4:1: F401 'asyncio' imported but unused
+tests/test_utilities.py:7:1: F401 'eval_runner.quickstart' imported but unused
+tests/test_utilities.py:11:1: E302 expected 2 blank lines, found 1
+tests/test_utilities.py:15:66: W291 trailing whitespace
+tests/test_utilities.py:21:1: E302 expected 2 blank lines, found 1
+tests/test_utilities.py:26:1: W293 blank line contains whitespace
+tests/test_utilities.py:28:1: W293 blank line contains whitespace
+tests/test_utilities.py:36:1: E302 expected 2 blank lines, found 1
+tests/test_utilities.py:45:1: W293 blank line contains whitespace
+tests/test_utilities.py:54:1: W293 blank line contains whitespace
+tests/test_utilities.py:58:13: F841 local variable 'filepath' is assigned to but never used
+tests/test_utilities.py:59:1: W293 blank line contains whitespace
+tests/test_utilities.py:63:13: F841 local variable 'html_files' is assigned to but never used
+tests/test_utilities.py:63:121: E501 line too long (152 > 120 characters)
+tests/test_utilities.py:67:1: W293 blank line contains whitespace
+tests/test_utilities.py:75:1: E302 expected 2 blank lines, found 1
+tests/test_utilities.py:94:1: E302 expected 2 blank lines, found 1
+tests/test_utilities.py:99:1: W293 blank line contains whitespace
+tests/test_utilities.py:104:9: E306 expected 1 blank line before a nested definition, found 0
+tests/test_utilities.py:108:1: W293 blank line contains whitespace
+tests/test_utilities.py:110:1: W293 blank line contains whitespace
+tests/test_utilities.py:115:1: W293 blank line contains whitespace
+tests/test_world_shims_hotswap.py:1:1: F401 'pytest' imported but unused
+tests/test_world_shims_hotswap.py:6:1: E302 expected 2 blank lines, found 1
+tests/test_world_shims_hotswap.py:10:1: E302 expected 2 blank lines, found 1
+tests/test_world_shims_hotswap.py:14:1: E302 expected 2 blank lines, found 1
+tests/test_world_shims_hotswap.py:19:1: W293 blank line contains whitespace
+tests/test_world_shims_hotswap.py:25:1: W293 blank line contains whitespace
+tests/test_world_shims_hotswap.py:36:1: E302 expected 2 blank lines, found 1
+tests/test_world_shims_hotswap.py:44:1: W293 blank line contains whitespace
+tests/test_world_shims_hotswap.py:49:1: E302 expected 2 blank lines, found 1
+tests/test_world_shims_hotswap.py:57:1: W293 blank line contains whitespace
+tests/test_world_shims_hotswap.py:62:1: E302 expected 2 blank lines, found 1
+tests/test_world_shims_hotswap.py:69:1: W293 blank line contains whitespace
+tests/test_world_shims_hotswap.py:72:1: W293 blank line contains whitespace
+tests/test_world_shims_hotswap.py:73:72: W291 trailing whitespace
+tests/test_world_shims_hotswap.py:78:1: E302 expected 2 blank lines, found 1
+tests/test_world_shims_hotswap.py:83:1: W293 blank line contains whitespace
+tests/test_world_shims_hotswap.py:91:1: W293 blank line contains whitespace
+tests/test_world_shims_hotswap.py:93:31: E261 at least two spaces before inline comment
+14    E111 indentation is not a multiple of 4
+2     E114 indentation is not a multiple of 4 (comment)
+13    E117 over-indented
+1     E122 continuation line missing indentation or outdented
+4     E128 continuation line under-indented for visual indent
+41    E261 at least two spaces before inline comment
+323   E302 expected 2 blank lines, found 1
+1     E303 too many blank lines (2)
+10    E305 expected 2 blank lines after class or function definition, found 1
+10    E306 expected 1 blank line before a nested definition, found 0
+4     E402 module level import not at top of file
+83    E501 line too long (130 > 120 characters)
+49    E701 multiple statements on one line (colon)
+5     E722 do not use bare 'except'
+171   F401 '.cli' imported but unused
+5     F541 f-string is missing placeholders
+4     F811 redefinition of unused 'doctor' from line 20
+3     F821 undefined name 'Dict'
+9     F841 local variable 'patterns' is assigned to but never used
+71    W291 trailing whitespace
+1     W292 no newline at end of file
+776   W293 blank line contains whitespace
+2     W391 blank line at end of file
+1602

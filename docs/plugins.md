@@ -23,12 +23,14 @@ pytest tests/ -v -p no:plugin_gateway
 
 ## Creating a Plugin
 
-Plugins are Python classes that inherit from `eval_runner.plugins.BaseEvalPlugin`.
+Plugins are Python classes that inherit from `eval_runner.plugins.BaseEvalPlugin`. The base class is an `abc.ABC`, allowing for formal hook definitions.
 
 ```python
 from eval_runner.plugins import BaseEvalPlugin
+from abc import abstractmethod
 
 class MyCustomPlugin(BaseEvalPlugin):
+    # Optional: override specific hooks as needed
     def before_evaluation(self, context):
         print(f"Starting evaluation for {context.scenario_id}!")
 
