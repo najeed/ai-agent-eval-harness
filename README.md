@@ -8,7 +8,7 @@
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Compliant-green.svg)](docs/architecture.md#security-guardrails)
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
 
-**AI Agent Evaluation Harness** is the enterprise-grade reliability framework for AI agents. It bridges the "Agentic Reliability Gap" through rigorous evaluation, deep-trace replay debugging, and industry-standard benchmark datasets.
+**AI Agent Evaluation Harness** is the enterprise-grade reliability framework for AI agents. It bridges the "Agentic Reliability Gap" through rigorous evaluation, deep-trace replay debugging, and a modular **20-Shim Enterprise Suite** for high-fidelity environment simulation.
 
 | Attribute | Specification |
 | :--- | :--- |
@@ -161,15 +161,13 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 ## At a Glance (v1.0 RC)
 
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
-- **Benchmark Ecosystem**: Native loaders and adapters for community benchmarks like GAIA and AssistantBench.
-- **Pluggable Architecture**: Extend anything via Python plugins, with out-of-the-box framework adapters for **LangGraph**, **CrewAI**, **Microsoft AutoGen**, and **xAI Grok**.
-- **Tool Sandbox**: Governance-controlled execution of real or mock tools with full workspace lifecycle management (`setup`/`teardown`).
-- **Integrated Visual Suite**: Unified dashboard for live trace replay and visual debugging.
-- **Semantic Bridge & Distribution**: Ingest production traces (`import-drift`), analyze failures (`triage`), and export datasets to HuggingFace (`export`).
-- **Interception Hooks**: Plugins can now intercept and block tool calls (`on_tool_request`) or register custom adapters.
-- **Enhanced Metrics**: Support for **dot-notation** in state verification (e.g., `user.profile.balance`) for deep-object inspection.
-- **Judge Guarding**: Metrics can now be marked as `required`. If a required LLM judge is misconfigured, the engine raises a critical `JudgeConfigurationError` rather than silently failing.
-- **Centralized Configuration**: All system constants and environment defaults managed via `eval_runner/config.py`.
+- **20-Shim Enterprise Suite**: High-fidelity simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more.
+- **Zero-Touch Hot-Swap Architecture**: Dynamically register and swap simulators via plugins without core code modifications.
+- **Benchmark Ecosystem**: Native loaders for GAIA and AssistantBench.
+- **Tool Sandbox**: Governance-controlled execution with full VFS-aware state parity verification.
+- **Integrated Visual Suite**: Unified React dashboard for live trace replay and visual debugging.
+- **Semantic Bridge**: Ingest production traces (`import-drift`) and analyze failures (`triage`).
+- **Judge Guarding**: Model-based scoring with support for OpenAI, Gemini, Claude, and Ollama.
 
 ## The Advanced Update (v1.1)
 
@@ -192,19 +190,14 @@ The latest release introduces a new suite of high-level automation and visual to
 
 ---
 
-## Zero-Touch Core Architecture
-
 The harness is built on a decoupled, event-driven architecture that allows Enterprise integrations to be hot-swapped without core modifications.
 
 - **EventEmitter Bus**: Passive observation of every turn, tool call, and state change.
-- **🧩 Pluggable Judge Layer**: Configurable model-based scoring (Luna-Judge) with support for OpenAI, Gemini, Claude, and Ollama.
-- **🏥 Industry-Standard Rubrics**: Built-in specialized evaluators for Clinical Safety (Healthcare), Fiduciary Accuracy (Finance), and Policy Adherence (Legal).
-- **⚖️ Judge Calibration**: Automated alignment checking between automated judge scores and human ground truth via the `calibrate` command.
-- **Interception Hooks**: Plugins can now intercept and block tool calls (`on_tool_request`) or register custom adapters.
-- **Native HITL Support**: Built-in support for pausing evaluation for human intervention via the `human` adapter.
-- **Non-Linear Trajectories**: Support for branching and forking trajectories (`fork()`) in `SessionManager` for research-grade evaluations.
-- **Advanced Discovery**: Plugin-driven registry for third-party agent adapters (LangGraph, CrewAI, AutoGen, Grok) via the `on_discover_adapters` hook.
-- **Immutable Contexts**: Ensures plugins cannot introduce side-effects into the core engine state.
+- **🧩 Pluggable Judge Layer**: Configurable model-based scoring with support for OpenAI, Gemini, Claude, and Ollama.
+- **🏥 Industry-Standard Rubrics**: Specialized evaluators for Clinical Safety, Fiduciary Accuracy, and Policy Adherence.
+- **Native HITL Support**: built-in pausing for human intervention via the `human` adapter.
+- **Advanced Discovery**: Plugin-driven registry for third-party agent adapters (LangGraph, CrewAI, AutoGen, Grok).
+- **Pluggable World Shims**: Register custom environment simulators through the `on_register_simulators` hook.
 
 
 ### Advanced Utilities

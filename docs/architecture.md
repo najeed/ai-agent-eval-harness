@@ -1,6 +1,4 @@
-## Foundation: Zero-Touch Core Architecture
-
-The "Zero-Touch Core" is a design philosophy ensuring the central evaluation engine remains framework-agnostic. All industry-specific logic, communication protocols (adapters), and evaluation metrics are implemented as plugins.
+The "Zero-Touch Core" is a design philosophy ensuring the central evaluation engine remains framework-agnostic. All industry-specific logic, communication protocols (adapters), and World Shims (Environment Simulators) are implemented as modular plugins.
 
 ### Unified Command-Line Interface
 The CLI (`cli.py`) now features **Dynamic Discovery**. Before parsing arguments, the harness triggers the `on_discover_adapters` hook across all registered plugins. This allows ecosystem-specific protocols like `autogen://` or `langgraph://` to be recognized as first-class citizens in the `--protocol` argument without hardcoding.
@@ -89,13 +87,9 @@ Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the eval
 | Reporting | `eval_runner/reporting_plugin.py`| Decoupled report generation (HTML/Console) and triage automation |
 | Flight Recorder | `eval_runner/flight_recorder.py`| Passive event logger subscribing to the core event bus |
 | Metrics | `eval_runner/metrics.py` | Research-grade scoring: Consenus, PII, and Consistency Scoring |
-| Simulators | `eval_runner/simulators.py`| Deterministic tool shims (Git, API) for dependency-free testing |
-| Mutator | `eval_runner/mutator.py` | Adversarial Mutation Engine for robustness red-teaming |
+| Simulators | `eval_runner/simulators.py`| World Shim suite (20+ simulators) for high-fidelity testing |
 | Triage | `eval_runner/triage.py`| Heuristic failure pattern matching and tagging |
-| Exporter | `eval_runner/exporter.py`| Conversion from internal `run.jsonl` to external formats (e.g., HuggingFace) |
-| Artifact Provider | `eval_runner/artifact_plugin.py`| Core compliance utility for SHA-256 manifest and Source-of-Truth bundling |
-| Benchmarks | `eval_runner/benchmarks/`| Native integrations for community datasets (GAIA, AssistantBench) |
-| Adapters | `eval_runner/adapters/`| Native plugin shims for external frameworks (LangGraph, CrewAI, AutoGen, Grok) |
+| Visual Suite | `ui/visual-debugger/` | React Flow powered dashboard for real-time trajectory analysis |
 | Analyzer | `eval_runner/analyzer.py`| Proactive GitHub repo scanning and AES scenario scaffolding |
 | Explainer | `eval_runner/explainer.py`| Heuristic-based trace diagnostics and root cause analysis |
 
@@ -183,18 +177,11 @@ The Integrated Visual Suite uses a **Token-Exchange Protocol** to ensure Enterpr
 3. **Security**: Plugin iframes are constrained via `sandbox="allow-scripts allow-forms allow-popups"` to prevent top-level session hijacking.
 4. **Communication**: Components communicate with the core UI via `window.postMessage` using origin-validated listeners for sanctioned actions like `NOTIFY`.
 
-## Visual Suite Migration: From Mermaid to React Flow
+## Visual Suite: React Flow Implementation
 
-The current Visual Suite uses **Mermaid.js** for passive trajectory visualization. While effective for basic charts, the enterprise roadmap requires a shift to **React Flow** for professional-grade interactivity and aesthetics.
-
-### Rationale for Migration
-- **Interactivity**: React Flow supports zooming, panning, and node dragging, which are essential for long, complex agent trajectories.
-- **Custom Styling**: Native React components can be used as nodes, allowing for "Glassmorphism" and rich tool-preview overlays that match the premium console design.
-- **Performance**: Mermaid generates static SVGs which can become unperformant and unreadable for $N > 20$ nodes. React Flow uses a highly optimized viewport for thousands of items.
-
-### Implementation Roadmap
-1. **Model Parity**: Map the internal `FlightRecorder` events to React Flow's `nodes` and `edges` format in `LiveBridgePlugin`.
-2. **Custom Node Definitions**: Create specialized React components for `AGENT_PROMPT`, `TOOL_CALL`, and `LUNA_JUDGE` events.
-3. **Mobile/Responsive Logic**: Leverage React Flow's `fitView` and zoom-sensitivity to provide a first-class experience on mobile devices (via Expo).
-4. **Interactive Debugging**: Allow users to "click through" nodes to view the exact tool sandbox state (VFS) at that specific moment in time.
+The Visual Suite has been fully migrated to **React Flow**, enabling:
+- **High-Density Trajectories**: Fluid zoom and pan for 100+ node traces.
+- **Glassmorphic UI**: Premium aesthetics with real-time tool overlays.
+- **Auto-Centering**: Instant focus on tool-calls or policy breaches.
+- **Interactive State Inspection**: Deep dive into the VFS sandbox at any turn.
 

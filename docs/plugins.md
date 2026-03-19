@@ -52,9 +52,10 @@ class MyCustomPlugin(BaseEvalPlugin):
 | `on_metrics_calculated` | `context`, `results` | Post-metric hook for cross-attempt aggregation. |
 | `after_evaluation` | `context`, `results` | Final hook after evaluation completes. |
 | `on_register_commands` | `registry: CommandRegistry` | Register CLI subcommands under the plugin namespace. |
-| `on_register_console_routes` | `app: Flask`, `nav: list` | Inject custom REST routes and React navigation links to the [Integrated Visual Suite](#extending-the-visual-suite). |
+| `on_register_simulators`| `registry: dict` | Shim Registration. Add your World Shims to the registry. |
+| `on_register_console_routes` | `app: Flask`, `nav: list` | Inject custom REST routes and React navigation links. |
 
-> **⚠️ Security Note:** The legacy `extend_cli` hook has been **removed** to prevent command hijacking. All plugins must use `on_register_commands` which isolates commands under `eval-harness plugin <plugin_name>`.
+> **⚠️ Security Note:** All plugins must use `on_register_commands` which isolates commands under `eval-harness plugin <plugin_name>`.
 
 ## Typed Context Objects
 
@@ -107,6 +108,19 @@ class MyReportPlugin(BaseEvalPlugin):
         print(f"Generating {args.format} report...")
 ```
 
+## Registering World Shims (Zero-Touch Environment)
+
+The `on_register_simulators` hook allows plugins to provide custom environment mocks (World Shims) that the engine uses to simulate real-world tool consequences.
+
+```python
+class MyCloudPlugin(BaseEvalPlugin):
+    def on_register_simulators(self, registry):
+        # Add your simulator instance to the global registry
+        registry["s3_bucket"] = S3Simulator()
+```
+
+Once registered, any scenario mentioning `s3_bucket` in its `tasks` will automatically use your simulator logic during evaluation.
+
 ---
 
 ## Extending the Visual Suite (Integrated Console)
@@ -150,7 +164,7 @@ The core UI enforces strict security for plugin components:
 - **Origin Validation**: All `postMessage` events are validated against the expected origin before processing.
 ```
 
-For detailed React component mapping and HUD customization, see the [UI Migration Guide](file:///C:/Users/najee/OneDrive/Documents/Projects/ai-agent-eval-harness/docs/guides/help/UI_MIGRATION_GUIDE.md).
+For detailed React component mapping and HUD customization, see the [UI Migration Guide](guides/help/UI_MIGRATION_GUIDE.md).
 
 ---
 

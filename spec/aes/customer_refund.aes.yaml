@@ -1,4 +1,4 @@
-aes_version: 0.1
+aes_version: 0.2
 
 metadata:
   name: airline_refund_scenario
@@ -9,6 +9,16 @@ metadata:
     - refunds
     - tool-use
   difficulty: medium
+
+# v0.2: Declare which World Shims to mount for this benchmark
+# Only these 3 simulators will be active during evaluation
+enabled_shims:
+  - database
+  - api
+  - security
+
+# v0.2: Complexity classification aligned with scenario.schema.json
+complexity_level: high
 
 environment:
   simulator: airline_support_env:v1

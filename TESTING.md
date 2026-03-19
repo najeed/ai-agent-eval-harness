@@ -25,7 +25,7 @@ pytest --cov=eval_runner --cov-report=html
 
 | Category | Command | Description |
 |----------|---------|-------------|
-| **All Tests** | `pytest` | Run complete test suite |
+| **All Tests** | `pytest` | Run complete test suite (200+) |
 | **Unit Tests** | `pytest tests/test_cli.py` | Core CLI functionality tests |
 | **Linter Check** | `python -m flake8 .` | Verify code quality and syntax |
 | **Compliance** | `pytest tests/test_scenario_compliance.py` | AES schema and protocol verification |
@@ -48,6 +48,9 @@ tests/
 ├── test_trace_recorder.py          # Real-time interaction recording
 ├── test_playground.py              # Interactive playground tests
 ├── test_quickstart.py              # Quickstart flow automation
+├── test_security_audit.py          # Security guardrail verification
+├── test_console_handoff.py         # JWT and SSO handoff verification
+├── test_stability.py               # Long-running simulation stability
 └── test_taxonomy.py                # Failure classification taxonomy
 ```
 

@@ -373,11 +373,39 @@ Convert production traces into evaluation scenarios:
 eval-harness import-drift --input production_trace.jsonl --industry telecom --output-dir industries/telecom/scenarios
 ```
 
-### 🧩 5.2 Triage
-The harness can categorize failures (e.g., connection errors, policy violations) for easier review.
+### 🔬 5.2 State-Level Trajectory Triage (How Root Cause Isolation Works)
+AgentEval isolates the root cause of a failure by combining three layers of analysis — not just scanning logs.
+
+**Layer 1: State Parity Check (VFS Delta)**
+Every World Shim (Database, Jira, Git, API, etc.) is "VFS-aware". When an agent calls a tool, AgentEval compares the resulting system state against the "Ground Truth" defined in the scenario. If the agent queries the wrong table or fails to commit a file, the State Divergence is flagged immediately as the **"Patient Zero"** step. This catches "silent failures" where the agent *thinks* it succeeded but the environment changed incorrectly.
+
+**Layer 2: Heuristic Triage Engine (`triage.py`)**
+A specialized engine scans the entire trace for failure patterns:
+- **Stall Detection** — identifies if an agent is looping (e.g., calling `list_dir` 3 times with no change in behavior).
+- **Tool-Level Exceptions** — captures internal simulator errors (e.g., a "404 Not Found" from the API Shim) that the agent might have ignored.
+- **Policy Violations** — if a Security Shim blocks an action (like a regex-based data leak), the triage engine flags the exact guardrail triggered.
+
+**Layer 3: Visual Timeline Mapping**
+The Visual Debugger's **"Isolate Root Cause"** automatically scrolls the timeline to the first Non-Success Signal — the exact failing node, highlighted in red.
+
+| Layer | What it detects | Why it matters |
+| :--- | :--- | :--- |
+| **State** | Data/File divergence | Catches silent failures where the agent thinks it succeeded. |
+| **Logic** | Loops & Stalls | Identifies when an agent's reasoning has hit a dead-end. |
+| **Security** | Policy Violations | Pinpoints exactly which guardrail was triggered and why. |
+
+By combining these layers, AgentEval can distinguish between an agent that *hallucinated a tool's existence* vs. an agent that *used the right tool but with the wrong parameters*.
+
+> **Why use Shims instead of Real APIs?**
+> - **Safety**: No risk of accidentally deleting a production database or emailing a real customer.
+> - **Determinism**: You can force the shim to fail (e.g., simulate a 500 error) to test error handling.
+> - **Speed**: Simulated responses are near-instant vs. real network latency.
+
+📖 See the full technical deep-dive: [`06_TRIAGE_ENGINE_AND_VFS.md`](06_TRIAGE_ENGINE_AND_VFS.md)
 
 ---
 
 ## 📎 Next Steps
 For architecture and extension patterns, read the Developer Guide:
 - `docs/guides/help/03_DEVELOPER_GUIDE.md`
+- `docs/guides/help/06_TRIAGE_ENGINE_AND_VFS.md`

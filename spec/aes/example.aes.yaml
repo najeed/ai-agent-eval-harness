@@ -1,9 +1,19 @@
-aes_version: "0.1"
+aes_version: 0.2
+
 metadata:
   name: "Standard Customer Support Benchmark"
   description: "A suite of tasks to evaluate basic customer support capabilities."
   author: "OpenCore Contributors"
   tags: ["support", "multi-turn", "retail"]
+
+# v0.2: Only mount the shims this benchmark requires
+enabled_shims:
+  - crm
+  - email
+  - kb
+
+# v0.2: Complexity classification
+complexity_level: low
 
 scenarios:
   - scenario_id: "refund_request_001"

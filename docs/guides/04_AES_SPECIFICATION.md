@@ -68,14 +68,34 @@ Define heuristics for "Success".
 
 ---
 
-## 4. Path Decoupling & Portability
+## 4. World Shim Configuration (`enabled_shims`)
+Scenarios can declare which World Shims (environment simulators) they require. The harness mounts only those shims for the duration of the evaluation run.
+
+```json
+{
+  "scenario_id": "loan_approval_v1",
+  "enabled_shims": ["database", "stripe", "security", "slack"],
+  "tasks": [...]
+}
+```
+
+- If `enabled_shims` is **omitted**, all 20 built-in shims are available by default.
+- Shim keys correspond to the registry keys defined in `eval_runner/simulators.py`.
+
+**Available built-in shim keys:** `git`, `api`, `database`, `slack`, `crm`, `email`, `calendar`, `jira`, `cloud`, `terminal`, `stripe`, `erp`, `browser`, `kb`, `support`, `social`, `vector`, `cicd`, `iot`, `security`
+
+📖 See the full shim reference with per-shim actions and failure modes: [`docs/guides/help/07_WORLD_SHIMS_REFERENCE.md`](../help/07_WORLD_SHIMS_REFERENCE.md)
+
+---
+
+## 5. Path Decoupling & Portability
 AES benchmarks are now fully portable. 
 - **Relative Datasets**: `dataset.path` can now be relative to the scenario file (e.g., `./records.csv`), allowing you to share scenario bundles easily.
 - **Auto-Industry**: If `industry` is omitted from metadata, the harness will attempt to infer it from the parent directory or tag it as `local`.
 
 ---
 
-## 5. Replaying Execution (`run.jsonl`)
+## 6. Replaying Execution (`run.jsonl`)
 Every AES evaluation produces a `run.jsonl` flight recorder log. You can replay this log to debug specific "crashes" or "wrong turns":
 ```bash
 eval-harness replay runs/run.jsonl

@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenCore Admin Console</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -14,13 +17,31 @@
     <script src="https://cdn.jsdelivr.net/npm/reactflow@11.10.1/dist/umd/index.min.js"></script>
     <link rel="stylesheet" href="/styles.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0b0e14; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
     </style>
 </head>
+
 <body class="text-slate-300 min-h-screen overflow-hidden">
     <div id="root" class="h-screen flex overflow-hidden font-sans">
         <div class="flex-1 flex items-center justify-center">
@@ -32,6 +53,9 @@
     </div>
 
     <!-- Load the main application logic -->
-    <script type="text/babel" data-presets="react" src="/App.jsx"></script>
+    <script type="text/babel" data-presets="env,react" src="/Demo.jsx"></script>
+    <script type="text/babel" data-presets="env,react" src="/App.jsx"></script>
+
 </body>
+
 </html>

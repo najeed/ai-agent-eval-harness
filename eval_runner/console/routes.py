@@ -219,6 +219,15 @@ class DebuggerStateStore:
 from ..events import EventEmitter
 EventEmitter.subscribe(DebuggerStateStore.handle_event)
 
+@core_bp.route("/ping")
+def ping():
+    return jsonify({
+        "status": "pong", 
+        "version": "v1.6-verified",
+        "cwd": os.getcwd(),
+        "file": __file__
+    })
+
 @core_bp.route("/debugger/state", methods=["GET", "POST"])
 def get_debugger_state():
     """Retrieve or update realtime or latest interactive debugger state."""
@@ -239,40 +248,57 @@ def get_debugger_state():
     # Check for run_id to load historical trace
     run_id = request.args.get("run_id")
     if run_id:
-        trace_file = Path("runs") / f"{run_id}.jsonl"
-        if trace_file.exists():
-            events = []
-            summary = {"message": f"Historical Trace: {run_id}"}
-            try:
-                with open(trace_file, "r", encoding="utf-8") as f:
-                    for line in f:
-                        ev = json.loads(line.strip())
-                        events.append(ev)
-                        # Minimal summary extraction for historical view
-                        if ev.get("event") == "world_state_change":
-                            summary["state"] = ev.get("state")
-                            summary["shared_state"] = ev.get("shared_state")
-                        elif ev.get("event") == "agent_request":
-                             summary["message"] = f"User: {ev.get('content')}"
-                        elif ev.get("event") == "agent_response":
-                             summary["last_tool"] = ev.get("response", {}).get("action")
-                
-                return jsonify({
-                    "status": "ok",
-                    "message": "Historical trace loaded",
-                    "data": {
-                        "summary": summary,
-                        "timeline": events
-                    }
-                })
-            except Exception as e:
-                return jsonify({"status": "error", "message": str(e)}), 500
+        project_root = Path(__file__).parent.parent.parent
+        trace_file = project_root / "runs" / f"{run_id}.jsonl"
+        print(f"DEBUG: Loading trace from {trace_file}", flush=True)
+        if not trace_file.exists():
+            print(f"DEBUG: Trace file MISSING at {trace_file}", flush=True)
+            return jsonify({"status": "error", "message": f"Trace file not found: {trace_file}"}), 404
+        
+        events = []
+        summary = {"message": f"Historical Trace: {run_id}"}
+        try:
+            with open(trace_file, "r", encoding="utf-8-sig") as f:
+                for line in f:
+                    clean_line = line.strip()
+                    if not clean_line:
+                        continue
+                    ev = json.loads(clean_line)
+                    events.append(ev)
+                    # Minimal summary extraction for historical view
+                    if ev.get("event") == "world_state_change":
+                        summary["state"] = ev.get("state")
+                        summary["shared_state"] = ev.get("shared_state")
+                    elif ev.get("event") == "agent_request":
+                        summary["message"] = f"User: {ev.get('content')}"
+                    elif ev.get("event") == "agent_response":
+                        summary["last_tool"] = ev.get("response", {}).get("action")
+            
+            return jsonify({
+                "status": "ok",
+                "message": "Historical trace loaded",
+                "data": {
+                    "summary": summary,
+                    "timeline": events
+                }
+            })
+        except Exception as e:
+            import traceback
+            print(f"ERROR loading {run_id}: {str(e)}", flush=True)
+            traceback.print_exc()
+            return jsonify({
+                "status": "error", 
+                "message": str(e), 
+                "path": str(trace_file),
+                "traceback": traceback.format_exc()
+            }), 500
 
     return jsonify({
         "status": "ok", 
         "message": "Live data hook is active", 
         "data": DebuggerStateStore.get_latest()
     })
+
 
 @core_bp.route("/docs", methods=["GET"])
 def list_docs():

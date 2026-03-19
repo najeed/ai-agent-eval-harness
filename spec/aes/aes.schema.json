@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Agent Eval Specification v0.1",
+    "title": "Agent Eval Specification v0.2",
     "type": "object",
     "required": [
         "aes_version",
@@ -260,6 +260,35 @@
                     "type": "boolean"
                 }
             }
+        },
+        "enabled_shims": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "World Shim keys to mount for this benchmark. Omit to mount all 20. Valid keys: git, api, database, slack, crm, email, calendar, jira, cloud, terminal, stripe, erp, browser, kb, support, social, vector, cicd, iot, security"
+        },
+        "agent_topology": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "reads": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                    },
+                    "writes": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                    }
+                }
+            },
+            "description": "Multi-agent state access permissions. Mirrors scenario.schema.json agent_topology."
+        },
+        "complexity_level": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "Relative difficulty rating. Aligned with scenario.schema.json complexity_level."
         }
     }
-}
+}

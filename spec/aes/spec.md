@@ -1,12 +1,13 @@
-# Agent Eval Specification (AES) v0.1
+# Agent Eval Specification (AES) v0.2
 
-AES is a standardized format for defining portable and robust AI agent benchmarks. v0.1 has been refined to support enterprise-grade validation features including typed tools, infrastructure hooks, and state assertions.
+AES is a standardized format for defining portable and robust AI agent benchmarks. v0.2 adds **World Shim configuration**, **multi-agent topology**, and **complexity classification** to the v0.1 enterprise validation features.
 
 ## Core Principles
 1. **Determinism**: Scenarios should be reproducible and verifiable.
 2. **Portability**: The format is framework-agnostic (LangGraph, CrewAI, etc.).
 3. **Structured Metrics**: Success is measured via standardized metrics, thresholds, and weights.
 4. **Environment Isolation**: Lifecycle hooks manage environment-side dependencies.
+5. **VFS-Aware Simulation**: World Shims provide stateful, safe environment simulation.
 
 ## Key Sections
 
@@ -49,7 +50,27 @@ A list of expected events (agent response, tool call) that serves as a guide for
 - `mutations`: Perturbations for robustness testing (e.g., "angry_user").
 - `reporting`: Controls for run trace exports and `run.jsonl` emission.
 
+### 10. World Shim Configuration (v0.2) ⭐
+Declare which environment simulators to mount for this benchmark.
+- `enabled_shims`: List of shim keys (e.g., `["database", "stripe", "security"]`).
+- Omit to mount all 20 built-in shims by default.
+- Valid keys: `git`, `api`, `database`, `slack`, `crm`, `email`, `calendar`, `jira`, `cloud`, `terminal`, `stripe`, `erp`, `browser`, `kb`, `support`, `social`, `vector`, `cicd`, `iot`, `security`
+- See [`07_WORLD_SHIMS_REFERENCE.md`](../docs/guides/help/07_WORLD_SHIMS_REFERENCE.md) for per-shim config.
+
+### 11. Multi-Agent Topology (v0.2) ⭐
+Define state access permissions for multi-agent crews.
+- `agent_topology`: Map of agent names to `reads` and `writes` state path namespaces.
+
+### 12. Complexity Level (v0.2) ⭐
+- `complexity_level`: `low`, `medium`, or `high` — aligns with `scenario.schema.json`.
+
 ## Validation
 ```bash
 eval-harness aes validate --path my_benchmark.aes.yaml
 ```
+
+## Changelog
+| Version | Changes |
+|---|---|
+| v0.2 | Added `enabled_shims`, `agent_topology`, `complexity_level` |
+| v0.1 | Initial release: typed tools, hooks, state assertions, metrics, policies |

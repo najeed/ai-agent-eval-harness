@@ -94,4 +94,7 @@ eval-harness run industries/<ind>/scenarios/<file>.json
 
 ---
 
-For deep-dives into specific topics like **Grounding Heatmaps** or **Adversarial Red-Teaming**, see the specialized guides in `docs/guides/`.
+For deep-dives into specific topics, see the specialized guides in `docs/guides/help/`:
+- [State-Level Triage & VFS Guide](06_TRIAGE_ENGINE_AND_VFS.md) — how root cause isolation works
+- [Adding World Shims](08_ADDING_WORLD_SHIMS.md) — extending the simulator suite
+- [Plugin Development](../../plugins.md) — zero-touch extensibility

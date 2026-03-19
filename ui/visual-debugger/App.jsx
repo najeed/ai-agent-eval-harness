@@ -1,38 +1,40 @@
 const { useState, useEffect, useMemo } = React;
+const ReactFlowRenderer = window.ReactFlow || {};
+const { ReactFlow, Controls, Background, useReactFlow, ReactFlowProvider } = ReactFlowRenderer;
 
 // --- Icon Helpers ---
 const Icon = ({ name, size = 20, className = "" }) => {
     // Simplified lucide-like icons using SVG
     const icons = {
-        home: <> <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></>,
-        scenarios: <> <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></>,
-        editor: <> <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
-        debugger: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>,
-        docs: <> <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></>,
-        search: <> <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>,
-        plus: <> <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
-        play: <polygon points="5 3 19 12 5 21 5 3"/>,
-        check: <polyline points="20 6 9 17 4 12"/>,
-        alert: <> <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>,
-        fileText: <> <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></>,
-        activity: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>,
-        book: <> <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></>,
-        box: <> <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></>,
-        github: <> <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7 A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></>,
-        chart: <> <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></>,
-        chevronLeft: <polyline points="15 18 9 12 15 6"/>,
-        chevronRight: <polyline points="9 18 15 12 9 6"/>,
-        x: <> <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
+        home: <> <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></>,
+        scenarios: <> <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></>,
+        editor: <> <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></>,
+        debugger: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />,
+        docs: <> <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>,
+        search: <> <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></>,
+        plus: <> <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></>,
+        play: <polygon points="5 3 19 12 5 21 5 3" />,
+        check: <polyline points="20 6 9 17 4 12" />,
+        alert: <> <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></>,
+        fileText: <> <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></>,
+        activity: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />,
+        book: <> <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>,
+        box: <> <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></>,
+        github: <> <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7 A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" /></>,
+        chart: <> <path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" /></>,
+        chevronLeft: <polyline points="15 18 9 12 15 6" />,
+        chevronRight: <polyline points="9 18 15 12 9 6" />,
+        x: <> <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
     };
-    const iconName = name === 'bar-chart-2' ? 'chart' : 
-                     name === 'chevron-left' ? 'chevronLeft' :
-                     name === 'chevron-right' ? 'chevronRight' :
-                     name === 'x' ? 'x' :
-                     name === 'file-text' ? 'fileText' : 
-                     name === 'activity' ? 'activity' :
-                     name === 'book' ? 'book' :
-                     name === 'box' ? 'box' :
-                     name === 'github' ? 'github' : name;
+    const iconName = name === 'bar-chart-2' ? 'chart' :
+        name === 'chevron-left' ? 'chevronLeft' :
+            name === 'chevron-right' ? 'chevronRight' :
+                name === 'x' ? 'x' :
+                    name === 'file-text' ? 'fileText' :
+                        name === 'activity' ? 'activity' :
+                            name === 'book' ? 'book' :
+                                name === 'box' ? 'box' :
+                                    name === 'github' ? 'github' : name;
     return (
         <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
             {icons[iconName] || icons.home}
@@ -55,24 +57,23 @@ const Sidebar = ({ activeTab, setActiveTab, navItems }) => (
                 </div>
             </div>
         </div>
-        
+
         <nav className="flex-1 px-3 space-y-1">
             {navItems.map(item => (
                 <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                        activeTab === item.id 
-                        ? 'bg-blue-600/10 text-blue-400 border border-blue-500/10' 
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === item.id
+                        ? 'bg-blue-600/10 text-blue-400 border border-blue-500/10'
                         : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent'
-                    }`}
+                        }`}
                 >
                     <Icon name={item.icon} size={18} />
                     {item.title}
                 </button>
             ))}
         </nav>
-        
+
         <div className="p-4 border-t border-slate-800">
             <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-800">
                 <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Status</p>
@@ -99,7 +100,6 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
                 setLoading(false);
             })
             .catch(err => {
-                console.error(err);
                 setLoading(false);
             });
     };
@@ -111,12 +111,12 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
         return () => clearTimeout(delayDebounceFn);
     }, [query]);
 
-    const filteredScenarios = searchQuery 
-        ? scenarios.filter(s => 
-            s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const filteredScenarios = searchQuery
+        ? scenarios.filter(s =>
+            s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             s.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
             s.industry.toLowerCase().includes(searchQuery.toLowerCase())
-          )
+        )
         : scenarios;
 
     const handleRunEval = (scenario) => {
@@ -125,13 +125,13 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ path: scenario.path, id: scenario.id })
         })
-        .then(res => res.json())
-        .then(data => {
-            onNotify(`${data.message || 'Evaluation queued successfully!'}`);
-        })
-        .catch(err => {
-            onNotify(`Error: ${err.message}`, 'error');
-        });
+            .then(res => res.json())
+            .then(data => {
+                onNotify(`${data.message || 'Evaluation queued successfully!'}`);
+            })
+            .catch(err => {
+                onNotify(`Error: ${err.message}`, 'error');
+            });
     };
 
     return (
@@ -143,7 +143,7 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
                 </div>
                 <div className="relative">
                     <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                    <input 
+                    <input
                         type="text"
                         placeholder="Search by ID, title, or industry..."
                         className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-200"
@@ -165,9 +165,8 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
                                 <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all">
                                     <Icon name="scenarios" size={20} />
                                 </div>
-                                <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest ${
-                                    s.lint_score > 80 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
-                                }`}>
+                                <div className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest ${s.lint_score > 80 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
+                                    }`}>
                                     Quality: {s.lint_score}%
                                 </div>
                             </div>
@@ -175,7 +174,7 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "" }) => {
                             <p className="text-slate-500 text-xs mb-4">ID: {s.id}</p>
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest bg-slate-800 px-2 py-1 rounded">{s.industry}</span>
-                                <button 
+                                <button
                                     onClick={() => handleRunEval(s)}
                                     className="text-blue-500 hover:text-blue-400 text-xs font-bold flex items-center gap-1 group/btn"
                                 >
@@ -200,7 +199,7 @@ const ScenarioEditor = () => {
         industry: 'generic',
         tasks: [{ id: '1', description: 'Agent should verify user identity' }]
     };
-    
+
     const [scenario, setScenario] = useState(initialState);
     const [generatedJson, setGeneratedJson] = useState(null);
 
@@ -253,7 +252,7 @@ const ScenarioEditor = () => {
                     <p className="text-slate-500 text-sm">Design complex multi-turn agentic evaluation logic without writing JSON.</p>
                 </div>
                 {generatedJson && (
-                    <button 
+                    <button
                         onClick={() => setGeneratedJson(null)}
                         className="text-xs text-blue-500 font-bold uppercase tracking-widest hover:text-blue-400"
                     >
@@ -267,7 +266,7 @@ const ScenarioEditor = () => {
                     <div className="bg-[#161b22] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                         <div className="px-6 py-3 border-b border-slate-800 bg-slate-800/20 flex justify-between items-center">
                             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">AES Configuration JSON</span>
-                            <button 
+                            <button
                                 onClick={() => {
                                     navigator.clipboard.writeText(generatedJson);
                                     alert('Copied to clipboard!');
@@ -287,8 +286,8 @@ const ScenarioEditor = () => {
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Scenario ID</label>
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 value={scenario.scenario_id}
                                 onChange={(e) => setScenario({ ...scenario, scenario_id: e.target.value })}
                                 className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
@@ -296,8 +295,8 @@ const ScenarioEditor = () => {
                         </div>
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Title</label>
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 value={scenario.title}
                                 onChange={(e) => setScenario({ ...scenario, title: e.target.value })}
                                 className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
@@ -309,8 +308,8 @@ const ScenarioEditor = () => {
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block">Task Sequence (State Nodes)</label>
                         <div className="space-y-3">
                             {scenario.tasks.map((task, idx) => (
-                                <div 
-                                    key={task.id} 
+                                <div
+                                    key={task.id}
                                     draggable="true"
                                     onDragStart={(e) => e.dataTransfer.setData('text/plain', idx)}
                                     onDragOver={(e) => e.preventDefault()}
@@ -334,7 +333,7 @@ const ScenarioEditor = () => {
                                             {idx + 1}
                                         </div>
                                     </div>
-                                    <input 
+                                    <input
                                         type="text"
                                         placeholder="e.g., The agent should calculate the net profit after tax..."
                                         value={task.description}
@@ -345,7 +344,7 @@ const ScenarioEditor = () => {
                                         }}
                                         className="flex-1 bg-transparent text-slate-200 border-none focus:outline-none placeholder:text-slate-700 py-1"
                                     />
-                                    <button 
+                                    <button
                                         onClick={() => removeTask(task.id)}
                                         className="p-2 text-slate-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                                         title="Remove Task"
@@ -355,7 +354,7 @@ const ScenarioEditor = () => {
                                 </div>
                             ))}
                         </div>
-                        <button 
+                        <button
                             onClick={addTask}
                             className="w-full py-4 border-2 border-dashed border-slate-800 rounded-xl text-slate-500 hover:text-slate-300 hover:border-slate-600 transition-all flex items-center justify-center gap-2 text-sm font-bold"
                         >
@@ -364,13 +363,13 @@ const ScenarioEditor = () => {
                     </div>
 
                     <div className="pt-6 border-t border-slate-800 flex justify-end gap-3">
-                        <button 
+                        <button
                             onClick={handleReset}
                             className="px-6 py-2.5 rounded-xl border border-slate-800 text-slate-300 font-bold text-sm hover:bg-slate-800 transition-all"
                         >
                             Reset
                         </button>
-                        <button 
+                        <button
                             onClick={handleGenerate}
                             className="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20"
                         >
@@ -493,25 +492,24 @@ const HumanFriendlyDetail = ({ event, onNotify }) => {
         <div className="detail-card animate-in fade-in zoom-in-95 duration-300">
             <div className="detail-header">
                 <div className="flex items-center gap-3">
-                    <span className={`label-pill ${
-                        event.event === 'prompt' ? 'bg-sky-500/10 text-sky-400' :
+                    <span className={`label-pill ${event.event === 'prompt' ? 'bg-sky-500/10 text-sky-400' :
                         event.event === 'agent_response' ? 'bg-emerald-500/10 text-emerald-400' :
-                        event.event === 'tool_call' ? 'bg-amber-500/10 text-amber-400' :
-                        event.event === 'agent_request' ? 'bg-slate-500/20 text-slate-300' :
-                        'bg-slate-500/10 text-slate-400'
-                    }`}>
+                            event.event === 'tool_call' ? 'bg-amber-500/10 text-amber-400' :
+                                event.event === 'agent_request' ? 'bg-slate-500/20 text-slate-300' :
+                                    'bg-slate-500/10 text-slate-400'
+                        }`}>
                         {event.event.replace('_', ' ')}
                     </span>
                     <span className="text-xs text-slate-500 font-mono">{new Date(event.timestamp).toLocaleTimeString()}</span>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button 
+                    <button
                         onClick={() => setShowRaw(!showRaw)}
                         className="text-[10px] text-slate-500 hover:text-white uppercase font-bold tracking-widest flex items-center gap-1 transition-colors"
                     >
                         <Icon name={showRaw ? 'eye_off' : 'eye'} size={12} /> {showRaw ? 'Hide JSON' : 'Show JSON'}
                     </button>
-                    <button 
+                    <button
                         onClick={() => {
                             navigator.clipboard.writeText(JSON.stringify(event, null, 2));
                             if (onNotify) onNotify("Event JSON copied");
@@ -522,7 +520,7 @@ const HumanFriendlyDetail = ({ event, onNotify }) => {
                     </button>
                 </div>
             </div>
-            
+
             <div className="detail-body">
                 {showRaw ? (
                     <pre className="json-block text-slate-400">{JSON.stringify(event, null, 2)}</pre>
@@ -543,8 +541,7 @@ const HumanFriendlyDetail = ({ event, onNotify }) => {
     );
 };
 
-const FlowContainer = ({ events, onNodeSelect, selectedEvent }) => {
-    const { ReactFlow, Controls, Background, useReactFlow } = ReactFlowRenderer;
+const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, minimal }) => {
     const { setCenter } = useReactFlow();
 
     const initialNodes = useMemo(() => {
@@ -552,25 +549,27 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent }) => {
         const COLS = 4;
         const SPACING_X = 250;
         const SPACING_Y = 180;
-        
+
         events.forEach((idx_e, idx) => {
             const e = events[idx];
             const row = Math.floor(idx / COLS);
             const col = idx % COLS;
-            
+
             // S-curve logic: alternate direction for even/odd rows
             const adjustedCol = (row % 2 === 0) ? col : (COLS - 1 - col);
             const x = adjustedCol * SPACING_X;
             const y = row * SPACING_Y;
-            
-            const isSelected = selectedEvent && 
-                selectedEvent.timestamp === e.timestamp && 
+
+            const isSelected = selectedEvent &&
+                selectedEvent.timestamp === e.timestamp &&
                 selectedEvent.event === e.event;
+
+            const isFailure = (e.event === 'policy_violation' || e.error || (e.response && e.response.status === 'error'));
 
             nodes.push({
                 id: `node-${idx}`,
                 type: 'default',
-                data: { 
+                data: {
                     label: (
                         <div className="flex flex-col items-center gap-1 text-center">
                             <span className="text-[10px] font-black text-white leading-tight">
@@ -581,7 +580,7 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent }) => {
                     )
                 },
                 position: { x: x, y: y },
-                className: `react-flow__node-${(e.event === 'prompt' || e.event === 'agent_request') ? 'prompt' : (e.event === 'tool_call' || e.event === 'agent_response' || e.event === 'agent_thought') ? 'agent' : 'environment'} ${isSelected ? 'ring-2 ring-blue-500 ring-offset-4 ring-offset-[#0d1117] shadow-[0_0_20px_rgba(59,130,246,0.5)]' : ''}`,
+                className: `react-flow__node-${(e.event === 'prompt' || e.event === 'agent_request') ? 'prompt' : (e.event === 'tool_call' || e.event === 'agent_response' || e.event === 'agent_thought') ? 'agent' : 'environment'} ${isSelected ? 'ring-2 ring-blue-500 ring-offset-4 ring-offset-[#0d1117] shadow-[0_0_20px_rgba(59,130,246,0.5)]' : ''} ${highlightFailure && isFailure ? 'ring-4 ring-red-500 ring-offset-8 animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.8)]' : (minimal && !isSelected) ? 'opacity-20 grayscale scale-90' : (highlightFailure && !isFailure) ? 'opacity-10 grayscale scale-75' : ''}`,
                 sourcePosition: (row % 2 === 0) ? 'right' : 'left',
                 targetPosition: (row % 2 === 0) ? 'left' : 'right',
                 // Handle wrap-around connections
@@ -599,8 +598,8 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent }) => {
             edges.push({
                 id: `edge-${i}`,
                 source: `node-${i}`,
-                target: `node-${i+1}`,
-                animated: events[i+1].event === 'tool_call',
+                target: `node-${i + 1}`,
+                animated: events[i + 1].event === 'tool_call',
                 style: { stroke: '#475569', strokeWidth: 2 },
             });
         }
@@ -642,26 +641,36 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent }) => {
     );
 };
 
-const FlowView = (props) => {
-    const { ReactFlowProvider } = ReactFlowRenderer;
+const FlowView = ({ events, selectedEvent, onNodeSelect, highlightFailure, minimal }) => {
     return (
         <ReactFlowProvider>
-            <FlowContainer {...props} />
+            <FlowContainer
+                events={events}
+                selectedEvent={selectedEvent}
+                onNodeSelect={onNodeSelect}
+                highlightFailure={highlightFailure}
+                minimal={minimal}
+            />
         </ReactFlowProvider>
     );
 };
 
-const VisualDebugger = ({ runId, onNotify }) => {
+const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTimeline = false, highlightFailure = false }) => {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isLive, setIsLive] = useState(!runId || runId === 'live');
-    const [viewMode, setViewMode] = useState('flow'); // Default to 'flow' map
+    const [viewMode, setViewMode] = useState('flow');
+
+    // Sync live/historical mode whenever runId prop changes
+    useEffect(() => {
+        setIsLive(!runId || runId === 'live');
+    }, [runId]);
 
     const loadTrace = (id) => {
         setLoading(true);
         const targetId = id || runId;
-        const url = (targetId && targetId !== 'live') 
+        const url = (targetId && targetId !== 'live')
             ? `/api/debugger/state?run_id=${targetId}`
             : `/api/debugger/state`;
 
@@ -674,7 +683,6 @@ const VisualDebugger = ({ runId, onNotify }) => {
                 setLoading(false);
             })
             .catch(err => {
-                console.error(err);
                 setLoading(false);
             });
     };
@@ -685,7 +693,7 @@ const VisualDebugger = ({ runId, onNotify }) => {
 
     useEffect(() => {
         if (!isLive) return;
-        
+
         const interval = setInterval(() => {
             fetch('/api/debugger/state')
                 .then(res => res.json())
@@ -695,7 +703,7 @@ const VisualDebugger = ({ runId, onNotify }) => {
                     }
                 });
         }, 1000);
-        
+
         return () => clearInterval(interval);
     }, [isLive]);
 
@@ -713,68 +721,68 @@ const VisualDebugger = ({ runId, onNotify }) => {
     return (
         <div className="flex h-full overflow-hidden">
             {/* Timeline Column */}
-            <div className="w-80 border-r border-slate-800 flex flex-col bg-[#0b0e14]">
-                <div className="p-4 border-b border-slate-800 sticky top-0 bg-[#0b0e14]/80 backdrop-blur-md z-10 flex justify-between items-center">
-                    <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Execution Trace</h3>
-                    <div className="flex gap-2">
-                        <button 
-                            onClick={() => setViewMode(viewMode === 'list' ? 'flow' : 'list')} 
-                            title={viewMode === 'flow' ? "Switch to List View" : "Switch to Flow Map"} 
-                            className={`p-1.5 rounded-lg border transition-all ${viewMode === 'flow' ? 'text-blue-400 bg-blue-400/10 border-blue-400/20' : 'text-slate-500 hover:text-blue-400 border-slate-800'}`}
-                        >
-                            <Icon name={viewMode === 'flow' ? 'list' : 'activity'} size={14} />
-                        </button>
-                        <div className="w-px h-4 bg-slate-800 mx-1 self-center" />
-                        <button onClick={() => loadTrace()} title="Reload Trace" className="p-1.5 text-slate-500 hover:text-blue-400">
-                            <Icon name="check" size={14} />
-                        </button>
-                        <button onClick={handleExport} title="Export Trace" className="p-1.5 text-slate-500 hover:text-emerald-400">
-                            <Icon name="box" size={14} />
-                        </button>
+            {!hideTimeline && (
+                <div className="w-80 border-r border-slate-800 flex flex-col bg-[#0b0e14]">
+                    <div className="p-4 border-b border-slate-800 sticky top-0 bg-[#0b0e14]/80 backdrop-blur-md z-10 flex justify-between items-center">
+                        <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Execution Trace</h3>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setViewMode(viewMode === 'list' ? 'flow' : 'list')}
+                                title={viewMode === 'flow' ? "Switch to List View" : "Switch to Flow Map"}
+                                className={`p-1.5 rounded-lg border transition-all ${viewMode === 'flow' ? 'text-blue-400 bg-blue-400/10 border-blue-400/20' : 'text-slate-500 hover:text-blue-400 border-slate-800'}`}
+                            >
+                                <Icon name={viewMode === 'flow' ? 'list' : 'activity'} size={14} />
+                            </button>
+                            <div className="w-px h-4 bg-slate-800 mx-1 self-center" />
+                            <button onClick={() => loadTrace()} title="Reload Trace" className="p-1.5 text-slate-500 hover:text-blue-400">
+                                <Icon name="check" size={14} />
+                            </button>
+                            <button onClick={handleExport} title="Export Trace" className="p-1.5 text-slate-500 hover:text-emerald-400">
+                                <Icon name="box" size={14} />
+                            </button>
+                        </div>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        {loading ? (
+                            <div className="flex items-center justify-center py-12">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                            </div>
+                        ) : events.length > 0 ? (
+                            events.map((e, idx) => (
+                                <div
+                                    key={idx}
+                                    onClick={() => setSelectedEvent(e)}
+                                    className={`p-3 rounded-xl cursor-pointer border transition-all ${selectedEvent === e
+                                        ? 'bg-blue-600/10 border-blue-500/30'
+                                        : 'bg-[#161b22] border-slate-800 hover:border-slate-700'
+                                        }`}
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <span className={`text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded ${(e.event === 'prompt' || e.event === 'agent_request') ? 'text-sky-400 bg-sky-400/10' :
+                                            e.event === 'agent_response' ? 'text-emerald-400 bg-emerald-400/10' :
+                                                e.event === 'tool_call' ? 'text-amber-400 bg-amber-400/10' :
+                                                    'text-slate-400 bg-slate-400/10'
+                                            }`}>
+                                            {e.event.replace('_', ' ')}
+                                        </span>
+                                        <span className="text-[10px] text-slate-600 font-mono italic">
+                                            {new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed opacity-80">
+                                        {e.content || (e.tool ? `${e.tool}(...)` : e.scenario || "Run Info")}
+                                    </p>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full py-12 text-center space-y-4 opacity-30">
+                                <Icon name="activity" size={48} />
+                                <p className="text-xs font-bold uppercase tracking-widest">No Trace Loaded</p>
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {loading ? (
-                        <div className="flex items-center justify-center py-12">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                        </div>
-                    ) : events.length > 0 ? (
-                        events.map((e, idx) => (
-                        <div 
-                            key={idx}
-                            onClick={() => setSelectedEvent(e)}
-                            className={`p-3 rounded-xl cursor-pointer border transition-all ${
-                                selectedEvent === e 
-                                ? 'bg-blue-600/10 border-blue-500/30' 
-                                : 'bg-[#161b22] border-slate-800 hover:border-slate-700'
-                            }`}
-                        >
-                            <div className="flex justify-between items-start mb-2">
-                                <span className={`text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded ${
-                                    (e.event === 'prompt' || e.event === 'agent_request') ? 'text-sky-400 bg-sky-400/10' :
-                                    e.event === 'agent_response' ? 'text-emerald-400 bg-emerald-400/10' :
-                                    e.event === 'tool_call' ? 'text-amber-400 bg-amber-400/10' :
-                                    'text-slate-400 bg-slate-400/10'
-                                }`}>
-                                    {e.event.replace('_', ' ')}
-                                </span>
-                                <span className="text-[10px] text-slate-600 font-mono italic">
-                                    {new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                            </div>
-                            <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed opacity-80">
-                                {e.content || (e.tool ? `${e.tool}(...)` : e.scenario || "Run Info")}
-                            </p>
-                        </div>
-                    ))
-                    ) : (
-                        <div className="flex flex-col items-center justify-center h-full py-12 text-center space-y-4 opacity-30">
-                            <Icon name="activity" size={48} />
-                            <p className="text-xs font-bold uppercase tracking-widest">No Trace Loaded</p>
-                        </div>
-                    )}
-                </div>
-            </div>
+            )}
 
             {/* Content Column */}
             <div className="flex-1 overflow-hidden flex flex-col bg-[#0d1117] relative">
@@ -791,7 +799,13 @@ const VisualDebugger = ({ runId, onNotify }) => {
                         </div>
                     </div>
                 ) : viewMode === 'flow' ? (
-                    <FlowView events={events} selectedEvent={selectedEvent} onNodeSelect={(e) => { setSelectedEvent(e); }} />
+                    <FlowView
+                        events={events}
+                        selectedEvent={selectedEvent}
+                        onNodeSelect={(e) => { setSelectedEvent(e); }}
+                        highlightFailure={highlightFailure}
+                        minimal={minimal}
+                    />
                 ) : (
                     <div className="flex-1 overflow-y-auto p-12">
                         {selectedEvent ? (
@@ -861,7 +875,7 @@ const ReportsView = ({ onViewReport }) => {
                                         {run.scenario}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button 
+                                        <button
                                             onClick={() => onViewReport(run.run_id)}
                                             className="text-blue-500 hover:text-blue-400 text-xs font-bold transition-colors"
                                         >
@@ -895,7 +909,7 @@ const DocsView = ({ categoryFilter, searchQuery = "" }) => {
         fetch('/api/docs')
             .then(res => res.json())
             .then(data => {
-                const filtered = categoryFilter 
+                const filtered = categoryFilter
                     ? data.docs.filter(d => d.category === categoryFilter)
                     : data.docs;
                 setDocs(filtered);
@@ -903,7 +917,7 @@ const DocsView = ({ categoryFilter, searchQuery = "" }) => {
             });
     }, [categoryFilter]);
 
-    const filteredDocs = searchQuery 
+    const filteredDocs = searchQuery
         ? docs.filter(d => d.title.toLowerCase().includes(searchQuery.toLowerCase()))
         : docs;
 
@@ -927,7 +941,7 @@ const DocsView = ({ categoryFilter, searchQuery = "" }) => {
     if (selectedDoc) {
         return (
             <div className="p-8 max-w-4xl mx-auto space-y-6">
-                <button 
+                <button
                     onClick={() => setSelectedDoc(null)}
                     className="flex items-center gap-2 text-slate-500 hover:text-slate-300 transition-colors text-sm font-bold uppercase tracking-widest"
                 >
@@ -963,7 +977,7 @@ const DocsView = ({ categoryFilter, searchQuery = "" }) => {
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {items.map(doc => (
-                                <div 
+                                <div
                                     key={doc.id}
                                     onClick={() => readDoc(doc.id)}
                                     className="p-5 bg-[#161b22] border border-slate-800 rounded-2xl flex items-center justify-between group cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/5 transition-all"
@@ -991,287 +1005,6 @@ const DocsView = ({ categoryFilter, searchQuery = "" }) => {
     );
 };
 
-const Demo = () => {
-    const [step, setStep] = useState(1);
-    const [fixing, setFixing] = useState(false);
-
-    const nextStep = () => setStep(s => Math.min(s + 1, 7));
-    const prevStep = () => setStep(s => Math.max(s - 1, 1));
-    const reset = () => { setStep(1); setFixing(false); };
-
-    const handleFix = () => {
-        setFixing(true);
-        setTimeout(() => {
-            setFixing(false);
-            nextStep();
-        }, 3000);
-    };
-
-    const renderStep = () => {
-        switch(step) {
-            case 1: 
-                return (
-                    <div className="flex-1 flex flex-col items-center justify-center p-20 animate-in fade-in zoom-in duration-500">
-                        <div className="max-w-2xl w-full text-center space-y-8">
-                            <div className="inline-block p-4 bg-red-500/10 rounded-3xl border border-red-500/20 text-red-500 mb-4 scale-125">
-                                <Icon name="alert" size={48} />
-                            </div>
-                            <h2 className="text-5xl font-black text-white leading-tight">Screen 1: The Failure</h2>
-                            <p className="text-xl text-slate-400 italic font-medium">“This is a real-world type of failure we see— an agent incorrectly approving a high-risk loan.”</p>
-                            
-                            <div className="p-8 bg-red-500/10 border-2 border-red-500/20 rounded-[40px] text-left shadow-2xl animate-pulse">
-                                <div className="flex justify-between items-center mb-6">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-red-400 px-3 py-1 bg-red-400/10 rounded-full">CRITICAL FAILURE</span>
-                                    <span className="text-xs text-slate-500 font-mono">10:45 AM</span>
-                                </div>
-                                <h3 className="text-2xl font-bold text-white mb-2">Loan Approval – Risk Check</h3>
-                                <p className="text-slate-400 text-sm mb-6">Scenario: finance-loan-risk-check</p>
-                                <div className="flex items-center gap-2 text-red-500 font-bold text-lg">
-                                    <Icon name="alert" size={20} />
-                                    <span>STATUS: ❌ FAILED (Safety Policy Violation)</span>
-                                </div>
-                            </div>
-                            <button onClick={nextStep} className="mt-8 px-10 py-4 bg-white text-black font-black rounded-full hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm">Analyze Failure</button>
-                        </div>
-                    </div>
-                );
-            case 2:
-                return (
-                    <div className="flex-1 flex flex-col items-center justify-center p-20 animate-in slide-in-from-right duration-500">
-                        <div className="max-w-4xl w-full space-y-8">
-                            <div className="text-center mb-12">
-                                <h2 className="text-4xl font-black text-white mb-4">What Teams Have Today</h2>
-                                <p className="text-xl text-slate-400 font-medium italic">“This is what most teams rely on today—logs. You can see prompts, tool calls... but nothing tells you why the agent made the wrong decision.”</p>
-                            </div>
-                            <div className="bg-[#0b0e14] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
-                                <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-[#161b22]">
-                                    <div className="flex gap-1.5">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/20"></div>
-                                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500/20"></div>
-                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/20"></div>
-                                    </div>
-                                    <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">production_logs_raw.jsonl</span>
-                                </div>
-                                <div className="p-8 font-mono text-[11px] text-slate-400 leading-relaxed overflow-y-auto max-h-96">
-                                    <div className="space-y-1 opacity-80">
-                                        <p>{`{"timestamp": "2026-03-19T04:10:00Z", "level": "INFO", "event": "request_started", "id": "8a9f"}`}</p>
-                                        <p>{`{"timestamp": "2026-03-19T04:10:01Z", "level": "DEBUG", "msg": "Tool get_customer_profile"}`}</p>
-                                        <p>{`{"timestamp": "2026-03-19T04:10:04Z", "level": "INFO", "msg": "HTTP 200 OK"}`}</p>
-                                        <p>{`{"timestamp": "2026-03-19T04:10:05Z", "level": "DEBUG", "msg": "Transition: FETCH -> ANALYSE"}`}</p>
-                                        <p>{`{"timestamp": "2026-03-19T04:10:08Z", "level": "DEBUG", "msg": "Tool get_risk_score"}`}</p>
-                                        <p>{`{"timestamp": "2026-03-19T04:10:12Z", "level": "INFO", "msg": "Decision: APPROVE (0.70)"}`}</p>
-                                        <p className="text-red-400 font-bold underline">{`{"timestamp": "2026-03-19T04:10:13Z", "level": "ERROR", "msg": "POLICY_FAIL"}`}</p>
-                                        <p className="opacity-30 italic">... 1,200 more lines of unformatted telemetry ...</p>
-                                        <p className="text-red-500 font-bold">{`{"timestamp": "2026-03-19T04:10:15Z", "level": "FATAL", "msg": "RUN_FAILED"}`}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="text-center pt-8">
-                                <button onClick={nextStep} className="px-10 py-4 bg-blue-600 text-white font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-xl shadow-blue-500/20 uppercase tracking-widest text-sm">The AgentEval Magic Moment</button>
-                            </div>
-                        </div>
-                    </div>
-                );
-            case 3:
-                return (
-                    <div className="flex-1 flex flex-col h-full animate-in zoom-in duration-700">
-                        <div className="p-6 border-b border-slate-800 bg-[#0b0e14]/50 backdrop-blur-xl flex justify-between items-center">
-                            <div>
-                                <h2 className="text-xl font-black text-white">AgentEval Replay</h2>
-                                <p className="text-xs text-slate-500 italic mt-1 font-medium">“Now let’s replay the same run using AgentEval. We skip the logs and go straight to the execution timeline.”</p>
-                            </div>
-                            <button onClick={nextStep} className="px-6 py-2 bg-white text-black font-black rounded-full text-[10px] uppercase tracking-widest z-50">Isolate Root Cause</button>
-                        </div>
-                        <div className="flex-1 overflow-hidden opacity-90 min-h-[400px]">
-                            <VisualDebugger runId="run-loan-risk-fail" />
-                        </div>
-                    </div>
-                );
-            case 4:
-                return (
-                    <div className="flex-1 flex flex-col h-full relative overflow-hidden">
-                        <div className="absolute inset-0 z-50 flex items-center justify-center p-20 animate-in fade-in duration-500">
-                             <div className="bg-blue-600 text-white rounded-[40px] p-12 max-w-2xl shadow-[0_0_100px_rgba(37,99,235,0.4)] border-2 border-white/20 relative animate-in zoom-in duration-300">
-                                <div className="absolute -top-6 -left-6 w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-xl border border-blue-100 rotate-[-12deg]">
-                                    <Icon name="search" size={32} />
-                                </div>
-                                <h3 className="text-3xl font-black mb-6">Screen 4: Root Cause Isolation</h3>
-                                <p className="text-xl font-bold mb-8 leading-relaxed">
-                                    “The AgentEval Engine automatically highlighted the logic breach. 
-                                    The agent used a <span className="underline decoration-4 decoration-amber-400">stale risk threshold of 0.65</span> instead of the current policy of <span className="underline decoration-4 decoration-emerald-400">0.85</span>.”
-                                </p>
-                                <div className="space-y-4 font-mono text-sm bg-black/20 p-6 rounded-2xl border border-white/10">
-                                    <div className="flex justify-between">
-                                        <span className="opacity-60">Expected Threshold:</span>
-                                        <span className="text-emerald-400 font-black">0.85</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="opacity-60">Agent Threshold:</span>
-                                        <span className="text-red-400 font-black">0.65 (MISMATCH)</span>
-                                    </div>
-                                </div>
-                                <button onClick={nextStep} className="w-full mt-10 py-5 bg-white text-blue-600 font-black rounded-3xl hover:bg-slate-100 transition-colors uppercase tracking-[0.2em] text-sm z-50">Deploy Fix & Re-run</button>
-                             </div>
-                        </div>
-                        <div className="flex-1 blur-md grayscale opacity-30 pointer-events-none">
-                            <VisualDebugger runId="run-loan-risk-fail" />
-                        </div>
-                    </div>
-                );
-            case 5:
-                return (
-                    <div className="flex-1 flex flex-col h-full animate-in fade-in duration-500">
-                        {fixing ? (
-                            <div className="absolute inset-0 z-[60] bg-[#0b0e14]/90 flex flex-col items-center justify-center space-y-8 backdrop-blur-3xl animate-in fade-in">
-                                <div className="w-32 h-32 relative">
-                                    <div className="absolute inset-0 rounded-full border-4 border-blue-500/20"></div>
-                                    <div className="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
-                                    <div className="absolute inset-0 flex items-center justify-center text-blue-500">
-                                        <Icon name="activity" size={48} />
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <h3 className="text-3xl font-black text-white mb-2">Build Index</h3>
-                                    <p className="text-slate-400 font-medium italic">“All fixes are automatically indexed for global regression testing.”</p>
-                                </div>
-                            </div>
-                        ) : null}
-                        <div className="p-6 border-b border-slate-800 bg-[#0b0e14]/50 backdrop-blur-xl flex justify-between items-center">
-                            <div>
-                                <h2 className="text-xl font-black text-white">The Rerun (Validation)</h2>
-                                <p className="text-xs text-slate-500 italic mt-1 font-medium">“We’ve identified the root cause. Now, let’s verify the fix with a high-fidelity rerun.”</p>
-                            </div>
-                            <div className="flex gap-4">
-                                <button onClick={() => setStep(4)} className="px-6 py-2 border border-slate-800 text-slate-500 font-black rounded-full text-[10px] uppercase tracking-widest hover:text-white hover:border-white transition-all">Back to Analysis</button>
-                                <button onClick={nextStep} className="px-6 py-2 bg-emerald-600 text-white font-black rounded-full text-[10px] uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20">Check CI/CD Matrix</button>
-                            </div>
-                        </div>
-                        <div className="flex-1 overflow-hidden min-h-[400px]">
-                            <VisualDebugger runId={fixing ? "" : "run-loan-risk-pass"} />
-                        </div>
-                        {!fixing && step === 5 && (
-                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[55] animate-in zoom-in bounce-in-down duration-1000">
-                                 <div className="bg-emerald-600 text-white px-10 py-6 rounded-full shadow-[0_0_80px_rgba(16,185,129,0.5)] border-2 border-white/20 flex items-center gap-4">
-                                     <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-emerald-600">
-                                         <Icon name="check" size={24} />
-                                     </div>
-                                     <span className="text-2xl font-black uppercase tracking-widest">PASSED</span>
-                                 </div>
-                             </div>
-                        )}
-                        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
-                            {!fixing && <button onClick={handleFix} className="px-12 py-5 bg-white text-blue-600 font-black rounded-full hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm shadow-[0_0_50px_rgba(255,255,255,0.3)] z-[60]">Trigger Rerun</button>}
-                            {fixing && (
-                                <div className="p-4 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center gap-4 animate-pulse">
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-400"></div>
-                                    <span className="text-blue-400 font-bold uppercase tracking-widest text-[10px]">Re-running Scenario with fixed threshold...</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                );
-            case 6:
-                return (
-                    <div className="flex-1 flex flex-col items-center justify-center p-20 animate-in slide-in-from-bottom-20 duration-500">
-                        <div className="max-w-5xl w-full">
-                            <div className="text-center mb-16">
-                                <h2 className="text-4xl font-black text-white mb-4">CI/CD for Agents</h2>
-                                <p className="text-xl text-slate-400 font-medium italic">“With AgentEval, you don’t just fix one bug. You build a regression suite that runs on every commit.”</p>
-                            </div>
-                            <div className="grid grid-cols-5 gap-6">
-                                <div className="space-y-4 pt-12">
-                                    {['Loan Approval', 'Med Diagnosis', 'Fraud Detection', 'Data Migration', 'Policy Review', 'Legacy Backup'].map((label, i) => (
-                                        <div key={i} className="h-12 flex items-center text-xs font-bold text-slate-500 uppercase tracking-tight pr-4 border-r border-slate-800/50">
-                                            {label}
-                                        </div>
-                                    ))}
-                                </div>
-                                {['v1.2.0 (Stable)', 'v2.0-beta', 'GPT-4o', 'Claude 3.5'].map((col, i) => (
-                                    <div key={i} className="space-y-4">
-                                        <div className="text-[10px] font-black text-slate-100 uppercase tracking-widest text-center px-4 py-2 bg-blue-600/10 border border-blue-500/20 rounded-xl">{col}</div>
-                                        {[1,2,3,4,5,6].map(row => (
-                                            <div key={row} className={`h-12 border rounded-xl flex items-center justify-center transition-all hover:scale-105 cursor-help ${
-                                                (i === 2 && row === 3) || (i === 1 && row > 4) 
-                                                ? 'bg-red-500/10 border-red-500/20 text-red-500 shadow-[inset_0_0_20px_rgba(239,68,68,0.1)]' 
-                                                : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 shadow-[inset_0_0_20px_rgba(16,185,129,0.1)]'
-                                            }`}>
-                                                <Icon name={(i === 2 && row === 3) || (i === 1 && row > 4) ? 'alert' : 'check'} size={18} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="mt-8 flex justify-center gap-8">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Golden Trajectory Match</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Logic Regression Detected</span>
-                                </div>
-                            </div>
-                            <div className="mt-16 text-center">
-                                <button onClick={nextStep} className="px-12 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-full hover:scale-105 transition-all shadow-2xl shadow-blue-500/30 uppercase tracking-[0.2em] text-sm">Finish Story</button>
-                            </div>
-                        </div>
-                    </div>
-                );
-            case 7:
-                return (
-                    <div className="flex-1 flex flex-col items-center justify-center p-20 animate-in fade-in duration-1000">
-                        <div className="max-w-3xl w-full text-center space-y-12">
-                            <div className="relative inline-block">
-                                <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 to-emerald-500 rounded-full blur-2xl opacity-40 animate-pulse"></div>
-                                <div className="w-40 h-40 bg-[#161b22] border-4 border-slate-800 rounded-[50px] flex items-center justify-center text-blue-500 relative shadow-2xl rotate-3">
-                                    <Icon name="debugger" size={80} />
-                                </div>
-                            </div>
-                            <div>
-                                <h2 className="text-6xl font-black text-white leading-tight mb-4">Scaling With Confidence</h2>
-                                <p className="text-2xl text-slate-400 leading-relaxed font-medium">
-                                    “This is how teams turn agents from a <span className="text-red-400 font-bold underline">liability</span> into a <span className="text-emerald-400 font-bold underline">competitive edge</span>. 
-                                    Stop guessing. Start evaluating.”
-                                </p>
-                            </div>
-                            <div className="pt-12 flex gap-6 justify-center">
-                                <button onClick={reset} className="px-10 py-5 border-2 border-slate-800 text-slate-400 font-black rounded-full hover:text-white hover:border-white transition-all uppercase tracking-widest text-sm">Re-watch</button>
-                                <button onClick={() => window.location.href = '/docs'} className="px-10 py-5 bg-white text-black font-black rounded-full hover:shadow-2xl hover:shadow-white/20 transition-all uppercase tracking-widest text-sm">Start Your First Eval</button>
-                            </div>
-                        </div>
-                    </div>
-                );
-        }
-    };
-
-    return (
-        <div className="h-full bg-[#0b0e14] flex flex-col overflow-hidden relative">
-            <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                {renderStep()}
-            </div>
-            
-            <div className="absolute bottom-6 right-6 z-[100] flex items-center gap-4 bg-slate-900/80 backdrop-blur-md p-2 rounded-2xl border border-slate-800 shadow-2xl">
-                <div className="flex gap-1 h-1 w-24 bg-slate-800 rounded-full overflow-hidden mx-2">
-                    {[1,2,3,4,5,6,7].map(s => (
-                        <div key={s} className={`flex-1 transition-all duration-500 ${step >= s ? (step === 7 ? 'bg-emerald-500' : 'bg-blue-600') : 'bg-transparent'}`}></div>
-                    ))}
-                </div>
-                <div className="flex gap-1">
-                    <button onClick={prevStep} className={`p-2 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all ${step === 1 ? 'opacity-0 pointer-events-none' : ''}`}>
-                        <Icon name="chevron-left" size={14} />
-                    </button>
-                    <button onClick={nextStep} className={`p-2 rounded-xl border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all ${step === 7 ? 'opacity-0 pointer-events-none' : ''}`}>
-                        <Icon name="chevron-right" size={14} />
-                    </button>
-                    <div className="w-px h-6 bg-slate-800 mx-1"></div>
-                    <button onClick={(e) => { e.stopPropagation(); reset(); window.location.href = '/'; }} className="p-2 rounded-xl border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-all" title="Exit Demo">
-                        <Icon name="x" size={14} />
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 const Dashboard = ({ onNavigate, navItems }) => {
     const [search, setSearch] = useState('');
@@ -1288,7 +1021,7 @@ const Dashboard = ({ onNavigate, navItems }) => {
                 setLastSync(new Date().toLocaleTimeString());
             })
             .catch(() => setScenarioCount('Err'));
-            
+
         fetch('/api/info')
             .then(res => res.json())
             .then(data => setSystemInfo(data))
@@ -1314,7 +1047,7 @@ const Dashboard = ({ onNavigate, navItems }) => {
                 fetchState();
             });
     };
-    
+
     const statusItems = [
         { label: 'Agent Endpoint', value: systemInfo.agent_endpoint || 'Offline', icon: 'activity' },
         { label: 'Engine Version', value: systemInfo.version, icon: 'box' },
@@ -1322,126 +1055,126 @@ const Dashboard = ({ onNavigate, navItems }) => {
         { label: 'World Shims', value: `${systemInfo.world_shims || 0} Registered`, icon: 'debugger' }
     ];
 
-    const filteredStatus = statusItems.filter(item => 
-        item.label.toLowerCase().includes(search.toLowerCase()) || 
+    const filteredStatus = statusItems.filter(item =>
+        item.label.toLowerCase().includes(search.toLowerCase()) ||
         item.value.toLowerCase().includes(search.toLowerCase())
     );
 
-    const filteredNav = navItems.filter(item => 
+    const filteredNav = navItems.filter(item =>
         item.title.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
-    <div className="p-8 space-y-8 max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-2">
-            <div>
-                <h2 className="text-3xl font-bold text-white">Dashboard</h2>
-                <p className="text-slate-500 text-sm mt-1">Real-time oversight of your evaluation infrastructure.</p>
-            </div>
-            <div className="relative">
-                <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                <input 
-                    type="text"
-                    placeholder="Search systems and navigation..."
-                    className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-80 text-slate-200"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-6">
-            {/* Demo Story Hero Card */}
-            {systemInfo.enable_demo !== false && (
-                <div 
-                    onClick={() => onNavigate({id: 'demo', title: 'Demo'})}
-                    className="col-span-1 bg-gradient-to-br from-indigo-600 via-blue-600 to-emerald-500 rounded-3xl p-6 text-white shadow-2xl shadow-blue-500/20 flex flex-col justify-between h-48 border border-white/20 cursor-pointer group active:scale-[0.98] transition-all relative overflow-hidden"
-                >
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Icon name="play" size={120} />
-                    </div>
-                    <div className="flex justify-between items-start z-10">
-                        <div className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
-                            <Icon name="play" size={20} />
-                        </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-white/20 px-2 py-1 rounded-full backdrop-blur-md">Interactive Demo</span>
-                    </div>
-                    <div className="z-10">
-                        <h3 className="text-2xl font-black mb-1 group-hover:translate-x-1 transition-transform">Run Demo</h3>
-                        <p className="text-xs font-bold opacity-80 uppercase tracking-widest">Loan Approval Failure</p>
-                    </div>
+        <div className="p-8 space-y-8 max-w-6xl mx-auto">
+            <div className="flex justify-between items-center mb-2">
+                <div>
+                    <h2 className="text-3xl font-bold text-white">Dashboard</h2>
+                    <p className="text-slate-500 text-sm mt-1">Real-time oversight of your evaluation infrastructure.</p>
                 </div>
-            )}
+                <div className="relative">
+                    <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <input
+                        type="text"
+                        placeholder="Search systems and navigation..."
+                        className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-80 text-slate-200"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
+            </div>
 
-            <div className="bg-[#161b22] border border-slate-800 rounded-3xl p-6 flex flex-col justify-between h-48 shadow-xl relative group">
-                <div className="flex justify-between items-start">
-                    <Icon name="scenarios" size={24} className="text-slate-500" />
-                    <button 
-                        onClick={refreshIndex}
-                        disabled={isRefreshing}
-                        className={`p-1.5 bg-slate-800 rounded-lg text-[9px] font-bold text-slate-400 hover:text-white hover:bg-blue-600 transition-all uppercase tracking-widest active:scale-95 ${isRefreshing ? 'opacity-100 cursor-wait' : 'opacity-0 group-hover:opacity-100'}`}
+            <div className="grid grid-cols-3 gap-6">
+                {/* Demo Story Hero Card */}
+                {systemInfo.enable_demo !== false && (
+                    <div
+                        onClick={() => onNavigate({ id: 'demo', title: 'Demo' })}
+                        className="col-span-1 bg-gradient-to-br from-indigo-600 via-blue-600 to-emerald-500 rounded-3xl p-6 text-white shadow-2xl shadow-blue-500/20 flex flex-col justify-between h-48 border border-white/20 cursor-pointer group active:scale-[0.98] transition-all relative overflow-hidden"
                     >
-                        {isRefreshing ? <div className="animate-spin w-2 h-2 border-b-2 border-white rounded-full"></div> : "Refresh Index"}
-                    </button>
-                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                </div>
-                <div>
-                    <h3 className="text-4xl font-black mb-1 text-white">{scenarioCount}</h3>
-                    <div className="flex items-center gap-2">
-                        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Scenarios Index</p>
-                        <span className="text-[9px] font-bold text-emerald-500/60 uppercase tracking-widest px-1.5 py-0.5 bg-emerald-500/5 rounded border border-emerald-500/10">Synced {lastSync}</span>
-                    </div>
-                </div>
-            </div>
-            <div className="bg-[#161b22] border border-slate-800 rounded-3xl p-6 flex flex-col justify-between h-48 shadow-xl">
-                <div className="flex justify-between items-start">
-                    <Icon name="debugger" size={24} className="text-slate-500" />
-                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                </div>
-                <div>
-                    <h3 className="text-4xl font-black mb-1 text-white">{systemInfo.world_shims || 0}</h3>
-                    <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">World Shims</p>
-                </div>
-            </div>
-        </div>
-
-        <div>
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Quick Access & Status</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredStatus.map((item, idx) => (
-                    <div key={idx} className="p-6 bg-[#161b22] border border-slate-800 rounded-2xl flex gap-4 items-center animate-in fade-in duration-300">
-                        <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-500/20">
-                            <Icon name={item.icon} />
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Icon name="play" size={120} />
                         </div>
-                        <div>
-                            <h4 className="font-bold text-white mb-0.5">{item.label}</h4>
-                            <p className="text-xs text-slate-500">{item.value}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-
-        {filteredNav.length > 0 && (
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Navigation</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {filteredNav.map(item => (
-                        <button 
-                            key={item.id}
-                            onClick={() => onNavigate(item)}
-                            className="p-4 bg-[#161b22] border border-slate-800 rounded-2xl hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group flex flex-col items-center text-center"
-                        >
-                            <div className="p-3 bg-slate-800 rounded-xl mb-3 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                                <Icon name={item.icon} size={20} />
+                        <div className="flex justify-between items-start z-10">
+                            <div className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
+                                <Icon name="play" size={20} />
                             </div>
-                            <span className="text-xs font-bold text-slate-200 group-hover:text-blue-400">{item.title}</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-white/20 px-2 py-1 rounded-full backdrop-blur-md">Interactive Demo</span>
+                        </div>
+                        <div className="z-10">
+                            <h3 className="text-2xl font-black mb-1 group-hover:translate-x-1 transition-transform">Run Demo</h3>
+                            <p className="text-xs font-bold opacity-80 uppercase tracking-widest">Loan Approval Failure</p>
+                        </div>
+                    </div>
+                )}
+
+                <div className="bg-[#161b22] border border-slate-800 rounded-3xl p-6 flex flex-col justify-between h-48 shadow-xl relative group">
+                    <div className="flex justify-between items-start">
+                        <Icon name="scenarios" size={24} className="text-slate-500" />
+                        <button
+                            onClick={refreshIndex}
+                            disabled={isRefreshing}
+                            className={`p-1.5 bg-slate-800 rounded-lg text-[9px] font-bold text-slate-400 hover:text-white hover:bg-blue-600 transition-all uppercase tracking-widest active:scale-95 ${isRefreshing ? 'opacity-100 cursor-wait' : 'opacity-0 group-hover:opacity-100'}`}
+                        >
+                            {isRefreshing ? <div className="animate-spin w-2 h-2 border-b-2 border-white rounded-full"></div> : "Refresh Index"}
                         </button>
+                        <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    </div>
+                    <div>
+                        <h3 className="text-4xl font-black mb-1 text-white">{scenarioCount}</h3>
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Scenarios Index</p>
+                            <span className="text-[9px] font-bold text-emerald-500/60 uppercase tracking-widest px-1.5 py-0.5 bg-emerald-500/5 rounded border border-emerald-500/10">Synced {lastSync}</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-[#161b22] border border-slate-800 rounded-3xl p-6 flex flex-col justify-between h-48 shadow-xl">
+                    <div className="flex justify-between items-start">
+                        <Icon name="debugger" size={24} className="text-slate-500" />
+                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                    </div>
+                    <div>
+                        <h3 className="text-4xl font-black mb-1 text-white">{systemInfo.world_shims || 0}</h3>
+                        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">World Shims</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Quick Access & Status</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredStatus.map((item, idx) => (
+                        <div key={idx} className="p-6 bg-[#161b22] border border-slate-800 rounded-2xl flex gap-4 items-center animate-in fade-in duration-300">
+                            <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-500/20">
+                                <Icon name={item.icon} />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-white mb-0.5">{item.label}</h4>
+                                <p className="text-xs text-slate-500">{item.value}</p>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
-        )}
-    </div>
+
+            {filteredNav.length > 0 && (
+                <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">Navigation</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {filteredNav.map(item => (
+                            <button
+                                key={item.id}
+                                onClick={() => onNavigate(item)}
+                                className="p-4 bg-[#161b22] border border-slate-800 rounded-2xl hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group flex flex-col items-center text-center"
+                            >
+                                <div className="p-3 bg-slate-800 rounded-xl mb-3 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                    <Icon name={item.icon} size={20} />
+                                </div>
+                                <span className="text-xs font-bold text-slate-200 group-hover:text-blue-400">{item.title}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 
@@ -1454,6 +1187,18 @@ const App = () => {
     const [globalSearch, setGlobalSearch] = useState('');
     const [toast, setToast] = useState(null);
     const [selectedRunId, setSelectedRunId] = useState(null);
+    const [isDemoReady, setIsDemoReady] = useState(!!window.Demo);
+
+    useEffect(() => {
+        if (isDemoReady) return;
+        const interval = setInterval(() => {
+            if (window.Demo) {
+                setIsDemoReady(true);
+                clearInterval(interval);
+            }
+        }, 100);
+        return () => clearInterval(interval);
+    }, [isDemoReady]);
 
     const showToast = (message, type = 'success') => {
         setToast({ message, type });
@@ -1464,12 +1209,12 @@ const App = () => {
         fetch('/api/nav')
             .then(res => res.json())
             .then(data => setNavItems(data.nav || []));
-            
+
         // Security: Global message listener for plugin-to-core communication
         const handleMessage = (event) => {
             // Origin Validation (assuming same-origin for now, but extensible)
             if (event.origin !== window.location.origin) return;
-            
+
             const { type, payload } = event.data || {};
             if (type === 'NOTIFY') {
                 showToast(payload.message, payload.type);
@@ -1477,7 +1222,7 @@ const App = () => {
         };
 
         window.addEventListener('message', handleMessage);
-            
+
         // Handle direct navigation from URL on boot
         const path = window.location.pathname.substring(1);
         if (path) setActiveTab(path === 'docs/api' ? 'api_docs' : path);
@@ -1503,12 +1248,12 @@ const App = () => {
 
     const renderContent = () => {
         const currentItem = navItems.find(n => n.id === activeTab);
-        
+
         // Dynamic Component Handling (Zero-Touch Hot-Swap)
         if (currentItem && currentItem.type === 'component') {
             return (
                 <div className="h-full w-full overflow-hidden bg-slate-900/10">
-                    <iframe 
+                    <iframe
                         src={currentItem.path}
                         className="w-full h-full border-none"
                         title={currentItem.title}
@@ -1524,9 +1269,19 @@ const App = () => {
             case 'reports': return <ReportsView onViewReport={handleViewReport} />;
             case 'editor': return <ScenarioEditor />;
             case 'debugger': return <VisualDebugger runId={selectedRunId} onNotify={showToast} />;
-            case 'demo': return <Demo />;
+            case 'demo': 
+                if (!window.Demo) {
+                    return (
+                        <div className="h-full flex flex-col items-center justify-center space-y-4">
+                            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="text-slate-500 font-medium animate-pulse">Loading Demo Module...</p>
+                        </div>
+                    );
+                }
+                const DemoComp = window.Demo; 
+                return <DemoComp />;
             case 'docs': return <DocsView searchQuery={globalSearch} />;
-            case 'api_docs': return <DocsView categoryFilter="API Reference" searchQuery={globalSearch}  />;
+            case 'api_docs': return <DocsView categoryFilter="API Reference" searchQuery={globalSearch} />;
             default: return (
                 <div className="h-full flex flex-col items-center justify-center opacity-30 italic">
                     <h2 className="text-5xl font-black mb-4">404</h2>
@@ -1545,23 +1300,27 @@ const App = () => {
                         <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{activeTab.replace('_', ' ')}</span>
                     </div>
                     <div className="flex gap-4">
-                        {searching && (
-                            <input 
-                                autoFocus
-                                type="text"
-                                placeholder="Search industry scenarios (e.g., Medical, FinTech)..."
-                                value={globalSearch}
-                                onChange={(e) => setGlobalSearch(e.target.value)}
-                                onBlur={() => !globalSearch && setSearching(false)}
-                                className="bg-slate-900 border border-slate-800 rounded-lg px-3 py-1 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 w-48"
-                            />
+                        {activeTab !== 'demo' && (
+                            <>
+                                {searching && (
+                                    <input
+                                        autoFocus
+                                        type="text"
+                                        placeholder="Search industry scenarios (e.g., Medical, FinTech)..."
+                                        value={globalSearch}
+                                        onChange={(e) => setGlobalSearch(e.target.value)}
+                                        onBlur={() => !globalSearch && setSearching(false)}
+                                        className="bg-slate-900 border border-slate-800 rounded-lg px-3 py-1 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 w-48"
+                                    />
+                                )}
+                                <button
+                                    onClick={() => setSearching(!searching)}
+                                    className={`p-2 rounded-lg transition-colors ${searching ? 'text-blue-400 bg-blue-400/10' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'}`}
+                                >
+                                    <Icon name="search" size={18} />
+                                </button>
+                            </>
                         )}
-                        <button 
-                            onClick={() => setSearching(!searching)}
-                            className={`p-2 rounded-lg transition-colors ${searching ? 'text-blue-400 bg-blue-400/10' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'}`}
-                        >
-                            <Icon name="search" size={18} />
-                        </button>
                     </div>
                 </header>
                 <div className="flex-1 overflow-y-auto">
@@ -1572,11 +1331,10 @@ const App = () => {
             {/* Toast Notification */}
             {toast && (
                 <div className="fixed bottom-8 right-8 z-[100] animate-in slide-in-from-right-8 duration-300">
-                    <div className={`px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${
-                        toast.type === 'error' 
-                        ? 'bg-red-500/10 border-red-500/20 text-red-500' 
+                    <div className={`px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${toast.type === 'error'
+                        ? 'bg-red-500/10 border-red-500/20 text-red-500'
                         : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
-                    }`}>
+                        }`}>
                         <Icon name={toast.type === 'error' ? 'alert' : 'check'} size={18} />
                         <span className="text-sm font-bold tracking-tight">{toast.message}</span>
                     </div>
@@ -1589,4 +1347,6 @@ const App = () => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 // Inject ReactFlow for UMD usage
 window.ReactFlowRenderer = window.ReactFlow;
+window.Icon = Icon;
+window.VisualDebugger = VisualDebugger;
 root.render(<App />);
