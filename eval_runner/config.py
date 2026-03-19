@@ -82,8 +82,12 @@ HTML_SUB_TEXT_COLOR = os.getenv("HTML_SUB_TEXT_COLOR", "#94a3b8")
 # --- Sandbox Security ---
 SANDBOX_VFS_PREFIX = os.getenv("SANDBOX_VFS_PREFIX", "vfs:/")
 SHELL_METABLOCKS = os.getenv("SHELL_METABLOCKS", ";,|,&&,`").split(",")
+GLOBAL_ENABLED_SHIMS = os.getenv("GLOBAL_ENABLED_SHIMS", "*").split(",")
 
 # --- Timeouts ---
 DEFAULT_ADAPTER_TIMEOUT = int(os.getenv("DEFAULT_ADAPTER_TIMEOUT", "30"))
 DEFAULT_LLM_TIMEOUT = int(os.getenv("DEFAULT_LLM_TIMEOUT", "10"))
 LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "1024"))
+
+# --- UI & Demo Persistence ---
+ENABLE_DEMO = os.getenv("ENABLE_DEMO", "true").lower() == "true"

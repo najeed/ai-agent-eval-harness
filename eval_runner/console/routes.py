@@ -8,17 +8,25 @@ core_bp = Blueprint("core", __name__, url_prefix="/api")
 
 def register_core_routes(app, nav_registry):
     # Add core navigation items with metadata for dynamic rendering
-    nav_registry.extend([
+    from ..config import ENABLE_DEMO
+    items = [
         {"id": "dashboard", "title": "Dashboard", "path": "/", "icon": "home", "type": "internal"},
         {"id": "scenarios", "title": "Scenarios", "path": "/scenarios", "icon": "file-text", "type": "internal"},
         {"id": "reports", "title": "Reports & Traces", "path": "/reports", "icon": "bar-chart-2", "type": "internal"},
         {"id": "editor", "title": "Scenario Editor", "path": "/editor", "icon": "file-text", "type": "internal"},
         {"id": "debugger", "title": "Visual Debugger", "path": "/debugger", "icon": "activity", "type": "internal"},
         {"id": "docs", "title": "Documentation", "path": "/docs", "icon": "book", "type": "internal"},
+    ]
+    
+    if ENABLE_DEMO:
+        items.append({"id": "demo", "title": "Demo Story", "path": "/demo", "icon": "play", "type": "internal"})
+        
+    items.extend([
         {"id": "api_docs", "title": "API Reference", "path": "/docs/api", "icon": "box", "type": "internal"},
         {"id": "community", "title": "Community", "path": "https://github.com/najeed/ai-agent-eval-harness", "icon": "github", "type": "external"}
     ])
     
+    nav_registry.extend(items)
     app.register_blueprint(core_bp)
 
 @core_bp.route("/scenarios", methods=["GET"])
@@ -35,17 +43,13 @@ def list_scenarios():
     catalog.load_index()
     
     results = catalog.search(query=query, industry=industry, difficulty=difficulty)
+    total = len(results)
     
-    # Enrich with real-time lint score for the explorer UI
-    linter = ScenarioLinter()
-    enriched = []
-    for s in results[:100]: # Limit enrichment for performance
-        lint_res = linter.lint(s["path"])
-        s["lint_score"] = lint_res["score"]
-        s["status"] = lint_res["status"]
-        enriched.append(s)
-        
-    return jsonify({"scenarios": enriched})
+    # Use pre-calculated linting from index for speed
+    return jsonify({
+        "scenarios": results[:200], # Return more for searchability
+        "total_count": total
+    })
 
 @core_bp.route("/runs", methods=["GET"])
 def list_runs():
@@ -258,7 +262,7 @@ def get_debugger_state():
                     "message": "Historical trace loaded",
                     "data": {
                         "summary": summary,
-                        "timeline": events[-50:] # Last 50 events
+                        "timeline": events
                     }
                 })
             except Exception as e:
@@ -312,3 +316,35 @@ def read_doc(doc_path):
     with open(target, "r", encoding="utf-8") as f:
         content = f.read()
     return jsonify({"content": content})
+
+@core_bp.route("/info", methods=["GET"])
+def get_info():
+    """Returns basic system info with dynamic provider detection."""
+    from ..config import ENABLE_DEMO, AGENT_API_URL, GOOGLE_API_KEY, ANTHROPIC_API_KEY, OPENAI_API_KEY
+    
+    agent = "Custom Endpoint"
+    if GOOGLE_API_KEY: agent = "Gemini Pro (Active)"
+    elif ANTHROPIC_API_KEY: agent = "Claude 3.5 (Active)"
+    elif OPENAI_API_KEY: agent = "GPT-4o (Active)"
+    
+    from ..simulators import get_simulator_registry
+    
+    return jsonify({
+        "version": "v1.2.0-stable",
+        "status": "active",
+        "world_shims": len(get_simulator_registry()),
+        "agent_endpoint": agent,
+        "api_url": AGENT_API_URL,
+        "enable_demo": ENABLE_DEMO,
+        "uptime": datetime.now().isoformat()
+    })
+
+@core_bp.route("/scenarios/refresh", methods=["POST"])
+def refresh_index():
+    """Manually re-builds the scenario catalog index."""
+    try:
+        from ..catalog import ScenarioCatalog
+        ScenarioCatalog().build_index()
+        return jsonify({"status": "success", "message": "Index refreshed."})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

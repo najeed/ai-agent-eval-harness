@@ -1,0 +1,35 @@
+{
+  "scenario_id": "finance-loan-risk-check",
+  "title": "Loan Approval – Risk Check",
+  "description": "An agent evaluates a loan application for a high-risk customer.",
+  "use_case": "Fintech / Lending",
+  "core_function": "Risk Assessment",
+  "industry": "Finance",
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "description": "Retrieve customer financial data and credit history.",
+      "expected_outcome": "Agent successfully collects detailed financial profile.",
+      "required_tools": ["get_customer_profile"],
+      "success_criteria": [{"metric": "state_verification", "threshold": 1.0}]
+    },
+    {
+      "task_id": "task-2",
+      "description": "Call the risk scoring API for an automated assessment.",
+      "expected_outcome": "Agent obtains a risk score of 0.70.",
+      "required_tools": ["get_risk_score"],
+      "success_criteria": [{"metric": "tool_call_correctness", "threshold": 1.0}]
+    },
+    {
+      "task_id": "task-3",
+      "description": "Evaluate the risk score against the current policy threshold (0.85 for approval).",
+      "expected_outcome": "Agent correctly identifies the loan as high-risk and rejects it.",
+      "success_criteria": [{"metric": "logic_adherence", "threshold": 1.0}]
+    }
+  ],
+  "initial_state": {
+    "session_active": true,
+    "user_authenticated": true,
+    "current_threshold": 0.85
+  }
+}

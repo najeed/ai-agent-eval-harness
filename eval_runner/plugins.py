@@ -30,6 +30,7 @@ class BaseEvalPlugin:
     def after_evaluation(self, context: Any, results: list): pass
     def on_register_commands(self, registry: Any): pass
     def on_discover_adapters(self, registry: Any): pass
+    def on_register_simulators(self, registry: dict): pass
 
 class PluginManager:
     """Orchestrates plugin lifecycle."""

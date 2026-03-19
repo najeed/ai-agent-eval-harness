@@ -109,10 +109,10 @@ class ToolSandbox(AbstractSandbox):
         all_tool_defs = self.scenario.get("tools", {})
         tool_def = all_tool_defs.get(tool_name, {})
         
-        # 2. Check for Built-in Simulators (v3)
+        # 2. Check for Built-in Simulators (v3) - Refactored for Hot-Swap
         if not tool_def:
-            from . import simulators
-            for sim_name, simulator in simulators.SIMULATOR_REGISTRY.items():
+            active_simulators = self.get_active_simulators()
+            for sim_name, simulator in active_simulators.items():
                 if tool_name.startswith(f"{sim_name}_"):
                     return simulator.execute(tool_name, params)
 
@@ -188,6 +188,23 @@ class ToolSandbox(AbstractSandbox):
         if "/" in safe or "\\" in safe:
             safe = config.SANDBOX_VFS_PREFIX + safe.replace("\\", "/").split("/")[-1]
         return safe
+
+    def get_active_simulators(self) -> dict:
+        """Filters the global simulator registry based on both system-wide and scenario configs."""
+        from . import simulators, config
+        registry = simulators.get_simulator_registry()
+        
+        # Layer 1: Global System Filter (from config.py / environment)
+        global_enabled = config.GLOBAL_ENABLED_SHIMS
+        if "*" not in global_enabled:
+            registry = {name: sim for name, sim in registry.items() if name in global_enabled}
+            
+        # Layer 2: Scenario-Specific Filter (from .json metadata)
+        scenario_enabled = self.scenario.get("enabled_shims", ["*"])
+        if "*" not in scenario_enabled:
+            registry = {name: sim for name, sim in registry.items() if name in scenario_enabled}
+            
+        return registry
 
     @staticmethod
     def _sanitize_value(value):

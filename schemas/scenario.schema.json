@@ -183,6 +183,13 @@
     "policies": {
       "type": "object",
       "description": "Governance policies to be enforced during execution (e.g., spending limits, tool constraints)"
+    },
+    "enabled_shims": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of world shims to enable for this scenario (e.g., ['git', 'api']). Use ['*'] for all."
     }
   },
   "definitions": {
