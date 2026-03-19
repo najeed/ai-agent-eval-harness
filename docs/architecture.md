@@ -88,7 +88,7 @@ Plugins (inheriting from `BaseEvalPlugin`) hook into specific stages of the eval
 | Flight Recorder | `eval_runner/flight_recorder.py`| Passive event logger subscribing to the core event bus |
 | Metrics | `eval_runner/metrics.py` | Research-grade scoring: Consenus, PII, and Consistency Scoring |
 | Simulators | `eval_runner/simulators.py`| World Shim suite (20+ simulators) for high-fidelity testing |
-| Triage | `eval_runner/triage.py`| Heuristic failure pattern matching and tagging |
+| Triage | `eval_runner/triage.py`| High-fidelity trajectory forensics and confidence-based root cause isolation |
 | Visual Suite | `ui/visual-debugger/` | React Flow powered dashboard for real-time trajectory analysis |
 | Analyzer | `eval_runner/analyzer.py`| Proactive GitHub repo scanning and AES scenario scaffolding |
 | Explainer | `eval_runner/explainer.py`| Heuristic-based trace diagnostics and root cause analysis |
@@ -100,7 +100,7 @@ Phase 1 establishes the "Standardized Evaluation" layer:
 - **`run.jsonl` (Flight Recorder)**: Every evaluation emits an append-only, deterministic log. This serves as the "source of truth" for replaying and debugging agent behavior without re-running the actual models.
 - **Agent Crash Replayer**: The `replay` CLI command reconstructs the agent's timeline from a `run.jsonl` file, enabling step-by-step inspection.
 - **Scenario Editor**: A visual drag-and-drop tool integrated into the Visual Suite for authoring and modifying AES logic without writing JSON.
-- **Failures Explainer**: The `explain` command analyzes `run.jsonl` to provide human-readable diagnostics for complex agent failures.
+- **Trace Explainer**: High-fidelity root cause diagnostics with forensic reasoning (e.g., policy violations vs. induced errors) and confidence scoring (100% for violations, 85% for tool/logic errors, 50% for heuristic fallbacks).
 
 ## Semantic Bridge & Drift Management
 
@@ -182,6 +182,15 @@ The Integrated Visual Suite uses a **Token-Exchange Protocol** to ensure Enterpr
 The Visual Suite has been fully migrated to **React Flow**, enabling:
 - **High-Density Trajectories**: Fluid zoom and pan for 100+ node traces.
 - **Glassmorphic UI**: Premium aesthetics with real-time tool overlays.
-- **Auto-Centering**: Instant focus on tool-calls or policy breaches.
+- **Auto-Centering**: Instant focus on tool-calls or identified root cause failure points.
 - **Interactive State Inspection**: Deep dive into the VFS sandbox at any turn.
 
+## High-Fidelity Triage Implementation
+
+The `TriageEngine` uses a multi-layered forensic approach to identify the root cause of agent failures:
+
+1.  **Level 1: Explicit Violations (100% Confidence)**: Direct policy breaches or evaluation plugin markers.
+2.  **Level 2: Induced Errors (85% Confidence)**: Tracing back from system/tool exceptions to the preceding agent decision.
+3.  **Level 3: Heuristic Divergence (50% Confidence)**: Identifying the last substantive decision before a run's failure signature.
+
+Every identification includes a `reason` and `confidence` score, providing transparency into the automatic diagnostics process.

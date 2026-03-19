@@ -52,9 +52,37 @@ def test_triage_success_no_tag():
         }
     ]
     TriageEngine.apply_triage(results)
+def test_identify_root_cause_policy():
+    from eval_runner.triage import TriageEngine
+    history = [
+        {"role": "user", "content": "hello"},
+        {"role": "agent", "content": {"action": "think"}},
+        {"role": "environment", "content": {"status": "policy_violation"}}
+    ]
+    assert TriageEngine.identify_root_cause_index(history) == 2
+
+def test_identify_root_cause_tool_error():
+    from eval_runner.triage import TriageEngine
+    history = [
+        {"role": "agent", "content": {"action": "tool_x"}}, # Index 0
+        {"role": "environment", "content": {"status": "error"}} # Index 1
+    ]
+    assert TriageEngine.identify_root_cause_index(history) == 0
+
+def test_identify_root_cause_fallback():
+    from eval_runner.triage import TriageEngine
+    history = [
+        {"role": "agent", "content": {"action": "bad_decision"}}, # Index 0
+        {"role": "run_end", "status": "failed"} # Index 1
+    ]
+    assert TriageEngine.identify_root_cause_index(history) == 0
+
 if __name__ == "__main__":
     test_triage_connection_error()
     test_triage_policy_violation()
     test_triage_tool_error()
     test_triage_success_no_tag()
+    test_identify_root_cause_policy()
+    test_identify_root_cause_tool_error()
+    test_identify_root_cause_fallback()
     print("ALL TESTS PASSED MANUALLY")

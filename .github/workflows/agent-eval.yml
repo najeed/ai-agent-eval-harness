@@ -31,7 +31,7 @@ jobs:
 
       - name: Validate AES Scenarios
         run: |
-          eval-harness aes validate industries/telecom/scenarios/
+          eval-harness aes validate --path industries/telecom/scenarios/
 
       - name: Run Evaluation Suite
         run: |

@@ -274,12 +274,17 @@ def get_debugger_state():
                     elif ev.get("event") == "agent_response":
                         summary["last_tool"] = ev.get("response", {}).get("action")
             
+            # Identify root cause using TriageEngine
+            from ..triage import TriageEngine
+            root_cause = TriageEngine.identify_root_cause(events)
+
             return jsonify({
                 "status": "ok",
                 "message": "Historical trace loaded",
                 "data": {
                     "summary": summary,
-                    "timeline": events
+                    "timeline": events,
+                    "root_cause": root_cause
                 }
             })
         except Exception as e:

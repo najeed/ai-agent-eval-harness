@@ -1002,10 +1002,17 @@ def handle_explain(args):
         return
         
     diagnosis = explainer.explain_trace(path)
-    print("\n--- Diagnostic Report ---")
-    print(f"Root Cause: {diagnosis['root_cause']}")
-    print(f"Suggestion: {diagnosis['suggestion']}")
-    print("-------------------------")
+    print("\n" + "=" * 50)
+    print(f"{'AGENT-EVAL FORENSIC REPORT':^50}")
+    print("=" * 50)
+    print(f"File:       {path.name}")
+    print(f"Confidence: {diagnosis['confidence']*100:.0f}%")
+    print(f"Target Turn: {diagnosis['index']}")
+    print("-" * 50)
+    print(f"Root Cause:\n{diagnosis['root_cause']}")
+    print("-" * 50)
+    print(f"Recommendation:\n{diagnosis['suggestion']}")
+    print("=" * 50 + "\n")
 
 def handle_calibrate(args):
     """Handler for 'calibrate' command."""

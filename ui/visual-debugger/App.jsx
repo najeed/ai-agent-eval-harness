@@ -541,7 +541,7 @@ const HumanFriendlyDetail = ({ event, onNotify }) => {
     );
 };
 
-const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, minimal }) => {
+const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, minimal, rootCauseIndex }) => {
     const { setCenter } = useReactFlow();
 
     const initialNodes = useMemo(() => {
@@ -564,7 +564,19 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, 
                 selectedEvent.timestamp === e.timestamp &&
                 selectedEvent.event === e.event;
 
-            const isFailure = (e.event === 'policy_violation' || e.error || (e.response && e.response.status === 'error'));
+            const isFailure = (e.event === 'policy_violation' || e.error || (e.response && e.response.status === 'error') || e.is_root_cause === true || (rootCauseIndex !== -1 && Number(idx) === Number(rootCauseIndex)));
+
+            let nodeClass = `react-flow__node-${(e.event === 'prompt' || e.event === 'agent_request') ? 'prompt' : (e.event === 'tool_call' || e.event === 'agent_response' || e.event === 'agent_thought') ? 'agent' : 'environment'}`;
+
+            if (highlightFailure && isFailure) {
+                nodeClass += " ring-4 ring-red-500 ring-offset-8 animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.8)] z-50";
+            } else if (isSelected) {
+                nodeClass += " ring-2 ring-blue-500 ring-offset-4 ring-offset-[#0d1117] shadow-[0_0_20px_rgba(59,130,246,0.5)] z-50";
+            } else if (highlightFailure && !isFailure) {
+                nodeClass += " opacity-10 grayscale scale-75";
+            } else if (minimal && !isSelected) {
+                nodeClass += " opacity-20 grayscale scale-90";
+            }
 
             nodes.push({
                 id: `node-${idx}`,
@@ -580,7 +592,7 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, 
                     )
                 },
                 position: { x: x, y: y },
-                className: `react-flow__node-${(e.event === 'prompt' || e.event === 'agent_request') ? 'prompt' : (e.event === 'tool_call' || e.event === 'agent_response' || e.event === 'agent_thought') ? 'agent' : 'environment'} ${isSelected ? 'ring-2 ring-blue-500 ring-offset-4 ring-offset-[#0d1117] shadow-[0_0_20px_rgba(59,130,246,0.5)]' : ''} ${highlightFailure && isFailure ? 'ring-4 ring-red-500 ring-offset-8 animate-pulse shadow-[0_0_30px_rgba(239,68,68,0.8)]' : (minimal && !isSelected) ? 'opacity-20 grayscale scale-90' : (highlightFailure && !isFailure) ? 'opacity-10 grayscale scale-75' : ''}`,
+                className: nodeClass,
                 sourcePosition: (row % 2 === 0) ? 'right' : 'left',
                 targetPosition: (row % 2 === 0) ? 'left' : 'right',
                 // Handle wrap-around connections
@@ -590,7 +602,7 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, 
             });
         });
         return nodes;
-    }, [events, selectedEvent]);
+    }, [events, selectedEvent, highlightFailure, rootCauseIndex]);
 
     const initialEdges = useMemo(() => {
         const edges = [];
@@ -641,15 +653,16 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, 
     );
 };
 
-const FlowView = ({ events, selectedEvent, onNodeSelect, highlightFailure, minimal }) => {
+const FlowView = ({ events, selectedEvent, onNodeSelect, highlightFailure = false, minimal = false, rootCauseIndex = -1 }) => {
     return (
         <ReactFlowProvider>
             <FlowContainer
                 events={events}
-                selectedEvent={selectedEvent}
                 onNodeSelect={onNodeSelect}
+                selectedEvent={selectedEvent}
                 highlightFailure={highlightFailure}
                 minimal={minimal}
+                rootCauseIndex={rootCauseIndex}
             />
         </ReactFlowProvider>
     );
@@ -661,6 +674,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
     const [loading, setLoading] = useState(false);
     const [isLive, setIsLive] = useState(!runId || runId === 'live');
     const [viewMode, setViewMode] = useState('flow');
+    const [rootCause, setRootCause] = useState(null);
 
     // Sync live/historical mode whenever runId prop changes
     useEffect(() => {
@@ -678,8 +692,39 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
             .then(res => res.json())
             .then(data => {
                 const eventsList = data.events || (data.data && data.data.timeline) || (Array.isArray(data) ? data : []);
+                const rc = data.data && data.data.root_cause;
                 setEvents(eventsList);
-                if (eventsList.length > 0) setSelectedEvent(eventsList[0]);
+                setRootCause(rc || null);
+                
+                const rcIdx = rc ? rc.index : -1;
+
+                // Root Cause Isolation logic
+                if (eventsList.length > 0) {
+                    let targetEvent = eventsList[0];
+                    if (highlightFailure) {
+                        if (rcIdx !== undefined && rcIdx >= 0) {
+                            targetEvent = eventsList[rcIdx];
+                        } else {
+                            const failureNode = eventsList.find(e =>
+                                e.is_root_cause === true ||
+                                e.event === 'policy_violation' ||
+                                e.error ||
+                                (e.response && e.response.status === 'error')
+                            );
+                            if (failureNode) {
+                                targetEvent = failureNode;
+                            } else {
+                                // Heuristic: if run_end says status=failed, highlight the last agent response
+                                const runEnd = eventsList.find(e => e.event === 'run_end' && e.status === 'failed');
+                                if (runEnd) {
+                                    const lastAction = [...eventsList].reverse().find(e => e.event === 'agent_response' || e.event === 'tool_call');
+                                    if (lastAction) targetEvent = lastAction;
+                                }
+                            }
+                        }
+                    }
+                    setSelectedEvent(targetEvent);
+                }
                 setLoading(false);
             })
             .catch(err => {
@@ -689,7 +734,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
 
     useEffect(() => {
         loadTrace(runId);
-    }, [runId]);
+    }, [runId, highlightFailure]);
 
     useEffect(() => {
         if (!isLive) return;
@@ -740,6 +785,45 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                             <button onClick={handleExport} title="Export Trace" className="p-1.5 text-slate-500 hover:text-emerald-400">
                                 <Icon name="box" size={14} />
                             </button>
+                            <div className="w-px h-4 bg-slate-800 mx-1 self-center" />
+                            {(rootCause?.index >= 0 || events.some(e => e.is_root_cause || e.event === 'policy_violation' || e.error || (e.response && e.response.status === 'error'))) && (
+                                <button
+                                    onClick={() => {
+                                        if (rootCause?.index >= 0 && events[rootCause.index]) {
+                                            setSelectedEvent(events[rootCause.index]);
+                                            const confidencePercent = Math.round(rootCause.confidence * 100);
+                                            onNotify(`Isolated root cause (${confidencePercent}% confidence): ${rootCause.reason}`);
+                                        } else {
+                                            // Fallback to local heuristic
+                                            const failureNode = events.find(e =>
+                                                e.is_root_cause === true ||
+                                                e.event === 'policy_violation' ||
+                                                e.error ||
+                                                (e.response && e.response.status === 'error')
+                                            );
+                                            if (failureNode) {
+                                                setSelectedEvent(failureNode);
+                                                onNotify("Focused on isolated root cause");
+                                            } else {
+                                                const runEnd = events.find(e => e.event === 'run_end' && e.status === 'failed');
+                                                if (runEnd) {
+                                                    const lastAction = [...events].reverse().find(e => e.event === 'agent_response' || e.event === 'tool_call');
+                                                    if (lastAction) {
+                                                        setSelectedEvent(lastAction);
+                                                        onNotify("Isolated probable root cause (heuristic)");
+                                                        return;
+                                                    }
+                                                }
+                                                onNotify("No clear root cause detected in trace", "error");
+                                            }
+                                        }
+                                    }}
+                                    title="Isolate Root Cause"
+                                    className="p-1.5 text-red-400 hover:text-red-300 bg-red-400/10 rounded-lg border border-red-400/20"
+                                >
+                                    <Icon name="alert" size={14} />
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -805,6 +889,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                         onNodeSelect={(e) => { setSelectedEvent(e); }}
                         highlightFailure={highlightFailure}
                         minimal={minimal}
+                        rootCauseIndex={rootCause?.index ?? -1}
                     />
                 ) : (
                     <div className="flex-1 overflow-y-auto p-12">
@@ -1337,7 +1422,7 @@ const App = () => {
                                     <input
                                         autoFocus
                                         type="text"
-                                        placeholder="Search industry scenarios (e.g., Medical, FinTech)..."
+                                        placeholder="Search documentation topics..."
                                         value={globalSearch}
                                         onChange={(e) => setGlobalSearch(e.target.value)}
                                         onBlur={() => !globalSearch && setSearching(false)}

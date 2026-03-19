@@ -150,11 +150,14 @@ eval-harness replay --path <path/to/run.jsonl>
 ```
 
 ### `explain`
-Automatically analyze a `run.jsonl` trace to diagnose root causes and suggest technical fixes.
+Automatically analyze a `run.jsonl` trace to diagnose root causes with high-fidelity tiered scoring and actionable technical fixes.
 ```bash
 eval-harness explain --path <path/to/run.jsonl>
 ```
-**Heuristics:** Detects infinite loops, tool-call hallucinations, policy violations, and PII exposure with targeted remediation advice.
+**Forensic Features:**
+- **Tiered Confidence Scoring**: Distinguishes between explicit policy violations (100%), induced system/tool errors (85%), and heuristic fallbacks (50%).
+- **Actionable Recommendations**: Provides targeted remediation advice (e.g., prompt refinement, tool sandbox optimization) based on the identified failure pattern.
+- **Pinpoint Diagnostics**: Identifies the exact turn (index) in the trajectory where the failure logic diverged.
 
 ### `calibrate`
 Measure alignment between the LLM judge and human ground truth in a flight recorder log.

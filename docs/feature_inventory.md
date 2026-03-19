@@ -43,5 +43,5 @@ Professional-grade dashboards and debugging tools.
 Diagnostics and maintenance utilities.
 - **Harness Doctor**: Self-diagnostic tool to verify environment, dependencies, and plugin health.
 - **Scenario Scaffold**: Interactive CLI for generating new evaluation benchmarks via simple PRDs.
-- **Trace Explainer**: Heuristic-based root cause analysis for complex agent failures.
+- **Trace Explainer**: High-fidelity root cause diagnostics with confidence scoring and forensic reasoning (e.g., policy violations vs. induced errors).
 - **Judge Calibration**: Measures AI judge agreement against human ground truth.
