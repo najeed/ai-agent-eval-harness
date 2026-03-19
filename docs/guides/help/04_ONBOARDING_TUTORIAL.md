@@ -97,7 +97,7 @@ eval-harness init --dir industries/retail --industry retail
 2. Run the newly generated scenario:
 
 ```bash
-eval-harness run industries/retail/scenarios/starter_scenario.json
+eval-harness run --scenario industries/retail/scenarios/starter_scenario.json
 ```
 
 ---
@@ -107,7 +107,7 @@ eval-harness run industries/retail/scenarios/starter_scenario.json
 Before sharing or running complex benchmarks, ensure your scenarios meet the AES standard:
 
 ```bash
-eval-harness lint industries/retail/scenarios/starter_scenario.json
+eval-harness lint --path industries/retail/scenarios/starter_scenario.json
 ```
 
 ---

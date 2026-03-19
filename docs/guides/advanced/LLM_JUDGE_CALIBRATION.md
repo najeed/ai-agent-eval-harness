@@ -22,7 +22,7 @@ Ensure your scenarios include a `human_score` field in the criteria metadata. Th
 ```
 
 > [!TIP]
-> **Use the `required: true` flag (v1.1+)** during calibration. This prevents the benchmark from falling back to Jaccard similarity if your judge provider is misconfigured, ensuring that your calibration metrics always reflect actual LLM performance.
+> **Use the `required: true` flag** during calibration. This prevents the benchmark from falling back to Jaccard similarity if your judge provider is misconfigured, ensuring that your calibration metrics always reflect actual LLM performance.
 
 ### 2. Execution
 Run your evaluation as normal. The harness will record the judge's score alongside the human score in the flight recorder (`run.jsonl`).
@@ -35,7 +35,7 @@ eval-harness evaluate --path scenarios/healthcare/
 Use the `calibrate` command to generate an alignment report.
 
 ```bash
-eval-harness calibrate runs/latest_run.jsonl
+eval-harness calibrate --path runs/latest_run.jsonl
 ```
 
 ## Interpreting Alignment Metrics

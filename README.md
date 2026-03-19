@@ -175,12 +175,12 @@ The latest release introduces a new suite of high-level automation and visual to
 
 #### Advanced CLI Suite
 - **`list`**: Faceted search filtering across 5,000+ industry scenarios.
-- **`lint`**: Automated quality scoring and AES compliance verification.
+- **`lint`**: Automated quality scoring and AES compliance verification via `--path`.
 - **`install <pack>`**: Rapid deployment of curated, industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
 - **`analyze <url>`**: Proactive agent repo scanning; auto-generates AES stubs by identifying tools and endpoints.
 - **`ci generate`**: One-click scaffolding of GitHub Actions workflows for evaluation-on-PR.
 - **`failures search`**: Intelligence-driven retrieval of edge cases from the global failure corpus.
-- **`explain <run.jsonl>`**: AI-powered trace diagnostics identifying root causes (loops, timeouts, PII leaks).
+- **`explain`**: AI-powered trace diagnostics (loops, timeouts, PII leaks) via `--path <run.jsonl>`.
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 
 #### Premium UX Tools
@@ -203,7 +203,7 @@ The harness is built on a decoupled, event-driven architecture that allows Enter
 ### Advanced Utilities
 Beyond the advanced suite, the harness provides a robust toolkit for professional evaluation:
 - **`doctor`**: Environment health checker.
-- **`report`**: Rich HTML reporting with interactive Mermaid trajectories.
+- **`report`**: Rich HTML reporting with interactive Mermaid trajectories via `--path`.
 - **`record` & `playground`**: Interaction capture and REPL experimentation for rapid prototyping.
 - **`spec-to-eval`**: Convert Markdown PRDs/Specs into executable JSON scenarios. Supports `--fill-defaults` to rapidly generate lint-compliant stubs.
 - **`scenario generate`**: Interactive scaffolding for manual test authoring.

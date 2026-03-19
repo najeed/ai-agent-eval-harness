@@ -152,7 +152,7 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
    - Ensure you have a `run.jsonl` with both `luna_judge_score` and `human_score` field.
    - Run:
      ```bash
-     eval-harness calibrate runs/latest_run.jsonl
+     eval-harness calibrate --path runs/latest_run.jsonl
      ```
    - Verify the ASCII "JUDGE CALIBRATION REPORT" is displayed with MAE and Pearson Correlation.
 

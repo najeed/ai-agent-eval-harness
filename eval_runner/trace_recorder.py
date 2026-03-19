@@ -69,7 +69,7 @@ async def record_interaction(agent_url: str):
                 f.write(json.dumps(e) + "\n")
         
         print(f"\n✅ Recording saved to: {log_file}")
-        print(f"Tip: You can replay this with 'eval-harness replay {log_file}'")
+        print(f"Tip: You can replay this with 'eval-harness replay --path {log_file}'")
 
 if __name__ == "__main__":
     # For testing, we can use a default URL or pass one via CLI

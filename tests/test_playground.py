@@ -15,7 +15,7 @@ async def test_run_playground_flow(monkeypatch):
     # Mock aiohttp ClientSession and response
     mock_response = AsyncMock()
     mock_response.status = 200
-    mock_response.get_json = AsyncMock(return_value={
+    mock_response.json = AsyncMock(return_value={
         "summary": "Hello user!", 
         "action": "call_tool",
         "tool_name": "search",

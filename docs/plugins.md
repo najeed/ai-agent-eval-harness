@@ -68,7 +68,7 @@ Passed to `before_evaluation`, `after_evaluation`, and `on_metrics_calculated`. 
 | :--- | :--- | :--- |
 | `scenario_id` | `str` | Unique ID of the current scenario. |
 | `scenario_data`| `dict` | **Immutable**. The full AES JSON scenario definition. |
-| `metadata` | `dict` | **Immutable**. Global metadata (difficulty, industry, etc.). |
+| `metadata` | `dict` | **Immutable**. Global metadata (difficulty, industry, etc.). Contains `args` (a dictionary of CLI flags). |
 | `global_state` | `dict` | **Immutable**. Shared engine-level configuration. |
 | `plugin_data` | `dict` | **Mutable**. A safe bucket for plugins to store state that persists across all turns of this scenario. |
 | `grounding_hits`| `dict` | Real-time map of tool and policy usage tracked by the engine. |

@@ -20,6 +20,7 @@ from . import linter
 from . import doctor
 from . import triage
 from . import config
+from .trace_utils import load_events
 
 def main():
     """Main CLI entry point."""
@@ -101,7 +102,7 @@ def main():
 
     # --- LINT COMMAND ---
     lint_parser = subparsers.add_parser("lint", help="Verify scenario quality and AES compliance")
-    lint_parser.add_argument("path", help="Path to scenario file or directory")
+    lint_parser.add_argument("--path", required=True, help="Path to scenario file or directory")
     
     # Security Guardrails: Command Hijacking Prevention
     # Removed `extend_cli` hook. Plugins must register via namespaced registry `eval-harness plugin <name>`
@@ -111,7 +112,7 @@ def main():
     aes_subparsers = aes_parser.add_subparsers(dest="aes_command", help="AES subcommands")
     
     validate_parser = aes_subparsers.add_parser("validate", help="Validate an AES benchmark file")
-    validate_parser.add_argument("path", help="Path to .aes.yaml file or directory")
+    validate_parser.add_argument("--path", required=True, help="Path to .aes.yaml file or directory")
 
     # --- SPEC-TO-EVAL COMMAND ---
     spec_parser = subparsers.add_parser("spec-to-eval", help="Convert Markdown PRD/Spec to Scenario JSON")
@@ -133,6 +134,11 @@ def main():
 
     # --- DOCTOR COMMAND ---
     subparsers.add_parser("doctor", help="Check environment and dependencies")
+    
+    # --- INIT COMMAND ---
+    init_p = subparsers.add_parser("init", help="Scaffold a new benchmark environment and generate linkable synthetic datasets")
+    init_p.add_argument("--dir", help="Target directory for scaffolding")
+    init_p.add_argument("--industry", help="Pre-select industry for scaffolding")
 
     # --- CONSOLE COMMAND ---
     console_parser = subparsers.add_parser("console", help="Launch the Web Admin Console (REST API & Frontend server)")
@@ -144,7 +150,13 @@ def main():
 
     # --- REPORT COMMAND ---
     report_parser = subparsers.add_parser("report", help="Generate HTML report from a run trace")
-    report_parser.add_argument("path", help="Path to run.jsonl file")
+    report_parser.add_argument("--path", required=True, help="Path to run.jsonl file")
+
+    # --- RUN COMMAND ---
+    run_parser = subparsers.add_parser("run", help="Execute evaluation on a single scenario")
+    run_parser.add_argument("--scenario", required=True, help="Path to scenario file")
+    run_parser.add_argument("--attempts", type=int, default=1, help="Number of attempts (pass@k)")
+    run_parser.add_argument("--agent", help="Override agent URL")
 
     # --- SCENARIO COMMAND ---
     scenario_parser = subparsers.add_parser("scenario", help="Scenario management utilities")
@@ -201,11 +213,11 @@ def main():
 
     # --- EXPLAIN COMMAND ---
     explain_parser = subparsers.add_parser("explain", help="Analyze trace logs to diagnose root causes")
-    explain_parser.add_argument("path", help="Path to run.jsonl file")
+    explain_parser.add_argument("--path", required=True, help="Path to run.jsonl file")
 
     # --- CALIBRATE COMMAND ---
     calibrate_parser = subparsers.add_parser("calibrate", help="Measure judge agreement against human-labeled ground truth")
-    calibrate_parser.add_argument("path", help="Path to run.jsonl file containing both judge and human scores")
+    calibrate_parser.add_argument("--path", required=True, help="Path to run.jsonl file containing both judge and human scores")
 
     # --- PLUGIN COMMAND ---
     # Security Guardrails: Strictly Namespaced Automated Registry
@@ -396,23 +408,20 @@ def handle_report(args):
         print(f"❌ Error: Trace file not found at {path}")
         return
 
-    events = []
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.strip():
-                    events.append(json.loads(line))
+        events = load_events(path)
     except Exception as e:
         print(f"❌ Error reading trace: {e}")
         return
     
     run_start = next((e for e in events if e.get("event") == "run_start"), None)
     if not run_start:
-        print("❌ Error: Could not find run_start event in trace.")
-        return
-        
-    scenario_metadata = run_start.get("metadata", {})
-    scenario_id = run_start.get("scenario", "unknown")
+        print("⚠ Warning: Could not find run_start event in trace. Using defaults.")
+        scenario_metadata = {}
+        scenario_id = path.stem
+    else:
+        scenario_metadata = run_start.get("metadata", {})
+        scenario_id = run_start.get("scenario", "unknown")
     
     # Reconstruct scenario object for the reporter
     scenario = {
@@ -479,9 +488,13 @@ def handle_replay(args):
         print(f"❌ Error: Replay file not found at {path}")
         return
 
-    with open(path, "r") as f:
-        for line in f:
-            event = json.loads(line)
+    try:
+        events = load_events(path)
+    except Exception as e:
+        print(f"❌ Error reading trace: {e}")
+        return
+
+    for event in events:
             ev_type = event.get("event", "unknown")
             timestamp = event.get("timestamp", "")
             
@@ -520,7 +533,7 @@ async def run_scenario(args):
 
     try:
         scenario = loader.load_scenario(scenario_path)
-        results = await engine.run_evaluation(scenario, attempts=args.attempts, metadata={"args": args})
+        results = await engine.run_evaluation(scenario, attempts=args.attempts, metadata={"args": vars(args)})
         
         # Determination of results is handled by the runner and ReportingPlugin handles the output.
         print(f"\n   [CLI] Evaluation complete for {scenario_path.name}")
@@ -577,7 +590,7 @@ async def run_evaluate(args):
             print(f"\n[{i+1}/{len(scenarios)}] Attempt {attempt+1}/{attempts} - Scenario: {scenario.get('title', 'Untitled')}")
             # Ensure protocol is passed to engine
             results = await engine.run_evaluation(scenario, metadata={
-                "args": args,
+                "args": vars(args),
                 "protocol": args.protocol,
                 "agent": args.agent,
                 "agent_name": getattr(args, "agent_name", None)
@@ -680,22 +693,33 @@ def list_industries():
     """Mock list of supported industries for scaffolding."""
     return ["accounting", "telecom", "healthcare", "legal", "generic"]
 
-def handle_init(_):
+def handle_init(args):
     """Wizard for initializing a new evaluation project."""
     print("\n--- OpenCore Scaffolding Wizard ---")
+    
+    target_dir = Path(args.dir) if args.dir else Path.cwd()
+    if args.dir:
+        target_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Scaffolding in: {target_dir}")
+
     framework = detect_framework()
     print(f"Detected Framework: {framework}")
     
     industries = list_industries()
-    print("\nAvailable Industries:")
-    for i, ind in enumerate(industries):
-        print(f"{i+1}. {ind}")
     
-    choice = input("\nSelect industry (number): ").strip()
-    try:
-        industry = industries[int(choice)-1]
-    except:
-        industry = "generic"
+    industry = args.industry
+    if not industry:
+        print("\nAvailable Industries:")
+        for i, ind in enumerate(industries):
+            print(f"{i+1}. {ind}")
+        
+        choice = input("\nSelect industry (number): ").strip()
+        try:
+            industry = industries[int(choice)-1]
+        except:
+            industry = "generic"
+    else:
+        print(f"Pre-selected Industry: {industry}")
         
     api_url = input("Agent API URL (default: http://localhost:5001/execute_task): ").strip()
     if not api_url:
@@ -709,7 +733,7 @@ def handle_init(_):
         "agent_api_url": api_url
     }
     
-    config_path = Path("eval_config.json")
+    config_path = target_dir / "eval_config.json"
     with open(config_path, "w") as f:
         json.dump(scaffold_config, f, indent=2)
     
@@ -995,22 +1019,24 @@ def handle_calibrate(args):
     human_scores = []
     
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            for line in f:
-                if not line.strip(): continue
-                event = json.loads(line)
-                
-                # We look for evaluation events for the luna_judge_score
-                if event.get("event") == "evaluation":
-                    if event.get("metric") == "luna_judge_score":
-                        judge_val = event.get("value")
-                        # The human score is expected to be in the scenario metadata
-                        # or passed along in the evaluation event if already available
-                        human_val = event.get("human_score")
-                        
-                        if human_val is not None:
-                            judge_scores.append(float(judge_val))
-                            human_scores.append(float(human_val))
+        events = load_events(path)
+    except Exception as e:
+        print(f"❌ Error reading trace: {e}")
+        return
+
+    try:
+        for event in events:
+            # We look for evaluation events for the luna_judge_score
+            if event.get("event") == "evaluation":
+                if event.get("metric") == "luna_judge_score":
+                    judge_val = event.get("value")
+                    # The human score is expected to be in the scenario metadata
+                    # or passed along in the evaluation event if already available
+                    human_val = event.get("human_score")
+                    
+                    if human_val is not None:
+                        judge_scores.append(float(judge_val))
+                        human_scores.append(float(human_val))
     except Exception as e:
         print(f"❌ Error processing trace for calibration: {e}")
         return

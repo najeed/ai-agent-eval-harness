@@ -36,5 +36,5 @@ def test_import_invalid_json(tmp_path):
     
     output_dir = tmp_path / "scenarios"
     
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError, match="No conversation history found in trace"):
         import_trace_as_scenario(invalid_file, "generic", output_dir)

@@ -59,7 +59,7 @@ eval-harness list [--search <query>]
 ### `lint`
 Verify scenario quality and AES specification compliance.
 ```bash
-eval-harness lint <path_to_scenario_or_dir>
+eval-harness lint --path <path_to_scenario_or_dir>
 ```
 - Runs automated checks for metadata quality, valid structure, and duplicate detection.
 - Provides a quality score (0-100) and detailed warning/error report.
@@ -89,7 +89,7 @@ eval-harness analyze <github_url>
 ### `aes validate`
 Validate Agent Eval Specification (.aes.yaml) files against the official schema.
 ```bash
-eval-harness aes validate <path>
+eval-harness aes validate --path <path>
 ```
 
 ### `spec-to-eval`
@@ -146,20 +146,20 @@ eval-harness failures search <query>
 ### `replay`
 Re-execute a `run.jsonl` flight recorder log to debug "wrong turns".
 ```bash
-eval-harness replay <path/to/run.jsonl>
+eval-harness replay --path <path/to/run.jsonl>
 ```
 
 ### `explain`
 Automatically analyze a `run.jsonl` trace to diagnose root causes and suggest technical fixes.
 ```bash
-eval-harness explain <path/to/run.jsonl>
+eval-harness explain --path <path/to/run.jsonl>
 ```
 **Heuristics:** Detects infinite loops, tool-call hallucinations, policy violations, and PII exposure with targeted remediation advice.
 
 ### `calibrate`
 Measure alignment between the LLM judge and human ground truth in a flight recorder log.
 ```bash
-eval-harness calibrate <path/to/run.jsonl>
+eval-harness calibrate --path <path/to/run.jsonl>
 ```
 **Metrics:** Calculates Pearson Correlation and Mean Absolute Error (MAE) based on paired `luna_judge_score` and `human_score` events.
 
@@ -202,7 +202,7 @@ eval-harness quickstart
 ### `report`
 Generate a standalone Premium HTML report from an execution trace.
 ```bash
-eval-harness report <path/to/run.jsonl>
+eval-harness report --path <path/to/run.jsonl>
 ```
 **Feature Highlights:**
 - **Trace Reconstruction**: Automatically reconstructs hierarchical task results, metrics, and triage tags from historical JSONL events.

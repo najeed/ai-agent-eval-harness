@@ -72,11 +72,53 @@ def test_ci_generate_command():
             mock_ci.assert_called_once()
 
 def test_explain_command():
-    """Verify explain command handler. (Migrated from test_visionary_cli.py)"""
+    """Verify explain command handler uses --path."""
     with patch("eval_runner.cli.handle_explain") as mock_explain:
-        with patch("sys.argv", ["eval-harness", "explain", "runs/run.jsonl"]):
+        with patch("sys.argv", ["eval-harness", "explain", "--path", "runs/run.jsonl"]):
             cli.main()
             mock_explain.assert_called_once()
+
+def test_evaluate_command():
+    """Verify evaluate command handler uses --path."""
+    with patch("eval_runner.cli.run_evaluate") as mock_eval:
+        with patch("sys.argv", ["eval-harness", "evaluate", "--path", "scenarios/finance/"]):
+            cli.main()
+            mock_eval.assert_called_once()
+
+def test_report_command():
+    """Verify report command handler uses --path."""
+    with patch("eval_runner.cli.handle_report") as mock_report:
+        with patch("sys.argv", ["eval-harness", "report", "--path", "runs/run.jsonl"]):
+            cli.main()
+            mock_report.assert_called_once()
+
+def test_lint_command():
+    """Verify lint command handler uses --path."""
+    with patch("eval_runner.cli.handle_lint") as mock_lint:
+        with patch("sys.argv", ["eval-harness", "lint", "--path", "scenarios/"]):
+            cli.main()
+            mock_lint.assert_called_once()
+
+def test_calibrate_command():
+    """Verify calibrate command handler uses --path."""
+    with patch("eval_runner.cli.handle_calibrate") as mock_cal:
+        with patch("sys.argv", ["eval-harness", "calibrate", "--path", "runs/run.jsonl"]):
+            cli.main()
+            mock_cal.assert_called_once()
+
+def test_aes_validate_command():
+    """Verify aes validate command handler uses --path."""
+    with patch("eval_runner.cli.handle_aes_validate") as mock_aes:
+        with patch("sys.argv", ["eval-harness", "aes", "validate", "--path", "spec.aes.yaml"]):
+            cli.main()
+            mock_aes.assert_called_once()
+
+def test_run_command():
+    """Verify run command handler uses --scenario."""
+    with patch("eval_runner.cli.run_scenario") as mock_run:
+        with patch("sys.argv", ["eval-harness", "run", "--scenario", "scenarios/test.json"]):
+            cli.main()
+            mock_run.assert_called_once()
 
 def test_failures_search_command():
     """Verify failures search command handler. (Migrated from test_visionary_cli.py)"""
@@ -95,7 +137,10 @@ def test_handle_init_scaffolding(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     
     with patch("eval_runner.cli.list_industries", return_value=["accounting", "telecom"]):
-        cli.handle_init(None)
+        mock_args = MagicMock()
+        mock_args.dir = None
+        mock_args.industry = None
+        cli.handle_init(mock_args)
         
     # Verify eval_config.json
     config_path = tmp_path / "eval_config.json"

@@ -25,9 +25,9 @@ git commit -s -m "Your commit message"
 ## 🏗️ How to Contribute
 
 ### 1. Adding New Industries & Scenarios
-- **Schema Compliance**: All JSON files must pass the validation checks via `eval-harness aes validate <path>`.
+- **Schema Compliance**: All JSON files must pass the validation checks via `eval-harness aes validate --path <path>`.
 - **Scaffolding**: Use `eval-harness init --dir <name> --industry <ind>` to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.
-- **Quality Verification**: All scenarios must pass the quality linter (`eval-harness lint <path>`). We target a score of **90+** for all official industry libraries.
+- **Quality Verification**: All scenarios must pass the quality linter (`eval-harness lint --path <path>`). We target a score of **90+** for all official industry libraries.
 - **Execution**: Ensure your scenario runs correctly with `eval-harness evaluate --path <your_path>`. The harness now supports **Path Decoupling**, allowing you to host and run benchmarks from any directory without repository-internal dependencies.
 
 ### 2. The Zero-Touch Core Philosophy

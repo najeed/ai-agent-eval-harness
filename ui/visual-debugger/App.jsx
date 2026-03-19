@@ -827,24 +827,55 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
     );
 };
 
-const ReportsView = ({ onViewReport }) => {
+const ReportsView = ({ onViewReport, searchQuery = "" }) => {
     const [runs, setRuns] = useState([]);
+    const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetch('/api/runs')
+    const fetchRuns = () => {
+        setLoading(true);
+        fetch(`/api/runs?q=${query}`)
             .then(res => res.json())
             .then(data => {
                 setRuns(data.runs || []);
                 setLoading(false);
+            })
+            .catch(err => {
+                setLoading(false);
             });
-    }, []);
+    };
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            fetchRuns();
+        }, 300);
+        return () => clearTimeout(delayDebounceFn);
+    }, [query]);
+
+    const filteredRuns = searchQuery
+        ? runs.filter(r =>
+            r.run_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            r.scenario.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        : runs;
 
     return (
         <div className="p-8 space-y-6 max-w-6xl mx-auto">
-            <div>
-                <h2 className="text-2xl font-bold text-white mb-2">Reports & Traces</h2>
-                <p className="text-slate-500 text-sm">Review historical execution logs and analyzed agent trajectories.</p>
+            <div className="flex justify-between items-end">
+                <div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Reports & Traces</h2>
+                    <p className="text-slate-500 text-sm">Review historical execution logs and analyzed agent trajectories.</p>
+                </div>
+                <div className="relative">
+                    <Icon name="search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <input
+                        type="text"
+                        placeholder="Search by Run ID or Scenario..."
+                        className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all w-64 text-slate-200"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                    />
+                </div>
             </div>
 
             {loading ? (
@@ -863,7 +894,7 @@ const ReportsView = ({ onViewReport }) => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800">
-                            {runs.map(run => (
+                            {filteredRuns.map(run => (
                                 <tr key={run.run_id} className="hover:bg-slate-800/20 transition-colors">
                                     <td className="px-6 py-4 text-xs text-slate-400 font-mono">
                                         {new Date(run.timestamp).toLocaleString()}
@@ -1266,7 +1297,7 @@ const App = () => {
         switch (activeTab) {
             case 'dashboard': return <Dashboard onNavigate={handleNavClick} navItems={navItems} />;
             case 'scenarios': return <ScenarioExplorer onNotify={showToast} searchQuery={globalSearch} />;
-            case 'reports': return <ReportsView onViewReport={handleViewReport} />;
+            case 'reports': return <ReportsView onViewReport={handleViewReport} searchQuery={globalSearch} />;
             case 'editor': return <ScenarioEditor />;
             case 'debugger': return <VisualDebugger runId={selectedRunId} onNotify={showToast} />;
             case 'demo': 
@@ -1300,7 +1331,7 @@ const App = () => {
                         <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{activeTab.replace('_', ' ')}</span>
                     </div>
                     <div className="flex gap-4">
-                        {activeTab !== 'demo' && (
+                        {(activeTab === 'docs' || activeTab === 'api_docs') && (
                             <>
                                 {searching && (
                                     <input

@@ -1,11 +1,11 @@
 # Reproduction script for state-test
-# Generated on 2026-03-19 15:08:23
+# Generated on 2026-03-20 00:56:22
 # 
 # Usage:
 # 1. Ensure you have the eval-harness installed: pip install .
 # 2. Set your environment variables (AGENT_API_URL, etc.)
-# 3. RUN: eval-harness run --path scenarios/state-test.json
+# 3. RUN: eval-harness run --scenario scenarios/state-test.json
 #
 # SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
 
-eval-harness run --path scenarios/state-test.json
+eval-harness run --scenario scenarios/state-test.json

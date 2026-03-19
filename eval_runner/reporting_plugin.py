@@ -78,7 +78,8 @@ class ReportingPlugin(BaseEvalPlugin):
         # 3. Notifications (Mock implementation)
         # We can check CLI args if we store them in a shared location, 
         # but for now we'll check context metadata.
-        if context.metadata.get("args") and getattr(context.metadata["args"], "notify", False):
+        args = context.metadata.get("args", {})
+        if args.get("notify", False):
             import asyncio
             # We are in a sync hook, but need to call async dispatcher
             loop = asyncio.get_event_loop()
@@ -93,7 +94,11 @@ class ReportingPlugin(BaseEvalPlugin):
         scenario_id = context.scenario_id
         repro_dir = Path("reports") / "repro"
         repro_dir.mkdir(parents=True, exist_ok=True)
-        
+
+        # Attempt to get the actual path from CLI args for more accurate repro instructions
+        args = context.metadata.get("args", {})
+        scenario_path = args.get("scenario") or f"scenarios/{scenario_id}.json"
+
         # Security Guardrails: RCE Prevention
         # Generate as inert .txt to prevent auto-execution
         repro_path = repro_dir / f"repro_{scenario_id}.txt"
@@ -105,11 +110,11 @@ class ReportingPlugin(BaseEvalPlugin):
 # Usage:
 # 1. Ensure you have the eval-harness installed: pip install .
 # 2. Set your environment variables (AGENT_API_URL, etc.)
-# 3. RUN: eval-harness run --path scenarios/{scenario_id}.json
+# 3. RUN: eval-harness run --scenario {scenario_path}
 #
 # SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
 
-eval-harness run --path scenarios/{scenario_id}.json
+eval-harness run --scenario {scenario_path}
 """
         # Additional safety for scenarios that might contain shell commands
         content = content.replace("os.system", "[REDACTED]").replace("subprocess", "[REDACTED]")

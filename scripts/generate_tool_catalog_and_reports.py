@@ -5,7 +5,7 @@ import collections
 import datetime
 
 # Paths
-root = r"c:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\industries"
+root = os.path.join(os.path.dirname(os.path.dirname(__file__)), "industries")
 
 # 1) Tool catalog
 counts = collections.Counter()

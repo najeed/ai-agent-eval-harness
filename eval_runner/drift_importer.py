@@ -9,6 +9,7 @@ import json
 import uuid
 from pathlib import Path
 from typing import Optional, Dict, Any
+from .trace_utils import load_events
 
 def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) -> Path:
     """
@@ -18,21 +19,9 @@ def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) 
         raise FileNotFoundError(f"Trace file not found: {trace_path}")
 
     try:
-        with open(trace_path, "r") as f:
-            content = f.read().strip()
-            if not content:
-                raise ValueError("Trace file is empty.")
-            
-            # Support both standard JSON and JSONL (one object per line)
-            lines = content.splitlines()
-            if len(lines) > 1:
-                # Assume JSONL
-                trace_data = [json.loads(line) for line in lines if line.strip()]
-            else:
-                # Assume standard JSON
-                trace_data = json.loads(content)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Failed to parse trace as JSON/JSONL: {e}")
+        trace_data = load_events(trace_path)
+    except Exception as e:
+        raise ValueError(f"Failed to parse trace: {e}")
 
     if isinstance(trace_data, dict):
         history = trace_data.get("history", [])
@@ -40,10 +29,7 @@ def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) 
         history = trace_data
     
     if not history:
-        if isinstance(trace_data, list):
-            history = trace_data
-        else:
-            raise ValueError("No conversation history found in trace.")
+        raise ValueError("No conversation history found in trace.")
 
     scenario_id = f"drift-{uuid.uuid4().hex[:8]}"
     

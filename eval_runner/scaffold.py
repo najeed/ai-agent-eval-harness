@@ -1,5 +1,6 @@
 import json
 import os
+import jsonschema
 from pathlib import Path
 
 def generate_interactive():
@@ -43,25 +44,38 @@ def generate_interactive():
             "scenario_id": scenario_id,
             "title": f"Generated {capability.replace('_', ' ').title()} Scenario {i}",
             "description": tpl["desc_tpl"].format(capability=capability, industry=industry),
+            "use_case": capability,
+            "core_function": f"{industry}_operations",
             "industry": industry,
             "tasks": [
                 {
                     "task_id": f"task_{i}",
                     "description": tpl["task_tpl"].format(capability=capability, industry=industry),
-                    "expected_output": tpl["expected_tpl"].format(
+                    "expected_outcome": tpl["expected_tpl"].format(
                         capability=capability, 
                         industry=industry,
                         capability_title=capability.title()
                     ),
-                    "requirements": [
-                        {"type": "mandatory", "description": f"Call the appropriate {capability} tool."}
-                    ],
-                    "metrics": [
+                    "success_criteria": [
                         {"metric": "success_rate", "threshold": 1.0}
                     ]
                 }
             ]
         }
+        
+        # Internal Schema Validation (Fail-Fast)
+        try:
+            schema_path = Path(__file__).parent.parent / "schemas" / "scenario.schema.json"
+            if schema_path.exists():
+                with open(schema_path, "r", encoding="utf-8") as sf:
+                    schema = json.load(sf)
+                jsonschema.validate(instance=scenario, schema=schema)
+        except jsonschema.exceptions.ValidationError as ve:
+            print(f"❌ Internal Validation Error for {scenario_id}: {ve.message}")
+            continue
+        except Exception as e:
+            print(f"⚠ Warning: Could not perform internal validation: {e}")
+
         
         filename = f"{scenario_id}.json"
         filepath = output_dir / filename
@@ -72,7 +86,7 @@ def generate_interactive():
     print(f"\n✅ Successfully generated {len(generated_files)} scenarios in {output_dir}/")
     for f in generated_files:
         print(f"  - {f.name}")
-    print("\nTip: Run these with 'eval-harness run <path>'")
+    print("\nTip: Run these with 'eval-harness evaluate --path <path_or_dir>'")
 
 if __name__ == "__main__":
     generate_interactive()

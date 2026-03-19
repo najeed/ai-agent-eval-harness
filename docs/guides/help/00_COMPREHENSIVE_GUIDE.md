@@ -30,10 +30,10 @@ eval-harness quickstart
 - `eval-harness console`: Launch the React Native (Expo) Admin Console GUI for visual management.
 - `eval-harness doctor`: Check your environment health.
 - `eval-harness list --search <query>`: Search the scenario catalog (supports faceted filtering).
-- `eval-harness lint <path>`: Verify scenario quality and AES specification compliance.
+- `eval-harness lint --path <path>`: Verify scenario quality and AES specification compliance.
 - `eval-harness spec-to-eval --fill-defaults`: Convert rough specs into valid, lint-passable scenarios.
 - `eval-harness auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
-- `eval-harness report <path>`: Generate a standalone **Premium HTML report** (reconstructed from any `.jsonl` trace).
+- `eval-harness report --path <path>`: Generate a standalone **Premium HTML report** (reconstructed from any `.jsonl` trace).
 - `eval-harness replay --path <path>`: View the step-by-step history of a run in terminal.
 - **Advanced Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain`.
 
@@ -89,7 +89,7 @@ pytest tests/
 
 For industry-specific scenarios:
 ```bash
-eval-harness run industries/<ind>/scenarios/<file>.json
+eval-harness run --scenario industries/<ind>/scenarios/<file>.json
 ```
 
 ---

@@ -99,7 +99,8 @@ class PublicationPlugin(BaseEvalPlugin):
         return tokens * rate
 
     def _generate_fingerprint(self, context):
-        seed = context.metadata.get("args", {}).get("seed", 0)
+        args = context.metadata.get("args", {})
+        seed = args.get("seed", 0) or 0
         scenario_id = context.scenario_id
         raw = f"{scenario_id}-{seed}-{datetime.now().strftime('%Y%m%d')}"
         return hashlib.sha256(raw.encode()).hexdigest()[:12]

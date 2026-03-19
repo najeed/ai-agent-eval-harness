@@ -11,7 +11,7 @@ AES is the foundational standard for shareable, deterministic agent benchmarks.
 
 ### Validating an AES file
 ```bash
-eval-harness aes validate path/to/benchmark.aes.yaml
+eval-harness aes validate --path path/to/benchmark.aes.yaml
 ```
 
 ## 3. Core Components
@@ -84,7 +84,7 @@ Scenarios can declare which World Shims (environment simulators) they require. T
 
 **Available built-in shim keys:** `git`, `api`, `database`, `slack`, `crm`, `email`, `calendar`, `jira`, `cloud`, `terminal`, `stripe`, `erp`, `browser`, `kb`, `support`, `social`, `vector`, `cicd`, `iot`, `security`
 
-📖 See the full shim reference with per-shim actions and failure modes: [`docs/guides/help/07_WORLD_SHIMS_REFERENCE.md`](../help/07_WORLD_SHIMS_REFERENCE.md)
+📖 See the full shim reference with per-shim actions and failure modes: [`docs/guides/help/07_WORLD_SHIMS_REFERENCE.md`](./help/07_WORLD_SHIMS_REFERENCE.md)
 
 ---
 
@@ -98,5 +98,5 @@ AES benchmarks are now fully portable.
 ## 6. Replaying Execution (`run.jsonl`)
 Every AES evaluation produces a `run.jsonl` flight recorder log. You can replay this log to debug specific "crashes" or "wrong turns":
 ```bash
-eval-harness replay runs/run.jsonl
+eval-harness replay --path runs/run.jsonl
 ```

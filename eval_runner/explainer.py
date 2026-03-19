@@ -6,16 +6,14 @@ Analyze trace logs (run.jsonl) to diagnose root causes and suggest fixes.
 
 import json
 from pathlib import Path
+from .trace_utils import load_events
 
 def explain_trace(trace_path: Path) -> dict:
     """
     Parses a run.jsonl file and identifies failure patterns.
     """
-    events = []
     try:
-        with open(trace_path, "r", encoding="utf-8") as f:
-            for line in f:
-                events.append(json.loads(line))
+        events = load_events(trace_path)
     except Exception as e:
         return {"root_cause": f"Error reading trace: {e}", "suggestion": "Check file permissions or JSON format."}
 

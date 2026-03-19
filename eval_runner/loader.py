@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 from typing import Dict, Callable, List, Optional, Any, Union
 from jsonschema import validate, ValidationError # type: ignore
+from .trace_utils import load_events
 
 # Load the schema once at module level
 _SCHEMA_PATH = Path(__file__).parent.parent / "schemas" / "scenario.schema.json"
@@ -56,12 +57,11 @@ def load_csv(file_path: Path) -> List[Dict]:
 
 @LoaderRegistry.register(".jsonl")
 def load_jsonl(file_path: Path) -> List[Dict]:
-    dataset = []
-    with open(file_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            if line.strip():
-                dataset.append(json.loads(line))
-    return dataset
+    try:
+        return load_events(file_path)
+    except Exception as e:
+        print(f"   [Loader] Error: Failed to load JSONL/JSON: {e}")
+        return []
 
 
 @LoaderRegistry.register(".json")

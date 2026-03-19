@@ -1,0 +1,21 @@
+{
+  "scenario_id": "gen_finance_derivatives_trading_1",
+  "title": "Generated Derivatives Trading Scenario 1",
+  "description": "Automatically generated test case for derivatives trading in finance industry.",
+  "use_case": "derivatives trading",
+  "core_function": "finance_operations",
+  "industry": "finance",
+  "tasks": [
+    {
+      "task_id": "task_1",
+      "description": "User wants to perform derivatives trading. Handle the request correctly.",
+      "expected_outcome": "Successfully handled derivatives trading.",
+      "success_criteria": [
+        {
+          "metric": "success_rate",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ]
+}

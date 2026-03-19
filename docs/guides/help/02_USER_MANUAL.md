@@ -85,12 +85,12 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness evaluate` | `--path`, `--format`, `--output`, `--limit`, `--attempts` / `-k` | Run a set of scenarios (batch mode) |
 | `eval-harness run` | `-k` | Run a single scenario JSON file |
 | `eval-harness replay` | `--path` | Replay a recorded run trace |
-| `eval-harness aes validate` | `path` | Validate AES benchmark YAML |
+| `eval-harness aes validate` | `--path` | Validate AES benchmark YAML |
 | `eval-harness console` | `--port` | Launch the Admin Console local API and interactive GUI (integrated React Native app) |
 | `eval-harness quickstart` | (none) | 60-second CLI demo (spawns agent + runs evaluation). Does NOT launch the GUI. |
 | `eval-harness doctor` | (none) | Check environment, dependencies, and connectivity |
 | `eval-harness init` | `--dir`, `--industry` | Scaffold a new benchmark environment and generate linkable synthetic datasets |
-| `eval-harness report` | `path` | Generate a **Premium HTML report** (reconstructed from any `.jsonl` trace) with interactive trajectory maps |
+| `eval-harness report` | `--path` | Generate a **Premium HTML report** (reconstructed from any `.jsonl` trace) with interactive trajectory maps |
 | `eval-harness scenario generate` | (none) | Interactively bootstrap new scenarios |
 | `eval-harness record` | `--agent` | Capture real interactions into an executable trace |
 | `eval-harness playground` | `--agent` | Interactive REPL for rapid agent experimentation |
@@ -99,13 +99,13 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |
 | `eval-harness mutate` | `--input`, `--type`, `--output` | Generate adversarial scenario variants |
 | `eval-harness list` | `--search` | Search and explore the scenario catalog |
-| `eval-harness lint` | `path` | Score and validate scenario quality/compliance |
+| `eval-harness lint` | `--path` | Score and validate scenario quality/compliance |
 | `eval-harness plugin` | `<plugin_name> <cmd>` | Secure namespace for executing 3rd-party plugin commands |
 
 ### 🧩 `run` — single scenario
 
 ```bash
-eval-harness run scenarios/your_scenario.json -k 2
+eval-harness run --scenario scenarios/your_scenario.json -k 2
 ```
 
 Use this for rapid iteration and debugging.
@@ -164,7 +164,7 @@ eval-harness doctor
 ### 🎨 `report` — Premium Visual Reporting
 Generate a premium HTML report with interactive trajectory maps reconstructed from historical trace events.
 ```bash
-eval-harness report runs/run_<id>.jsonl
+eval-harness report --path runs/run_<id>.jsonl
 ```
 
 ### ✨ `scenario generate` — Interactive Scaffolding
@@ -194,7 +194,7 @@ eval-harness list --search "telecom"
 ### 🧹 `lint` — Quality Scoring
 Check your scenarios for AES compliance and technical quality.
 ```bash
-eval-harness lint industries/telecom/scenarios/troubleshooting_v1.json
+eval-harness lint --path industries/telecom/scenarios/troubleshooting_v1.json
 ```
 - **90-100**: High quality, CI-ready.
 - **70-89**: Warning (Missing metadata or low complexity).
@@ -219,7 +219,7 @@ eval-harness analyze https://github.com/example/agent
 ### 🤖 `explain` — Trace Analysis
 Automated diagnostic analysis of `run.jsonl` traces to identify root causes of agent failures.
 ```bash
-eval-harness explain runs/run.jsonl
+eval-harness explain --path runs/run.jsonl
 ```
 
 ### 🛠️ Visual Scenario Editor
@@ -279,7 +279,7 @@ mkdir -p industries/<your_industry>/scenarios
 3. Run it via CLI:
 
 ```bash
-eval-harness run industries/<your_industry>/scenarios/<file>.json
+eval-harness run --scenario industries/<your_industry>/scenarios/<file>.json
 ```
 
 4. (Optional) Run an industry batch:

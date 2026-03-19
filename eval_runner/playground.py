@@ -27,7 +27,7 @@ async def run_playground(agent_url: str):
                 # For now, let's keep it direct.
                 async with session.post(agent_url, json={"task_description": task}, timeout=10) as response:
                     if response.status == 200:
-                        data = await response.get_json()
+                        data = await response.json()
                         
                         # Use premium formatting for agent response
                         print(f"🤖 AGENT: {data.get('summary', '...')}")

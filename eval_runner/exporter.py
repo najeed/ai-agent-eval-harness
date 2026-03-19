@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 from typing import List, Dict, Any
+from .trace_utils import load_events
 
 class HFExporter:
     """Logic for mapping internal run.jsonl traces to HuggingFace Dataset schemas."""
@@ -31,18 +32,18 @@ class HFExporter:
             print(f"      [Exporter] Error: Trace file {trace_path} not found.")
             return
 
-        with open(path, "r") as f:
-            for line in f:
-                try:
-                    event = json.loads(line)
-                    hf_dataset.append({
-                        "event_type": event.get("event"),
-                        "timestamp": event.get("timestamp"),
-                        "payload": event.get("payload", {}),
-                        "meta": canonical_meta
-                    })
-                except:
-                    continue
+        try:
+            events = load_events(path)
+            for event in events:
+                hf_dataset.append({
+                    "event_type": event.get("event"),
+                    "timestamp": event.get("timestamp"),
+                    "payload": event.get("payload", {}),
+                    "meta": canonical_meta
+                })
+        except Exception as e:
+            print(f"      [Exporter] Error: Failed to load events: {e}")
+            return
 
         with open(output_path, "w") as f:
             json.dump(hf_dataset, f, indent=2)

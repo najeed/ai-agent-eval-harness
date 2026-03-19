@@ -1,11 +1,11 @@
 # Reproduction script for test-consistency
-# Generated on 2026-03-19 15:08:21
+# Generated on 2026-03-20 00:56:21
 # 
 # Usage:
 # 1. Ensure you have the eval-harness installed: pip install .
 # 2. Set your environment variables (AGENT_API_URL, etc.)
-# 3. RUN: eval-harness run --path scenarios/test-consistency.json
+# 3. RUN: eval-harness run --scenario scenarios/test-consistency.json
 #
 # SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
 
-eval-harness run --path scenarios/test-consistency.json
+eval-harness run --scenario scenarios/test-consistency.json
