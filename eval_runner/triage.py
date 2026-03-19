@@ -59,6 +59,7 @@ class TriageEngine:
 
     @staticmethod
     @staticmethod
+    @staticmethod
     def identify_root_cause(history: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Pinpoints the root cause with a confidence score and explanation.
@@ -66,23 +67,34 @@ class TriageEngine:
         if not history:
             return {"index": -1, "confidence": 0, "reason": "No history"}
 
-        # 0. Check for failure signature
+        # 0. Check for failure signature (Include 'failure' and 'failed' and results)
         has_failure = any(
-            turn.get("event") == "run_end" and turn.get("status") == "failed"
-            or (isinstance(turn.get("content"), dict) and turn.get("content", {}).get("status") in ("error", "policy_violation"))
+            turn.get("event") in ("run_end", "evaluation") or turn.get("role") == "run_end"
             for turn in history
         )
-        if not has_failure:
-            return {"index": -1, "confidence": 1.0, "reason": "Execution succeeded"}
+        
+        # Explicit fail status check
+        is_explicit_fail = any(
+            (turn.get("event") == "run_end" or turn.get("role") == "run_end") and turn.get("status") in ("failed", "failure")
+            for turn in history
+        )
 
-        # 1. High Confidence: Policy Violation
+        # 1. High Confidence: Policy Violation or Marked Root Cause
         for i, turn in enumerate(history):
             content = turn.get("content") or {}
+            # Check content for explicit violation status
             if isinstance(content, dict) and content.get("status") == "policy_violation":
                 return {
                     "index": i,
                     "confidence": 1.0,
                     "reason": f"Explicit policy violation detected at turn {i}: {content.get('message', 'Unspecified violation')}"
+                }
+            # Check evaluation events for policy compliance failure (common in tests)
+            if turn.get("event") == "evaluation" and turn.get("metric") == "policy_compliance" and turn.get("value") == 0.0:
+                return {
+                    "index": i,
+                    "confidence": 1.0,
+                    "reason": "Policy Violation (Safety/Privacy Guardrail) detected via evaluation metrics."
                 }
             if turn.get("is_root_cause"):
                  return {
@@ -91,35 +103,66 @@ class TriageEngine:
                     "reason": "Explicitly marked as root cause by evaluation plugin."
                 }
 
-        # 2. Medium-High Confidence: Tool Error (caused by agent decision)
+        # 2. Medium-High Confidence: Tool Error or Timeout
         for i, turn in enumerate(history):
-            if turn.get("role") in ("environment", "system"):
-                content = turn.get("content") or {}
-                if isinstance(content, dict) and content.get("status") == "error":
-                    for j in range(i - 1, -1, -1):
-                        if history[j].get("role") == "agent":
-                            return {
-                                "index": j,
-                                "confidence": 0.85,
-                                "reason": f"System error at turn {i} likely triggered by agent decision at turn {j}."
-                            }
-                    return {"index": i, "confidence": 0.7, "reason": "System error with no clear preceding agent action."}
-
-        # 3. Medium Confidence: Connection failure
-        if len(history) > 0 and history[0].get("event") == "connection_error":
-            return {"index": 0, "confidence": 0.9, "reason": "Run failed due to initial connection error."}
-
-        # 4. Low-Medium Confidence: Heuristic Fallback (Last substantive action)
-        for i in range(len(history) - 1, -1, -1):
-            if history[i].get("role") == "agent":
-                action = history[i].get("content", {}).get("action")
-                if action and action != "thought":
+            # Check tool results for error/timeout strings (explainer style)
+            if turn.get("event") == "tool_result" or turn.get("role") == "environment":
+                raw_result = str(turn.get("result") or turn.get("content", ""))
+                result_val = raw_result.lower()
+                if "timeout" in result_val:
                     return {
-                        "index": i,
-                        "confidence": 0.5,
-                        "reason": "Identified last substantive agent action before run failure (heuristic fallback)."
+                        "index": i, 
+                        "confidence": 0.85, 
+                        "reason": f"Tool Timeout: {turn.get('tool') or 'unknown'}. Result: {raw_result}",
+                        "suggestion": "Increase the tool sandbox timeout or optimize the backend service."
                     }
-        
+                if "error" in result_val or "exception" in result_val:
+                    # Trace back to agent if possible
+                    inner_reason = f"Tool Error in {turn.get('tool') or 'executor'}: {raw_result}"
+                    for j in range(i - 1, -1, -1):
+                        if history[j].get("role") == "agent" or history[j].get("event") in ("agent_response", "tool_call"):
+                             return {
+                                 "index": j, 
+                                 "confidence": 0.85, 
+                                 "reason": f"{inner_reason} (triggered by agent decision at turn {j})",
+                                 "suggestion": "Debug the tool implementation or check for missing environment variables."
+                             }
+                    return {"index": i, "confidence": 0.7, "reason": inner_reason, "suggestion": "Debug the tool implementation or check for missing environment variables."}
+
+        # 3. Infinite Loop Detection (Ported from explainer.py)
+        prompts = [e.get("content") for e in history if e.get("event") == "prompt" or e.get("role") == "user"]
+        if len(prompts) > 10 and len(set([str(p) for p in prompts])) < len(prompts) / 2:
+            return {
+                "index": 0,
+                "confidence": 0.9,
+                "reason": "Infinite Loop Detected (Repetitive Prompts).",
+                "suggestion": "Review agent logic for circular reasoning or missing termination guards."
+            }
+
+        # 4. Final Fallback: If run_end says failure but nothing else found
+        if is_explicit_fail:
+            for i in range(len(history) - 1, -1, -1):
+                if history[i].get("role") == "agent" or history[i].get("event") in ("agent_response", "tool_call"):
+                    action = history[i].get("content", {}).get("action") if isinstance(history[i].get("content"), dict) else None
+                    if action != "thought":
+                        return {
+                            "index": i,
+                            "confidence": 0.5,
+                            "reason": "Target Task Not Completed. Identified last substantive agent action before run failure.",
+                            "suggestion": "Increase EVAL_MAX_TURNS or refine the agent's prompt to be more specific."
+                        }
+            # Catch-all for failed status even without agent actions in history
+            return {
+                "index": -1,
+                "confidence": 0.3,
+                "reason": "Target Task Not Completed (Unexpected Termination).",
+                "suggestion": "Check for early run termination or missing agent response events."
+            }
+
+        # If it reached here and it's not an explicit fail, it might be a success or inconclusive
+        if not is_explicit_fail and any(turn.get("event") == "run_end" and turn.get("status") == "success" for turn in history):
+            return {"index": -1, "confidence": 1.0, "reason": "Execution succeeded"}
+
         return {"index": -1, "confidence": 0.1, "reason": "Inconclusive results; no clear deviation point found."}
 
     @staticmethod

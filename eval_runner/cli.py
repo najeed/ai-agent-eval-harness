@@ -459,12 +459,13 @@ def handle_aes_validate(args):
     path = Path(args.path)
     files = []
     if path.is_dir():
-        files = list(path.glob("*.aes.yaml"))
+        # Search for BOTH .aes.yaml and .json scenarios
+        files = list(path.glob("*.aes.yaml")) + list(path.glob("*.json"))
     else:
         files = [path]
 
     if not files:
-        print(f"[FAIL] No .aes.yaml files found at {path}")
+        print(f"[FAIL] No .aes.yaml or .json scenarios found at {path}")
         return
 
     for file_path in files:

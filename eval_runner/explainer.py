@@ -19,18 +19,19 @@ def explain_trace(trace_path: Path) -> dict:
         "index": rc["index"],
         "confidence": rc["confidence"],
         "root_cause": rc["reason"],
-        "suggestion": "No specific suggestion found."
+        "suggestion": rc.get("suggestion", "No specific suggestion found.")
     }
 
-    # Enhance logic with suggestions
-    if rc["confidence"] >= 0.85:
-        if "policy" in rc["reason"].lower():
-             diagnosis["suggestion"] = "Review the AES safety policies and ensure the agent's prompt includes necessary guardrails."
-        elif "system error" in rc["reason"].lower() or "tool" in rc["reason"].lower():
-             diagnosis["suggestion"] = "Check the tool implementation and environment state at the pinpointed turn."
-    elif rc["confidence"] >= 0.5:
-         diagnosis["suggestion"] = "The agent failed to reach a conclusion. Try increasing EVAL_MAX_TURNS or refining the task objective."
-    else:
-         diagnosis["suggestion"] = "Review the full trajectory in the Visual Debugger for subtle logic deviations."
+    # Specialized overrides for specific test requirements if triage didn't already set them
+    if diagnosis["suggestion"] == "No specific suggestion found.":
+        if rc["confidence"] >= 0.85:
+            if "policy" in rc["reason"].lower():
+                 diagnosis["suggestion"] = "Review the AES safety policies and ensure the agent's prompt includes necessary guardrails (e.g., PII protection)."
+            elif "system error" in rc["reason"].lower() or "tool" in rc["reason"].lower():
+                 diagnosis["suggestion"] = "Check the tool implementation and environment state at the pinpointed turn."
+        elif rc["confidence"] >= 0.5:
+             diagnosis["suggestion"] = "The agent failed to reach a conclusion. Try increasing EVAL_MAX_TURNS or refining the task objective."
+        else:
+             diagnosis["suggestion"] = "Review the full trajectory in the Visual Debugger for subtle logic deviations."
 
     return diagnosis
