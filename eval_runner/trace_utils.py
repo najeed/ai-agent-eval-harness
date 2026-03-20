@@ -37,4 +37,8 @@ def load_events(path: Union[Path, str]) -> List[Dict[Any, Any]]:
                 except json.JSONDecodeError:
                     # Skip malformed lines in a JSONL file
                     continue
+        
+        if not events and content:
+            raise ValueError("No valid JSON events could be parsed from the trace file.")
+            
         return events

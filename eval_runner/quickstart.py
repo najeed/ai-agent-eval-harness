@@ -15,7 +15,7 @@ def start_sample_agent():
         print(f"❌ Error: Sample agent not found at {agent_path}")
         return None
     
-    print("🚀 Starting sample agent server...")
+    print("[Quickstart] Starting sample agent server...")
     # Use sys.executable to ensure we use the same python interpreter
     process = subprocess.Popen(
         [sys.executable, str(agent_path)],

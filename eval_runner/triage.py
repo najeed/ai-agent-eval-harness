@@ -87,26 +87,54 @@ class TriageEngine:
                     "confidence": 1.0,
                     "reason": f"Explicit policy violation detected at turn {i}: {content.get('message', 'Unspecified violation')}"
                 }
-            # Check evaluation events for policy compliance failure (common in tests)
-            if turn.get("event") == "evaluation" and turn.get("metric") == "policy_compliance" and turn.get("value") == 0.0:
+        # 1. High Confidence: Explicitly marked failures (policy, safety, validation)
+        for i, turn in enumerate(history):
+            ev = turn.get("event")
+            status = turn.get("status")
+            content = turn.get("content") or {}
+            if ev == "policy_violation" or status == "policy_violation" or (isinstance(content, dict) and content.get("status") == "policy_violation"):
+                return {
+                    "index": i,
+                    "confidence": 0.95,
+                    "reason": "Policy violation detected at this turn.",
+                    "suggestion": "Review the agent's safety filters or policy constraints."
+                }
+            if ev == "safety_block" or status == "safety_block" or (isinstance(content, dict) and content.get("status") == "safety_block"):
                 return {
                     "index": i,
                     "confidence": 1.0,
-                    "reason": "Policy Violation (Safety/Privacy Guardrail) detected via evaluation metrics."
+                    "reason": "Safety block triggered (e.g., PII or toxic content).",
+                    "suggestion": "Check the evaluation guardrails and input sanitization."
                 }
-            if turn.get("is_root_cause"):
+            # Check evaluation events for policy compliance failure (common in tests)
+            if ev == "evaluation" and turn.get("metric") == "policy_compliance" and turn.get("value") == 0.0:
+                return {
+                    "index": i,
+                    "confidence": 1.0,
+                    "reason": "Policy Violation (Safety/Privacy Guardrail) detected via evaluation metrics.",
+                    "suggestion": "Review the agent's safety filters or policy constraints."
+                }
+
+        # 3. Explicitly marked root cause in a turn (if plugin added it)
+        for i, turn in enumerate(history):
+            if turn.get("is_root_cause") or turn.get("root_cause"):
                  return {
                     "index": i,
                     "confidence": 1.0,
-                    "reason": "Explicitly marked as root cause by evaluation plugin."
+                    "reason": turn.get("root_cause_reason") or "Explicitly marked as root cause by evaluation plugin.",
+                    "suggestion": turn.get("root_cause_suggestion") or "Review the specific metric failure in the report."
                 }
 
         # 2. Medium-High Confidence: Tool Error or Timeout
         for i, turn in enumerate(history):
             # Check tool results for error/timeout strings (explainer style)
             if turn.get("event") == "tool_result" or turn.get("role") == "environment":
-                raw_result = str(turn.get("result") or turn.get("content", ""))
+                content = turn.get("content") or {}
+                raw_result = str(turn.get("result") or (content.get("message") if isinstance(content, dict) else content))
                 result_val = raw_result.lower()
+                
+                is_error = "error" in result_val or "exception" in result_val or (isinstance(content, dict) and content.get("status") == "error")
+                
                 if "timeout" in result_val:
                     return {
                         "index": i, 
@@ -114,7 +142,7 @@ class TriageEngine:
                         "reason": f"Tool Timeout: {turn.get('tool') or 'unknown'}. Result: {raw_result}",
                         "suggestion": "Increase the tool sandbox timeout or optimize the backend service."
                     }
-                if "error" in result_val or "exception" in result_val:
+                if is_error:
                     # Trace back to agent if possible
                     inner_reason = f"Tool Error in {turn.get('tool') or 'executor'}: {raw_result}"
                     for j in range(i - 1, -1, -1):
@@ -127,15 +155,46 @@ class TriageEngine:
                              }
                     return {"index": i, "confidence": 0.7, "reason": inner_reason, "suggestion": "Debug the tool implementation or check for missing environment variables."}
 
-        # 3. Infinite Loop Detection (Ported from explainer.py)
+        # 4. Connection Error or System Failure
+        for i, turn in enumerate(history):
+            if turn.get("role") == "system" or turn.get("event") == "system_error":
+                content = turn.get("content") or {}
+                if (isinstance(content, dict) and content.get("status") == "error") or "error" in str(content).lower():
+                    return {
+                        "index": i,
+                        "confidence": 0.9,
+                        "reason": f"System/Connection Error: {content.get('message') or str(content) if isinstance(content, dict) else str(content)}",
+                        "suggestion": "Check agent connectivity, API keys, or infrastructure logs."
+                    }
+
+        # 5. Stall Detection (Repeated Agent Actions)
+        agent_actions = []
+        for i, turn in enumerate(history):
+            if turn.get("role") == "agent" and isinstance(turn.get("content"), dict):
+                agent_actions.append((i, turn.get("content", {}).get("action")))
+        
+        if len(agent_actions) >= 3:
+            for i in range(len(agent_actions) - 2):
+                idx, act = agent_actions[i]
+                if act == agent_actions[i+1][1] == agent_actions[i+2][1] and act is not None and act != "thought":
+                    return {
+                        "index": idx,
+                        "confidence": 0.8,
+                        "reason": f"Agent Stall Detected: Repeatedly calling '{act}' without progress.",
+                        "suggestion": "Review the agent's tool-use logic or check if the tool is providing sufficient feedback."
+                    }
+
+        # 6. Infinite Loop Detection
         prompts = [e.get("content") for e in history if e.get("event") == "prompt" or e.get("role") == "user"]
-        if len(prompts) > 10 and len(set([str(p) for p in prompts])) < len(prompts) / 2:
-            return {
-                "index": 0,
-                "confidence": 0.9,
-                "reason": "Infinite Loop Detected (Repetitive Prompts).",
-                "suggestion": "Review agent logic for circular reasoning or missing termination guards."
-            }
+        if len(prompts) > 10:
+            unique_prompts = set([str(p) for p in prompts])
+            if len(unique_prompts) < len(prompts) / 2:
+                return {
+                    "index": 0,
+                    "confidence": 0.9,
+                    "reason": "Infinite Loop Detected (Repetitive Interaction Pattern).",
+                    "suggestion": "Review agent logic for circular reasoning or missing termination guards."
+                }
 
         # 4. Final Fallback: If run_end says failure but nothing else found
         if is_explicit_fail:
@@ -167,8 +226,6 @@ class TriageEngine:
     def identify_root_cause_index(history: List[Dict[str, Any]]) -> int:
         """Backwards compatible wrapper for the index only."""
         return TriageEngine.identify_root_cause(history)["index"]
-
-        return "UNKNOWN_FAILURE"
 
     @classmethod
     def apply_triage(cls, all_results: List[Dict[str, Any]]):

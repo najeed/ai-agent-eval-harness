@@ -154,7 +154,7 @@ class SessionManager:
                         EventEmitter.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "turn": turn})
                         
                         prompt = agent_response.get("prompt", "Human intervention required.")
-                        print(f"\n   ✋ [HITL PAUSE] Task: {task_id} | Turn: {turn}")
+                        print(f"\n   [HITL PAUSE] Task: {task_id} | Turn: {turn}")
                         print(f"      Context: {prompt}")
 
                         # 1. Check CI/Non-Interactive environment

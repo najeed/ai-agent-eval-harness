@@ -7,7 +7,7 @@ from pathlib import Path
 
 async def record_interaction(agent_url: str):
     """Simple loop to record interactions with an agent."""
-    print("\n⏺ AI Agent Eval Harness - Trace Recorder")
+    print("\n[Trace Recorder] AI Agent Eval Harness - Trace Recorder")
     print(f"Target Agent: {agent_url}\n")
     print("Type 'exit' or 'quit' to stop recording.\n")
 

@@ -5,7 +5,7 @@ from pathlib import Path
 
 def generate_interactive():
     """Interactive prompt to generate scenarios."""
-    print("\n✨ AI Agent Eval Harness - Scenario Generator\n")
+    print("\n[Generator] AI Agent Eval Harness - Scenario Generator\n")
     
     industry = input("What industry? (e.g., customer_support, telecom): ").strip() or "general"
     capability = input("What capability? (e.g., refund handling, troubleshooting): ").strip() or "default"

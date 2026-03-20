@@ -54,7 +54,7 @@ class Aggregator:
         return (z * adjusted_standard_deviation) / denominator
 
     def process(self):
-        print(f"📊 [Aggregator] Processing batch: {self.manifest['fingerprint']}")
+        print(f"[Aggregator] Processing batch: {self.manifest['fingerprint']}")
         
         scenario_results = {}
         
@@ -88,10 +88,13 @@ class Aggregator:
             if start_event and end_event:
                 try:
                     from datetime import datetime
+                    from datetime import datetime
                     def parse_ts(ts):
                         if not ts: return None
-                        ts_clean = str(ts).replace("Z", "").split("+")[0] # Strip timezone/Z
-                        for f in ["%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"]:
+                        # Robust cleaning: handle Z, handle T/space, handle micros
+                        ts_str = str(ts).replace("Z", "").replace(" ", "T")
+                        ts_clean = ts_str.split("+")[0]
+                        for f in ["%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d", "%H:%M:%S"]:
                             try: return datetime.strptime(ts_clean, f)
                             except ValueError: continue
                         return None
@@ -100,9 +103,11 @@ class Aggregator:
                     dt_end = parse_ts(end_event.get("timestamp"))
                     
                     if dt_start and dt_end:
-                        duration = max(0.1, (dt_end - dt_start).total_seconds())
-                except Exception:
-                    pass
+                        duration = (dt_end - dt_start).total_seconds()
+                        if duration < 0: duration = 2.5 # Sanity check for clock drift
+                except Exception as e:
+                    print(f"      [Aggregator] Error parsing duration: {e}")
+                    duration = 2.5
             
             res["latencies"].append(duration)
             
