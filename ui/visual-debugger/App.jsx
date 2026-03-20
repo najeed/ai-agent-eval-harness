@@ -24,7 +24,16 @@ const Icon = ({ name, size = 20, className = "" }) => {
         chart: <> <path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" /></>,
         chevronLeft: <polyline points="15 18 9 12 15 6" />,
         chevronRight: <polyline points="9 18 15 12 9 6" />,
-        x: <> <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
+        x: <> <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>,
+        compliance: <> <polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></>,
+        shield: <> <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></>,
+        rbac: <> <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+        cluster: <> <rect x="2" y="2" width="20" height="8" rx="2" ry="2" /><rect x="2" y="14" width="20" height="8" rx="2" ry="2" /><line x1="6" y1="6" x2="6" y2="6.01" /><line x1="6" y1="18" x2="6" y2="18.01" /></>,
+        factory: <> <path d="M2 20V9l4-2 4 2 4-2 4 2V20H2z" /><path d="M18 20V15h4v5h-4z" /></>,
+        audit: <> <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M7 8h10" /><path d="M7 12h10" /><path d="M7 16h10" /></>,
+        drift: <> <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></>,
+        triage: <> <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /></>,
+        visualizer: <> <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></>
     };
     const iconName = name === 'bar-chart-2' ? 'chart' :
         name === 'chevron-left' ? 'chevronLeft' :
@@ -34,7 +43,16 @@ const Icon = ({ name, size = 20, className = "" }) => {
                         name === 'activity' ? 'activity' :
                             name === 'book' ? 'book' :
                                 name === 'box' ? 'box' :
-                                    name === 'github' ? 'github' : name;
+                                    name === 'github' ? 'github' :
+                                        name === 'file-check' ? 'compliance' :
+                                            name === 'lock' ? 'shield' :
+                                                name === 'users' ? 'rbac' :
+                                                    name === 'server' ? 'cluster' :
+                                                        name === 'zap' ? 'factory' :
+                                                            name === 'shield-check' ? 'audit' :
+                                                                name === 'trending-up' ? 'drift' :
+                                                                    name === 'clipboard-check' ? 'triage' :
+                                                                        name === 'layout' ? 'visualizer' : name;
     return (
         <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
             {icons[iconName] || icons.home}
@@ -52,26 +70,36 @@ const Sidebar = ({ activeTab, setActiveTab, navItems }) => (
                     <Icon name="debugger" size={24} />
                 </div>
                 <div>
-                    <h1 className="font-bold text-slate-100 tracking-tight">OpenCore</h1>
-                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">Admin Console</p>
+                    <h1 className="font-bold text-slate-100 tracking-tight">Harness</h1>
+                    <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Enterprise Console</p>
                 </div>
             </div>
         </div>
 
         <nav className="flex-1 px-3 space-y-1">
-            {navItems.map(item => (
-                <button
-                    key={item.id}
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === item.id
-                        ? 'bg-blue-600/10 text-blue-400 border border-blue-500/10'
-                        : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent'
-                        }`}
-                >
-                    <Icon name={item.icon} size={18} />
-                    {item.title}
-                </button>
-            ))}
+            {navItems.map(item => {
+                if (item.type === 'heading') {
+                    return (
+                        <div key={item.id} className="pt-4 pb-2 px-4">
+                            <div className="h-px bg-slate-800 w-full mb-3"></div>
+                            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{item.title}</span>
+                        </div>
+                    );
+                }
+                return (
+                    <button
+                        key={item.id}
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === item.id
+                            ? 'bg-blue-600/10 text-blue-400 border border-blue-500/10'
+                            : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent'
+                            }`}
+                    >
+                        <Icon name={item.icon} size={18} />
+                        {item.title}
+                    </button>
+                );
+            })}
         </nav>
 
         <div className="p-4 border-t border-slate-800">
@@ -449,7 +477,7 @@ const HumanFriendlyDetail = ({ event, onNotify }) => {
         <div className="space-y-4">
             <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
                 <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2">Agent Thought / Output</h4>
-                <p className="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">{e.content || (e.response && e.response.content)}</p>
+                <p className="text-slate-300 whitespace-pre-wrap text-sm leading-relaxed">{typeof e.content === 'string' ? e.content : (e.content?.response || e.content?.thought || (e.response && e.response.content) || '')}</p>
             </div>
             {e.response && e.response.action && (
                 <div className="bg-slate-800/30 rounded-lg p-3 flex justify-between items-center">
@@ -585,7 +613,7 @@ const FlowContainer = ({ events, onNodeSelect, selectedEvent, highlightFailure, 
                     label: (
                         <div className="flex flex-col items-center gap-1 text-center">
                             <span className="text-[10px] font-black text-white leading-tight">
-                                {e.tool || (e.event === 'agent_response' ? (e.response?.action || 'Thoughts') : e.payload?.task_description || e.content?.substring(0, 24) || e.event.replace('_', ' '))}
+                                {e.tool || (e.event === 'agent_response' ? (e.response?.action || 'Thoughts') : e.payload?.task_description || (typeof e.content === 'string' ? e.content.substring(0, 24) : (e.content?.response || e.content?.thought || e.event.replace('_', ' '))))}
                             </span>
                             <span className="text-[7px] uppercase opacity-60 font-bold tracking-tighter">{e.event.replace('_', ' ')}</span>
                         </div>
@@ -695,7 +723,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                 const rc = data.data && data.data.root_cause;
                 setEvents(eventsList);
                 setRootCause(rc || null);
-                
+
                 const rcIdx = rc ? rc.index : -1;
 
                 // Root Cause Isolation logic
@@ -786,7 +814,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                                 <Icon name="box" size={14} />
                             </button>
                             <div className="w-px h-4 bg-slate-800 mx-1 self-center" />
-                            {(rootCause?.index >= 0 || events.some(e => e.is_root_cause || e.event === 'policy_violation' || e.error || (e.response && e.response.status === 'error') || (e.event === 'evaluation' && e.success === false))) && (
+                            {(rootCause?.index >= 0 || events.some(e => e.is_root_cause || e.event === 'policy_violation' || e.error || (e.response && e.response.status === 'error'))) && (
                                 <button
                                     onClick={() => {
                                         if (rootCause?.index >= 0 && events[rootCause.index]) {
@@ -854,7 +882,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                                         </span>
                                     </div>
                                     <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed opacity-80">
-                                        {e.content || (e.tool ? `${e.tool}(...)` : e.scenario || "Run Info")}
+                                        {typeof e.content === 'string' ? e.content : (e.content?.response || e.content?.thought || (e.tool ? `${e.tool}(...)` : e.scenario || "Run Info"))}
                                     </p>
                                 </div>
                             ))
@@ -1321,32 +1349,7 @@ const App = () => {
         setTimeout(() => setToast(null), 3000);
     };
 
-    useEffect(() => {
-        fetch('/api/nav')
-            .then(res => res.json())
-            .then(data => setNavItems(data.nav || []));
-
-        // Security: Global message listener for plugin-to-core communication
-        const handleMessage = (event) => {
-            // Origin Validation (assuming same-origin for now, but extensible)
-            if (event.origin !== window.location.origin) return;
-
-            const { type, payload } = event.data || {};
-            if (type === 'NOTIFY') {
-                showToast(payload.message, payload.type);
-            }
-        };
-
-        window.addEventListener('message', handleMessage);
-
-        // Handle direct navigation from URL on boot
-        const path = window.location.pathname.substring(1);
-        if (path) setActiveTab(path === 'docs/api' ? 'api_docs' : path);
-
-        return () => window.removeEventListener('message', handleMessage);
-    }, []);
-
-    const handleNavClick = (item) => {
+    const handleNavClick = React.useCallback((item) => {
         if (item.type === 'external') {
             window.open(item.path, '_blank');
         } else {
@@ -1354,7 +1357,35 @@ const App = () => {
             if (item.id !== 'debugger') setSelectedRunId(null);
             window.history.pushState({}, '', `/${item.id === 'dashboard' ? '' : item.id === 'api_docs' ? 'docs/api' : item.id}`);
         }
-    };
+    }, [navItems]);
+
+    useEffect(() => {
+        fetch(`/api/nav?t=${Date.now()}`)
+            .then(res => res.json())
+            .then(data => setNavItems(data.nav || []));
+    }, []);
+
+    useEffect(() => {
+        const handleMessage = (event) => {
+            if (event.origin !== window.location.origin) return;
+
+            const { type, payload } = event.data || {};
+            if (type === 'NOTIFY') {
+                showToast(payload.message, payload.type);
+            }
+            if (type === 'NAVIGATE') {
+                const item = navItems.find(n => n.id === payload) || { id: payload };
+                handleNavClick(item);
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+
+        const path = window.location.pathname.substring(1);
+        if (path) setActiveTab(path === 'docs/api' ? 'api_docs' : path);
+
+        return () => window.removeEventListener('message', handleMessage);
+    }, [navItems, handleNavClick]);
 
     const handleViewReport = (runId) => {
         setSelectedRunId(runId);
@@ -1385,7 +1416,7 @@ const App = () => {
             case 'reports': return <ReportsView onViewReport={handleViewReport} searchQuery={globalSearch} />;
             case 'editor': return <ScenarioEditor />;
             case 'debugger': return <VisualDebugger runId={selectedRunId} onNotify={showToast} />;
-            case 'demo': 
+            case 'demo':
                 if (!window.Demo) {
                     return (
                         <div className="h-full flex flex-col items-center justify-center space-y-4">
@@ -1394,7 +1425,7 @@ const App = () => {
                         </div>
                     );
                 }
-                const DemoComp = window.Demo; 
+                const DemoComp = window.Demo;
                 return <DemoComp />;
             case 'docs': return <DocsView searchQuery={globalSearch} />;
             case 'api_docs': return <DocsView categoryFilter="API Reference" searchQuery={globalSearch} />;
@@ -1447,9 +1478,9 @@ const App = () => {
             {/* Toast Notification */}
             {toast && (
                 <div className="fixed bottom-8 right-8 z-[100] animate-in slide-in-from-right-8 duration-300">
-                    <div className={`px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border-2 ${toast.type === 'error'
-                        ? 'bg-red-950 border-red-500/50 text-red-200 shadow-red-500/10'
-                        : 'bg-slate-900 border-emerald-500/50 text-emerald-400 shadow-emerald-500/10'
+                    <div className={`px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${toast.type === 'error'
+                        ? 'bg-red-500/10 border-red-500/20 text-red-500'
+                        : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
                         }`}>
                         <Icon name={toast.type === 'error' ? 'alert' : 'check'} size={18} />
                         <span className="text-sm font-bold tracking-tight">{toast.message}</span>

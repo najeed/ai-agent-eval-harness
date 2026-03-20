@@ -341,22 +341,64 @@ def get_debugger_state():
     run_id = request.args.get("run_id")
     if run_id:
         project_root = Path(__file__).parent.parent.parent
-        trace_file = project_root / "runs" / f"{run_id}.jsonl"
-        print(f"DEBUG: Loading trace from {trace_file}", flush=True)
-        if not trace_file.exists():
-            print(f"DEBUG: Trace file MISSING at {trace_file}", flush=True)
+        runs_dir = project_root / "runs"
+        demo_dir = runs_dir / "demo"
+        
+        # 1. Try standard locations
+        paths_to_check = [
+            runs_dir / f"{run_id}.jsonl",
+            demo_dir / f"{run_id}.jsonl"
+        ]
+        
+        trace_file = next((p for p in paths_to_check if p.exists()), None)
+        
+        # 2. Dynamic generation for demo IDs if not found on disk
+        if not trace_file and run_id in ["run-loan-risk-fail", "run-loan-risk-pass"]:
+            from .demo_traces import get_demo_trace
+            events = get_demo_trace(run_id)
+            if events:
+                try:
+                    demo_dir.mkdir(parents=True, exist_ok=True)
+                    trace_file = demo_dir / f"{run_id}.jsonl"
+                    with open(trace_file, "w", encoding="utf-8") as f:
+                        for ev in events:
+                            f.write(json.dumps(ev) + "\n")
+                    print(f"DEBUG: Dynamically generated demo trace at {trace_file}", flush=True)
+                except Exception as e:
+                    print(f"ERROR generating demo trace: {e}", flush=True)
+                    # Fallback to serving in-memory if disk write fails
+                    summary = {"message": f"Demo Narrative: {run_id.replace('-', ' ').title()}"}
+                    from ..triage import TriageEngine
+                    return jsonify({
+                        "status": "ok",
+                        "message": "Demo trace loaded from memory (disk write failed)",
+                        "data": {
+                            "summary": summary,
+                            "timeline": events,
+                            "root_cause": TriageEngine.identify_root_cause(events),
+                        }
+                    })
+
+        if not trace_file:
+            print(f"DEBUG: Trace file MISSING for {run_id}", flush=True)
             return (
                 jsonify(
                     {
                         "status": "error",
-                        "message": f"Trace file not found: {trace_file}",
+                        "message": f"Trace file not found for run_id: {run_id}",
                     }
                 ),
                 404,
             )
 
+        print(f"DEBUG: Loading trace from {trace_file}", flush=True)
         events = []
         summary = {"message": f"Historical Trace: {run_id}"}
+        if run_id.startswith("run-loan-risk"):
+             summary["message"] = f"Demo Narrative: {run_id.replace('-', ' ').title()}"
+             if run_id == "run-loan-risk-fail":
+                 summary["message"] = "Demo Narrative: Loan Approval Failure Analysis"
+
         try:
             with open(trace_file, "r", encoding="utf-8-sig") as f:
                 for line in f:
