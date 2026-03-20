@@ -786,7 +786,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                                 <Icon name="box" size={14} />
                             </button>
                             <div className="w-px h-4 bg-slate-800 mx-1 self-center" />
-                            {(rootCause?.index >= 0 || events.some(e => e.is_root_cause || e.event === 'policy_violation' || e.error || (e.response && e.response.status === 'error'))) && (
+                            {(rootCause?.index >= 0 || events.some(e => e.is_root_cause || e.event === 'policy_violation' || e.error || (e.response && e.response.status === 'error') || (e.event === 'evaluation' && e.success === false))) && (
                                 <button
                                     onClick={() => {
                                         if (rootCause?.index >= 0 && events[rootCause.index]) {
@@ -1447,9 +1447,9 @@ const App = () => {
             {/* Toast Notification */}
             {toast && (
                 <div className="fixed bottom-8 right-8 z-[100] animate-in slide-in-from-right-8 duration-300">
-                    <div className={`px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${toast.type === 'error'
-                        ? 'bg-red-500/10 border-red-500/20 text-red-500'
-                        : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+                    <div className={`px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border-2 ${toast.type === 'error'
+                        ? 'bg-red-950 border-red-500/50 text-red-200 shadow-red-500/10'
+                        : 'bg-slate-900 border-emerald-500/50 text-emerald-400 shadow-emerald-500/10'
                         }`}>
                         <Icon name={toast.type === 'error' ? 'alert' : 'check'} size={18} />
                         <span className="text-sm font-bold tracking-tight">{toast.message}</span>

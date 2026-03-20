@@ -92,6 +92,17 @@ def test_identify_root_cause_fallback():
     assert TriageEngine.identify_root_cause_index(history) == 0
 
 
+def test_identify_root_cause_metric_failure():
+    from eval_runner.triage import TriageEngine
+
+    history = [
+        {"role": "agent", "content": {"action": "bad_answer"}},  # Index 0
+        {"event": "evaluation", "metric": "clarity", "success": False, "value": 0.2},  # Index 1
+    ]
+    # Should point to the agent action at index 0
+    assert TriageEngine.identify_root_cause_index(history) == 0
+
+
 if __name__ == "__main__":
     test_triage_connection_error()
     test_triage_policy_violation()
@@ -100,4 +111,5 @@ if __name__ == "__main__":
     test_identify_root_cause_policy()
     test_identify_root_cause_tool_error()
     test_identify_root_cause_fallback()
+    test_identify_root_cause_metric_failure()
     print("ALL TESTS PASSED MANUALLY")

@@ -147,6 +147,25 @@ class TriageEngine:
                     "suggestion": "Review the agent's safety filters or policy constraints.",
                 }
 
+        # 1.1 High Confidence: General Evaluation Failures (Metric-based)
+        for i, turn in enumerate(history):
+            if turn.get("event") == "evaluation" and turn.get("success") is False:
+                # Find the last agent action before this evaluation
+                for j in range(i - 1, -1, -1):
+                    if history[j].get("role") == "agent" or history[j].get("event") in ("agent_response", "tool_call"):
+                        return {
+                            "index": j,
+                            "confidence": 0.9,
+                            "reason": f"Metric Failure: '{turn.get('metric', 'unspecified')}' failed (Value: {turn.get('value')}). Deviation pinpointed to agent action at turn {j}.",
+                            "suggestion": "Review the agent's reasoning leading to this specific metric failure."
+                        }
+                return {
+                    "index": i,
+                    "confidence": 0.8,
+                    "reason": f"Metric Failure: '{turn.get('metric', 'unspecified')}' failed (Value: {turn.get('value')}).",
+                    "suggestion": "Review the evaluation criteria for this scenario."
+                }
+
         # 3. Explicitly marked root cause in a turn (if plugin added it)
         for i, turn in enumerate(history):
             if turn.get("is_root_cause") or turn.get("root_cause"):
