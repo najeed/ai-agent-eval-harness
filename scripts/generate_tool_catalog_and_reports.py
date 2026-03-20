@@ -27,11 +27,13 @@ catalog = {
     "tools": [],
 }
 for tool, cnt in counts.most_common():
-    catalog["tools"].append({
-        "name": tool,
-        "count": cnt,
-        "example": examples.get(tool),
-    })
+    catalog["tools"].append(
+        {
+            "name": tool,
+            "count": cnt,
+            "example": examples.get(tool),
+        }
+    )
 
 out_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "schemas")
 os.makedirs(out_dir, exist_ok=True)
@@ -50,19 +52,28 @@ for path in glob.glob(os.path.join(root, "**", "scenarios", "*.json"), recursive
         for sc in t.get("success_criteria", []):
             thr = sc.get("threshold")
             if thr in (0.5, 1.0):
-                report.append({
-                    "scenario_id": sid,
-                    "path": path,
-                    "task_id": tid,
-                    "metric": sc.get("metric"),
-                    "threshold": thr,
-                })
+                report.append(
+                    {
+                        "scenario_id": sid,
+                        "path": path,
+                        "task_id": tid,
+                        "metric": sc.get("metric"),
+                        "threshold": thr,
+                    }
+                )
 
 reports_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "reports")
 os.makedirs(reports_dir, exist_ok=True)
 json_report_path = os.path.join(reports_dir, "questionable_thresholds.json")
 with open(json_report_path, "w", encoding="utf-8") as f:
-    json.dump({"generated_at": datetime.datetime.utcnow().isoformat() + "Z", "entries": report}, f, indent=2)
+    json.dump(
+        {
+            "generated_at": datetime.datetime.utcnow().isoformat() + "Z",
+            "entries": report,
+        },
+        f,
+        indent=2,
+    )
 
 md_report_path = os.path.join(reports_dir, "questionable_thresholds.md")
 with open(md_report_path, "w", encoding="utf-8") as f:
@@ -77,4 +88,6 @@ with open(md_report_path, "w", encoding="utf-8") as f:
         )
 
 print(f"Wrote tool catalog: {json_path}")
-print(f"Wrote questionable threshold reports: {json_report_path} and {md_report_path} (entries: {len(report)})")
+print(
+    f"Wrote questionable threshold reports: {json_report_path} and {md_report_path} (entries: {len(report)})"
+)

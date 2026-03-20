@@ -1,7 +1,9 @@
 from typing import Dict, Optional
 
+
 class RubricRegistry:
     """Registry for industry-specific evaluation rubrics."""
+
     _rubrics: Dict[str, str] = {
         "generic": """
 You are an objective judge. Rate the similarity between the 'Expected Outcome' and the 'Agent Summary' on a scale of 0.0 to 1.0.
@@ -82,7 +84,7 @@ Expected Outcome: {expected_outcome}
 Agent Summary: {agent_summary}
 
 Return ONLY a single float between 0.0 and 1.0.
-"""
+""",
     }
 
     @classmethod

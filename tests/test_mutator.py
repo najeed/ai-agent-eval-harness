@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from eval_runner import mutator
 
+
 def test_mutator_typo():
     """Verify typo mutation replaces characters."""
     scenario = {"tasks": [{"description": "Please clone the repo"}]}
@@ -17,6 +18,7 @@ def test_mutator_typo():
     assert desc != "Please clone the repo"
     # Basic check: should still be somewhat similar
     assert len(desc) > 0
+
 
 def test_mutator_ambiguity():
     """Verify ambiguity mutation adds confusing phrases."""
@@ -27,12 +29,14 @@ def test_mutator_ambiguity():
     assert any(f in desc for f in fillers)
     assert desc != "Clone the repo"
 
+
 def test_mutator_injection():
     """Verify injection mutation adds adversarial instructions."""
     scenario = {"tasks": [{"description": "Clone the repo"}]}
     mutated = mutator.mutate_scenario(scenario, "injection")
     desc = mutated["tasks"][0]["description"]
     assert "Ignore all previous instructions" in desc
+
 
 def test_save_mutated_scenario(tmp_path):
     """Verify saving mutated scenario to file."""

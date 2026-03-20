@@ -1,16 +1,20 @@
 from __future__ import annotations
-from typing import Dict, Callable, Optional, Any
+from typing import Dict, Callable, Optional
+
 
 class MetricRegistry:
     """Registry for evaluation metrics."""
+
     _metrics: Dict[str, Callable] = {}
 
     @classmethod
     def register(cls, name: str):
         """Decorator to register a metric function."""
+
         def decorator(func: Callable):
             cls._metrics[name] = func
             return func
+
         return decorator
 
     @classmethod
@@ -22,6 +26,7 @@ class MetricRegistry:
     def list_metrics(cls) -> list:
         """Returns a list of registered metric names."""
         return list(cls._metrics.keys())
+
 
 # --- Import sub-modules to trigger registration ---
 # Legacy order matters for shadowing if any (none expected)
@@ -40,6 +45,6 @@ from .core import (
     calculate_consensus_scoring,
     calculate_pii_safety,
     calculate_refusal_calibration,
-    calculate_consistency_score
+    calculate_consistency_score,
 )
 from .accuracy import calculate_luna_judge_score

@@ -2,7 +2,4 @@
 from .gaia import GAIABenchmark
 from .assistantbench import AssistantBenchmark
 
-BENCHMARK_REGISTRY = {
-    "gaia": GAIABenchmark,
-    "assistantbench": AssistantBenchmark
-}
+BENCHMARK_REGISTRY = {"gaia": GAIABenchmark, "assistantbench": AssistantBenchmark}

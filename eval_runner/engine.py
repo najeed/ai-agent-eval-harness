@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 engine.py
 
@@ -25,11 +26,12 @@ from . import config
 MAX_ENGINE_ATTEMPTS = config.MAX_ENGINE_ATTEMPTS
 MAX_TURNS = config.EVAL_MAX_TURNS
 
+
 # Dynamic Adapter Registry for Agent Communication
 class AgentAdapterRegistry:
     _adapters: Dict[str, Callable] = {}
     _discovered: bool = False
-    
+
     @classmethod
     def register(cls, protocol: str, adapter_func):
         cls._adapters[protocol] = adapter_func
@@ -39,38 +41,44 @@ class AgentAdapterRegistry:
         """Triggers plugin-based discovery of adapters."""
         if cls._discovered:
             return
-        
+
         # Load standard adapters
         from . import adapters
+
         cls.register("http", adapters.http_adapter)
         cls.register("local", adapters.local_subprocess_adapter)
         cls.register("socket", adapters.socket_adapter)
 
         plugins.manager.trigger("on_discover_adapters", cls)
-        
+
         # Register default human adapter if not already registered
         if "human" not in cls._adapters:
             cls._adapters["human"] = cls._human_adapter
-            
+
         cls._discovered = True
-        
+
     @classmethod
     async def _human_adapter(cls, payload: dict):
         """Standard adapter for Human-In-The-Loop intervention."""
         # Provides structured metadata to the session loop
         return {
-            "action": "hitl_pause", 
+            "action": "hitl_pause",
             "message": "Waiting for human intervention.",
-            "prompt": payload.get("task_description", "Please review the current state and provide guidance.")
+            "prompt": payload.get(
+                "task_description",
+                "Please review the current state and provide guidance.",
+            ),
         }
-        
+
     @classmethod
-    async def call_agent(cls, payload: dict, protocol="http", endpoint: Optional[str] = None):
+    async def call_agent(
+        cls, payload: dict, protocol="http", endpoint: Optional[str] = None
+    ):
         cls._discover()
         adapter = cls._adapters.get(protocol)
         if not adapter:
             raise ValueError(f"No adapter registered for protocol: {protocol}")
-        
+
         # Use provided endpoint or fall back to defaults
         if not endpoint:
             if protocol == "http":
@@ -86,18 +94,24 @@ class AgentAdapterRegistry:
         print(f"      [Engine] Executing {protocol} call to: {endpoint}")
         return await adapter(payload, endpoint)
 
-async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[dict] = None) -> list:
+
+async def run_evaluation(
+    scenario: dict, attempts: int = 1, metadata: Optional[dict] = None
+) -> list:
     """Entry point for evaluation. Delegates to the Runner strategy."""
     from .runner import DefaultRunner
-    
+
     if attempts > MAX_ENGINE_ATTEMPTS:
-        print(f"[Engine] Security WARNING: requested attempts ({attempts}) exceeds MAX_ENGINE_ATTEMPTS ({MAX_ENGINE_ATTEMPTS}). Capping.")
+        print(
+            f"[Engine] Security WARNING: requested attempts ({attempts}) exceeds MAX_ENGINE_ATTEMPTS ({MAX_ENGINE_ATTEMPTS}). Capping."
+        )
         attempts = MAX_ENGINE_ATTEMPTS
-    
+
     # Load internal plugins if not already loaded (like FlightRecorder and ReportingPlugin)
     from .flight_recorder import FlightRecorderPlugin
     from .reporting_plugin import ReportingPlugin
     from .publication_plugin import PublicationPlugin
+
     if not any(isinstance(p, FlightRecorderPlugin) for p in plugins.manager.plugins):
         plugins.manager.plugins.append(FlightRecorderPlugin())
     if not any(isinstance(p, ReportingPlugin) for p in plugins.manager.plugins):
@@ -105,6 +119,6 @@ async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[d
 
     runner = DefaultRunner()
     results = await runner.run(scenario, attempts, metadata=metadata)
-    
+
     # Backward compatibility: return first attempt if k=1
     return results[0] if attempts == 1 else results

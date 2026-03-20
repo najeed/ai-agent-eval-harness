@@ -2,13 +2,14 @@ import pytest
 import os
 from unittest.mock import AsyncMock, patch
 from eval_runner.llm_providers import (
-    LLMProviderFactory, 
-    OllamaProvider, 
-    OpenAIProvider, 
-    AnthropicProvider, 
+    LLMProviderFactory,
+    OllamaProvider,
+    OpenAIProvider,
+    AnthropicProvider,
     GeminiProvider,
-    GrokProvider
+    GrokProvider,
 )
+
 
 @pytest.mark.asyncio
 async def test_ollama_provider():
@@ -18,9 +19,10 @@ async def test_ollama_provider():
         mock_response.status = 200
         mock_response.json.return_value = {"response": "0.8"}
         mock_post.return_value.__aenter__.return_value = mock_response
-        
+
         result = await provider.generate("test")
         assert result == "0.8"
+
 
 @pytest.mark.asyncio
 async def test_openai_provider():
@@ -28,13 +30,12 @@ async def test_openai_provider():
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json.return_value = {
-            "choices": [{"message": {"content": "0.9"}}]
-        }
+        mock_response.json.return_value = {"choices": [{"message": {"content": "0.9"}}]}
         mock_post.return_value.__aenter__.return_value = mock_response
-        
+
         result = await provider.generate("test")
         assert result == "0.9"
+
 
 @pytest.mark.asyncio
 async def test_anthropic_provider():
@@ -42,13 +43,12 @@ async def test_anthropic_provider():
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json.return_value = {
-            "content": [{"text": "1.0"}]
-        }
+        mock_response.json.return_value = {"content": [{"text": "1.0"}]}
         mock_post.return_value.__aenter__.return_value = mock_response
-        
+
         result = await provider.generate("test")
         assert result == "1.0"
+
 
 @pytest.mark.asyncio
 async def test_gemini_provider():
@@ -60,17 +60,18 @@ async def test_gemini_provider():
             "candidates": [{"content": {"parts": [{"text": "0.7"}]}}]
         }
         mock_post.return_value.__aenter__.return_value = mock_response
-        
+
         result = await provider.generate("test")
         assert result == "0.7"
 
+
 def test_provider_factory():
     from eval_runner import config
-    
+
     with patch("eval_runner.config.JUDGE_PROVIDER", "openai"):
         provider = LLMProviderFactory.create()
         assert isinstance(provider, OpenAIProvider)
-    
+
     with patch("eval_runner.config.JUDGE_PROVIDER", "anthropic"):
         provider = LLMProviderFactory.create()
         assert isinstance(provider, AnthropicProvider)

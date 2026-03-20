@@ -1,9 +1,10 @@
 # eval_runner/benchmarks/assistantbench.py
 from typing import List, Dict, Any
 
+
 class AssistantBenchmark:
     """Loader and Adapter for the AssistantBench dataset."""
-    
+
     @staticmethod
     def load(uri: str) -> List[Dict[str, Any]]:
         print(f"      [Benchmark] Loading AssistantBench dataset from {uri}...")
@@ -22,8 +23,9 @@ class AssistantBenchmark:
                         "expected_outcome": "Goal reached via tools",
                         "success_criteria": [
                             {"metric": "state_verification", "threshold": 1.0}
-                        ]
+                        ],
                     }
-                ]
-            } for i in range(2)
+                ],
+            }
+            for i in range(2)
         ]

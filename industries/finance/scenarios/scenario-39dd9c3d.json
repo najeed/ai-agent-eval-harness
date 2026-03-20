@@ -3,7 +3,22 @@
   "version": "2.0.0",
   "title": "Financial Audit Request",
   "description": "Evaluation of AI agent's ability to handle complex financial audit inquiries and data retrieval.",
-  "tasks": [],
+  "tasks": [
+    {
+      "task_id": "audit_task_1",
+      "description": "Verify audit trail for transaction ID-998273.",
+      "expected_outcome": "Agent retrieves correct audit timestamps and logs.",
+      "required_tools": [
+        "db_shim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "generic_accuracy",
+          "threshold": 0.8
+        }
+      ]
+    }
+  ],
   "industry": "finance",
   "use_case": "General Support",
   "core_function": "Inquiry Handling"

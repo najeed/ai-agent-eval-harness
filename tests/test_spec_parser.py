@@ -1,6 +1,7 @@
 import pytest
 from eval_runner.spec_parser import parse_markdown_to_scenario
 
+
 def test_parse_valid_markdown():
     markdown = """# PRD: Test Scenario
 **Industry:** telecom
@@ -24,7 +25,7 @@ Description of task one.
 - **tool1:** {"max_limit": 10}
 """
     scenario = parse_markdown_to_scenario(markdown)
-    
+
     assert scenario["title"] == "Test Scenario"
     assert scenario["industry"] == "telecom"
     assert len(scenario["tasks"]) == 1
@@ -34,6 +35,7 @@ Description of task one.
     assert scenario["tasks"][0]["success_criteria"][0]["threshold"] == 0.9
     assert "agent1" in scenario["agent_topology"]
     assert "tool1" in scenario["policies"]
+
 
 def test_parse_missing_sections():
     markdown = "# PRD: Minimal\n## Tasks\n### 1. T1\n- **Tools:** t1"

@@ -1,7 +1,22 @@
 {
   "scenario_id": "scenario-48fff5a6",
   "version": "2.0.0",
-  "tasks": [],
+  "tasks": [
+    {
+      "task_id": "reschedule_task_1",
+      "description": "Reschedule appointment for Patient-ID-4822 to 2026-04-15 at 10:00 AM.",
+      "expected_outcome": "Agent confirms rescheduling success in the hospital database.",
+      "required_tools": [
+        "hospital_api"
+      ],
+      "success_criteria": [
+        {
+          "metric": "generic_accuracy",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ],
   "title": "Scenario Specification: Healthcare Portal",
   "description": "This scenario tests an agent's ability to handle a medical appointment rescheduling request.",
   "industry": "healthcare",

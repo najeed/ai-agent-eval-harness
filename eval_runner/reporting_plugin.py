@@ -13,16 +13,19 @@ from . import metrics
 from pathlib import Path
 from datetime import datetime
 
+
 class ReportingPlugin(BaseEvalPlugin):
     """Orchestrates report generation and notifications after evaluation."""
 
-    def on_metrics_calculated(self, context: EvaluationContext, all_attempt_results: list):
+    def on_metrics_calculated(
+        self, context: EvaluationContext, all_attempt_results: list
+    ):
         """Calculates consistency score across multiple attempts."""
         if len(all_attempt_results) < 2:
             return
 
         print(f"   [ReportingPlugin] Calculating cross-attempt consistency...")
-        
+
         # Calculate consistency per task
         num_tasks = len(all_attempt_results[0])
         for t_idx in range(num_tasks):
@@ -32,21 +35,24 @@ class ReportingPlugin(BaseEvalPlugin):
                 history = task_res.get("conversation_history", [])
                 summary = self._extract_summary_from_history(history)
                 summaries.append(summary)
-            
+
             consistency_score = metrics.calculate_consistency_score(summaries)
-            
+
             # Inject consistency metric into the last attempt's results for backward compat with tests
             last_task_res = all_attempt_results[-1][t_idx]
-            last_task_res["metrics"].append({
-                "metric": "consistency_score",
-                "score": consistency_score,
-                "threshold": 0.0,
-                "success": True
-            })
+            last_task_res["metrics"].append(
+                {
+                    "metric": "consistency_score",
+                    "score": consistency_score,
+                    "threshold": 0.0,
+                    "success": True,
+                }
+            )
 
     def _extract_summary_from_history(self, history):
         agent_msgs = [m for m in history if m["role"] == "agent"]
-        if not agent_msgs: return ""
+        if not agent_msgs:
+            return ""
         last_content = agent_msgs[-1].get("content", "")
         if isinstance(last_content, dict):
             return last_content.get("summary") or last_content.get("content") or ""
@@ -59,7 +65,7 @@ class ReportingPlugin(BaseEvalPlugin):
     def after_evaluation(self, context: EvaluationContext, results: list):
         """Automatically called when evaluation finishes."""
         scenario = context.scenario_data
-        
+
         # Note: In k-attempt runs, results is a list of lists.
         # Use the first attempt for the summary report (backwards compat)
         display_results = results[0] if isinstance(results[0], list) else results
@@ -70,24 +76,29 @@ class ReportingPlugin(BaseEvalPlugin):
 
         # 1. Standard Summary Report
         print("\n   [ReportingPlugin] Generating summary report...")
-        reporter.generate_report(scenario, display_results, export_trajectory=True, metadata=context.metadata)
-        
+        reporter.generate_report(
+            scenario, display_results, export_trajectory=True, metadata=context.metadata
+        )
+
         # 2. Reproduction Script (Mock implementation)
         self.generate_repro_script(context)
-        
+
         # 3. Notifications (Mock implementation)
-        # We can check CLI args if we store them in a shared location, 
+        # We can check CLI args if we store them in a shared location,
         # but for now we'll check context metadata.
         args = context.metadata.get("args", {})
         if args.get("notify", False):
             import asyncio
+
             # We are in a sync hook, but need to call async dispatcher
             loop = asyncio.get_event_loop()
             if loop.is_running():
                 # Already in a loop, create task
                 loop.create_task(self.dispatch_notifications(context, display_results))
             else:
-                loop.run_until_complete(self.dispatch_notifications(context, display_results))
+                loop.run_until_complete(
+                    self.dispatch_notifications(context, display_results)
+                )
 
     def generate_repro_script(self, context: EvaluationContext):
         """Creates a standalone script to reproduce the evaluation."""
@@ -97,24 +108,24 @@ class ReportingPlugin(BaseEvalPlugin):
 
         # Attempt to get the actual path from CLI args for more accurate repro instructions
         args = context.metadata.get("args", {})
-        
+
         # 1. Check if we have a benchmark URI
         if "://" in str(args.get("path", "")):
-             scenario_path = args.get("path")
+            scenario_path = args.get("path")
         # 2. Check if we have an explicit scenario arg
         elif args.get("scenario"):
-             scenario_path = args.get("scenario")
+            scenario_path = args.get("scenario")
         # 3. Check if the scenario data itself contains the path (injected during load)
         elif context.scenario_data.get("path"):
-             scenario_path = context.scenario_data.get("path")
+            scenario_path = context.scenario_data.get("path")
         # 4. Smart fallback: try to find the scenario in the default location
         else:
-             scenario_path = f"scenarios/{scenario_id}.json"
+            scenario_path = f"scenarios/{scenario_id}.json"
 
         # Security Guardrails: RCE Prevention
         # Generate as inert .txt to prevent auto-execution
         repro_path = repro_dir / f"repro_{scenario_id}.txt"
-        
+
         # Strip potential arbitrary execution
         content = f"""# Reproduction script for {scenario_id}
 # Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
@@ -129,8 +140,10 @@ class ReportingPlugin(BaseEvalPlugin):
 eval-harness run --scenario {scenario_path}
 """
         # Additional safety for scenarios that might contain shell commands
-        content = content.replace("os.system", "[REDACTED]").replace("subprocess", "[REDACTED]")
-        
+        content = content.replace("os.system", "[REDACTED]").replace(
+            "subprocess", "[REDACTED]"
+        )
+
         with open(repro_path, "w") as f:
             f.write(content)
         print(f"   [ReportingPlugin] Inert repro instructions generated: {repro_path}")
@@ -142,8 +155,10 @@ eval-harness run --scenario {scenario_path}
             print("   [ReportingPlugin] Skip: No 'webhook_url' provided in metadata.")
             return
 
-        print(f"   [ReportingPlugin] Dispatching notification to: {webhook_url[:20]}...")
-        
+        print(
+            f"   [ReportingPlugin] Dispatching notification to: {webhook_url[:20]}..."
+        )
+
         # Simple summary
         total = len(results)
         successes = 0
@@ -152,23 +167,29 @@ eval-harness run --scenario {scenario_path}
             # results is [ [task1_res, task2_res], [task1_res, task2_res] ] for attempts
             # If it's a single attempt, it might be just [task1_res, task2_res]
             tasks = attempt_res if isinstance(attempt_res, list) else [attempt_res]
-            if all(all(m.get("success", False) for m in tr.get("metrics", [])) for tr in tasks):
+            if all(
+                all(m.get("success", False) for m in tr.get("metrics", []))
+                for tr in tasks
+            ):
                 successes += 1
-        
+
         payload = {
             "text": f"🚀 *Evaluation Complete*\n*Scenario*: {context.scenario_id}\n*Success Rate*: {successes}/{total} tasks passed.",
             "attachments": [
                 {
                     "title": "View Report",
-                    "text": f"Reproduction script generated: reports/repro/repro_{context.scenario_id}.txt"
+                    "text": f"Reproduction script generated: reports/repro/repro_{context.scenario_id}.txt",
                 }
-            ]
+            ],
         }
 
         try:
             import aiohttp
+
             async with aiohttp.ClientSession() as session:
-                async with session.post(webhook_url, json=payload, timeout=5) as response:
+                async with session.post(
+                    webhook_url, json=payload, timeout=5
+                ) as response:
                     if response.status < 300:
                         print("   [ReportingPlugin] Notification sent successfully.")
                     else:

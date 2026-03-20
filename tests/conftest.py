@@ -6,11 +6,14 @@ Includes logic to gracefully shut down OpenTelemetry to prevent I/O errors on cl
 """
 
 import pytest
+
 try:
     from opentelemetry import trace
+
     OTEL_AVAILABLE = True
 except ImportError:
     OTEL_AVAILABLE = False
+
 
 @pytest.fixture(scope="session", autouse=True)
 def shutdown_tracer():

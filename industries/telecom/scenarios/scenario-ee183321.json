@@ -1,7 +1,22 @@
 {
   "scenario_id": "scenario-ee183321",
   "version": "2.0.0",
-  "tasks": [],
+  "tasks": [
+    {
+      "task_id": "dispute_task_1",
+      "description": "Calculate data overage credit for Account-82736 based on roaming logs.",
+      "expected_outcome": "Agent calculates a $42.50 credit and applies it to the next statement.",
+      "required_tools": [
+        "billing_shim"
+      ],
+      "success_criteria": [
+        {
+          "metric": "tool_call_correctness",
+          "threshold": 1.0
+        }
+      ]
+    }
+  ],
   "title": "Billing Dispute Resolution Agent",
   "industry": "telecom",
   "use_case": "customer_service",

@@ -160,6 +160,7 @@ HTML_TEMPLATE = """
 </html>
 """
 
+
 class HTMLBuilder:
     def __init__(self, aggregated_paths: list, is_pilot: bool = False):
         self.paths = [Path(p) for p in aggregated_paths]
@@ -170,61 +171,75 @@ class HTMLBuilder:
         self.is_pilot = is_pilot
 
     def build(self):
-        print(f"🎨 [HTMLBuilder] Building comparative leaderboard for {len(self.agents_data)} agents.")
-        
+        print(
+            f"🎨 [HTMLBuilder] Building comparative leaderboard for {len(self.agents_data)} agents."
+        )
+
         prepared_agents = []
         all_scenario_ids = set()
-        
+
         for data in self.agents_data:
             scenarios = data.get("scenarios", {})
             all_scenario_ids.update(scenarios.keys())
-            
+
             # Calculate averages for the agent
             total_pass = sum(s["pass_rate"] for s in scenarios.values())
             total_lat = sum(s["avg_latency"] for s in scenarios.values())
             total_cost = sum(s["avg_cost"] for s in scenarios.values())
-            
+
             # Extract consistency score if present in metrics
             consistency_scores = []
             for s_val in scenarios.values():
                 for m in s_val.get("metrics", []):
                     if m.get("metric") == "consistency_score":
                         consistency_scores.append(m.get("score", 0))
-            
+
             count = len(scenarios) or 1
-            avg_consistency = sum(consistency_scores) / len(consistency_scores) if consistency_scores else 0
-            
-            prepared_agents.append({
-                "name": data.get("agent", "Unknown"),
-                "avg_pass_rate": total_pass / count,
-                "avg_latency": total_lat / count,
-                "avg_cost": total_cost / count,
-                "avg_consistency": avg_consistency,
-                "scenarios": scenarios
-            })
+            avg_consistency = (
+                sum(consistency_scores) / len(consistency_scores)
+                if consistency_scores
+                else 0
+            )
+
+            prepared_agents.append(
+                {
+                    "name": data.get("agent", "Unknown"),
+                    "avg_pass_rate": total_pass / count,
+                    "avg_latency": total_lat / count,
+                    "avg_cost": total_cost / count,
+                    "avg_consistency": avg_consistency,
+                    "scenarios": scenarios,
+                }
+            )
 
         template = Template(HTML_TEMPLATE)
         html_content = template.render(
             agents=prepared_agents,
             scenario_ids=sorted(list(all_scenario_ids)),
             is_pilot=self.is_pilot,
-            run_count=5 if self.is_pilot else 100
+            run_count=5 if self.is_pilot else 100,
         )
 
         # Output to the parent results dir if multiple, or the batch dir if single
         if len(self.paths) > 1:
-            output_path = self.paths[0].parent.parent / ("pilot_preview.html" if self.is_pilot else "leaderboard.html")
+            output_path = self.paths[0].parent.parent / (
+                "pilot_preview.html" if self.is_pilot else "leaderboard.html"
+            )
         else:
-            output_path = self.paths[0].parent / ("pilot_preview.html" if self.is_pilot else "leaderboard.html")
-            
+            output_path = self.paths[0].parent / (
+                "pilot_preview.html" if self.is_pilot else "leaderboard.html"
+            )
+
         with open(output_path, "w") as f:
             f.write(html_content)
-            
+
         print(f"✅ [HTMLBuilder] Leaderboard generated: {output_path}")
         return output_path
 
+
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) < 2:
         print("Usage: python html_builder.py <path1> <path2> ... [--pilot]")
     else:

@@ -14,10 +14,12 @@ from unittest.mock import patch, MagicMock, AsyncMock
 from eval_runner import engine
 from eval_runner import metrics
 
+
 @pytest.fixture(autouse=True)
 def reset_global_state():
     from eval_runner.events import EventEmitter
     from eval_runner.plugins import manager
+
     EventEmitter.listeners = {}
     manager.plugins = []
     yield
@@ -28,34 +30,49 @@ async def test_pass_at_k_protocol():
     """Verify that engine runs k attempts and calculates pass@k. (Migrated from test_phase3.py)"""
     scenario = {
         "scenario_id": "test-k",
-        "tasks": [{
-            "task_id": "task-1",
-            "description": "Do something",
-            "success_criteria": [{"metric": "generic_accuracy", "threshold": 0.5}]
-        }]
+        "tasks": [
+            {
+                "task_id": "task-1",
+                "description": "Do something",
+                "success_criteria": [{"metric": "generic_accuracy", "threshold": 0.5}],
+            }
+        ],
     }
-    
+
     # Mock agent to succeed in 1 out of 2 attempts
     attempt_count = 0
-    async def mock_agent_call(payload, protocol="http", endpoint=None): 
+
+    async def mock_agent_call(payload, protocol="http", endpoint=None):
         nonlocal attempt_count
         attempt_count += 1
         if attempt_count == 1:
             return {"action": "final_answer", "summary": "Success"}
         else:
-            return {"action": "final_answer", "summary": ""} # Fails generic_accuracy (length > 0)
-            
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_agent:
+            return {
+                "action": "final_answer",
+                "summary": "",
+            }  # Fails generic_accuracy (length > 0)
+
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_agent:
         mock_agent.side_effect = mock_agent_call
         results = await engine.run_evaluation(scenario, attempts=2)
-        
+
         assert len(results) == 2
-        
+
         successes = 0
         for attempt in results:
-            if all(all(m["success"] for m in tr["metrics"] if m["metric"] != "consistency_score") for tr in attempt):
+            if all(
+                all(
+                    m["success"]
+                    for m in tr["metrics"]
+                    if m["metric"] != "consistency_score"
+                )
+                for tr in attempt
+            ):
                 successes += 1
-        
+
         assert successes == 1
 
 
@@ -64,28 +81,33 @@ async def test_consistency_score_integration():
     """Verify that consistency score is calculated across attempts. (Migrated from test_phase3.py)"""
     scenario = {
         "scenario_id": "test-consistency",
-        "tasks": [{
-            "task_id": "task-1",
-            "description": "Do something",
-            "success_criteria": []
-        }]
+        "tasks": [
+            {"task_id": "task-1", "description": "Do something", "success_criteria": []}
+        ],
     }
-    
+
     # Mock agent to give same answer twice
     async def mock_agent_call(payload, protocol="http", endpoint=None):
         return {"action": "final_answer", "summary": "Identical result"}
-            
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", side_effect=mock_agent_call):
+
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent",
+        side_effect=mock_agent_call,
+    ):
         results = await engine.run_evaluation(scenario, attempts=2)
-        
+
         # Check task metrics in the last attempt
         task_res = results[-1][0]
-        consistency_metric = next((m for m in task_res["metrics"] if m["metric"] == "consistency_score"), None)
-        
+        consistency_metric = next(
+            (m for m in task_res["metrics"] if m["metric"] == "consistency_score"), None
+        )
+
         assert consistency_metric is not None
         assert consistency_metric["score"] == 1.0
 
+
 # --- Helpers ---
+
 
 def _make_scenario(required_tools=None):
     """Create a minimal scenario for testing."""
@@ -109,7 +131,9 @@ def _make_scenario(required_tools=None):
         ],
     }
 
+
 # --- Tests ---
+
 
 @pytest.mark.asyncio
 async def test_engine_single_tool_call():
@@ -127,7 +151,9 @@ async def test_engine_single_tool_call():
         },
     ]
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
@@ -135,11 +161,14 @@ async def test_engine_single_tool_call():
     task_result = results[0]
     assert task_result["task_id"] == "task-1"
     assert len(task_result["conversation_history"]) >= 2
-    
+
     # Find tool_call_correctness metric
-    metric = next(m for m in task_result["metrics"] if m["metric"] == "tool_call_correctness")
+    metric = next(
+        m for m in task_result["metrics"] if m["metric"] == "tool_call_correctness"
+    )
     assert metric["score"] == 1.0
     assert metric["success"] is True
+
 
 @pytest.mark.asyncio
 async def test_engine_multiple_tools():
@@ -157,12 +186,17 @@ async def test_engine_multiple_tools():
     ]
     scenario = _make_scenario(["tool_a", "tool_b"])
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
-    metric = next(m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness")
+    metric = next(
+        m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness"
+    )
     assert metric["score"] == 1.0
+
 
 @pytest.mark.asyncio
 async def test_engine_final_answer_first_turn():
@@ -174,20 +208,25 @@ async def test_engine_final_answer_first_turn():
         },
     ]
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
     # No tools were used, so tool_call_correctness should be 0.0
-    metric = next(m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness")
+    metric = next(
+        m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness"
+    )
     assert metric["score"] == 0.0
     assert results[0]["turns_taken"] == 1
+
 
 @pytest.mark.asyncio
 async def test_engine_max_turns_reached(monkeypatch):
     """Agent keeps calling tools and never finishes — should stop at MAX_TURNS."""
     monkeypatch.setattr("eval_runner.engine.MAX_TURNS", 2)
-    
+
     responses = [
         {
             "action": "call_tool",
@@ -198,7 +237,9 @@ async def test_engine_max_turns_reached(monkeypatch):
         for i in range(5)
     ]
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
@@ -206,25 +247,38 @@ async def test_engine_max_turns_reached(monkeypatch):
     # The loop for turn in range(1, MAX_TURNS + 1) runs for 1, 2.
     assert results[0]["turns_taken"] <= 3
 
+
 @pytest.mark.asyncio
 async def test_engine_connection_error():
     """Agent API is unreachable — should handle gracefully and return empty metrics."""
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", side_effect=Exception("Connection Error")):
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent",
+        side_effect=Exception("Connection Error"),
+    ):
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
     assert len(results) == 1
-    metric = next(m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness")
+    metric = next(
+        m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness"
+    )
     assert metric["score"] == 0.0
+
 
 @pytest.mark.asyncio
 async def test_engine_timeout():
     """Agent API times out — should handle gracefully."""
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", side_effect=asyncio.TimeoutError()):
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent",
+        side_effect=asyncio.TimeoutError(),
+    ):
         results = await engine.run_evaluation(_make_scenario())
 
     assert len(results) == 1
-    metric = next(m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness")
+    metric = next(
+        m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness"
+    )
     assert metric["success"] is False
+
 
 @pytest.mark.asyncio
 async def test_engine_generic_accuracy_metric():
@@ -249,12 +303,19 @@ async def test_engine_generic_accuracy_metric():
         },
     ]
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
-    metric = next(m for m in results[0]["metrics"] if m["metric"] == "information_retrieval_accuracy")
+    metric = next(
+        m
+        for m in results[0]["metrics"]
+        if m["metric"] == "information_retrieval_accuracy"
+    )
     assert metric["score"] == 1.0
+
 
 @pytest.mark.asyncio
 async def test_engine_communication_clarity_metric():
@@ -279,12 +340,17 @@ async def test_engine_communication_clarity_metric():
         },
     ]
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
-    metric = next(m for m in results[0]["metrics"] if m["metric"] == "communication_clarity")
+    metric = next(
+        m for m in results[0]["metrics"] if m["metric"] == "communication_clarity"
+    )
     assert metric["score"] == 1.0
+
 
 @pytest.mark.asyncio
 async def test_engine_policy_violation_feedback_loop():
@@ -293,33 +359,37 @@ async def test_engine_policy_violation_feedback_loop():
         "scenario_id": "policy-test",
         "industry": "test",
         "policies": {"apply_refund": {"max_limit": 50}},
-        "tasks": [{
-            "task_id": "task-1",
-            "required_tools": ["apply_refund"],
-            "success_criteria": [{"metric": "policy_compliance", "threshold": 1.0}]
-        }]
+        "tasks": [
+            {
+                "task_id": "task-1",
+                "required_tools": ["apply_refund"],
+                "success_criteria": [{"metric": "policy_compliance", "threshold": 1.0}],
+            }
+        ],
     }
     responses = [
         {
             "action": "call_tool",
             "tool_name": "apply_refund",
             "tool_params": {"amount": 100},
-            "summary": "Trying refund."
+            "summary": "Trying refund.",
         },
-        {
-            "action": "final_answer",
-            "summary": "Limited the refund to 50."
-        }
+        {"action": "final_answer", "summary": "Limited the refund to 50."},
     ]
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
     task_result = results[0]
-    compliance = next(m for m in task_result["metrics"] if m["metric"] == "policy_compliance")
+    compliance = next(
+        m for m in task_result["metrics"] if m["metric"] == "policy_compliance"
+    )
     assert compliance["score"] == 0.0
     assert compliance["success"] is False
+
 
 @pytest.mark.asyncio
 async def test_engine_state_verification_metric():
@@ -331,34 +401,41 @@ async def test_engine_state_verification_metric():
         "tools": {
             "update_plan": {
                 "state_changes": [{"path": "current_plan", "value": "Premium"}],
-                "output": {"status": "success"}
+                "output": {"status": "success"},
             }
         },
-        "tasks": [{
-            "task_id": "task-1",
-            "required_tools": ["update_plan"],
-            "expected_state_changes": [{"path": "current_plan", "value": "Premium"}],
-            "success_criteria": [{"metric": "state_verification", "threshold": 1.0}]
-        }]
+        "tasks": [
+            {
+                "task_id": "task-1",
+                "required_tools": ["update_plan"],
+                "expected_state_changes": [
+                    {"path": "current_plan", "value": "Premium"}
+                ],
+                "success_criteria": [
+                    {"metric": "state_verification", "threshold": 1.0}
+                ],
+            }
+        ],
     }
     responses = [
         {
             "action": "call_tool",
             "tool_name": "update_plan",
             "tool_params": {"current_plan": "Premium"},
-            "summary": "Updating plan."
+            "summary": "Updating plan.",
         },
-        {
-            "action": "final_answer",
-            "summary": "Plan updated."
-        }
+        {"action": "final_answer", "summary": "Plan updated."},
     ]
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
     task_result = results[0]
-    state_metric = next(m for m in task_result["metrics"] if m["metric"] == "state_verification")
+    state_metric = next(
+        m for m in task_result["metrics"] if m["metric"] == "state_verification"
+    )
     assert state_metric["score"] == 1.0
     assert state_metric["success"] is True

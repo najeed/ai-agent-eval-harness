@@ -9,11 +9,12 @@ from typing import Any, Dict
 
 class GitSimulator:
     """Simulates a Git repository state."""
+
     def __init__(self):
         self.state = {
             "current_branch": "main",
             "staged_files": [],
-            "history": [{"commit": "init", "message": "Initial commit"}]
+            "history": [{"commit": "init", "message": "Initial commit"}],
         }
 
     def execute(self, action: str, params: dict) -> dict:
@@ -31,42 +32,51 @@ class GitSimulator:
 
 class ApiSimulator:
     """Simulates a generic REST API."""
+
     def __init__(self):
         self.endpoints = {
             "/api/v1/health": {"status": "healthy"},
-            "/api/v1/user/1": {"id": 1, "name": "Test User", "plan": "pro"}
+            "/api/v1/user/1": {"id": 1, "name": "Test User", "plan": "pro"},
         }
 
     def execute(self, action: str, params: dict) -> dict:
         method = params.get("method", "GET").upper()
         path = params.get("path", "/")
-        
+
         if method == "GET":
             result = self.endpoints.get(path, {"error": "Not Found"})
-            return {"status": "success" if "error" not in result else "error", "data": result}
+            return {
+                "status": "success" if "error" not in result else "error",
+                "data": result,
+            }
         elif method == "POST":
             return {"status": "success", "data": {"id": 999, "status": "created"}}
         return {"status": "error", "message": f"Unsupported method: {method}"}
 
+
 class DatabaseSimulator:
     """Simulates a secure SQL environment."""
+
     def __init__(self):
         self.tables = {
             "users": [{"id": 1, "email": "admin@example.com", "role": "admin"}],
-            "logs": []
+            "logs": [],
         }
 
     def execute(self, action: str, params: dict) -> dict:
         if action == "database_query":
             q = params.get("query", "").lower()
-            if "select" in q: return {"status": "success", "rows": self.tables["users"]}
-            if "insert" in q: 
+            if "select" in q:
+                return {"status": "success", "rows": self.tables["users"]}
+            if "insert" in q:
                 self.tables["logs"].append(params.get("data", {}))
                 return {"status": "success", "message": "Row inserted"}
         return {"status": "error", "message": "Access denied or bad query"}
 
+
 class SlackSimulator:
     """Simulates a corporate Slack workspace."""
+
     def __init__(self):
         self.messages = []
 
@@ -78,8 +88,10 @@ class SlackSimulator:
             return {"status": "success", "ts": "123456.789"}
         return {"status": "error", "message": "Slack API down"}
 
+
 class CRMSimulator:
     """Simulates an enterprise Customer Relationship Management system."""
+
     def __init__(self):
         self.leads = [{"id": "L101", "name": "Acme Corp", "status": "New"}]
 
@@ -93,8 +105,10 @@ class CRMSimulator:
                     return {"status": "success"}
         return {"status": "error", "message": "Lead not found"}
 
+
 class EmailSimulator:
     """Simulates a corporate email server."""
+
     def __init__(self):
         self.inbox = [{"id": "M001", "from": "boss@corp.com", "subject": "Status?"}]
         self.sent = []
@@ -107,8 +121,10 @@ class EmailSimulator:
             return {"status": "success", "messages": self.inbox}
         return {"status": "error", "message": "SMTP connection failed"}
 
+
 class CalendarSimulator:
     """Simulates a calendar system (GCal/Outlook)."""
+
     def __init__(self):
         self.events = [{"title": "Eval Kickoff", "time": "2026-03-20T10:00"}]
 
@@ -118,22 +134,30 @@ class CalendarSimulator:
             return {"status": "success"}
         return {"status": "error", "message": "Conflict detected"}
 
+
 class JiraSimulator:
     """Simulates Jira/Issue tracking."""
+
     def __init__(self, initial_issues: list = None):
-        self.issues = initial_issues if initial_issues is not None else [
-            {"id": "PROJ-1", "summary": "Fix login bug", "status": "Todo"},
-            {"id": "PROJ-2", "summary": "Implement Auth", "status": "In Progress"}
-        ]
+        self.issues = (
+            initial_issues
+            if initial_issues is not None
+            else [
+                {"id": "PROJ-1", "summary": "Fix login bug", "status": "Todo"},
+                {"id": "PROJ-2", "summary": "Implement Auth", "status": "In Progress"},
+            ]
+        )
 
     def execute(self, action: str, params: dict) -> dict:
         if action == "jira_create":
             new_id = f"PROJ-{len(self.issues) + 1}"
-            self.issues.append({
-                "id": new_id,
-                "summary": params.get("summary", "New issue"),
-                "status": "Todo"
-            })
+            self.issues.append(
+                {
+                    "id": new_id,
+                    "summary": params.get("summary", "New issue"),
+                    "status": "Todo",
+                }
+            )
             return {"status": "success", "id": new_id}
         elif action == "jira_update":
             issue_id = params.get("id")
@@ -145,8 +169,10 @@ class JiraSimulator:
             return {"status": "success", "issues": self.issues}
         return {"status": "error", "message": "Issue not found or unknown action"}
 
+
 class CloudSimulator:
     """Simulates AWS/GCP infrastructure."""
+
     def __init__(self):
         self.instances = [{"id": "i-1234", "type": "t2.micro", "status": "running"}]
 
@@ -156,21 +182,26 @@ class CloudSimulator:
             return {"status": "success", "id": "i-5678"}
         return {"status": "error", "message": "Quota exceeded"}
 
+
 class TerminalSimulator:
     """Simulates a remote SSH/Bash terminal."""
+
     def __init__(self):
         self.cwd = "/home/user"
 
     def execute(self, action: str, params: dict) -> dict:
         cmd = params.get("cmd", "")
-        if "ls" in cmd: return {"status": "success", "output": "file1.txt\nfile2.py"}
-        if "cd" in cmd: 
+        if "ls" in cmd:
+            return {"status": "success", "output": "file1.txt\nfile2.py"}
+        if "cd" in cmd:
             self.cwd = params.get("path", self.cwd)
             return {"status": "success"}
         return {"status": "success", "output": f"Command executed in {self.cwd}"}
 
+
 class StripeSimulator:
     """Simulates a payment gateway."""
+
     def __init__(self):
         self.charges = []
 
@@ -180,8 +211,10 @@ class StripeSimulator:
             return {"status": "success", "id": "ch_123"}
         return {"status": "error", "message": "Card declined"}
 
+
 class ERPSimulator:
     """Simulates an ERP system (SAP/Oracle)."""
+
     def __init__(self):
         self.orders = [{"id": "O-99", "item": "Widget", "qty": 100}]
 
@@ -191,8 +224,10 @@ class ERPSimulator:
             return {"status": "success"}
         return {"status": "error", "message": "Inventory low"}
 
+
 class BrowserSimulator:
     """Simulates a headless browser DOM."""
+
     def __init__(self):
         self.url = "about:blank"
 
@@ -202,18 +237,24 @@ class BrowserSimulator:
             return {"status": "success", "title": "Mock Page"}
         return {"status": "success", "url": self.url}
 
+
 class KnowledgeBaseSimulator:
     """Simulates a Knowledge Base (Confluence/Notion/Wiki)."""
+
     def __init__(self):
-        self.docs = [{"id": "D001", "title": "Onboarding", "content": "Welcome to the team!"}]
+        self.docs = [
+            {"id": "D001", "title": "Onboarding", "content": "Welcome to the team!"}
+        ]
 
     def execute(self, action: str, params: dict) -> dict:
         if action == "kb_search":
             return {"status": "success", "results": self.docs}
         return {"status": "error", "message": "Document not found"}
 
+
 class SupportDeskSimulator:
     """Simulates a ticketing system (Zendesk/Intercom)."""
+
     def __init__(self):
         self.tickets = [{"id": "TKT-123", "subject": "Billing issue", "status": "open"}]
 
@@ -226,8 +267,10 @@ class SupportDeskSimulator:
                     return {"status": "success"}
         return {"status": "error", "message": "Ticket not found"}
 
+
 class SocialMediaSimulator:
     """Simulates social media interactions (X/LinkedIn)."""
+
     def __init__(self):
         self.posts = []
 
@@ -237,8 +280,10 @@ class SocialMediaSimulator:
             return {"status": "success", "id": "p_998"}
         return {"status": "success", "feed": self.posts}
 
+
 class VectorDBSimulator:
     """Simulates a Vector Database (Pinecone/Milvus) for RAG."""
+
     def __init__(self):
         self.vectors = []
 
@@ -247,8 +292,10 @@ class VectorDBSimulator:
             return {"status": "success", "matches": [{"id": "v1", "score": 0.99}]}
         return {"status": "success"}
 
+
 class CICDSimulator:
     """Simulates a CI/CD pipeline (Jenkins/Actions)."""
+
     def __init__(self):
         self.builds = [{"id": "B-1", "status": "success"}]
 
@@ -258,8 +305,10 @@ class CICDSimulator:
             return {"status": "success", "id": "B-2"}
         return {"status": "success", "builds": self.builds}
 
+
 class IoTSimulator:
     """Simulates IoT device interaction."""
+
     def __init__(self):
         self.devices = {"thermostat": "72F", "lights": "off"}
 
@@ -270,8 +319,10 @@ class IoTSimulator:
             return {"status": "success", "state": self.devices[device]}
         return {"status": "error", "message": "Device offline"}
 
+
 class SecuritySimulator:
     """Simulates Identity & Access Management (Auth0/Okta)."""
+
     def __init__(self):
         self.users = [{"id": "u_99", "role": "admin"}]
 
@@ -279,6 +330,7 @@ class SecuritySimulator:
         if action == "security_auth":
             return {"status": "success", "token": "jwt_token_xyz"}
         return {"status": "error", "message": "Invalid credentials"}
+
 
 # Internal world shims (immutable core defaults)
 _INTERNAL_SIMULATORS = {
@@ -301,8 +353,9 @@ _INTERNAL_SIMULATORS = {
     "vector": VectorDBSimulator(),
     "cicd": CICDSimulator(),
     "iot": IoTSimulator(),
-    "security": SecuritySimulator()
+    "security": SecuritySimulator(),
 }
+
 
 def get_simulator_registry() -> dict:
     """
@@ -310,11 +363,11 @@ def get_simulator_registry() -> dict:
     with external shims discovered via the Zero-Touch plugin architecture.
     """
     from . import plugins
-    
+
     # Start with a copy of internal defaults
     registry = _INTERNAL_SIMULATORS.copy()
-    
+
     # Trigger plugin hook to allow external shims to register themselves
     plugins.manager.trigger("on_register_simulators", registry)
-    
+
     return registry

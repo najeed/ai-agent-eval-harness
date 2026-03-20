@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 loader.py
 
@@ -10,7 +11,7 @@ import csv
 import json
 from pathlib import Path
 from typing import Dict, Callable, List, Optional, Any, Union
-from jsonschema import validate, ValidationError # type: ignore
+from jsonschema import validate, ValidationError  # type: ignore
 from .trace_utils import load_events
 
 # Load the schema once at module level
@@ -29,14 +30,17 @@ def _get_schema() -> dict:
 
 class LoaderRegistry:
     """Registry for data loaders."""
+
     _loaders: Dict[str, Callable] = {}
 
     @classmethod
     def register(cls, extension: str):
         """Decorator to register a loader for a specific file extension."""
+
         def decorator(func: Callable):
             cls._loaders[extension.lower()] = func
             return func
+
         return decorator
 
     @classmethod
@@ -48,7 +52,7 @@ class LoaderRegistry:
 @LoaderRegistry.register(".csv")
 def load_csv(file_path: Path) -> List[Dict]:
     dataset = []
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             dataset.append(row)
@@ -70,16 +74,19 @@ def load_single_scenario(file_path: Path) -> List[Dict]:
     return [load_scenario(str(file_path))]
 
 
-def load_scenario(path: Union[str, Path]) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+def load_scenario(
+    path: Union[str, Path],
+) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     """
     Loads scenarios from a JSON/YAML file or a Benchmark URI (e.g., gaia://2023).
     """
     path_str = str(path)
-    
+
     # 1. Handle Benchmark URIs
     if "://" in path_str:
         scheme, uri = path_str.split("://", 1)
         from .benchmarks import BENCHMARK_REGISTRY
+
         if scheme in BENCHMARK_REGISTRY:
             benchmark_class = BENCHMARK_REGISTRY[scheme]
             return benchmark_class.load(uri)
@@ -107,18 +114,22 @@ def load_scenario(path: Union[str, Path]) -> Union[Dict[str, Any], List[Dict[str
             # Resolve relative to the scenario file's directory
             absolute_ds_path = (file_path.parent / ds_path).resolve()
             scenario_data["dataset"]["path"] = str(absolute_ds_path)
-            print(f"      [Loader] Resolved relative dataset path: {ds_path} -> {absolute_ds_path}")
+            print(
+                f"      [Loader] Resolved relative dataset path: {ds_path} -> {absolute_ds_path}"
+            )
 
     # Note: validation is only for standard scenario files
     validate(instance=scenario_data, schema=_get_schema())
-    
+
     # Inject path for traceability in repro scripts/reports
     scenario_data["path"] = path_str
-    
+
     return scenario_data
 
 
-def load_dataset(file_path: Union[str, Path], format_type: Optional[str] = None) -> List[Dict]:
+def load_dataset(
+    file_path: Union[str, Path], format_type: Optional[str] = None
+) -> List[Dict]:
     """Loads a dataset file or scenario(s) using the registered loaders."""
     # Handle Benchmark URIs before Path normalization
     if isinstance(file_path, str) and "://" in file_path:

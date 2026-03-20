@@ -10,12 +10,13 @@ from typing import Dict, Any, List
 
 CATEGORIES = [
     "tool_call_error",
-    "state_parity_mismatch", 
+    "state_parity_mismatch",
     "hallucination",
     "timeout",
     "sandbox_breach",
-    "partial_pass"
+    "partial_pass",
 ]
+
 
 class FailureTaxonomy:
     """Classifies agent failures based on conversation history and tool results."""
@@ -25,7 +26,7 @@ class FailureTaxonomy:
         """Determines the specific failure category for a non-successful run."""
         metrics = task_result.get("metrics", [])
         history = task_result.get("conversation_history", [])
-        
+
         # 1. Partial Pass Detection
         success_count = sum(1 for m in metrics if m.get("success", False))
         if 0 < success_count < len(metrics):
@@ -35,7 +36,10 @@ class FailureTaxonomy:
         for turn in history:
             if turn.get("role") == "environment":
                 content = turn.get("content", {})
-                if isinstance(content, dict) and content.get("status") == "policy_violation":
+                if (
+                    isinstance(content, dict)
+                    and content.get("status") == "policy_violation"
+                ):
                     return "sandbox_breach"
 
         # 3. Tool Call Errors
@@ -50,7 +54,7 @@ class FailureTaxonomy:
                     return "tool_call_error"
 
         # 4. Timeout / Max Turns
-        if len(history) >= 10: # Heuristic for now, should ideally check config
+        if len(history) >= 10:  # Heuristic for now, should ideally check config
             return "timeout"
 
         # 5. Hallucination Detection (Simple Heuristic for now)

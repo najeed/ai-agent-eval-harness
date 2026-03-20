@@ -3,12 +3,18 @@ import os
 import jsonschema
 from pathlib import Path
 
+
 def generate_interactive():
     """Interactive prompt to generate scenarios."""
     print("\n[Generator] AI Agent Eval Harness - Scenario Generator\n")
-    
-    industry = input("What industry? (e.g., customer_support, telecom): ").strip() or "general"
-    capability = input("What capability? (e.g., refund handling, troubleshooting): ").strip() or "default"
+
+    industry = (
+        input("What industry? (e.g., customer_support, telecom): ").strip() or "general"
+    )
+    capability = (
+        input("What capability? (e.g., refund handling, troubleshooting): ").strip()
+        or "default"
+    )
     count_str = input("How many scenarios? (default: 1): ").strip()
     try:
         count = int(count_str) if count_str else 1
@@ -22,50 +28,54 @@ def generate_interactive():
         {
             "desc_tpl": "Automatically generated test case for {capability} in {industry} industry.",
             "task_tpl": "User wants to perform {capability}. Handle the request correctly.",
-            "expected_tpl": "Successfully handled {capability}."
+            "expected_tpl": "Successfully handled {capability}.",
         },
         {
             "desc_tpl": "Edge-case validation for {capability} workflows within the {industry} sector.",
             "task_tpl": "Simulate a complex {capability} interaction. Ensure the agent follows standard {industry} protocols.",
-            "expected_tpl": "{capability_title} processed with full audit trails."
+            "expected_tpl": "{capability_title} processed with full audit trails.",
         },
         {
             "desc_tpl": "Adversarial robustness check: {capability} under high-load/ambiguous conditions.",
             "task_tpl": "The user provides minimal info for {capability}. The agent must clarify and then execute.",
-            "expected_tpl": "Agent clarifies request and completes {capability} correctly."
-        }
+            "expected_tpl": "Agent clarifies request and completes {capability} correctly.",
+        },
     ]
 
     generated_files = []
     for i in range(1, count + 1):
-        tpl = templates[(i-1) % len(templates)]
+        tpl = templates[(i - 1) % len(templates)]
         scenario_id = f"gen_{industry}_{capability.replace(' ', '_')}_{i}"
         scenario = {
             "scenario_id": scenario_id,
             "title": f"Generated {capability.replace('_', ' ').title()} Scenario {i}",
-            "description": tpl["desc_tpl"].format(capability=capability, industry=industry),
+            "description": tpl["desc_tpl"].format(
+                capability=capability, industry=industry
+            ),
             "use_case": capability,
             "core_function": f"{industry}_operations",
             "industry": industry,
             "tasks": [
                 {
                     "task_id": f"task_{i}",
-                    "description": tpl["task_tpl"].format(capability=capability, industry=industry),
-                    "expected_outcome": tpl["expected_tpl"].format(
-                        capability=capability, 
-                        industry=industry,
-                        capability_title=capability.title()
+                    "description": tpl["task_tpl"].format(
+                        capability=capability, industry=industry
                     ),
-                    "success_criteria": [
-                        {"metric": "success_rate", "threshold": 1.0}
-                    ]
+                    "expected_outcome": tpl["expected_tpl"].format(
+                        capability=capability,
+                        industry=industry,
+                        capability_title=capability.title(),
+                    ),
+                    "success_criteria": [{"metric": "success_rate", "threshold": 1.0}],
                 }
-            ]
+            ],
         }
-        
+
         # Internal Schema Validation (Fail-Fast)
         try:
-            schema_path = Path(__file__).parent.parent / "schemas" / "scenario.schema.json"
+            schema_path = (
+                Path(__file__).parent.parent / "schemas" / "scenario.schema.json"
+            )
             if schema_path.exists():
                 with open(schema_path, "r", encoding="utf-8") as sf:
                     schema = json.load(sf)
@@ -76,17 +86,19 @@ def generate_interactive():
         except Exception as e:
             print(f"⚠ Warning: Could not perform internal validation: {e}")
 
-        
         filename = f"{scenario_id}.json"
         filepath = output_dir / filename
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(scenario, f, indent=2)
         generated_files.append(filepath)
 
-    print(f"\n✅ Successfully generated {len(generated_files)} scenarios in {output_dir}/")
+    print(
+        f"\n✅ Successfully generated {len(generated_files)} scenarios in {output_dir}/"
+    )
     for f in generated_files:
         print(f"  - {f.name}")
     print("\nTip: Run these with 'eval-harness evaluate --path <path_or_dir>'")
+
 
 if __name__ == "__main__":
     generate_interactive()

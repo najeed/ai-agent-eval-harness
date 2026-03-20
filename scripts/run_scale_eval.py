@@ -14,46 +14,69 @@ import random
 from pathlib import Path
 from multiprocessing import Pool
 
+
 def run_single_eval(args_tuple):
     """Worker function for parallel evaluation."""
     scenario_path, agent_name, protocol, agent_url, seed, retry_count = args_tuple
-    
+
     cmd = [
-        "python", "-m", "eval_runner.cli", "evaluate",
-        "--path", str(scenario_path),
-        "--agent-name", agent_name,
-        "--protocol", protocol,
-        "--agent", agent_url,
-        "--per-run-logs"
+        "python",
+        "-m",
+        "eval_runner.cli",
+        "evaluate",
+        "--path",
+        str(scenario_path),
+        "--agent-name",
+        agent_name,
+        "--protocol",
+        protocol,
+        "--agent",
+        agent_url,
+        "--per-run-logs",
     ]
     if seed is not None:
         cmd.extend(["--seed", str(seed)])
-        
+
     print(f"[ScaleRunner] Executing: {' '.join(cmd)}")
-    
+
     for attempt in range(retry_count + 1):
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode == 0:
             return True
-        print(f"   [Retry] Attempt {attempt+1} failed for {scenario_path.name}. Retrying...")
-        
+        print(
+            f"   [Retry] Attempt {attempt+1} failed for {scenario_path.name}. Retrying..."
+        )
+
     return False
+
 
 async def main():
     parser = argparse.ArgumentParser(description="AI Agent Eval Scale Runner")
     parser.add_argument("--path", required=True, help="Path to scenario directory")
-    parser.add_argument("--agent-name", default="Scale-Agent-X", help="Name for leaderboard")
+    parser.add_argument(
+        "--agent-name", default="Scale-Agent-X", help="Name for leaderboard"
+    )
     parser.add_argument("--protocol", default="http", help="Agent protocol")
-    parser.add_argument("--agent", default="http://localhost:5001/execute_task", help="Agent URL")
-    parser.add_argument("--runs", type=int, default=10, help="Number of total runs to perform")
-    parser.add_argument("--parallel", type=int, default=4, help="Number of parallel workers")
-    parser.add_argument("--pilot", action="store_true", help="Quick-run mode (3 runs, 1 worker)")
+    parser.add_argument(
+        "--agent", default="http://localhost:5001/execute_task", help="Agent URL"
+    )
+    parser.add_argument(
+        "--runs", type=int, default=10, help="Number of total runs to perform"
+    )
+    parser.add_argument(
+        "--parallel", type=int, default=4, help="Number of parallel workers"
+    )
+    parser.add_argument(
+        "--pilot", action="store_true", help="Quick-run mode (3 runs, 1 worker)"
+    )
     parser.add_argument("--resume", action="store_true", help="Resume from checkpoint")
     parser.add_argument("--seed", type=int, help="Base seed for reproducibility")
-    parser.add_argument("--retries", type=int, default=1, help="Number of retries per failed evaluation")
-    
+    parser.add_argument(
+        "--retries", type=int, default=1, help="Number of retries per failed evaluation"
+    )
+
     args = parser.parse_args()
-    
+
     if args.pilot:
         args.runs = 3
         args.parallel = 1
@@ -61,7 +84,7 @@ async def main():
 
     scenario_dir = Path(args.path)
     scenarios = list(scenario_dir.glob("*.json"))
-    
+
     if not scenarios:
         print(f"[Error] No scenarios found in {args.path}")
         return
@@ -77,11 +100,22 @@ async def main():
     for s in scenarios:
         for _ in range(runs_per_scenario):
             if task_idx < args.runs:
-                all_tasks.append((s, args.agent_name, args.protocol, args.agent, seeds[task_idx], args.retries))
+                all_tasks.append(
+                    (
+                        s,
+                        args.agent_name,
+                        args.protocol,
+                        args.agent,
+                        seeds[task_idx],
+                        args.retries,
+                    )
+                )
                 task_idx += 1
 
-    print(f"[ScaleRunner] Starting scale run: {len(all_tasks)} total evaluations across {args.parallel} workers (Base Seed: {base_seed})...")
-    
+    print(
+        f"[ScaleRunner] Starting scale run: {len(all_tasks)} total evaluations across {args.parallel} workers (Base Seed: {base_seed})..."
+    )
+
     checkpoint_path = Path("reports/scale_checkpoint.json")
     completed = 0
     if args.resume and checkpoint_path.exists():
@@ -98,14 +132,18 @@ async def main():
                     try:
                         with open(checkpoint_path, "w") as f:
                             json.dump({"completed": completed}, f)
-                    except: pass
-                    print(f"[ScaleRunner] Progress: {completed}/{args.runs} runs completed.")
+                    except:
+                        pass
+                    print(
+                        f"[ScaleRunner] Progress: {completed}/{args.runs} runs completed."
+                    )
 
-    print("\n" + "="*40)
+    print("\n" + "=" * 40)
     print(f"[ScaleRunner] Scale campaign finished!")
     print(f"[ScaleRunner] Total Successful Runs: {completed}")
     print(f"[ScaleRunner] Results aggregated in reports/publication_data.json")
-    print("="*40)
+    print("=" * 40)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

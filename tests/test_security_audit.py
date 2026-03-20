@@ -13,14 +13,15 @@ import concurrent.futures
 from unittest.mock import patch, MagicMock, AsyncMock
 from pathlib import Path
 
-
 # ──────────────────────────────────────────────────────────────────────────────
 # Audit Point #1 — DoS: MAX_ENGINE_ATTEMPTS cap
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 def test_dos_attempt_cap():
     """Verify that run_evaluation caps attempts at MAX_ENGINE_ATTEMPTS."""
     from eval_runner.engine import MAX_ENGINE_ATTEMPTS
+
     assert MAX_ENGINE_ATTEMPTS == 50, "Engine must enforce a hard cap of 50 attempts."
 
 
@@ -31,12 +32,12 @@ async def test_dos_attempt_cap_clamp():
 
     scenario = {
         "scenario_id": "dos-test",
-        "tasks": [{"task_id": "t1", "description": "test",
-                   "success_criteria": []}],
+        "tasks": [{"task_id": "t1", "description": "test", "success_criteria": []}],
     }
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent",
-               new_callable=AsyncMock) as mock:
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock:
         mock.return_value = {"action": "final_answer", "summary": "ok"}
         results = await engine.run_evaluation(scenario, attempts=100)
         # Should have been clamped to 50
@@ -46,6 +47,7 @@ async def test_dos_attempt_cap_clamp():
 # ──────────────────────────────────────────────────────────────────────────────
 # Audit Point #6 — Fork Bomb Prevention
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def test_fork_bomb_depth():
     """SessionManager.fork() must raise at MAX_FORK_DEPTH."""
@@ -73,7 +75,9 @@ async def test_fork_bomb_breadth(monkeypatch):
     async def mock_agent(payload, protocol="http"):
         return {
             "action": "branch",
-            "branches": [{"name": f"b{i}", "message": "x"} for i in range(MAX_FORK_BREADTH + 1)]
+            "branches": [
+                {"name": f"b{i}", "message": "x"} for i in range(MAX_FORK_BREADTH + 1)
+            ],
         }
 
     monkeypatch.setattr(AgentAdapterRegistry, "call_agent", mock_agent)
@@ -86,6 +90,7 @@ async def test_fork_bomb_breadth(monkeypatch):
 # ──────────────────────────────────────────────────────────────────────────────
 # Audit Point #8 — Prototype Pollution / Frozen Context
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def test_context_immutability():
     """Frozen dataclass must reject attribute assignment."""
@@ -105,7 +110,9 @@ def test_context_history_deep_copy():
     from eval_runner.context import TurnContext
 
     original = [{"role": "user", "content": "hello"}]
-    turn = TurnContext(task_id="t1", turn_number=1, current_message="hi", history=original)
+    turn = TurnContext(
+        task_id="t1", turn_number=1, current_message="hi", history=original
+    )
 
     # history is converted to tuple, so mutation of original list is irrelevant
     original.append({"role": "agent", "content": "world"})
@@ -120,7 +127,9 @@ def test_evaluation_context_frozen_dicts():
     """scenario_data and metadata should be read-only MappingProxyType."""
     from eval_runner.context import EvaluationContext
 
-    ctx = EvaluationContext(scenario_id="x", scenario_data={"key": "val"}, metadata={"m": 1})
+    ctx = EvaluationContext(
+        scenario_id="x", scenario_data={"key": "val"}, metadata={"m": 1}
+    )
     assert isinstance(ctx.scenario_data, types.MappingProxyType)
     assert isinstance(ctx.metadata, types.MappingProxyType)
 
@@ -135,10 +144,14 @@ def test_evaluation_context_frozen_dicts():
 # Audit Point #2 — PII / Secret Redaction
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 def test_sanitize_jwt():
     """JWT tokens must be redacted."""
     from eval_runner.events import sanitize_payload
-    data = {"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.Q_w2AVguFXmVt"}
+
+    data = {
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.Q_w2AVguFXmVt"
+    }
     result = sanitize_payload(data)
     assert "[REDACTED_JWT]" in result["token"]
 
@@ -146,6 +159,7 @@ def test_sanitize_jwt():
 def test_sanitize_aws_key():
     """AWS Access Key IDs must be redacted."""
     from eval_runner.events import sanitize_payload
+
     data = {"key": "AKIAIOSFODNN7EXAMPLE"}
     result = sanitize_payload(data)
     assert "[REDACTED_AWS_KEY]" in result["key"]
@@ -167,6 +181,7 @@ def test_sanitize_github_token():
 def test_sanitize_bearer_token():
     """Bearer authorization headers must be redacted."""
     from eval_runner.events import sanitize_payload
+
     data = {"auth": "Bearer sk-live-abc123xyz456"}
     result = sanitize_payload(data)
     assert "Bearer [REDACTED]" in result["auth"]
@@ -175,6 +190,7 @@ def test_sanitize_bearer_token():
 def test_sanitize_format_string():
     """Format-string injection (`{`, `}`) must be neutralized."""
     from eval_runner.events import sanitize_payload
+
     data = {"payload": "{malicious_format}"}
     result = sanitize_payload(data)
     assert "{" not in result["payload"] or "{{" in result["payload"]
@@ -183,6 +199,7 @@ def test_sanitize_format_string():
 # ──────────────────────────────────────────────────────────────────────────────
 # Audit Point #4 — Plugin Timeout Enforcement
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def test_plugin_timeout():
     """A hanging plugin hook should be terminated after PLUGIN_TIMEOUT."""
@@ -199,6 +216,7 @@ def test_plugin_timeout():
 # ──────────────────────────────────────────────────────────────────────────────
 # Audit Point #5 — Sandbox Escape / Chroot
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def test_sandbox_path_traversal_key():
     """Path traversal in state keys must be neutralized."""
@@ -232,16 +250,20 @@ def test_sandbox_shell_metachar_strip():
 # Audit Point #3 — CLI Namespace Isolation
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 def test_cli_no_extend_cli():
     """BaseEvalPlugin must NOT have an extend_cli method (deprecated)."""
     from eval_runner.plugins import BaseEvalPlugin
-    assert not hasattr(BaseEvalPlugin, "extend_cli"), \
-        "extend_cli was deprecated in favor of on_register_commands."
+
+    assert not hasattr(
+        BaseEvalPlugin, "extend_cli"
+    ), "extend_cli was deprecated in favor of on_register_commands."
 
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Audit Point #7 — Repro Script RCE Prevention
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def test_repro_script_txt_extension(tmp_path, monkeypatch):
     """Reproduction scripts must be emitted as .txt, not .py/.sh."""
@@ -274,44 +296,47 @@ def test_repro_script_rce_strip(tmp_path, monkeypatch):
     assert "os.system" not in content
     assert "subprocess" not in content
 
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Audit Point #9 — Plugin GUI Hijacking / JWT Handoff
 # ──────────────────────────────────────────────────────────────────────────────
+
 
 def test_auth_jwt_generation():
     """Verify that generate_handoff_token creates a short-lived HS256 JWT."""
     from eval_runner.console.auth import generate_handoff_token, SECRET_KEY
     import jwt
-    
+
     token = generate_handoff_token()
     decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-    
+
     assert decoded["sub"] == "admin-user"
     assert decoded["scope"] == "console-handoff"
     assert "exp" in decoded
+
 
 def test_auth_handoff_decorator():
     """Verify that @handoff_required enforces token presence and validity."""
     from eval_runner.console.auth import handoff_required, generate_handoff_token
     from flask import Flask, request, jsonify
-    
+
     app = Flask(__name__)
-    
+
     @app.route("/test")
     @handoff_required
     def protected():
         return jsonify({"status": "ok"})
-    
+
     with app.test_request_context("/test"):
         # No token
         response, status = protected()
         assert status == 401
-        
+
     with app.test_request_context("/test?token=invalid"):
         # Invalid token
         response, status = protected()
         assert status == 401
-        
+
     valid_token = generate_handoff_token()
     with app.test_request_context(f"/test?token={valid_token}"):
         # Valid token

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 """
 reporter.py
 
@@ -13,6 +14,7 @@ from pathlib import Path
 from typing import Optional
 from . import config
 
+
 def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = None):
     """
     Saves a detailed JSON trajectory of the evaluation run.
@@ -22,28 +24,29 @@ def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = No
         report_dir = base_dir / "reports" / "trajectories"
     else:
         report_dir = config.TRAJECTORIES_DIR
-    
+
     report_dir.mkdir(parents=True, exist_ok=True)
-    
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     scenario_id = scenario.get("scenario_id", "unknown")
     filename = f"{scenario_id}_{timestamp}.json"
-    
+
     output = {
         "metadata": {
             "scenario_id": scenario_id,
             "title": scenario.get("title"),
             "industry": scenario.get("industry"),
-            "timestamp": timestamp
+            "timestamp": timestamp,
         },
-        "results": results
+        "results": results,
     }
-    
+
     filepath = report_dir / filename
     with open(filepath, "w") as f:
         json.dump(output, f, indent=2)
-    
+
     print(f"\n[Reporter] Trajectory exported to: {filepath}")
+
 
 def generate_mermaid_trajectory(task_results: dict) -> str:
     """
@@ -52,35 +55,35 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
     history = task_results.get("conversation_history", [])
     if not history:
         return ""
-    
+
     mermaid = ["graph TD"]
     mermaid.append("  Start((Start))")
-    
+
     prev_node = "Start"
     turn_idx = 1
-    
+
     for entry in history:
         role = entry.get("role")
         content = entry.get("content")
         if not isinstance(content, dict):
             content = {}
-        
+
         node_id = f"Turn_{turn_idx}_{role}"
-        
+
         if role == "agent":
             action = content.get("action", "unknown")
             framework = content.get("metadata", {}).get("framework", "")
             protocol = entry.get("protocol", "")
             agent = entry.get("agent", "")
             agent_name = entry.get("agent_name")
-            
+
             label = f"{turn_idx}: {action}"
             if action == "unknown":
                 if framework:
                     label = f"{turn_idx}: {framework}"
                 elif protocol:
                     label = f"{turn_idx}: {protocol}"
-            
+
             if agent_name:
                 label += f" ({agent_name})"
             elif agent:
@@ -89,40 +92,45 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
                 if len(agent_display) > 20:
                     agent_display = agent_display[:17] + "..."
                 label += f" ({agent_display})"
-            
+
             mermaid.append(f'  {node_id}["{label}"]')
             mermaid.append(f"  {prev_node} --> {node_id}")
             prev_node = node_id
         elif role == "environment":
             status = content.get("status", "success")
             label = f"Env: {status}"
-            
+
             # Special styling for violations
             if status == "policy_violation":
                 mermaid.append(f"  {node_id}((Violation))")
-                mermaid.append(f"  style {node_id} fill:#f96,stroke:#333,stroke-width:4px")
+                mermaid.append(
+                    f"  style {node_id} fill:#f96,stroke:#333,stroke-width:4px"
+                )
             else:
                 mermaid.append(f'  {node_id}["{label}"]')
-            
+
             mermaid.append(f"  {prev_node} --> {node_id}")
             prev_node = node_id
             turn_idx += 1
-            
+
     mermaid.append(f"  {prev_node} --> End((End))")
     return "\n".join(mermaid)
 
-def generate_html_report(scenario: dict, results: list, metadata: Optional[dict] = None) -> Path:
+
+def generate_html_report(
+    scenario: dict, results: list, metadata: Optional[dict] = None
+) -> Path:
     """
     Generates a premium HTML report for the evaluation results.
     """
     report_dir = config.HTML_REPORTS_DIR
     report_dir.mkdir(parents=True, exist_ok=True)
-    
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     scenario_id = scenario.get("scenario_id", "unknown")
     filename = f"report_{scenario_id}_{timestamp}.html"
     filepath = report_dir / filename
-    
+
     protocol = (metadata or {}).get("protocol", "unknown")
     agent = (metadata or {}).get("agent", "unknown")
     if agent == "unknown" or agent is None:
@@ -134,7 +142,7 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
             agent = os.getenv("AGENT_SOCKET_ADDR") or "socket-connection"
 
     agent_name = (metadata or {}).get("agent_name")
-    
+
     # Discovery: If not in metadata, scan results for a discovered name
     if not agent_name:
         for tr in results:
@@ -142,20 +150,27 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
                 if entry.get("role") == "agent" and entry.get("agent_name"):
                     agent_name = entry["agent_name"]
                     break
-            if agent_name: break
-    
+            if agent_name:
+                break
+
     total_tasks = len(results)
-    successful_tasks = sum(1 for tr in results if tr.get("metrics") and all(m["success"] for m in tr["metrics"]))
+    successful_tasks = sum(
+        1
+        for tr in results
+        if tr.get("metrics") and all(m["success"] for m in tr["metrics"])
+    )
     success_rate = (successful_tasks / total_tasks * 100) if total_tasks > 0 else 0
-    
+
     tasks_html = ""
     for tr in results:
         task_id = tr["task_id"]
         metrics = tr.get("metrics", [])
         is_success = bool(metrics) and all(m["success"] for m in metrics)
         status_class = "success" if is_success else "failure"
-        status_text = "PASSED" if is_success else f"FAILED [{tr.get('triage_tag', 'UNKNOWN')}]"
-        
+        status_text = (
+            "PASSED" if is_success else f"FAILED [{tr.get('triage_tag', 'UNKNOWN')}]"
+        )
+
         metrics_html = ""
         for m in tr["metrics"]:
             m_status = "pass" if m["success"] else "fail"
@@ -165,9 +180,9 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
                     <span class="m-score">{m['score']:.2f} / {m['threshold']:.2f}</span>
                 </div>
             """
-            
+
         mermaid_code = generate_mermaid_trajectory(tr)
-        
+
         tasks_html += f"""
             <div class="task-card {status_class}">
                 <div class="task-header">
@@ -255,22 +270,29 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
     """
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(html_content)
-    
+
     return filepath
 
-def generate_report(scenario: dict, results: list, export_trajectory: bool = False, export_html: bool = True, metadata: Optional[dict] = None):
+
+def generate_report(
+    scenario: dict,
+    results: list,
+    export_trajectory: bool = False,
+    export_html: bool = True,
+    metadata: Optional[dict] = None,
+):
     """
     Generates and prints a summary report of the evaluation results.
     """
     print("\n" + "=" * 50)
     print("EVALUATION REPORT")
     print("=" * 50)
-    scenario_id = scenario.get('scenario_id')
+    scenario_id = scenario.get("scenario_id")
     print(f"Scenario: {scenario.get('title')} ({scenario_id})")
-    
+
     protocol = (metadata or {}).get("protocol", "http")
     agent_target = (metadata or {}).get("agent", "Unknown")
-    
+
     # Defaulting: Resolve from system defaults if metadata is missing
     if agent_target == "Unknown" or agent_target is None:
         if protocol == "http":
@@ -281,7 +303,7 @@ def generate_report(scenario: dict, results: list, export_trajectory: bool = Fal
             agent_target = os.getenv("AGENT_SOCKET_ADDR") or "socket-connection"
 
     agent_name = (metadata or {}).get("agent_name")
-    
+
     # Discovery: Scan results if not in metadata
     if not agent_name:
         for tr in results:
@@ -289,8 +311,9 @@ def generate_report(scenario: dict, results: list, export_trajectory: bool = Fal
                 if entry.get("role") == "agent" and entry.get("agent_name"):
                     agent_name = entry["agent_name"]
                     break
-            if agent_name: break
-            
+            if agent_name:
+                break
+
     print(f"Protocol: {protocol.upper()}")
     print(f"Agent: {agent_name or agent_target}")
     print("-" * 50)
@@ -301,7 +324,9 @@ def generate_report(scenario: dict, results: list, export_trajectory: bool = Fal
     for task_result in results:
         task_id = task_result["task_id"]
         metrics_list = task_result.get("metrics", [])
-        task_is_overall_success = bool(metrics_list) and all(m["success"] for m in metrics_list)
+        task_is_overall_success = bool(metrics_list) and all(
+            m["success"] for m in metrics_list
+        )
 
         if task_is_overall_success:
             status = "SUCCESS"
@@ -318,7 +343,7 @@ def generate_report(scenario: dict, results: list, export_trajectory: bool = Fal
                 f"| Score: {metric['score']:.2f} "
                 f"| Threshold: {metric['threshold']:.2f}"
             )
-            
+
         # Add Mermaid snippet for failed tasks or if requested
         if not task_is_overall_success:
             print("\n  Trajectory Map (Mermaid):")
@@ -337,10 +362,10 @@ def generate_report(scenario: dict, results: list, export_trajectory: bool = Fal
     print(f"Failed Tasks: {total_tasks - successful_tasks}")
     print(f"Overall Success Rate: {success_rate:.2f}%")
     print("=" * 50 + "\n")
-    
+
     if export_trajectory:
         save_trajectory(scenario, results)
-        
+
     if export_html:
         html_path = generate_html_report(scenario, results, metadata=metadata)
         print(f"[Reporter] HTML report generated: {html_path}")

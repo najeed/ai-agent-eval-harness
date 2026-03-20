@@ -19,6 +19,7 @@ from eval_runner import reporter
 def _capture_report(scenario, results):
     """Run generate_report and capture stdout."""
     from contextlib import redirect_stdout
+
     buf = StringIO()
     with redirect_stdout(buf):
         reporter.generate_report(scenario, results)
@@ -39,8 +40,18 @@ def test_report_all_tasks_pass():
         {
             "task_id": "task-1",
             "metrics": [
-                {"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": True},
-                {"metric": "communication_clarity", "score": 1.0, "threshold": 1.0, "success": True},
+                {
+                    "metric": "tool_call_correctness",
+                    "score": 1.0,
+                    "threshold": 1.0,
+                    "success": True,
+                },
+                {
+                    "metric": "communication_clarity",
+                    "score": 1.0,
+                    "threshold": 1.0,
+                    "success": True,
+                },
             ],
         },
     ]
@@ -56,7 +67,12 @@ def test_report_task_fails():
         {
             "task_id": "task-1",
             "metrics": [
-                {"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": False},
+                {
+                    "metric": "tool_call_correctness",
+                    "score": 0.0,
+                    "threshold": 1.0,
+                    "success": False,
+                },
             ],
         },
     ]
@@ -71,13 +87,23 @@ def test_report_mixed_tasks():
         {
             "task_id": "task-1",
             "metrics": [
-                {"metric": "tool_call_correctness", "score": 1.0, "threshold": 1.0, "success": True},
+                {
+                    "metric": "tool_call_correctness",
+                    "score": 1.0,
+                    "threshold": 1.0,
+                    "success": True,
+                },
             ],
         },
         {
             "task_id": "task-2",
             "metrics": [
-                {"metric": "tool_call_correctness", "score": 0.0, "threshold": 1.0, "success": False},
+                {
+                    "metric": "tool_call_correctness",
+                    "score": 0.0,
+                    "threshold": 1.0,
+                    "success": False,
+                },
             ],
         },
     ]
@@ -110,7 +136,12 @@ def test_report_metric_display_format():
         {
             "task_id": "task-1",
             "metrics": [
-                {"metric": "information_retrieval_accuracy", "score": 0.85, "threshold": 0.8, "success": True},
+                {
+                    "metric": "information_retrieval_accuracy",
+                    "score": 0.85,
+                    "threshold": 0.8,
+                    "success": True,
+                },
             ],
         },
     ]

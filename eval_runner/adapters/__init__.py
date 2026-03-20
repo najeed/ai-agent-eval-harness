@@ -1,4 +1,3 @@
-
 """
 eval_runner/adapters/__init__.py
 
@@ -14,15 +13,20 @@ import sys
 from typing import Dict, Any, Optional
 from .. import config
 
+
 async def http_adapter(payload: dict, url: str):
     """Call an agent over HTTP (default)."""
     import aiohttp
+
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            url, json=payload, timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT)
+            url,
+            json=payload,
+            timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
         ) as response:
             response.raise_for_status()
             return await response.json()
+
 
 async def local_subprocess_adapter(payload: dict, command: str):
     """
@@ -33,7 +37,7 @@ async def local_subprocess_adapter(payload: dict, command: str):
         command,
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE
+        stderr=asyncio.subprocess.PIPE,
     )
 
     input_data = json.dumps(payload).encode()
@@ -41,12 +45,15 @@ async def local_subprocess_adapter(payload: dict, command: str):
 
     if process.returncode != 0:
         error_msg = stderr.decode().strip()
-        raise RuntimeError(f"Agent subprocess failed (exit code {process.returncode}): {error_msg}")
+        raise RuntimeError(
+            f"Agent subprocess failed (exit code {process.returncode}): {error_msg}"
+        )
 
     try:
         return json.loads(stdout.decode())
     except json.JSONDecodeError:
         raise RuntimeError(f"Agent subprocess returned invalid JSON: {stdout.decode()}")
+
 
 async def socket_adapter(payload: dict, address: str):
     """
@@ -72,7 +79,7 @@ async def socket_adapter(payload: dict, address: str):
         # Read until newline
         response_data = await reader.readline()
         if not response_data:
-             return {}
+            return {}
         return json.loads(response_data.decode())
     finally:
         writer.close()
@@ -80,4 +87,3 @@ async def socket_adapter(payload: dict, address: str):
             await writer.wait_closed()
         except Exception:
             pass
-

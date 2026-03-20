@@ -14,11 +14,12 @@ st.set_page_config(
     page_title="AI Agent Eval Lab",
     page_icon="🤖",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 # Custom CSS for dark mode aesthetics
-st.markdown("""
+st.markdown(
+    """
 <style>
     .main {
         background-color: #0e1117;
@@ -33,7 +34,9 @@ st.markdown("""
         color: #fafafa;
     }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 st.title("🤖 AI Agent Evaluation Lab: Trajectory Dashboard")
 
@@ -45,11 +48,15 @@ if not TRAJECTORY_DIR.exists():
 files = sorted(TRAJECTORY_DIR.glob("*.json"), key=os.path.getmtime, reverse=True)
 
 if not files:
-    st.info("No evaluation trajectories found. Run an evaluation with `--export` to see results here.")
+    st.info(
+        "No evaluation trajectories found. Run an evaluation with `--export` to see results here."
+    )
     st.stop()
 
 # Sidebar selection
-selected_file = st.sidebar.selectbox("Select Evaluation Run", files, format_func=lambda x: x.name)
+selected_file = st.sidebar.selectbox(
+    "Select Evaluation Run", files, format_func=lambda x: x.name
+)
 
 # Load data
 with open(selected_file, "r") as f:
@@ -60,7 +67,9 @@ results = data.get("results", [])
 
 # Header Metrics
 st.header(f"Run: {metadata.get('title', 'Unknown Scenario')}")
-st.subheader(f"Industry: {metadata.get('industry', 'N/A')} | Timestamp: {metadata.get('timestamp')}")
+st.subheader(
+    f"Industry: {metadata.get('industry', 'N/A')} | Timestamp: {metadata.get('timestamp')}"
+)
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -80,7 +89,10 @@ if parsimony_scores:
 with col1:
     st.metric("Total Tasks", total_tasks)
 with col2:
-    st.metric("Success Rate", f"{(success_count/total_tasks)*100:.1f}%" if total_tasks else "0%")
+    st.metric(
+        "Success Rate",
+        f"{(success_count/total_tasks)*100:.1f}%" if total_tasks else "0%",
+    )
 with col3:
     st.metric("Avg Parsimony", f"{avg_parsimony:.2f}")
 with col4:
@@ -98,11 +110,15 @@ with t_col1:
     st.subheader("Metrics")
     for m in task_result["metrics"]:
         status_color = "green" if m["success"] else "red"
-        st.markdown(f"**{m['metric']}**: :{status_color}[{m['score']:.2f}] (Threshold: {m['threshold']:.2f})")
+        st.markdown(
+            f"**{m['metric']}**: :{status_color}[{m['score']:.2f}] (Threshold: {m['threshold']:.2f})"
+        )
 
     st.subheader("Conversation History")
     for msg in task_result.get("conversation_history", []):
-        with st.expander(f"{msg['role'].capitalize()}: {str(msg.get('content'))[:50]}..."):
+        with st.expander(
+            f"{msg['role'].capitalize()}: {str(msg.get('content'))[:50]}..."
+        ):
             st.json(msg)
 
 with t_col2:
@@ -112,15 +128,15 @@ with t_col2:
     history = task_result.get("conversation_history", [])
     mermaid_code = ["graph TD"]
     mermaid_code.append("  Start((Start))")
-    
+
     prev_node = "Start"
     turn_idx = 1
-    
+
     for entry in history:
         role = entry.get("role")
         content = entry.get("content", {})
         node_id = f"Turn_{turn_idx}_{role}"
-        
+
         if role == "agent":
             action = content.get("action", "unknown")
             label = f"{turn_idx}: {action}"
@@ -137,12 +153,14 @@ with t_col2:
             mermaid_code.append(f"  {prev_node} --> {node_id}")
             prev_node = node_id
             turn_idx += 1
-            
+
     mermaid_code.append(f"  {prev_node} --> End((End))")
-    
+
     # Render using the built-in mermaid support if available or fallback to text
     st.code("\n".join(mermaid_code), language="mermaid")
-    st.info("💡 Paste the code above into [Mermaid Live Editor](https://mermaid.live) for a full visual render.")
+    st.info(
+        "💡 Paste the code above into [Mermaid Live Editor](https://mermaid.live) for a full visual render."
+    )
 
 st.sidebar.markdown("---")
 st.sidebar.caption("Digital Twin Lab v1.0")

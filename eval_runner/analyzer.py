@@ -5,9 +5,9 @@ Logic for scanning agent repositories to identify tools, endpoints, and patterns
 """
 
 import re
-import os
 import json
 from pathlib import Path
+
 
 async def analyze_repo(repo_url: str) -> list:
     """
@@ -21,21 +21,37 @@ async def analyze_repo(repo_url: str) -> list:
         "agent_init": r"Agent\(|AgentExecutor\(|initialize_agent\(",
         "llm_call": r"openai\.|anthropic\.|ChatOpenAI\(",
     }
-    
+
     found_patterns = []
-    
+
     # In a real implementation, we would clone the repo and scan it.
     # For this demo, we'll return a set of discovered patterns.
-    
+
     if "telecom" in repo_url.lower():
         found_patterns = [
-            {"type": "api_endpoint", "match": "/api/v1/billing", "file": "app/billing.py"},
-            {"type": "tool_definition", "match": "def refund_tool()", "file": "tools/support.py"},
+            {
+                "type": "api_endpoint",
+                "match": "/api/v1/billing",
+                "file": "app/billing.py",
+            },
+            {
+                "type": "tool_definition",
+                "match": "def refund_tool()",
+                "file": "tools/support.py",
+            },
         ]
     elif "finance" in repo_url.lower():
         found_patterns = [
-            {"type": "llm_call", "match": "ChatOpenAI(model='gpt-4')", "file": "agent/core.py"},
-            {"type": "tool_definition", "match": "def ticker_tool()", "file": "tools/market.py"},
+            {
+                "type": "llm_call",
+                "match": "ChatOpenAI(model='gpt-4')",
+                "file": "agent/core.py",
+            },
+            {
+                "type": "tool_definition",
+                "match": "def ticker_tool()",
+                "file": "tools/market.py",
+            },
         ]
     else:
         found_patterns = [
@@ -45,7 +61,7 @@ async def analyze_repo(repo_url: str) -> list:
     # Scaffold scenarios based on patterns
     output_dir = Path("scenarios/auto")
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     scenarios = []
     for i, pattern in enumerate(found_patterns):
         scenario_id = f"auto_{pattern['type']}_{i}"
@@ -56,17 +72,14 @@ async def analyze_repo(repo_url: str) -> list:
             "tasks": [
                 {
                     "task_id": "t1",
-                    "description": f"Interact with {pattern['match']} and verify its output."
+                    "description": f"Interact with {pattern['match']} and verify its output.",
                 }
             ],
-            "metadata": {
-                "source_file": pattern['file'],
-                "pattern": pattern['match']
-            }
+            "metadata": {"source_file": pattern["file"], "pattern": pattern["match"]},
         }
-        
+
         with open(output_dir / f"{scenario_id}.json", "w") as f:
             json.dump(scenario, f, indent=2)
         scenarios.append(scenario)
-        
+
     return scenarios
