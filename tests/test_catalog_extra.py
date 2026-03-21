@@ -87,3 +87,32 @@ def test_list_scenarios_branches(capsys):
         list_scenarios("query")
         out, _ = capsys.readouterr()
         assert "and 5 more" in out
+
+def test_search_auto_load(tmp_path):
+    index_path = tmp_path / "index.json"
+    cat_data = [{"id": "s1", "title": "t1", "industry": "fin", "description": "d", "tags": []}]
+    with open(index_path, "w") as f:
+        json.dump(cat_data, f)
+    cat = ScenarioCatalog(index_path=str(index_path))
+    # search() should call load_index() if scenarios is empty
+    res = cat.search(query="t1")
+    assert len(res) == 1
+
+def test_search_faceted_filters():
+    cat = ScenarioCatalog()
+    cat.scenarios = [
+        {"id": "s1", "industry": "fin", "difficulty": 1, "tags": []},
+        {"id": "s2", "industry": "tech", "difficulty": 2, "tags": []}
+    ]
+    # Test line 130: faceted filter loop
+    res = cat.search(industry="fin")
+    assert len(res) == 1
+    assert res[0]["id"] == "s1"
+
+def test_list_scenarios_no_query(capsys):
+    with patch("eval_runner.catalog.ScenarioCatalog.load_index"), \
+         patch("eval_runner.catalog.ScenarioCatalog.scenarios", [{"id": "s1", "industry": "i", "difficulty": 1, "title": "t"}]):
+        list_scenarios(query=None)
+        out, _ = capsys.readouterr()
+        assert "Scenario Catalog: (1 total)" in out
+

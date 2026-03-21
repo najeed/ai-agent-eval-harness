@@ -60,3 +60,14 @@ def test_push_to_hf_auth_hint(tmp_path, capsys):
         HFExporter.push_to_hf(str(dataset_path), "repo_id")
         out, _ = capsys.readouterr()
         assert "Please run 'huggingface-cli login'" in out
+
+def test_push_to_hf_success(tmp_path, capsys):
+    dataset_path = tmp_path / "data.json"
+    dataset_path.touch()
+    
+    mock_api = MagicMock()
+    with patch("huggingface_hub.HfApi", return_value=mock_api):
+        HFExporter.push_to_hf(str(dataset_path), "repo_id")
+        out, _ = capsys.readouterr()
+        assert "Success! Dataset pushed" in out
+
