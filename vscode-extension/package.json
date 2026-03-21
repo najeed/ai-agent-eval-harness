@@ -1,5 +1,5 @@
 {
-  "name": "ai-multi-agent-eval",
+  "name": "ai-agent-eval-harness",
   "displayName": "MultiAgentEval",
   "description": "VS Code extension for the MultiAgentEval",
   "version": "0.1.0",

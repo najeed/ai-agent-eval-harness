@@ -7,8 +7,8 @@ Before building a plugin, set up your local development environment:
 
 ```bash
 # 1. Clone & activate virtual environment
-git clone https://github.com/najeed/ai-agent-multiagent-eval.git
-cd ai-agent-multiagent-eval
+git clone https://github.com/najeed/ai-agent-eval-harness.git
+cd ai-agent-eval-harness
 python -m venv venv
 venv\Scripts\activate  # Windows
 # source venv/bin/activate # Mac/Linux

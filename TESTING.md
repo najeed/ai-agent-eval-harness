@@ -165,7 +165,7 @@ def test_api_integration(mock_post):
 1. **Import Errors**
    ```bash
    # Ensure you're in the project root
-   cd /path/to/ai-multi-agent-eval
+   cd /path/to/ai-agent-eval-harness
    pytest
    ```
 

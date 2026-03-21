@@ -2,7 +2,7 @@
 
 # 🤖 MultiAgentEval
 
-[![CI](https://github.com/najeed/ai-multi-agent-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-multi-agent-eval/actions)
+[![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Compliant-green.svg)](docs/architecture.md#security-guardrails)
@@ -294,22 +294,22 @@ Here are ways to get involved:
 
 ### 🌟 Quick Contributions
 - ⭐ Star this repository
-- 🐛 [Report bugs](https://github.com/najeed/ai-multi-agent-eval/issues/new?template=bug_report.md)
-- 💡 [Suggest features](https://github.com/najeed/ai-multi-agent-eval/issues/new?template=feature_request.md)
-- 📖 [Improve documentation](https://github.com/najeed/ai-multi-agent-eval/issues/new?template=documentation.md)
+- 🐛 [Report bugs](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=bug_report.md)
+- 💡 [Suggest features](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=feature_request.md)
+- 📖 [Improve documentation](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=documentation.md)
 
 ### 🔨 Code Contributions
-- 🆕 [Good first issues](https://github.com/najeed/ai-multi-agent-eval/labels/good%20first%20issue)
+- 🆕 [Good first issues](https://github.com/najeed/ai-agent-eval-harness/labels/good%20first%20issue)
 - 🧪 Add test scenarios
 - ⚖️ **Zero-CLA**: We use the DCO (Developer Certificate of Origin). Just `git commit -s`.
-- 🏭 [Contribute new industries](https://github.com/najeed/ai-multi-agent-eval/issues/new?template=industry_request.md)
-- 🎯 [Create evaluation scenarios](https://github.com/najeed/ai-multi-agent-eval/issues/new?template=scenario_contribution.md)
+- 🏭 [Contribute new industries](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=industry_request.md)
+- 🎯 [Create evaluation scenarios](https://github.com/najeed/ai-agent-eval-harness/issues/new?template=scenario_contribution.md)
 
 ### Contributors
 Thanks to all our contributors! 🙌
 
-<a href="https://github.com/najeed/ai-multi-agent-eval/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=najeed/ai-multi-agent-eval" />
+<a href="https://github.com/najeed/ai-agent-eval-harness/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=najeed/ai-agent-eval-harness" />
 </a>
 
 ## Licensing and Editions

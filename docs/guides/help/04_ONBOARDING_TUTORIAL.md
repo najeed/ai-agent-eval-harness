@@ -23,8 +23,8 @@ Welcome to the harness! This tutorial walks a first-time user (e.g., a Product M
 Run:
 
 ```bash
-git clone https://github.com/najeed/ai-agent-multiagent-eval.git
-cd ai-agent-multiagent-eval
+git clone https://github.com/najeed/ai-agent-eval-harness.git
+cd ai-agent-eval-harness
 python -m venv .venv
 # Activate the venv (macOS/Linux)
 source .venv/bin/activate
