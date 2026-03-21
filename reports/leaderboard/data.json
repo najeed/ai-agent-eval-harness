@@ -405,5 +405,16 @@
     "cost": 0.022,
     "resolutions": 0,
     "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-2824",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774085396.3021228,
+    "iso_time": "2026-03-21T09:29:56.302127+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
   }
 ]
