@@ -31,15 +31,19 @@ jobs:
 
       - name: Validate AES Scenarios
         run: |
-          eval-harness aes validate --path industries/telecom/scenarios/
+          multiagent-eval aes validate --path industries/telecom/scenarios/
 
-      - name: Run Evaluation Suite
+      - name: Run Industry Evaluation (Telecom)
         run: |
-          eval-harness evaluate --path industries/telecom/scenarios --format jsonl --output reports/eval_results.json
+          multiagent-eval evaluate --path industries/telecom/scenarios --format jsonl --output reports/eval_results.json
         env:
           OTEL_SDK_DISABLED: true
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || '' }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY || '' }}
+
+      - name: Run Global Scenario Evaluation
+        run: |
+          multiagent-eval evaluate --path scenarios/ --attempts 3
 
       - name: Upload Replay Traces
         uses: actions/upload-artifact@v4
