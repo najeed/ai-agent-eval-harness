@@ -100,8 +100,10 @@ async def test_run_evaluate_success(mock_args, tmp_path):
         ]
         
         # Mock Path.stat to avoid FileNotFoundError in exporter.py
-        with patch("eval_runner.exporter.Path.stat") as mock_stat:
+        # Also ensure st_mode is an integer to satisfy pathlib.is_dir()
+        with patch("eval_runner.cli.Path.stat") as mock_stat:
             mock_stat.return_value.st_mtime = 123456789.0
+            mock_stat.return_value.st_mode = 0o40755  # Directory permissions
             await cli.run_evaluate(mock_args)
 
 

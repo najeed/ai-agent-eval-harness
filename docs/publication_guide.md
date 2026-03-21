@@ -3,12 +3,12 @@
 This guide provides step-by-step instructions and examples for using the Advanced Publication Suite to conduct evaluations, aggregate results, and generate professional leaderboards.
 
 ## Table of Contents
-1. [Setup & Configuration](#setup--configuration)
+1. [Setup & Configuration](#setup-configuration)
 2. [Directory Structure: scenarios vs industries](#directory-structure-scenarios-vs-industries)
 3. [Quick Start: Pilot Mode](#quick-start-pilot-mode)
-4. [Agent Protocols & Adapters](#agent-protocols--adapters)
+4. [Agent Protocols & Adapters](#agent-protocols-adapters)
 5. [Standard Execution](#standard-execution)
-6. [Advanced Options](#advanced_options)
+6. [Advanced Options](#advanced-options)
 7. [Deep Dive on Seeds](#deep-dive-on-seeds)
 8. [Understanding Outputs](#understanding-outputs)
 

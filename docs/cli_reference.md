@@ -192,7 +192,7 @@ multiagent-eval record [--agent <url>]
 ## Utilities
 
 ### `console`
-Launch the Web Admin Console backend API and Unified React SPA. The console provides a high-density dashboard for end-to-end evaluation management:
+Launch the Visual Debugger backend API and Unified React SPA. The debugger provides a high-density dashboard for end-to-end evaluation management:
 - **Scenario Explorer**: Browse the catalog with faceted filters, global search, and real-time **Lint Scores**.
 - **Visual AES Builder**: Drag-and-drop integrated logic builder that saves production-ready JSON directly to the industry catalog.
 - **Background Evaluation**: Trigger runs directly from the UI; the console handles background execution and event streaming.

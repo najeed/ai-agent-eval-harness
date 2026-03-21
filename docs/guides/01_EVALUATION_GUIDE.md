@@ -55,9 +55,9 @@ The `state_verification` metric now supports **dot-notation** for inspecting nes
 
 - **HITL (Human-In-The-Loop)**: Pause evaluations for manual intervention via the `human` adapter.
 
-## Visual Evaluation & Debugging (Admin Console)
+## Visual Evaluation & Debugging (**Visual Debugger**)
 
-Beyond the CLI, the harness provides a **Unified React SPA** Admin Console for visual management:
+Beyond the CLI, the harness provides a **Unified React SPA** Visual Debugger for visual management:
 - **Scenario Explorer**: Browse the catalog with faceted filters and global search.
 - **Visual AES Builder**: Drag-and-drop integrated logic builder for complex flows.
 - **Reports & Traces**: Historical execution timeline with detailed analysis, discovered Agent Identity (names/models), and instant "View Report" navigation.

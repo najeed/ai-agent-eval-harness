@@ -123,7 +123,7 @@ The Visual Suite uses a **Secure Handoff** architecture and provides integrated 
 1. **JWT Issuance**: The frontend requests a short-lived (60s) handoff token from `/api/auth/handoff`.
 2. **Authentication**: The plugin route must be decorated with `@handoff_required` to verify this token.
 3. **Dual Rendering Modes**:
-   - **Mode A (Native SDUI)**: If the endpoint returns `application/json` with a UI spec, the console renders it using native React Native components.
+   - **Mode A (Native SDUI)**: If the endpoint returns `application/json` with a UI spec, the console renders it using native React components.
    - **Mode B (Secure WebView)**: If it returns HTML, the console renders an authenticated WebView.
 
 ```python
@@ -148,7 +148,7 @@ class EnterpriseConsolePlugin(BaseEvalPlugin):
 
 The harness now includes a **VS Code Extension** scaffold (`vscode-extension/`) that brings core evaluation workflows directly into the editor.
 - **Run Scenario**: Right-click any `.json` scenario to execute a trace.
-- **Open Console**: One-click access to the Web Admin Console.
+- **`Visual Debugger`**: The premium React UI for visualizing results.
 
 ---
 

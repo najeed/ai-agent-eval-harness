@@ -69,5 +69,5 @@ def test_push_to_hf_success(tmp_path, capsys):
     with patch("huggingface_hub.HfApi", return_value=mock_api):
         HFExporter.push_to_hf(str(dataset_path), "repo_id")
         out, _ = capsys.readouterr()
-        assert "Success! Dataset pushed" in out
+        assert "Success! Dataset and Card pushed" in out
 

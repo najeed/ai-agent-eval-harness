@@ -270,5 +270,5 @@ class MyCustomShimPlugin(BaseEvalPlugin):
         registry["my_erp_v2"] = MyERPv2Simulator()
 ```
 
-📖 See [`docs/plugins.md`](/docs/plugins.md) for the full plugin lifecycle reference.
+📖 See [plugins.md](../../plugins.md) for the full plugin lifecycle reference.
 📖 See [`06_TRIAGE_ENGINE_AND_VFS.md`](06_TRIAGE_ENGINE_AND_VFS.md) for how shims integrate with the VFS triage engine.

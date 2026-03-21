@@ -1,11 +1,11 @@
 # Reproduction script for accuracy-test
-# Generated on 2026-03-21 15:12:57
+# Generated on 2026-03-22 02:39:26
 # 
 # Usage:
-# 1. Ensure you have the eval-harness installed: pip install .
+# 1. Ensure you have the multiagent-eval installed: pip install .
 # 2. Set your environment variables (AGENT_API_URL, etc.)
-# 3. RUN: eval-harness run --scenario scenarios/accuracy-test.json
+# 3. RUN: multiagent-eval run --scenario scenarios/accuracy-test.json
 #
 # SECURITY NOTE: ONLY execute this manually after reviewing the scenario file.
 
-eval-harness run --scenario scenarios/accuracy-test.json
+multiagent-eval run --scenario scenarios/accuracy-test.json

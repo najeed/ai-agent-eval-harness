@@ -34,8 +34,8 @@ These are automatically reflected in your **Dashboard** under "World Shims."
 ## Shims vs. VFS State Parity
 A common question is: *How do shims allow for VFS state parity checks?*
 
-1.  **The Sandbox State (VFS)**: The [ToolSandbox](/eval_runner/tool_sandbox.py#95-225) maintains a "Virtual File System" (the `.state` dict).
-2.  **Execution Hook**: When an agent calls `database_query`, the [ToolSandbox](/eval_runner/tool_sandbox.py#95-225) routes it to the [DatabaseSimulator](/eval_runner/simulators.py#49-65).
+1.  **The Sandbox State (VFS)**: The [tool_sandbox.py](https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/tool_sandbox.py) maintains a "Virtual File System" (the `.state` dict).
+2.  **Execution Hook**: When an agent calls `database_query`, the `ToolSandbox` routes it to the [DatabaseSimulator](https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/simulators.py).
 3.  **State Reflection**: The shim executes the action and can optionally return `state_changes` that are applied to the VFS.
 4.  **Parity Check**: At the end of a run, the `Evaluator` compares the current VFS state against the **"Ground Truth"** defined in the scenario. This is how we ensure "State Parity."
 
@@ -43,7 +43,7 @@ A common question is: *How do shims allow for VFS state parity checks?*
 The system uses a **Two-Key Activation Model** for World Shims to ensure security and ease of management:
 
 ### 1. Global System Override
-In [.env](/.env) (or via environment variables), you can set `GLOBAL_ENABLED_SHIMS`:
+In `.env` (or via environment variables), you can set `GLOBAL_ENABLED_SHIMS`:
 - **Default**: `git,api,database,terminal,cloud,slack,email,jira,social,support,crm,erp,stripe,calendar,browser,vector,kb,cicd,iot,security`
 - **Restricted**: `git,api` (Only these two can ever be used).
 - This allows you to disable heavy or risky shims system-wide without updating a single scenario.
@@ -58,7 +58,7 @@ Each scenario can further restrict its environment using the `enabled_shims` pro
 The preferred way to add a shim is via a **Plugin**. This keeps the core harness immutable.
 
 ### 1. Define the Simulator
-Create your simulator class anywhere (e.g., in your plugin package). It must implement [execute(action, params)](/eval_runner/simulators.py#124-132).
+Create your simulator class anywhere (e.g., in your plugin package). It must implement [execute(action, params)](https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/simulators.py).
 
 ```python
 class MyCustomSimulator:
@@ -67,7 +67,7 @@ class MyCustomSimulator:
 ```
 
 ### 2. Register via Plugin Hook
-In your [BaseEvalPlugin](/eval_runner/plugins.py#27-34) subclass, override the [on_register_simulators](/tests/test_world_shims_hotswap.py#11-13) hook:
+In your [BaseEvalPlugin](https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/plugins.py) subclass, override the [on_register_simulators](https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/plugins.py) hook:
 
 ```python
 from eval_runner.plugins import BaseEvalPlugin

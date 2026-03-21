@@ -7,7 +7,7 @@ from .events import CoreEvents
 class RemoteBridgePlugin(BaseEvalPlugin):
     """
     Zero-Touch Live Bridge Plugin.
-    Propagates engine events to a running Admin Console via HTTP.
+    Propagates engine events to a running Visual Debugger via HTTP.
     """
 
     def __init__(self, endpoint="http://localhost:5000/api/debugger/state"):
@@ -16,7 +16,7 @@ class RemoteBridgePlugin(BaseEvalPlugin):
         self._check_console_active()
 
     def _check_console_active(self):
-        """Checks if the console is running to avoid unnecessary noise."""
+        """Checks if the debugger is running to avoid unnecessary noise."""
         try:
             # Minimal timeout to avoid blocking the engine
             resp = requests.get(self.endpoint, timeout=0.1)
@@ -25,7 +25,7 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             self.active = False
 
     def _post_event(self, event_name, data):
-        """Internal helper to post events to the console."""
+        """Update the Visual Debugger state with the latest turn data."""
         if not self.active:
             return
 

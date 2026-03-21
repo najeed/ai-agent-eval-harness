@@ -21,7 +21,7 @@
       },
       {
         "command": "multiagent-eval.openConsole",
-        "title": "Eval: Open Admin Console"
+        "title": "Eval: Open Visual Debugger"
       }
     ],
     "keybindings": [

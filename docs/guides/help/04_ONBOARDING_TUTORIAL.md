@@ -35,10 +35,8 @@ python -m pip install -e .
 python -m pip install -r requirements.txt
 ```
 
-> ✅ Expected output snippet:
->
 > ```text
-> Successfully installed ai-agent-multiagent-eval-<version> ...
+> Successfully installed multi-agent-eval-<version> ...
 > ```
 
 ### ✅ Step 2: Verify the CLI is available
@@ -126,7 +124,7 @@ multiagent-eval replay --path runs/run.jsonl
 multiagent-eval console
 ```
 
-Inspect results natively using the **Admin Console**. The console provides a unified hub for the entire lifecycle:
+Inspect results natively using the **Visual Debugger**. The suite provides a unified hub for the entire lifecycle:
 - **Scenario Editor**: Design and save scenarios directly to the industry libraries.
 - **Background Runner**: Trigger evaluations and monitor them via the UI.
 - **Visual DNA Debugger**: Live trajectory playback, state inspection, and trace export.

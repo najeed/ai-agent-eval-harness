@@ -440,6 +440,17 @@
     "total_scenarios": 2
   },
   {
+    "run_id": "run-test_scenario-13084",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774127365.0829773,
+    "iso_time": "2026-03-21T21:09:25.082981+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
     "run_id": "run-telecom-ts-13814-29964",
     "team": "default",
     "agent": "telecom",

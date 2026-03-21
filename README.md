@@ -329,7 +329,7 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Observability** | 🔶 Terminal output | ✅ OTEL Drift Gauges & Dashboard Feed |
 | **Defensibility Governance**| ❌ No | ✅ WORM Audit Logs & Cryptographic Sealing|
 | **Integrity Checks** | ❌ No | ✅ AES Scenario Merkle Sync (Root Verify) |
-| **Admin Console & GUI** | ✅ Local React Native App | ✅ Glassmorphic Dashboard & Secure Handoff |
+| **Visual Debugger & GUI** | ✅ Local React Native App | ✅ Enterprise Dashboard & Secure Handoff |
 | **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Repro |
 | **Parallel Engine** | 🔶 Sequential only | ✅ Ray/Local JobQueue Distributed Runs |
 | **Interactive Triage** | 🔶 Heuristic only | ✅ Multi-user Sync & Human Annotation |

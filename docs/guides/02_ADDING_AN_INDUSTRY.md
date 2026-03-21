@@ -48,7 +48,7 @@ Run schema validation locally:
 python -c "from eval_runner.loader import load_scenario; from pathlib import Path; load_scenario(Path('industries/YOUR_INDUSTRY/scenarios/YOUR_SCENARIO.json'))"
 ```
 
-## Step 5: Verify in Admin Console
+## Step 5: Verify in Visual Debugger
 
 Launch the dashboard to ensure your new industry and scenarios are appearing correctly in the library:
 

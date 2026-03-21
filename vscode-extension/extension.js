@@ -19,7 +19,7 @@ function activate(context) {
 					vscode.window.showErrorMessage(`Eval Failed: ${stderr || error.message}`);
 					return;
 				}
-				vscode.window.showInformationMessage('Eval Complete! View results in Admin Console.');
+				vscode.window.showInformationMessage('Eval Complete! View results in Visual Debugger.');
 			});
 		} else {
 			vscode.window.showErrorMessage('Please open an AES Scenario JSON file first.');

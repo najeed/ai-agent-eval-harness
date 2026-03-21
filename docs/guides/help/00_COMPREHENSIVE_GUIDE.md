@@ -27,7 +27,7 @@ multiagent-eval quickstart
 > **Integrated Visual Suite**: Launch the premium web dashboard via `multiagent-eval console`. It now features a Live Debugger that streams real-time state from your evaluations using the Zero-Touch `RemoteBridgePlugin`.
 
 ### 1.2 Useful CLI Commands
-- `multiagent-eval console`: Launch the React Native (Expo) Admin Console GUI for visual management.
+- `multiagent-eval console`: Launch the React Visual Debugger GUI for visual management.
 - `multiagent-eval doctor`: Check your environment health.
 - `multiagent-eval list --search <query>`: Search the scenario catalog (supports faceted filtering).
 - `multiagent-eval lint --path <path>`: Verify scenario quality and AES specification compliance.
@@ -58,7 +58,7 @@ multiagent-eval quickstart
 - `import-drift --input <pord.jsonl>`: Convert production traces into regression tests.
 - `mutate --input <file> --type injection`: Generate adversarial test variants for red-teaming.
 - **Advanced Utilities**: `install`, `analyze`, `ci generate`, `failures search`, and `explain` ([Reference](../../cli_reference.md)).
-- **Visual Scenario Editor**: A visual React Native UI for constructing AES logic and saving it directly to the catalog, accessible via the `console` command.
+- **Visual Scenario Editor**: A visual React UI for constructing AES logic and saving it directly to the catalog, accessible via the `console` command.
 
 ---
 

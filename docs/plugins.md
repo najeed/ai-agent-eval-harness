@@ -166,7 +166,7 @@ The core UI enforces strict security for plugin components:
 - **Origin Validation**: All `postMessage` events are validated against the expected origin before processing.
 ```
 
-For detailed React component mapping and HUD customization, see the [UI Migration Guide](guides/help/UI_MIGRATION_GUIDE.md).
+- `verification`: [Ecosystem Verification Guide](guides/help/05_ECOSYSTEM_VERIFICATION_GUIDE.md)
 
 ---
 

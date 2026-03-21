@@ -23,8 +23,8 @@ Welcome to the official documentation. Start with the Quick Start guide and expl
 
 | Document | Description |
 |-------|-------------|
-| [Console Quickstart](guides/help/UI_MIGRATION_GUIDE.md) | Visualizing traces and catalogs |
-| [Visual Debugger](guides/help/06_TRIAGE_ENGINE_AND_VFS.md) | Step-by-step trajectory playback |
+| [Visual Debugger](guides/help/02_USER_MANUAL.md) | Visualizing traces and catalogs |
+| [Trajectory Analysis](guides/help/06_TRIAGE_ENGINE_AND_VFS.md) | Step-by-step trajectory playback |
 
 ## 🏭 Industry Guides
 

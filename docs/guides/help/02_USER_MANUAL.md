@@ -7,9 +7,9 @@ This guide is for users who want to run and understand evaluations without divin
 ## 📌 Table of Contents
 1. [Core Concepts](#core-concepts)
 2. [Running Evaluations (CLI)](#running-evaluations-cli)
-3. [Scenario Structure](#scenario-structure)
+3. [Scenario Structure](#scenario-structure-example)
 4. [Metrics Explained](#metrics-explained)
-5. [Drift & Triage (Advanced)](#drift--triage-advanced)
+5. [Drift & Triage (Advanced)](#drift-triage-advanced)
 
 ---
 
@@ -90,7 +90,7 @@ multiagent-eval evaluate --path industries/telecom --format jsonl --output repor
 | `multiagent-eval replay` | `--path` | Replay a recorded run trace |
 | `multiagent-eval aes validate` | `--path` | Validate AES benchmark YAML (v1.1) |
 | `multiagent-eval aes scaffold` | `--output` | Generate a starter AES v1.1 template |
-| `multiagent-eval console` | `--port` | Launch the Admin Console local API and interactive GUI (Integrated Visual Suite) |
+| `multiagent-eval console` | `--port` | Launch the Visual Debugger local API and interactive GUI (Integrated Visual Suite) |
 | `multiagent-eval quickstart` | (none) | 60-second CLI demo (spawns agent + runs evaluation). |
 | `multiagent-eval doctor` | (none) | Check environment, dependencies, and configuration |
 | `multiagent-eval init` | `--dir`, `--industry` | Scaffold a new benchmark environment and linked datasets |
@@ -146,7 +146,7 @@ multiagent-eval quickstart
 *   Generates a **Premium HTML report** (Mermaid trajectories enabled) in `reports/`.
 *   **Note:** This command is designed for CLI-only instant feedback; use `multiagent-eval console` for the visual experience.
 
-### 🖥️ `console` — React Native Admin Console GUI
+### 🖥️ `console` — React Visual Debugger GUI
 Launch a high-fidelity visual dashboard to run scenarios, inspect trace lines chronologically, and review system documentation locally.
 
 #### Key Features:
@@ -227,7 +227,7 @@ multiagent-eval explain --path runs/run.jsonl
 ```
 
 ### 🛠️ Visual Scenario Editor
-Built into the Admin Console (`multiagent-eval console`), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.
+Built into the Visual Debugger (`multiagent-eval console`), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.
 
 ---
 

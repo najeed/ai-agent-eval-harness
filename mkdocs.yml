@@ -56,6 +56,7 @@ nav:
           - Writing Tests: guides/testing/writing-tests.md
           - Running Tests: guides/testing/running-tests.md
           - Test Patterns: guides/testing/test-patterns.md
+  - Architecture: architecture.md
   - Features:
       - Inventory: feature_inventory.md
       - API Reference: agent_api.md
@@ -88,8 +89,8 @@ nav:
       - Adding World Shims: guides/help/08_ADDING_WORLD_SHIMS.md
       - Triage & VFS: guides/help/06_TRIAGE_ENGINE_AND_VFS.md
       - Verification: guides/help/05_ECOSYSTEM_VERIFICATION_GUIDE.md
-      - UI Migration: guides/help/UI_MIGRATION_GUIDE.md
   - Reference:
       - Comprehensive Guide: guides/help/00_COMPREHENSIVE_GUIDE.md
+      - Contributing: contributing.md
       - PRD Sample: samples/prd_sample.md
       - Code of Conduct: CODE_OF_CONDUCT.md
