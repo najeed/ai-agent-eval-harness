@@ -80,9 +80,7 @@ scenario_sources/
 industries_assessment/
 
 # Ignore the social media icons and branding assets
-social_media_icon.png
-social_media_icon2.png
-AI Agent Eval Harness.png
+*.png
 
 # Ignore stale generated docs
 enhanced_README.md
