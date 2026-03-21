@@ -229,5 +229,71 @@
     "cost": 0.022,
     "resolutions": 0,
     "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-26528",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774062129.0624115,
+    "iso_time": "2026-03-21T03:02:09.062415+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-16120",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774062257.8467934,
+    "iso_time": "2026-03-21T03:04:17.846794+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-14180",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774062407.0059402,
+    "iso_time": "2026-03-21T03:06:47.005944+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-10412",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774062604.3399725,
+    "iso_time": "2026-03-21T03:10:04.339974+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-17344",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774065047.4806345,
+    "iso_time": "2026-03-21T03:50:47.480638+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-17796",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774065253.9773123,
+    "iso_time": "2026-03-21T03:54:13.977315+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
   }
 ]

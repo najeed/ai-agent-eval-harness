@@ -6006,10 +6006,10 @@
     "difficulty": 1,
     "tags": [],
     "path": "industries\\test-ind\\scenarios\\new-scen.json",
-    "mtime": 1774060853.1900206,
+    "mtime": 1774064966.1965506,
     "description": "desc",
-    "lint_score": 95,
-    "status": "warning"
+    "lint_score": 30,
+    "status": "fail"
   },
   {
     "id": "drift-0fb797af",

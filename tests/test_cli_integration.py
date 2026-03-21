@@ -54,15 +54,18 @@ def test_handle_report_integration(cli_runner):
 
 def test_handle_aes_validate_integration(cli_runner):
     """Integrates handle_aes_validate with jsonschema."""
-    # Mock schema file
     schema_dir = Path(cli.__file__).parent.parent / "spec" / "aes"
-    schema_dir.mkdir(parents=True, exist_ok=True)
-    (schema_dir / "aes.schema.json").write_text("{}")
-
+    schema_file = schema_dir / "aes.schema.json"
+    
+    # Do NOT mock or overwrite the actual schema!
+    # Instead, we mock json.load to return a stub schema so it passes without file IO issues during tests.
     aes_file = cli_runner / "test.aes.yaml"
-    aes_file.write_text("scenario_id: test")
+    aes_file.write_text("scenario_id: test\naes_version: 1.1")
 
-    with patch("jsonschema.validate") as mock_val:
+    with patch("jsonschema.validate") as mock_val, \
+         patch("json.load") as mock_json_load:
+         
+        mock_json_load.return_value = {} # empty generic schema
         with patch("sys.argv", ["eval-harness", "aes", "validate", "--path", str(aes_file)]):
             cli.main()
             mock_val.assert_called_once()
