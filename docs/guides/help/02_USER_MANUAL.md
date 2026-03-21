@@ -88,15 +88,16 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 | `eval-harness evaluate` | `--path`, `--format`, `--output`, `--limit`, `--attempts` / `-k` | Run a set of scenarios (batch mode) |
 | `eval-harness run` | `-k` | Run a single scenario JSON file |
 | `eval-harness replay` | `--path` | Replay a recorded run trace |
-| `eval-harness aes validate` | `--path` | Validate AES benchmark YAML |
-| `eval-harness console` | `--port` | Launch the Admin Console local API and interactive GUI (integrated React Native app) |
-| `eval-harness quickstart` | (none) | 60-second CLI demo (spawns agent + runs evaluation). Does NOT launch the GUI. |
-| `eval-harness doctor` | (none) | Check environment, dependencies, and connectivity |
-| `eval-harness init` | `--dir`, `--industry` | Scaffold a new benchmark environment and generate linkable synthetic datasets |
-| `eval-harness report` | `--path` | Generate a **Premium HTML report** (reconstructed from any `.jsonl` trace) with interactive trajectory maps |
+| `eval-harness aes validate` | `--path` | Validate AES benchmark YAML (v1.1) |
+| `eval-harness aes scaffold` | `--output` | Generate a starter AES v1.1 template |
+| `eval-harness console` | `--port` | Launch the Admin Console local API and interactive GUI (Integrated Visual Suite) |
+| `eval-harness quickstart` | (none) | 60-second CLI demo (spawns agent + runs evaluation). |
+| `eval-harness doctor` | (none) | Check environment, dependencies, and configuration |
+| `eval-harness init` | `--dir`, `--industry` | Scaffold a new benchmark environment and linked datasets |
+| `eval-harness report` | `--path` | Generate a **Premium HTML report** with reconstructed trajectories |
 | `eval-harness scenario generate` | (none) | Interactively bootstrap new scenarios |
 | `eval-harness record` | `--agent` | Capture real interactions into an executable trace |
-| `eval-harness playground` | `--agent` | Interactive REPL for rapid agent experimentation |
+| `eval-harness playground` | `--agent` | Interactive REPL for rapid experimentation |
 | `eval-harness spec-to-eval` | `--input`, `--output` | Convert Markdown spec to scenario JSON |
 | `eval-harness auto-translate` | `--input`, `--model`, `--industry` | Translate raw documents (PDF, DOCX) into scenario JSON via a local LLM |
 | `eval-harness import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |

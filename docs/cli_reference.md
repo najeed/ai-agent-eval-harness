@@ -92,6 +92,15 @@ Validate Agent Eval Specification (.aes.yaml) files against the official schema.
 ```bash
 eval-harness aes validate --path <path>
 ```
+- Performs deep structure checking using `jsonschema`.
+- Ensures all mandatory benchmark fields are present.
+
+### `aes scaffold`
+Automatically generate a template Agent Eval Specification (.aes.yaml) file.
+```bash
+eval-harness aes scaffold --output <path>
+```
+- Creates a baseline YAML structure compliant with the latest benchmark standards.
 
 ### `spec-to-eval`
 Convert a Markdown PRD/Spec file into a structured Scenario JSON.

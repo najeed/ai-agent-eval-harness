@@ -6,6 +6,7 @@ Updated for modularity and plugin-based extensibility with argument groups.
 """
 
 import argparse
+import os
 import asyncio
 import sys
 import json

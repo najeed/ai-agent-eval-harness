@@ -19,6 +19,13 @@ Welcome to the official documentation. Start with the Quick Start guide and expl
 | [Architecture](architecture.md) | High-level data flow and system design |
 | [Agent API Spec](agent_api.md) | Contract for agent communication |
 
+## 🖥 Integrated Visual Suite
+
+| Document | Description |
+|-------|-------------|
+| [Console Quickstart](guides/03_CONSOLE_GUIDE.md) | Visualizing traces and catalogs |
+| [Visual Debugger](guides/01_VISUAL_DEBUGGER_UI.md) | Step-by-step trajectory playback |
+
 ## 🏭 Industry Guides
 
 | Document | Description |

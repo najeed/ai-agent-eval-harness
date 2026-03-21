@@ -44,6 +44,20 @@ Task: refund_processing [FAILURE [CONNECTION_ERROR]]
   FAILED Metric: generic_accuracy | Score: 0.00 | Threshold: 0.80
 ```
 
+## 3. Automated Diagnostics (`explain`)
+
+While triage applies categorical tags, the `explain` command performs a deep forensic analysis of the execution trace to identify the root cause of a failure.
+
+### Usage
+```bash
+eval-harness explain --path runs/run.jsonl
+```
+
+### Forensic Features
+- **Tiered Confidence Scoring**: Distinguishes between explicit policy violations (100%), induced system/tool errors (85%), and heuristic fallbacks (50%).
+- **Actionable Remediation**: Provides targeted advice based on the identified pattern (e.g., prompt refinement, sandbox optimization).
+- **Pinpoint Diagnostics**: Identifies the exact turn (index) where the failure logic diverged.
+
 > [!TIP]
 > **Visual Triage**: Use `eval-harness console` to view these failure tags interactively. The dashboard highlights `POLICY_VIOLATION` and `STALL` events with visual cues in the trajectory timeline.
 

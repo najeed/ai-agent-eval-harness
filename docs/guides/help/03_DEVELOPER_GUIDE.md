@@ -222,11 +222,13 @@ If `cleanup_workspace` is `false` (default for many research scenarios), the dir
 
 ---
 
-## 🤝 10) Contribution Flow
+## 🤝 10) Contribution & Verification Flow
 1. Add scenario JSON in `industries/<industry>/scenarios/`.
 2. Run with `eval-harness run --scenario <path>`.
 3. Add specialized metrics or plugins as needed.
-4. Verify with `pytest tests/`.
+4. Coverage Standard: All new core utilities must target 90%+ coverage.
+5. Verification: Run the full suite with `pytest tests/`.
+6. Linting: Ensure compliance with `flake8` standards.
 
 ---
 

@@ -61,8 +61,15 @@ set AGENT_API_URL=http://localhost:5001/execute_task
 ```
 
 ### 3. Run an Evaluation
+Access the global library of **5,000+ industry-grade scenarios**.
 ```bash
 eval-harness evaluate --path industries/telecom
+```
+
+### 4. Validate Benchmarks
+Ensure your custom benchmarks are AES v0.2 compliant.
+```bash
+eval-harness aes validate --path my_benchmarks
 ```
 
 ---

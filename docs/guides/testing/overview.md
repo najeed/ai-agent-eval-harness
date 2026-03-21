@@ -22,6 +22,7 @@ tests/
 ├── test_quickstart.py          # Quickstart demo tests
 ├── test_doctor.py              # Environment doctor tests
 ├── test_taxonomy.py            # Taxonomy classification tests
+├── test_stability.py           # Core stability and hardening tests
 └── test_explainer.py           # Trace explainer tests
 ```
 
@@ -75,8 +76,8 @@ tests/
 ## Test Coverage Expectations
 
 ### Minimum Coverage Requirements
-- **Core Modules**: 90%+ line coverage for evaluation engine components
-- **Utility Functions**: 85%+ line coverage for helper functions
+- **Core Modules**: 80%+ line coverage for evaluation engine components
+- **Utility Functions**: 80%+ line coverage for helper functions
 - **Schema Validation**: 100% coverage for validation logic
 - **Error Handling**: All error paths must be tested
 

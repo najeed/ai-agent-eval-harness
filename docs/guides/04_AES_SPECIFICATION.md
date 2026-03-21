@@ -1,4 +1,4 @@
-# Guide: Agent Eval Specification (AES) v0.1
+# Guide: Agent Eval Specification (AES) v1.1
 
 AES is the foundational standard for shareable, deterministic agent benchmarks.
 
@@ -12,6 +12,11 @@ AES is the foundational standard for shareable, deterministic agent benchmarks.
 ### Validating an AES file
 ```bash
 eval-harness aes validate --path path/to/benchmark.aes.yaml
+```
+
+### Scaffolding a new benchmark
+```bash
+eval-harness aes scaffold --output path/to/new_benchmark.aes.yaml
 ```
 
 ## 3. Core Components

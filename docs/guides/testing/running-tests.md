@@ -82,7 +82,6 @@ Run the dedicated suite for verifying core stability fixes (dot-notation, judge 
 ```bash
 pytest tests/test_stability.py
 ```
-```
 
 ### Integration Tests
 
