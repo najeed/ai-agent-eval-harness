@@ -1,4 +1,4 @@
-# User Guide: Advanced Publication Suite (Zero-Touch)
+# User Guide: Advanced Publication Suite
 
 This guide provides step-by-step instructions and examples for using the Advanced Publication Suite to conduct evaluations, aggregate results, and generate professional leaderboards.
 

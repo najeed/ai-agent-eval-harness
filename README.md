@@ -3,11 +3,11 @@
 # 🤖 MultiAgentEval
 
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
+[![Coverage](https://img.shields.io/badge/Coverage-90%25-green.svg)](docs/TESTING.md)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Compliant-green.svg)](docs/architecture.md#security-guardrails)
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
-[![Test Coverage](https://img.shields.io/badge/Coverage-90%25-green.svg)](docs/TESTING.md)
 [![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/test_security_audit.py)
 
 **MultiAgentEval** is the enterprise-grade reliability framework for AI agents. It bridges the "Agentic Reliability Gap" through rigorous evaluation, deep-trace replay debugging, and a modular 20-Shim Enterprise Suite for high-fidelity environment simulation.
