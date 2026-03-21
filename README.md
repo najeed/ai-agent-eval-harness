@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Compliant-green.svg)](docs/architecture.md#security-guardrails)
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
-[![Coverage](https://img.shields.io/badge/Coverage-82%25-green.svg)](docs/TESTING.md)
+[![Test Coverage](https://img.shields.io/badge/Coverage-82%25-green.svg)](docs/TESTING.md)
 [![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/test_security_audit.py)
 
 **AI Agent Evaluation Harness** is the enterprise-grade reliability framework for AI agents. It bridges the "Agentic Reliability Gap" through rigorous evaluation, deep-trace replay debugging, and a modular 20-Shim Enterprise Suite for high-fidelity environment simulation.

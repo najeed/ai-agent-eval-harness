@@ -1,0 +1,386 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-8.4.0, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 17 items
+
+tests/test_cli_router.py::test_router_sync_handlers[args0-eval_runner.cli.handle_init] PASSED [  5%]
+tests/test_cli_router.py::test_router_sync_handlers[args1-eval_runner.cli.handle_import_drift] PASSED [ 11%]
+tests/test_cli_router.py::test_router_sync_handlers[args2-eval_runner.cli.handle_auto_translate] PASSED [ 17%]
+tests/test_cli_router.py::test_router_sync_handlers[args3-eval_runner.cli.handle_replay] PASSED [ 23%]
+tests/test_cli_router.py::test_router_sync_handlers[args4-eval_runner.cli.handle_mutate] PASSED [ 29%]
+tests/test_cli_router.py::test_router_sync_handlers[args5-eval_runner.cli.handle_doctor] PASSED [ 35%]
+tests/test_cli_router.py::test_router_sync_handlers[args6-eval_runner.cli.handle_inspect] PASSED [ 41%]
+tests/test_cli_router.py::test_router_sync_handlers[args7-eval_runner.cli.handle_taxonomy] PASSED [ 47%]
+tests/test_cli_router.py::test_router_sync_handlers[args8-eval_runner.cli.handle_catalog_search] PASSED [ 52%]
+tests/test_cli_router.py::test_router_sync_handlers[args9-eval_runner.cli.handle_export] PASSED [ 58%]
+tests/test_cli_router.py::test_router_list_metrics FAILED                [ 64%]
+tests/test_cli_router.py::test_router_console FAILED                     [ 70%]
+tests/test_cli_router.py::test_router_quickstart PASSED                  [ 76%]
+tests/test_cli_router.py::test_router_scenario_generate FAILED           [ 82%]
+tests/test_cli_router.py::test_router_record PASSED                      [ 88%]
+tests/test_cli_router.py::test_router_playground PASSED                  [ 94%]
+tests/test_cli_router.py::test_router_exception_exit FAILED              [100%]
+
+================================== FAILURES ===================================
+__________________________ test_router_list_metrics ___________________________
+
+self = ArgumentParser(prog='python.exe eval-harness', usage=None, description='AI Agent Evaluation Harness (OpenCore)', formatter_class=<class 'argparse.ArgumentDefaultsHelpFormatter'>, conflict_handler='error', add_help=True)
+args = ['list-metrics'], namespace = Namespace(command=None), intermixed = False
+
+    def _parse_known_args2(self, args, namespace, intermixed):
+        if args is None:
+            # args default to the system args
+            args = _sys.argv[1:]
+        else:
+            # make sure that args are mutable
+            args = list(args)
+    
+        # default Namespace built from parser defaults
+        if namespace is None:
+            namespace = Namespace()
+    
+        # add any action defaults that aren't present
+        for action in self._actions:
+            if action.dest is not SUPPRESS:
+                if not hasattr(namespace, action.dest):
+                    if action.default is not SUPPRESS:
+                        setattr(namespace, action.dest, action.default)
+    
+        # add any parser defaults that aren't present
+        for dest in self._defaults:
+            if not hasattr(namespace, dest):
+                setattr(namespace, dest, self._defaults[dest])
+    
+        # parse the arguments and exit if there are any errors
+        if self.exit_on_error:
+            try:
+>               namespace, args = self._parse_known_args(args, namespace, intermixed)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+C:\Python314\Lib\argparse.py:2040: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\argparse.py:2295: in _parse_known_args
+    stop_index = consume_positionals(start_index)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:2247: in consume_positionals
+    take_action(action, args)
+C:\Python314\Lib\argparse.py:2101: in take_action
+    argument_values = self._get_values(action, argument_strings)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:2627: in _get_values
+    self._check_value(action, value[0])
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ArgumentParser(prog='python.exe eval-harness', usage=None, description='AI Agent Evaluation Harness (OpenCore)', formatter_class=<class 'argparse.ArgumentDefaultsHelpFormatter'>, conflict_handler='error', add_help=True)
+action = _SubParsersAction(option_strings=[], dest='command', nargs='A...', const=None, default=None, type=None, choices={'eval..., conflict_handler='error', add_help=True)}, required=False, help='Available commands', metavar=None, deprecated=False)
+value = 'list-metrics'
+
+    def _check_value(self, action, value):
+        # converted value must be one of the choices (if specified)
+        choices = action.choices
+        if choices is None:
+            return
+    
+        if isinstance(choices, str):
+            choices = iter(choices)
+    
+        if value not in choices:
+            args = {'value': str(value),
+                    'choices': ', '.join(map(str, action.choices))}
+            msg = _('invalid choice: %(value)r (choose from %(choices)s)')
+    
+            if self.suggest_on_error and isinstance(value, str):
+                if all(isinstance(choice, str) for choice in action.choices):
+                    import difflib
+                    suggestions = difflib.get_close_matches(value, action.choices, 1)
+                    if suggestions:
+                        args['closest'] = suggestions[0]
+                        msg = _('invalid choice: %(value)r, maybe you meant %(closest)r? '
+                                '(choose from %(choices)s)')
+    
+>           raise ArgumentError(action, msg % args)
+E           argparse.ArgumentError: argument command: invalid choice: 'list-metrics' (choose from evaluate, list, lint, aes, spec-to-eval, auto-translate, import-drift, doctor, inspect, taxonomy, catalog-search, init, console, quickstart, report, run, scenario, record, playground, export, mutate, replay, cleanup-runs, install, analyze, ci, failures, explain, calibrate, plugin)
+
+C:\Python314\Lib\argparse.py:2689: ArgumentError
+
+During handling of the above exception, another exception occurred:
+
+    def test_router_list_metrics():
+        with patch("sys.argv", ["eval-harness", "list-metrics"]), \
+             patch("builtins.print") as mock_print:
+>           cli.main()
+
+tests\test_cli_router.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+eval_runner\cli.py:289: in main
+    args = parser.parse_args()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:2001: in parse_args
+    args, argv = self.parse_known_args(args, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:2011: in parse_known_args
+    return self._parse_known_args2(args, namespace, intermixed=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:2042: in _parse_known_args2
+    self.error(str(err))
+C:\Python314\Lib\argparse.py:2771: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ArgumentParser(prog='python.exe eval-harness', usage=None, description='AI Agent Evaluation Harness (OpenCore)', formatter_class=<class 'argparse.ArgumentDefaultsHelpFormatter'>, conflict_handler='error', add_help=True)
+status = 2
+message = "python.exe eval-harness: error: argument command: invalid choice: 'list-metrics' (choose from evaluate, list, lint, a...ecord, playground, export, mutate, replay, cleanup-runs, install, analyze, ci, failures, explain, calibrate, plugin)\n"
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, _sys.stderr)
+>       _sys.exit(status)
+E       SystemExit: 2
+
+C:\Python314\Lib\argparse.py:2758: SystemExit
+---------------------------- Captured stderr call -----------------------------
+usage: python.exe eval-harness [-h]
+                               {evaluate,list,lint,aes,spec-to-eval,auto-translate,import-drift,doctor,inspect,taxonomy,catalog-search,init,console,quickstart,report,run,scenario,record,playground,export,mutate,replay,cleanup-runs,install,analyze,ci,failures,explain,calibrate,plugin} ...
+python.exe eval-harness: error: argument command: invalid choice: 'list-metrics' (choose from evaluate, list, lint, aes, spec-to-eval, auto-translate, import-drift, doctor, inspect, taxonomy, catalog-search, init, console, quickstart, report, run, scenario, record, playground, export, mutate, replay, cleanup-runs, install, analyze, ci, failures, explain, calibrate, plugin)
+_____________________________ test_router_console _____________________________
+
+    def test_router_console():
+        with patch("sys.argv", ["eval-harness", "console"]), \
+>            patch("eval_runner.cli.run_server") as mock_server:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_router.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:1503: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000002A8C5AA7070>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'eval_runner.cli' from 'C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\eval_runner\\cli.py'> does not have the attribute 'run_server'
+
+C:\Python314\Lib\unittest\mock.py:1473: AttributeError
+________________________ test_router_scenario_generate ________________________
+
+    def test_router_scenario_generate():
+        with patch("sys.argv", ["eval-harness", "scenario", "generate"]), \
+>            patch("eval_runner.cli.scaffold.generate_interactive") as mock_gen:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_router.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:1487: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'eval_runner.cli.scaffold'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+                     ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'eval_runner.cli' has no attribute 'scaffold'
+
+C:\Python314\Lib\pkgutil.py:473: AttributeError
+_________________________ test_router_exception_exit __________________________
+
+    def test_router_exception_exit():
+        # Force an exception inside main to hit the traceback and sys.exit(1) block
+        with patch("sys.argv", ["eval-harness", "list"]), \
+             patch("eval_runner.cli.handle_list", side_effect=Exception("Crash")), \
+>            patch("eval_runner.cli.traceback.print_exc") as mock_exc:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_router.py:74: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:1487: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'eval_runner.cli.traceback'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+                     ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'eval_runner.cli' has no attribute 'traceback'
+
+C:\Python314\Lib\pkgutil.py:473: AttributeError
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.0-final-0 _______________
+
+Name                 Stmts   Miss  Cover   Missing
+--------------------------------------------------
+eval_runner\cli.py     867    657    24%   277, 293, 295, 297, 301-305, 307, 313-314, 320, 322-325, 339, 341-344, 355-383, 388-395, 400, 405-425, 430-438, 443-450, 458-503, 508-548, 553-588, 593-633, 638-665, 671-811, 816-831, 836, 841-940, 945-976, 981-1073, 1082-1126, 1133-1143, 1148-1166, 1171-1174, 1179-1198, 1203-1210, 1215-1245, 1250-1270, 1275-1294, 1299-1366, 1371-1407, 1412-1414, 1419-1431, 1436-1465, 1470-1481, 1485
+--------------------------------------------------
+TOTAL                  867    657    24%
+=========================== short test summary info ===========================
+FAILED tests/test_cli_router.py::test_router_list_metrics - SystemExit: 2
+FAILED tests/test_cli_router.py::test_router_console - AttributeError: <modul...
+FAILED tests/test_cli_router.py::test_router_scenario_generate - AttributeErr...
+FAILED tests/test_cli_router.py::test_router_exception_exit - AttributeError:...
+======================== 4 failed, 13 passed in 1.36s =========================
