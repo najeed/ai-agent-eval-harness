@@ -98,7 +98,11 @@ async def test_run_evaluate_success(mock_args, tmp_path):
         mock_eval.return_value = [
             {"metrics": [{"success": True}], "conversation_history": [{"role": "agent", "content": {"summary": "done"}}]}
         ]
-        await cli.run_evaluate(mock_args)
+        
+        # Mock Path.stat to avoid FileNotFoundError in exporter.py
+        with patch("eval_runner.exporter.Path.stat") as mock_stat:
+            mock_stat.return_value.st_mtime = 123456789.0
+            await cli.run_evaluate(mock_args)
 
 
 # --- handle_auto_translate ---

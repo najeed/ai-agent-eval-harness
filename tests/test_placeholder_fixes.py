@@ -1,7 +1,7 @@
 import pytest
 import asyncio
 import os
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock, patch, AsyncMock, ANY
 from eval_runner.session import SessionManager
 from eval_runner.exporter import HFExporter
 from eval_runner.reporting_plugin import ReportingPlugin
@@ -67,14 +67,20 @@ async def test_hitl_ci_auto_resume():
 def test_exporter_hf_push():
     """Verifies HFExporter.push_to_hf calls the SDK correctly (mocked)."""
     with patch("huggingface_hub.HfApi") as MockApi, patch("pathlib.Path.exists", return_value=True):
-
         mock_api_instance = MockApi.return_value
 
         HFExporter.push_to_hf("dummy.json", "user/repo")
 
-        mock_api_instance.upload_file.assert_called_with(
+        # Verify specific calls (dataset and README)
+        mock_api_instance.upload_file.assert_any_call(
             path_or_fileobj="dummy.json",
             path_in_repo="dummy.json",
+            repo_id="user/repo",
+            repo_type="dataset",
+        )
+        mock_api_instance.upload_file.assert_any_call(
+            path_or_fileobj=ANY,
+            path_in_repo="README.md",
             repo_id="user/repo",
             repo_type="dataset",
         )
