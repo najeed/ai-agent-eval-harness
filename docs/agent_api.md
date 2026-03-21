@@ -1,6 +1,6 @@
 # Agent API Specification
 
-This document describes the expected API contract between the evaluation harness and the AI agent under test.
+This document describes the expected API contract between the MultiAgentEval and the AI agent under test.
 
 ## Endpoint
 

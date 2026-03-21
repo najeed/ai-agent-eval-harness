@@ -1,6 +1,6 @@
-# Feature Inventory - AI Agent Eval Harness
+# Feature Inventory - MultiAgentEval
 
-This document provides a comprehensive inventory of the capabilities, tools, and technical features of the Zero-Touch AI Agent Evaluation Harness.
+This document provides a comprehensive inventory of the capabilities, tools, and technical features of the Zero-Touch MultiAgentEval.
 
 ## 1. Zero-Touch Core (Evaluation Engine)
 The foundation of the harness, designed for framework-agnostic execution.

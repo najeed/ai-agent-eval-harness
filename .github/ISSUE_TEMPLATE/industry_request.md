@@ -10,7 +10,7 @@ assignees: ''
 What industry would you like to see supported?
 
 **Industry Importance**
-Why is this industry important for AI agent evaluation?
+Why is this industry important for MultiAgentEval?
 
 **Key Use Cases**
 List 3-5 key use cases where AI agents are used in this industry:

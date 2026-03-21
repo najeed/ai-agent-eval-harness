@@ -11,7 +11,7 @@ We actively maintain and provide security updates for the following versions:
 
 ## Reporting a Vulnerability
 
-We take the security of the AI Agent Evaluation Harness seriously. If you discover a security vulnerability, please follow these steps:
+We take the security of the MultiAgentEval seriously. If you discover a security vulnerability, please follow these steps:
 
 ### How to Report
 
@@ -49,7 +49,7 @@ We follow responsible disclosure practices:
    - Use `pip-audit` or similar tools to check for known vulnerabilities
    - Pin dependency versions in requirements files
 
-### AI Agent Evaluation Security
+### MultiAgentEval Security
 
 1. **Code Execution**: 
    - Use secure sandboxes for agent code execution

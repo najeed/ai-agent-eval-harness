@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a quick reference for testing the AI Agent Evaluation Harness. For detailed information, see the comprehensive guides in [`docs/guides/testing/`](docs/guides/testing/).
+This document provides a quick reference for testing the MultiAgentEval. For detailed information, see the comprehensive guides in [`docs/guides/testing/`](docs/guides/testing/).
 
 ## Quick Start
 
@@ -165,7 +165,7 @@ def test_api_integration(mock_post):
 1. **Import Errors**
    ```bash
    # Ensure you're in the project root
-   cd /path/to/ai-agent-eval-harness
+   cd /path/to/ai-multi-agent-eval
    pytest
    ```
 

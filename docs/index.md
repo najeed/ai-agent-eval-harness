@@ -1,4 +1,4 @@
-# AI Agent Evaluation Harness — Documentation
+# MultiAgentEval — Documentation
 
 Welcome to the official documentation. Start with the Quick Start guide and explore the detailed manuals below.
 

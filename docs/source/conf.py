@@ -1,4 +1,4 @@
-﻿# Configuration file for the Sphinx documentation builder.
+# Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "AI Agent Eval Harness"
+project = "MultiAgentEval"
 copyright = "2025, Najeed Khan"
 author = "Najeed Khan"
 release = "0.0.1"

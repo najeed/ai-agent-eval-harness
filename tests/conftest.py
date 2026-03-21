@@ -1,7 +1,7 @@
 """
 conftest.py
 
-Shared fixtures and configuration for the evaluation harness test suite.
+Shared fixtures and configuration for the MultiAgentEval test suite.
 Includes logic to gracefully shut down OpenTelemetry to prevent I/O errors on closed files.
 """
 

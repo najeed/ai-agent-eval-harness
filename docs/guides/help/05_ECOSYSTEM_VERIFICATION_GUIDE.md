@@ -28,7 +28,7 @@ This occurs when a package lacks a pre-built wheel for Python 3.14 and requires 
 Before verifying individual integrations, ensure the harness is installed in editable mode:
 
 ```bash
-cd ai-agent-eval-harness
+cd ai-multi-agent-eval
 pip install -e .
 ```
 

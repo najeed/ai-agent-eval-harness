@@ -1,14 +1,14 @@
 # Plugin Development Guide
 
-The AI Agent Evaluation Harness is built on a strict "Zero-Touch Core" philosophy. This means that you should rarely, if ever, modify the `eval_runner` core engine directly. Instead, almost all custom business logic, API integrations, and new CLI commands should be injected via plugins.
+The MultiAgentEval is built on a strict "Zero-Touch Core" philosophy. This means that you should rarely, if ever, modify the `eval_runner` core engine directly. Instead, almost all custom business logic, API integrations, and new CLI commands should be injected via plugins.
 
 ## Developer Quick Setup
 Before building a plugin, set up your local development environment:
 
 ```bash
 # 1. Clone & activate virtual environment
-git clone https://github.com/najeed/ai-agent-eval-harness.git
-cd ai-agent-eval-harness
+git clone https://github.com/najeed/ai-multi-agent-eval.git
+cd ai-multi-agent-eval
 python -m venv venv
 venv\Scripts\activate  # Windows
 # source venv/bin/activate # Mac/Linux

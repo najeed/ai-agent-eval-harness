@@ -1,7 +1,7 @@
 """
 plugins.py
 
-Plugin management system for AI Agent Eval Harness.
+Plugin management system for MultiAgentEval.
 Handles dynamic discovery and loading of evaluation plugins.
 Updated to respect Zero-Touch architecture and immutable core.
 """

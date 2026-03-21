@@ -58,7 +58,7 @@ FEATURES = [
 
 def verify():
     print("=" * 60)
-    print(" AI AGENT EVAL HARNESS - FEATURE VERIFICATION SUITE")
+    print(" MultiAgentEval - FEATURE VERIFICATION SUITE")
     print("=" * 60)
 
     matrix = []

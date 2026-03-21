@@ -1,7 +1,7 @@
 """
 taxonomy.py
 
-Centralized failure classification engine for AI Agent Eval Harness.
+Centralized failure classification engine for MultiAgentEval.
 Maps trajectory patterns to industry-standard failure categories.
 """
 

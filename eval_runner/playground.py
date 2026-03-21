@@ -7,7 +7,7 @@ from . import reporter
 
 async def run_playground(agent_url: str):
     """Interactive playground loop."""
-    print("\n🎮 AI Agent Eval Harness - Playground")
+    print("\n🎮 MultiAgentEval - Playground")
     print(f"Agent: {agent_url}")
     print("Experiment with your agent in real-time. Type 'exit' to quit.\n")
 

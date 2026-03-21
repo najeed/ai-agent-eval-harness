@@ -1,7 +1,7 @@
 
 <!-- CONTRIBUTING.md -->
 
-# Contributing to AI-Agent-Eval-Harness
+# Contributing to AI-multi-agent-eval
 
 Thank you for your interest in building the industry standard for agentic reliability.
 

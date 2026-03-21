@@ -117,7 +117,7 @@ def send_patient_update(email, message):
 
 # --- 3. Core Agent Logic ---
 # This is the "brain" of our agent. It decides which tool to use based on keywords
-# in the task description it receives from the evaluation harness.
+# in the task description it receives from the MultiAgentEval.
 
 
 @app.route("/execute_task", methods=["POST"])

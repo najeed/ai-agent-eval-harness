@@ -21,7 +21,7 @@ async def check_agent_reachable(url: str):
 
 async def run_doctor():
     """Environment validation logic."""
-    print("\n[Doctor] AI Agent Eval Harness - Environment Doctor\n")
+    print("\n[Doctor] MultiAgentEval - Environment Doctor\n")
 
     # 1. Python Version
     py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"

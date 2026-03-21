@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The AI Agent Evaluation Harness uses a comprehensive testing strategy to ensure reliability, maintainability, and correctness of the evaluation framework. This document provides an overview of the test architecture, organization, and testing philosophy.
+The MultiAgentEval uses a comprehensive testing strategy to ensure reliability, maintainability, and correctness of the evaluation framework. This document provides an overview of the test architecture, organization, and testing philosophy.
 
 ## Test Directory Structure
 

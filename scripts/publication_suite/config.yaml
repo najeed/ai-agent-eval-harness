@@ -1,4 +1,4 @@
-# AI Agent Eval Harness - Global Configuration
+# MultiAgentEval - Global Configuration
 
 # Evaluation Parameters
 default_runs: 100

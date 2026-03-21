@@ -1,6 +1,6 @@
 # PyPI Distribution Guide
 
-This guide details the process of building and publishing the `eval_runner` package (AI Agent Evaluation Harness) to PyPI.
+This guide details the process of building and publishing the `eval_runner` package (MultiAgentEval) to PyPI.
 
 ## Prerequisites
 
@@ -68,7 +68,7 @@ twine upload --repository testpypi dist/*
 You can then try installing it from TestPyPI:
 ```bash
 # Use the new package name
-pip install --index-url https://test.pypi.org/simple/ --no-deps ai-agent-eval-harness
+pip install --index-url https://test.pypi.org/simple/ --no-deps ai-multi-agent-eval
 ```
 
 ## Step 5: Upload to PyPI

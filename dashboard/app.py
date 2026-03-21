@@ -1,7 +1,7 @@
 """
 dashboard/app.py
 
-Streamlit application for visualizing AI Agent Evaluation trajectories and metrics.
+Streamlit application for visualizing MultiAgentEval trajectories and metrics.
 """
 
 import streamlit as st
@@ -11,7 +11,7 @@ from pathlib import Path
 
 # Set page configuration for a premium look
 st.set_page_config(
-    page_title="AI Agent Eval Lab",
+    page_title="MultiAgentEval Lab",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -38,7 +38,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("🤖 AI Agent Evaluation Lab: Trajectory Dashboard")
+st.title("🤖 MultiAgentEval Lab: Trajectory Dashboard")
 
 # Trajectory discovery
 TRAJECTORY_DIR = Path("reports/trajectories")

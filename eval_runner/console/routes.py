@@ -79,7 +79,7 @@ def register_core_routes(app, nav_registry):
             {
                 "id": "community",
                 "title": "Community",
-                "path": "https://github.com/najeed/ai-agent-eval-harness",
+                "path": "https://github.com/najeed/ai-multi-agent-eval",
                 "icon": "github",
                 "type": "external",
             },

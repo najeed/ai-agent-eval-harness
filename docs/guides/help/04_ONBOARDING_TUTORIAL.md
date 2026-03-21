@@ -1,4 +1,4 @@
-# Onboarding Tutorial — AI Agent Evaluation Harness
+# Onboarding Tutorial — MultiAgentEval
 
 Welcome to the harness! This tutorial walks a first-time user (e.g., a Product Manager or Engineering first-timer) through a complete evaluation workflow with real commands and expected outputs.
 
@@ -23,8 +23,8 @@ Welcome to the harness! This tutorial walks a first-time user (e.g., a Product M
 Run:
 
 ```bash
-git clone https://github.com/najeed/ai-agent-eval-harness.git
-cd ai-agent-eval-harness
+git clone https://github.com/najeed/ai-multi-agent-eval.git
+cd ai-multi-agent-eval
 python -m venv .venv
 # Activate the venv (macOS/Linux)
 source .venv/bin/activate
@@ -38,7 +38,7 @@ python -m pip install -r requirements.txt
 > ✅ Expected output snippet:
 >
 > ```text
-> Successfully installed ai-agent-eval-harness-<version> ...
+> Successfully installed ai-multi-agent-eval-<version> ...
 > ```
 
 ### ✅ Step 2: Verify the CLI is available
@@ -54,7 +54,7 @@ eval-harness --help
 > ```text
 > usage: eval-harness [-h] {evaluate,aes,spec-to-eval,import-drift,run,replay,mutate,list,lint} ...
 > 
-> AI Agent Evaluation Harness (OpenCore)
+> MultiAgentEval (OpenCore)
 > ```
 
 ### ✅ Step 3: Explore the Scenario Catalog

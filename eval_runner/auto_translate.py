@@ -58,7 +58,7 @@ async def translate_to_scenario(
     """Uses a local Ollama LLM to synthesize a scenario JSON from raw text."""
 
     prompt = f"""
-You are an expert evaluator converting raw unstructured requirement documents into structured JSON scenarios for the AI Agent Evaluation Harness.
+You are an expert evaluator converting raw unstructured requirement documents into structured JSON scenarios for the MultiAgentEval.
 
 Your task is to analyze the following document and synthesize a valid JSON scenario that meets the official AES (Agent Eval Specification) schema. 
 

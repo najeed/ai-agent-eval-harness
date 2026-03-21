@@ -2,7 +2,7 @@
 
 ## Common Testing Patterns for Evaluation Frameworks
 
-This document outlines common testing patterns and strategies specifically designed for evaluation frameworks like the AI Agent Evaluation Harness.
+This document outlines common testing patterns and strategies specifically designed for evaluation frameworks like the MultiAgentEval.
 
 ## Evaluation Engine Testing Patterns
 

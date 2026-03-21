@@ -14,7 +14,7 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(
-        description="AI Agent Eval - Publication Suite (Zero-Touch)"
+        description="MultiAgentEval - Publication Suite (Zero-Touch)"
     )
     parser.add_argument(
         "--mode", choices=["pilot", "standard"], default="standard", help="Run mode"

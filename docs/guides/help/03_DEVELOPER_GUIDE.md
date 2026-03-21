@@ -1,4 +1,4 @@
-# 🛠 Developer Guide — AI Agent Evaluation Harness
+# 🛠 Developer Guide — MultiAgentEval
 
 This guide is for engineers building on or extending the harness.
 

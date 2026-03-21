@@ -1,9 +1,9 @@
-.. AI Agent Eval Harness documentation master file, created by
+.. MultiAgentEval documentation master file, created by
    sphinx-quickstart on Mon Jul 21 04:13:29 2025.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-AI Agent Eval Harness documentation
+MultiAgentEval documentation
 ===================================
 
 Add your content using ``reStructuredText`` syntax. See the

@@ -1,8 +1,8 @@
 """
-Test package for the AI Agent Evaluation Harness.
+Test package for the MultiAgentEval.
 
 This package contains comprehensive test suites for all major components
-of the AI Agent Evaluation Harness, including scenario loading, agent
+of the MultiAgentEval, including scenario loading, agent
 API testing, metrics calculation, evaluation runner functionality,
 schema validation, and tool sandbox behavior.
 

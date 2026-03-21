@@ -1,6 +1,6 @@
-# AI Agent Evaluation Harness — Comprehensive Guide
+# MultiAgentEval — Comprehensive Guide
 
-> This document is the single authoritative reference for using, extending, and developing the AI Agent Evaluation Harness.
+> This document is the single authoritative reference for using, extending, and developing the MultiAgentEval.
 > It is organized into three levels: **Quick Start**, **User Manual**, and **Developer Guide**.
 
 ---
@@ -11,8 +11,8 @@
 
 1. Clone and install the harness:
 ```bash
-git clone https://github.com/najeed/ai-agent-eval-harness.git
-cd ai-agent-eval-harness
+git clone https://github.com/najeed/ai-multi-agent-eval.git
+cd ai-multi-agent-eval
 pip install -e .
 ```
 

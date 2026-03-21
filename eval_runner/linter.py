@@ -13,6 +13,16 @@ import hashlib
 class ScenarioLinter:
     """Analyzes scenarios for quality, validity, and duplicates."""
 
+    def get_quality_tier(self, score: int) -> str:
+        """Determines the quality tier based on the lint score."""
+        if score >= 90:
+            return "GOLD"
+        elif score >= 70:
+            return "SILVER"
+        elif score >= 50:
+            return "BRONZE"
+        return "UNRANKED"
+
     def lint(self, file_path: str) -> Dict[str, Any]:
         """Runs a suite of checks on a scenario file."""
         p = Path(file_path)
@@ -22,6 +32,7 @@ class ScenarioLinter:
             "warnings": [],
             "errors": [],
             "score": 100,
+            "tier": "GOLD",
         }
 
         if not p.exists():
@@ -36,6 +47,7 @@ class ScenarioLinter:
             results["status"] = "fail"
             results["errors"].append(f"Invalid JSON: {str(e)}")
             results["score"] = 0
+            results["tier"] = "UNRANKED"
             return results
 
         # 1. Metadata & Identity Checks
@@ -43,6 +55,7 @@ class ScenarioLinter:
             results["status"] = "fail"
             results["errors"].append(f"Scenario file must be a JSON object, found {type(data).__name__}")
             results["score"] = 0
+            results["tier"] = "UNRANKED"
             return results
 
         # Mandatory Top-Level Fields
@@ -100,6 +113,10 @@ class ScenarioLinter:
             results["status"] = "fail"
         elif results["warnings"]:
             results["status"] = "warning"
+            
+        # 4. Final Scoring & Tier
+        results["score"] = max(0, results["score"])
+        results["tier"] = self.get_quality_tier(results["score"])
 
         return results
 
@@ -143,4 +160,7 @@ def run_lint(path: str):
             if res["status"] == "fail":
                 fails += 1
                 print(f"❌ {p.name}: {res['errors']}")
+            else:
+                status_icon = "✅" if res["status"] == "pass" else "⚠"
+                print(f"{status_icon} {p.name}: Score {res['score']} [{res['tier']}]")
         print(f"\nLinting complete. {total} scanned, {fails} failed.")

@@ -1,7 +1,7 @@
 """
 cli.py
 
-Main entry point for the Evaluation Harness CLI.
+Main entry point for the MultiAgentEval CLI.
 Updated for modularity and plugin-based extensibility with argument groups.
 """
 
@@ -31,8 +31,8 @@ def main():
     available_protocols = list(engine.AgentAdapterRegistry._adapters.keys())
 
     parser = argparse.ArgumentParser(
-        description="AI Agent Evaluation Harness (OpenCore)",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="MultiAgentEval (OpenCore)",
+        formatter_class=argparse.RawTextHelpFormatter,
     )
 
     # Subparsers for different commands
@@ -90,6 +90,20 @@ def main():
     )
     eval_parser.add_argument("--seed", type=int, help="Random seed for reproducibility")
     eval_parser.add_argument("--retry-failed", action="store_true", help="Retry previously failed scenarios")
+    eval_parser.add_argument("--push-hf", help="HuggingFace repo ID to push results to after run")
+
+    # --- VERIFY COMMAND ---
+    verify_parser = subparsers.add_parser("verify", help="Verify the integrity of a run trace")
+    verify_parser.add_argument("--path", required=True, help="Path to run.jsonl file")
+    verify_parser.add_argument("--manifest", help="Path to manifest.json file (optional if in same dir)")
+
+    # --- CONTRIBUTE COMMAND ---
+    subparsers.add_parser("contribute", help="Launch interactive wizard to create/submit new scenarios")
+
+    # --- LEADERBOARD COMMAND ---
+    leaderboard_p = subparsers.add_parser("leaderboard", help="Generate a performance comparison table from run traces")
+    leaderboard_p.add_argument("--dir", default="runs", help="Directory containing .jsonl traces")
+    leaderboard_p.add_argument("--output", default="LEADERBOARD.md", help="Output filename")
 
     # --- LIST COMMAND ---
     list_parser = subparsers.add_parser("list", help="List and search available scenarios")
@@ -172,6 +186,7 @@ def main():
     # --- REPORT COMMAND ---
     report_parser = subparsers.add_parser("report", help="Generate HTML report from a run trace")
     report_parser.add_argument("--path", required=True, help="Path to run.jsonl file")
+    report_parser.add_argument("--share", action="store_true", help="Generate a shareable, standalone HTML report")
 
     # --- RUN COMMAND ---
     run_parser = subparsers.add_parser("run", help="Execute evaluation on a single scenario")
@@ -350,6 +365,14 @@ def main():
             from . import playground
 
             asyncio.run(playground.run_playground(args.agent))
+        elif args.command == "verify":
+            handle_verify(args)
+        elif args.command == "contribute":
+            from . import contributor
+            contributor.ContributeWizard.run()
+        elif args.command == "leaderboard":
+            from . import leaderboard_generator
+            leaderboard_generator.run_leaderboard(args.dir, args.output)
         elif args.command == "export":
             handle_export(args)
         elif args.command == "cleanup-runs":
@@ -506,6 +529,7 @@ def reconstruct_results_from_events(events: list) -> list:
 def handle_report(args):
     """Handler for 'report' command."""
     from . import reporter
+    from .trace_utils import load_events
 
     print(f"\n[Report] Generating HTML report from: {args.path}")
     path = Path(args.path)
@@ -544,7 +568,7 @@ def handle_report(args):
         return
 
     print("   -> Generating Premium HTML Report...")
-    html_path = reporter.generate_html_report(scenario, results)
+    html_path = reporter.generate_html_report(scenario, results, metadata={"trace_path": args.path}, standalone=args.share)
     print(f"[OK] HTML Report generated successfully: {html_path}")
 
 
@@ -776,6 +800,25 @@ async def run_evaluate(args):
 
         all_results.extend([res for tries in scenario_tries for res in tries])
 
+    # --- Phase 4: Growth Loop ---
+    if getattr(args, "push_hf", None):
+        print(f"\n[CLI] Growth Loop: Finalizing results for HF Hub...")
+        from . import exporter
+        from . import verifier
+
+        # 1. Verification Sign-off
+        master_log_path = Path(os.getenv("RUN_LOG_DIR", "runs")) / "run.jsonl"
+        if master_log_path.exists():
+            print(f"   -> Signing local trace for public transparency...")
+            verifier.TraceVerifier.sign_trace(str(master_log_path))
+
+        # 2. Export & Push
+        hf_dataset_path = Path("reports/hf_dataset.json")
+        hf_dataset_path.parent.mkdir(parents=True, exist_ok=True)
+
+        exporter.HFExporter.export(str(master_log_path), str(hf_dataset_path))
+        exporter.HFExporter.push_to_hf(str(hf_dataset_path), args.push_hf)
+
     # Save research summary if multiple attempts were made
     if research_summary:
         summary_path = Path("reports/research_summary.json")
@@ -870,7 +913,7 @@ def handle_init(args):
 
     # Generate eval_config.json
     scaffold_config = {
-        "project_name": "My AI Agent Eval",
+        "project_name": "My MultiAgentEval",
         "industry": industry,
         "framework": framework,
         "agent_api_url": api_url,
@@ -1161,7 +1204,6 @@ def handle_mutate(args):
         output_path = Path(args.output)
     else:
         output_path = input_path.parent / f"{input_path.stem}_{args.type}.json"
-
     mutator.save_mutated_scenario(mutated, output_path)
     print(f"[OK] Mutated scenario saved to {output_path}")
 
@@ -1172,6 +1214,33 @@ def handle_export(args):
 
     if args.format == "hf":
         exporter.HFExporter.export(args.input, args.output)
+
+
+def handle_verify(args):
+    """Handler for 'verify' command."""
+    from . import verifier
+    
+    trace_path = Path(args.path)
+    if not trace_path.exists():
+        print(f"[FAIL] Error: Trace file not found at {trace_path}")
+        return
+
+    manifest_path = Path(args.manifest) if args.manifest else trace_path.parent / f"{trace_path.stem}_manifest.json"
+    
+    if not manifest_path.exists():
+        print(f"[CLI] No manifest found. Generating signature for: {trace_path.name}")
+        try:
+            new_manifest = verifier.TraceVerifier.sign_trace(str(trace_path))
+            print(f"[OK] Trace signed successfully. Manifest: {new_manifest}")
+        except Exception as e:
+            print(f"[FAIL] Error signing trace: {e}")
+        return
+
+    print(f"[CLI] Verifying trace integrity: {trace_path.name}...")
+    if verifier.TraceVerifier.verify_trace(str(trace_path), str(manifest_path)):
+        print(f"[OK] VERIFIED: Trace integrity matches manifest signature.")
+    else:
+        print(f"[CRITICAL] FAILED: Trace integrity compromised or manifest mismatch!")
 
 
 def handle_install(args):

@@ -51,7 +51,7 @@ def run_single_eval(args_tuple):
 
 
 async def main():
-    parser = argparse.ArgumentParser(description="AI Agent Eval Scale Runner")
+    parser = argparse.ArgumentParser(description="MultiAgentEval Scale Runner")
     parser.add_argument("--path", required=True, help="Path to scenario directory")
     parser.add_argument(
         "--agent-name", default="Scale-Agent-X", help="Name for leaderboard"

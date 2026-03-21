@@ -3,7 +3,7 @@ from __future__ import annotations
 """
 reporter.py
 
-This module provides reporting utilities for the AI Agent Evaluation Harness.
+This module provides reporting utilities for MultiAgentEval.
 It generates summary reports, exports detailed trajectories, and generates Mermaid visualizations.
 """
 
@@ -115,7 +115,7 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
     return "\n".join(mermaid)
 
 
-def generate_html_report(scenario: dict, results: list, metadata: Optional[dict] = None) -> Path:
+def generate_html_report(scenario: dict, results: list, metadata: Optional[dict] = None, standalone: bool = False) -> Path:
     """
     Generates a premium HTML report for the evaluation results.
     """
@@ -124,8 +124,19 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     scenario_id = scenario.get("scenario_id", "unknown")
-    filename = f"report_{scenario_id}_{timestamp}.html"
+    
+    prefix = "standalone_" if standalone else "report_"
+    filename = f"{prefix}{scenario_id}_{timestamp}.html"
     filepath = report_dir / filename
+
+    # Check for verification manifest
+    is_verified = False
+    trace_path = (metadata or {}).get("trace_path")
+    if trace_path:
+        tp = Path(trace_path)
+        manifest_path = tp.parent / f"{tp.stem}_manifest.json"
+        if manifest_path.exists():
+            is_verified = True
 
     protocol = (metadata or {}).get("protocol", "unknown")
     agent = (metadata or {}).get("agent", "unknown")
@@ -223,12 +234,28 @@ def generate_html_report(scenario: dict, results: list, metadata: Optional[dict]
         .m-name {{ font-size: 0.7rem; color: var(--sub); text-transform: uppercase; font-weight: bold; }}
         .m-score {{ font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }}
         .mermaid-container {{ background: rgba(15, 23, 42, 0.5); padding: 20px; border-radius: 8px; overflow-x: auto; }}
+        .verified-badge {{ 
+            background: linear-gradient(135deg, #FFD700, #DAA520); 
+            color: #000; 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Evaluation Report</h1>
-        <p style="color: var(--sub)">Scenario: {scenario.get('title')} ({scenario_id}) • {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h1>Evaluation Report</h1>
+                <p style="color: var(--sub)">Scenario: {scenario.get('title')} ({scenario_id}) • {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>
+            </div>
+            {"<div class='verified-badge'>VERIFIED RUN</div>" if is_verified else ""}
+        </div>
     </div>
     
     <div class="summary-box">
@@ -355,5 +382,5 @@ def generate_report(
         save_trajectory(scenario, results)
 
     if export_html:
-        html_path = generate_html_report(scenario, results, metadata=metadata)
+        html_path = generate_html_report(scenario, results, metadata=metadata, standalone=True)
         print(f"[Reporter] HTML report generated: {html_path}")

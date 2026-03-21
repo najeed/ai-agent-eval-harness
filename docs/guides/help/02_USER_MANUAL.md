@@ -1,4 +1,4 @@
-# 🧠 User Manual — AI Agent Evaluation Harness
+# 🧠 User Manual — MultiAgentEval
 
 This guide is for users who want to run and understand evaluations without diving into internal implementation details.
 

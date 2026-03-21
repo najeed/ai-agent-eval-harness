@@ -5,7 +5,7 @@ const { exec } = require('child_process');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	console.log('AI Agent Eval Harness is now active!');
+	console.log('MultiAgentEval is now active!');
 
 	let runScenario = vscode.commands.registerCommand('eval-harness.runScenario', function () {
 		const activeEditor = vscode.window.activeTextEditor;

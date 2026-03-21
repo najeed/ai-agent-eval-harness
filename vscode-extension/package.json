@@ -1,7 +1,7 @@
 {
-  "name": "ai-agent-eval-harness",
-  "displayName": "AI Agent Eval Harness",
-  "description": "VS Code extension for the AI Agent Evaluation Harness",
+  "name": "ai-multi-agent-eval",
+  "displayName": "MultiAgentEval",
+  "description": "VS Code extension for the MultiAgentEval",
   "version": "0.1.0",
   "publisher": "opencore",
   "engines": {

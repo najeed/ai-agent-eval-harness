@@ -3,7 +3,7 @@ from __future__ import annotations
 """
 loader.py
 
-This module provides utilities for loading scenario and dataset files for the AI Agent Evaluation Harness.
+This module provides utilities for loading scenario and dataset files for the MultiAgentEval.
 It supports loading scenario JSON files with schema validation, and dataset loading for CSV/JSONL.
 """
 

@@ -1,5 +1,5 @@
 [project]
-name = "agent-eval-harness"
+name = "multi-agent-eval"
 version = "0.1.0"
 description = "Enterprise-grade reliability framework for AI agents."
 readme = "README.md"

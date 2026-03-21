@@ -1,0 +1,21 @@
+{
+  "scenario_id": "refund-policy-case",
+  "title": "Refund Policy Case",
+  "description": "Evaluation for Refund Policy Case in the retail industry.",
+  "industry": "retail",
+  "use_case": "Customer Support",
+  "core_function": "Inquiry Handling",
+  "complexity_level": "medium",
+  "tasks": [
+    {
+      "task_id": "test-1",
+      "description": "User asks a basic question about...",
+      "expected_outcome": "Agent provides a clear, accurate answer...",
+      "success_criteria": [
+        "Accuracy",
+        "Clarity"
+      ],
+      "tools": []
+    }
+  ]
+}

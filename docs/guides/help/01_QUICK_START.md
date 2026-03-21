@@ -1,4 +1,4 @@
-# 🏁 Quick Start — AI Agent Evaluation Harness
+# 🏁 Quick Start — MultiAgentEval
 
 > Get up and running in under 60 seconds. This guide is for people who want to run an evaluation with minimal setup.
 

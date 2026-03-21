@@ -32,7 +32,7 @@ def start_sample_agent():
 async def run_quickstart():
     """Executes the quickstart flow."""
     print("\n" + "=" * 50)
-    print("🏃 AI Agent Eval Harness - Quickstart Demo")
+    print("🏃 MultiAgentEval - Quickstart Demo")
     print("=" * 50 + "\n")
 
     agent_process = start_sample_agent()

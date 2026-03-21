@@ -2,7 +2,7 @@
 
 # Guide: Adding a New Industry
 
-This guide provides a step-by-step process for adding a new industry to the evaluation harness.
+This guide provides a step-by-step process for adding a new industry to the MultiAgentEval.
 
 ## Step 1: Create the Directory Structure
 
