@@ -53,7 +53,8 @@ def test_ping_route(client):
 
 # --- /scenarios exception ---
 def test_save_scenario_exception(client):
-    with patch("builtins.open", side_effect=Exception("Disk full")):
+    with patch("eval_runner.console.routes.Path.mkdir"), \
+         patch("builtins.open", side_effect=Exception("Disk full")):
         res = client.post("/api/scenarios", json={"scenario_id": "test", "industry": "fin"})
         assert res.status_code == 500
         assert "Disk full" in res.json["error"]

@@ -3,7 +3,9 @@
 # 🤖 MultiAgentEval
 
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-90%25-green.svg)](docs/TESTING.md)
+[![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-93%25-brightgreen.svg)](docs/TESTING.md)
+[![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-98%25-brightgreen.svg)](docs/COVERAGE_INVENTORY.md)
+[![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Compliant-green.svg)](docs/architecture.md#security-guardrails)
@@ -19,6 +21,24 @@
 | **Status** | 🟢 Production-Ready Framework |
 | **Core Goal** | Eliminating the "Agentic Reliability Gap" |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [Advanced Update](#the-advanced-update-v11) • [Architecture](#zero-touch-core-architecture) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+
+### 🛡️ Add the Badge to Your Agent
+
+Showcase your agent's rigorous reliability by adding the official **Works with MultiAgentEval** badge to your repository to show that it has been evaluated by the MultiAgentEval framework.
+
+#### Option 1: Using img.shields.io
+You can use the Shields.io service to generate a consistent badge for your project:
+
+```markdown
+[![Works with MultiAgentEval](https://img.shields.io/badge/Works%20with-MultiAgentEval-2c62c7)](https://github.com/najeed/ai-agent-eval-harness)
+```
+
+#### Option 2: Using GitHub Asset
+Alternatively, link directly to our high-fidelity SVG asset:
+
+```markdown
+[![Works with MultiAgentEval](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs/assets/badges/works-with-multiagenteval.svg)](https://github.com/najeed/ai-agent-eval-harness)
+```
 
 ## Table of Contents
 - [Mission](#mission)

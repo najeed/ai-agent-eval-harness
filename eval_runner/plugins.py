@@ -85,9 +85,9 @@ class PluginManager:
         except ImportError:
             pass
         try:
-            from .live_bridge_plugin import LiveBridgePlugin
+            from .live_bridge_plugin import RemoteBridgePlugin
 
-            internal_plugin_classes.append(LiveBridgePlugin)
+            internal_plugin_classes.append(RemoteBridgePlugin)
         except ImportError:
             pass
         try:

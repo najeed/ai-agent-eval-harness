@@ -550,6 +550,116 @@
     "total_scenarios": 2
   },
   {
+    "run_id": "run-test_scenario-24128",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774131654.469357,
+    "iso_time": "2026-03-21T22:20:54.469359+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-30000",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774131944.7849352,
+    "iso_time": "2026-03-21T22:25:44.784936+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-22352",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774132069.5159564,
+    "iso_time": "2026-03-21T22:27:49.515957+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-20484",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774132342.088446,
+    "iso_time": "2026-03-21T22:32:22.088447+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-7224",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774133013.0022066,
+    "iso_time": "2026-03-21T22:43:33.002207+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-22772",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774134046.5611982,
+    "iso_time": "2026-03-21T23:00:46.561200+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-15280",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774134671.3580055,
+    "iso_time": "2026-03-21T23:11:11.358006+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-22312",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774134900.813345,
+    "iso_time": "2026-03-21T23:15:00.813346+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-28604",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774135264.5590582,
+    "iso_time": "2026-03-21T23:21:04.559063+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-14820",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774135461.3717427,
+    "iso_time": "2026-03-21T23:24:21.371744+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
     "run_id": "run-telecom-ts-13814-29964",
     "team": "default",
     "agent": "telecom",

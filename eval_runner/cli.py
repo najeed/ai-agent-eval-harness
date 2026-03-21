@@ -153,6 +153,9 @@ def main():
     drift_parser.add_argument("--industry", required=True, help="Industry category")
     drift_parser.add_argument("--output-dir", help="Directory to save scenarios")
 
+    # --- LIST-METRICS COMMAND ---
+    subparsers.add_parser("list-metrics", help="List all registered evaluation metrics")
+
     # --- DOCTOR COMMAND ---
     subparsers.add_parser("doctor", help="Check environment and dependencies")
 
@@ -399,6 +402,9 @@ def main():
                 print("Invalid or missing plugin command.")
         else:
             parser.print_help()
+    except KeyboardInterrupt:
+        print("\n[CLI] Interrupted by user.")
+        sys.exit(130)
     except Exception:
         import traceback
 
