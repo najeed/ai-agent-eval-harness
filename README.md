@@ -1,6 +1,6 @@
 <!-- README.md (root of the project) -->
 
-# 🤖 MultiAgentEval
+# 🤖 MultiAgentEval - The Enterprise-Grade Reliability Framework for AI Agents
 
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
 [![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-93%25-brightgreen.svg)](docs/TESTING.md)
@@ -12,7 +12,7 @@
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
 [![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/test_security_audit.py)
 
-**MultiAgentEval** is the enterprise-grade reliability framework for AI agents. It bridges the "Agentic Reliability Gap" through rigorous evaluation, deep-trace replay debugging, and a modular 20-Shim Enterprise Suite for high-fidelity environment simulation.
+**MultiAgentEval** bridges the "Agentic Reliability Gap" through rigorous evaluation, deep-trace replay debugging, and a modular 20-Shim Enterprise Suite for high-fidelity environment simulation.
 
 | Attribute | Specification |
 | :--- | :--- |
