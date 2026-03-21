@@ -72,7 +72,7 @@ def test_calculation_accuracy_branches():
     assert calculate_calculation_accuracy({"expected_outcome": "text only"}, "agent response") == 1.0
     
     # 1 match out of 2 expected
-    res = calculate_calculation_accuracy({"expected_outcome": "5 and 10"}, "found 5 but missed 10")
+    res = calculate_calculation_accuracy({"expected_outcome": "5 and 10"}, "found 5 but missed ten")
     assert res == 0.5
     
 def test_verification_accuracy_branches():

@@ -180,7 +180,8 @@ async def test_socket_adapter_unix_and_tcp():
     mock_writer.drain = AsyncMock()
     mock_writer.wait_closed = AsyncMock()
     
-    with patch("asyncio.open_unix_connection", return_value=(mock_reader, mock_writer), create=True):
+    async def mock_open(*args, **kwargs): return (mock_reader, mock_writer)
+    with patch("asyncio.open_unix_connection", side_effect=mock_open, create=True):
         res_unix = await socket_adapter({}, "unix:/path")
         assert res_unix["response"] == "ok"
         

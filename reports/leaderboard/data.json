@@ -1,5 +1,16 @@
 [
   {
+    "run_id": "run-test_m4-3324",
+    "team": "default",
+    "agent": "test_m4",
+    "timestamp": 1774085017.5767543,
+    "iso_time": "2026-03-21T09:23:37.576755+00:00Z",
+    "score": 0.0,
+    "cost": 0.011,
+    "resolutions": 0,
+    "total_scenarios": 1
+  },
+  {
     "run_id": "run-test_scenario-17232",
     "team": "default",
     "agent": "test_scenario",

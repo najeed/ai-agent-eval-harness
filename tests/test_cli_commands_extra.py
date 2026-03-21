@@ -38,7 +38,7 @@ def test_handle_report_exceptions():
     # 524-526: No run_start defaults
     with patch("eval_runner.cli.Path.exists", return_value=True), \
          patch("eval_runner.cli.load_events", return_value=[]), \
-         patch("eval_runner.cli.reporter.generate_html_report"):
+         patch("eval_runner.reporter.generate_html_report"):
         handle_report(args)
 
 # --- handle_replay exceptions (596-597, 601-603) ---

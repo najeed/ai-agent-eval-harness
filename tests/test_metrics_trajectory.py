@@ -54,13 +54,19 @@ async def test_engine_captures_state_transitions():
         "tool_params": {"status": "active"},
     }
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call, \
+         patch("eval_runner.plugins.manager.plugins", []):
         # Turn 1: Tool call
         # Turn 2: Signal final_answer
         mock_call.side_effect = [
             mock_response,
             {"action": "final_answer", "summary": "Done"},
         ]
+        
+        # We also need to avoid real ToolSandbox.execute if it tries to do anything fancy,
+        # but the default ToolSandbox doesn't require Docker. 
+        # The logs showed EnterprisePlugin was the one doing it.
+        # So mocking plugins list should fix it.
 
         results = await engine.run_evaluation(scenario)
         history = results[0]["conversation_history"]

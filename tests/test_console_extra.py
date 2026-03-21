@@ -30,23 +30,20 @@ def test_list_runs_parse_exception(client, tmp_path):
         assert res.status_code == 200
 
 # --- /evaluate inner thread ---
-def test_evaluate_background_thread():
-    from eval_runner.console.routes import evaluate_scenario
+def test_evaluate_background_thread(client):
     # The actual inner function `run_in_background` is defined locally so it's tricky,
     # but we can just DONOT mock threading.Thread, and let it run an AsyncMock.
-    app = create_app()
-    with app.test_request_context(json={"path": "test.json"}):
-        with patch("eval_runner.console.routes.Path.exists", return_value=True), \
-             patch("eval_runner.console.routes.load_scenario", return_value={"scenario_id": "test"}), \
-             patch("eval_runner.console.routes.run_evaluation", new_callable=MagicMock) as mock_eval:
-             # We just let it execute threading.Thread! 
-             # mock_eval needs to be an async coroutine
-             async def dummy_run(*args, **kwargs): pass
-             mock_eval.side_effect = dummy_run
-             
-             res = client.post("/api/evaluate", json={"path": "test.json"})
-             assert res.status_code == 200
-             assert res.json["status"] == "started"
+    with patch("eval_runner.console.routes.Path.exists", return_value=True), \
+         patch("eval_runner.loader.load_scenario", return_value={"scenario_id": "test"}), \
+         patch("eval_runner.engine.run_evaluation", new_callable=MagicMock) as mock_eval:
+         # We just let it execute threading.Thread! 
+         # mock_eval needs to be an async coroutine
+         async def dummy_run(*args, **kwargs): pass
+         mock_eval.side_effect = dummy_run
+         
+         res = client.post("/api/evaluate", json={"path": "test.json"})
+         assert res.status_code == 200
+         assert res.json["status"] == "started"
 
 # --- Ping Route ---
 def test_ping_route(client):
