@@ -58,6 +58,18 @@ def test_linter_tasks_validation(tmp_path):
     assert "Missing 'expected_outcome'" in res["errors"][0]
     assert res["complexity"]["suggested_tools"] == 2
 
+def test_linter_zero_tasks(tmp_path):
+    p = tmp_path / "zero.json"
+    data = {
+        "scenario_id": "t1", "title": "t", "description": "d",
+        "use_case": "u", "core_function": "c", "industry": "i",
+        "complexity_level": "low",
+        "tasks": []
+    }
+    p.write_text(json.dumps(data), encoding="utf-8")
+    res = ScenarioLinter().lint(str(p))
+    assert "0 tasks" in res["warnings"][0]
+
 def test_linter_find_duplicates_exception(tmp_path):
     p1 = tmp_path / "bad.json"
     p1.write_text("{bad", encoding="utf-8")
@@ -78,3 +90,10 @@ def test_run_lint_cli_directory_failure(tmp_path, capsys):
             captured = capsys.readouterr()
             assert "failed." in captured.out
             assert "1 failed" in captured.out
+
+def test_run_lint_cli_file(tmp_path, capsys):
+    p = tmp_path / "single.json"
+    p.write_text('{"bad": 1}', encoding="utf-8")
+    run_lint(str(p))
+    captured = capsys.readouterr()
+    assert "status" in captured.out

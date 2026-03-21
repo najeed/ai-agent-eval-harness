@@ -372,5 +372,27 @@
     "cost": 0.022,
     "resolutions": 0,
     "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-10012",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774083963.6815937,
+    "iso_time": "2026-03-21T09:06:03.681597+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-26260",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774084851.1710582,
+    "iso_time": "2026-03-21T09:20:51.171059+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
   }
 ]
