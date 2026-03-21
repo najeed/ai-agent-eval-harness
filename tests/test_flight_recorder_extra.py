@@ -21,7 +21,11 @@ def test_flight_recorder_rotation(tmp_path):
     master_log.touch()
 
     # Configure with rotation = 2
-    with patch.dict(os.environ, {"RUN_LOG_DIR": str(log_dir), "RUN_LOG_ROTATE_COUNT": "2"}):
+    with patch.dict(os.environ, {
+        "RUN_LOG_DIR": str(log_dir), 
+        "RUN_LOG_ROTATE_COUNT": "2",
+        "RUN_LOG_PER_RUN": "true"
+    }):
         recorder = FlightRecorderPlugin()
         # Trigger rotation by sending a RUN_START event
         recorder.handle_event(Event("run_start", {"run_id": "new_run"}))
