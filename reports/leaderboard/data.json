@@ -438,5 +438,16 @@
     "cost": 0.022,
     "resolutions": 0,
     "total_scenarios": 2
+  },
+  {
+    "run_id": "run-telecom-ts-13814-29964",
+    "team": "default",
+    "agent": "telecom",
+    "timestamp": 1774126100.670152,
+    "iso_time": "2026-03-21T20:48:20.670153+00:00Z",
+    "score": 0.0,
+    "cost": 0.044,
+    "resolutions": 0,
+    "total_scenarios": 4
   }
 ]

@@ -23,8 +23,8 @@ Welcome to the official documentation. Start with the Quick Start guide and expl
 
 | Document | Description |
 |-------|-------------|
-| [Console Quickstart](guides/03_CONSOLE_GUIDE.md) | Visualizing traces and catalogs |
-| [Visual Debugger](guides/01_VISUAL_DEBUGGER_UI.md) | Step-by-step trajectory playback |
+| [Console Quickstart](guides/help/UI_MIGRATION_GUIDE.md) | Visualizing traces and catalogs |
+| [Visual Debugger](guides/help/06_TRIAGE_ENGINE_AND_VFS.md) | Step-by-step trajectory playback |
 
 ## 🏭 Industry Guides
 
@@ -35,6 +35,6 @@ Welcome to the official documentation. Start with the Quick Start guide and expl
 
 ## Project Links
 
-- [Root README](../README.md)
-- [CONTRIBUTING](../CONTRIBUTING.md)
+- [Documentation Home](index.md)
+- [Contributing](contributing.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)

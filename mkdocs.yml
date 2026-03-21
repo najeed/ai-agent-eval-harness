@@ -50,21 +50,46 @@ nav:
   - Getting Started:
       - Quickstart: guides/help/01_QUICK_START.md
       - User Manual: guides/help/02_USER_MANUAL.md
-      - Developer Guide: guides/help/03_DEVELOPER_GUIDE.md
-  - Architecture: architecture.md
+      - Developer Guide: 
+          - Architecture & Plugins: guides/help/03_DEVELOPER_GUIDE.md
+          - Testing Overview: guides/testing/overview.md
+          - Writing Tests: guides/testing/writing-tests.md
+          - Running Tests: guides/testing/running-tests.md
+          - Test Patterns: guides/testing/test-patterns.md
   - Features:
       - Inventory: feature_inventory.md
       - API Reference: agent_api.md
       - CLI Reference: cli_reference.md
+      - Core Evaluator: api/core_evaluator.md
       - Plugins: plugins.md
-  - Advanced Guides:
+  - Industry Guides:
       - Evaluation: guides/01_EVALUATION_GUIDE.md
-      - Triage & Drift: guides/05_DRIFT_AND_TRIAGE.md
+      - Adding an Industry: guides/02_ADDING_AN_INDUSTRY.md
+      - Core Functions: guides/03_CORE_FUNCTIONS_GUIDE.md
+  - Advanced Guides:
       - AES Specification: guides/04_AES_SPECIFICATION.md
+      - Triage & Drift: guides/05_DRIFT_AND_TRIAGE.md
+      - LLM Judge Calibration: guides/advanced/LLM_JUDGE_CALIBRATION.md
+      - PyPI Distribution: guides/advanced/PYPI_DISTRIBUTION.md
       - Publication: publication_guide.md
   - Ecosystem:
       - Onboarding: guides/help/04_ONBOARDING_TUTORIAL.md
+      - Frameworks:
+          - AutoGen: guides/frameworks/autogen.md
+          - Claude Code: guides/frameworks/claude-code.md
+          - CrewAI: guides/frameworks/crewai.md
+          - Gemini MultiModal: guides/frameworks/gemini-multimodal-live.md
+          - Gemini Vertex AI: guides/frameworks/gemini-vertex-ai.md
+          - LangChain: guides/frameworks/langchain.md
+          - LangGraph: guides/frameworks/langgraph.md
+          - Ollama: guides/frameworks/ollama.md
+          - OpenAI Assistants: guides/frameworks/openai-assistants.md
       - World Shims: guides/help/07_WORLD_SHIMS_REFERENCE.md
+      - Adding World Shims: guides/help/08_ADDING_WORLD_SHIMS.md
+      - Triage & VFS: guides/help/06_TRIAGE_ENGINE_AND_VFS.md
       - Verification: guides/help/05_ECOSYSTEM_VERIFICATION_GUIDE.md
+      - UI Migration: guides/help/UI_MIGRATION_GUIDE.md
   - Reference:
+      - Comprehensive Guide: guides/help/00_COMPREHENSIVE_GUIDE.md
+      - PRD Sample: samples/prd_sample.md
       - Code of Conduct: CODE_OF_CONDUCT.md
