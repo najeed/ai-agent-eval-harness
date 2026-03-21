@@ -41,9 +41,7 @@ class ScenarioLinter:
         # 1. Metadata & Identity Checks
         if not isinstance(data, dict):
             results["status"] = "fail"
-            results["errors"].append(
-                f"Scenario file must be a JSON object, found {type(data).__name__}"
-            )
+            results["errors"].append(f"Scenario file must be a JSON object, found {type(data).__name__}")
             results["score"] = 0
             return results
 
@@ -65,9 +63,7 @@ class ScenarioLinter:
 
         # Recommend complexity_level instead of difficulty
         if "complexity_level" not in data:
-            results["warnings"].append(
-                "Missing recommended field: 'complexity_level' (low/medium/high)"
-            )
+            results["warnings"].append("Missing recommended field: 'complexity_level' (low/medium/high)")
             results["score"] -= 5
 
         # 2. Structure Checks
@@ -85,9 +81,7 @@ class ScenarioLinter:
                     ]
                     for tr in task_reqs:
                         if tr not in task:
-                            results["errors"].append(
-                                f"Task {i} ({task.get('task_id', 'unknown')}): Missing '{tr}'"
-                            )
+                            results["errors"].append(f"Task {i} ({task.get('task_id', 'unknown')}): Missing '{tr}'")
                             results["status"] = "fail"
                             results["score"] -= 10
 
@@ -125,9 +119,7 @@ class ScenarioLinter:
                 signature = hashlib.md5(tasks_str.encode()).hexdigest()
 
                 if signature in hashes:
-                    duplicates.append(
-                        {"original": hashes[signature], "duplicate": str(p)}
-                    )
+                    duplicates.append({"original": hashes[signature], "duplicate": str(p)})
                 else:
                     hashes[signature] = str(p)
             except Exception:

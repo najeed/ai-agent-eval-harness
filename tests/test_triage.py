@@ -27,9 +27,7 @@ def test_triage_policy_violation():
         {
             "task_id": "t1",
             "metrics": [{"success": False}],
-            "conversation_history": [
-                {"role": "environment", "content": {"status": "policy_violation"}}
-            ],
+            "conversation_history": [{"role": "environment", "content": {"status": "policy_violation"}}],
         }
     ]
     TriageEngine.apply_triage(results)
@@ -43,9 +41,7 @@ def test_triage_tool_error():
         {
             "task_id": "t1",
             "metrics": [{"success": False}],
-            "conversation_history": [
-                {"role": "environment", "content": {"status": "error"}}
-            ],
+            "conversation_history": [{"role": "environment", "content": {"status": "error"}}],
         }
     ]
     TriageEngine.apply_triage(results)
@@ -55,9 +51,7 @@ def test_triage_tool_error():
 def test_triage_success_no_tag():
     from eval_runner.triage import TriageEngine
 
-    results = [
-        {"task_id": "t1", "metrics": [{"success": True}], "conversation_history": []}
-    ]
+    results = [{"task_id": "t1", "metrics": [{"success": True}], "conversation_history": []}]
     TriageEngine.apply_triage(results)
 
 

@@ -140,9 +140,7 @@ def test_load_nonexistent_scenario(tmp_path):
 
 def test_load_csv_dataset():
     """Test loading a CSV dataset file."""
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".csv", delete=False, newline=""
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
         f.write("name,value\n")
         f.write("alpha,1\n")
         f.write("beta,2\n")
@@ -195,9 +193,7 @@ def test_load_dataset_unsupported_format():
 def test_load_dataset_with_format_override():
     """Test loading a dataset with an explicit format_type override."""
     # Create a CSV file with a .txt extension
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".txt", delete=False, newline=""
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, newline="") as f:
         f.write("id,label\n")
         f.write("1,test\n")
         f.flush()
@@ -213,9 +209,7 @@ def test_load_dataset_with_format_override():
 
 def test_load_csv_empty_file():
     """Empty CSV (headers only) returns empty list."""
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".csv", delete=False, newline=""
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, newline="") as f:
         f.write("col1,col2\n")
         f.flush()
         temp_path = Path(f.name)

@@ -1,0 +1,13 @@
+{
+  "scenario_id": "new-scen",
+  "version": "2.0.0",
+  "title": "New",
+  "industry": "test-ind",
+  "description": "desc",
+  "tasks": [],
+  "metadata": {
+    "difficulty": 1,
+    "tags": [],
+    "created_at": "2026-03-21T08:11:15.504662"
+  }
+}

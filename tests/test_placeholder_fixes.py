@@ -18,18 +18,16 @@ async def test_hitl_interactive_input():
     }
 
     # Mock agent response with hitl_pause
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.return_value = {
             "action": "hitl_pause",
             "prompt": "Custom HITL Prompt",
         }
 
         # Mock input()
-        with patch(
-            "builtins.input", return_value="Approved by test"
-        ) as mock_input, patch("sys.stdin.isatty", return_value=True), patch.dict(
+        with patch("builtins.input", return_value="Approved by test") as mock_input, patch(
+            "sys.stdin.isatty", return_value=True
+        ), patch.dict(
             os.environ, {"CI": ""}
         ):  # Ensure not in CI mode
 
@@ -52,9 +50,9 @@ async def test_hitl_ci_auto_resume():
     """Verifies that SessionManager auto-resumes in CI mode."""
     scenario = {"scenario_id": "test_hitl_ci", "tasks": [{"task_id": "task1"}]}
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call, patch.dict(os.environ, {"CI": "true"}):
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call, patch.dict(
+        os.environ, {"CI": "true"}
+    ):
 
         mock_call.return_value = {"action": "hitl_pause"}
         session = SessionManager(scenario)
@@ -68,9 +66,7 @@ async def test_hitl_ci_auto_resume():
 
 def test_exporter_hf_push():
     """Verifies HFExporter.push_to_hf calls the SDK correctly (mocked)."""
-    with patch("huggingface_hub.HfApi") as MockApi, patch(
-        "pathlib.Path.exists", return_value=True
-    ):
+    with patch("huggingface_hub.HfApi") as MockApi, patch("pathlib.Path.exists", return_value=True):
 
         mock_api_instance = MockApi.return_value
 
@@ -93,9 +89,7 @@ async def test_reporting_plugin_notifications():
         scenario_data={},
         metadata={"webhook_url": "http://fake-webhook"},
     )
-    results = [
-        [{"metrics": [{"success": True}]}]
-    ]  # K-attempt results are list of lists
+    results = [[{"metrics": [{"success": True}]}]]  # K-attempt results are list of lists
 
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_response = AsyncMock()

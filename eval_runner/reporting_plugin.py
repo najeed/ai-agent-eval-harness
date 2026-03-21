@@ -17,9 +17,7 @@ from datetime import datetime
 class ReportingPlugin(BaseEvalPlugin):
     """Orchestrates report generation and notifications after evaluation."""
 
-    def on_metrics_calculated(
-        self, context: EvaluationContext, all_attempt_results: list
-    ):
+    def on_metrics_calculated(self, context: EvaluationContext, all_attempt_results: list):
         """Calculates consistency score across multiple attempts."""
         if len(all_attempt_results) < 2:
             return
@@ -76,9 +74,7 @@ class ReportingPlugin(BaseEvalPlugin):
 
         # 1. Standard Summary Report
         print("\n   [ReportingPlugin] Generating summary report...")
-        reporter.generate_report(
-            scenario, display_results, export_trajectory=True, metadata=context.metadata
-        )
+        reporter.generate_report(scenario, display_results, export_trajectory=True, metadata=context.metadata)
 
         # 2. Reproduction Script (Mock implementation)
         self.generate_repro_script(context)
@@ -96,9 +92,7 @@ class ReportingPlugin(BaseEvalPlugin):
                 # Already in a loop, create task
                 loop.create_task(self.dispatch_notifications(context, display_results))
             else:
-                loop.run_until_complete(
-                    self.dispatch_notifications(context, display_results)
-                )
+                loop.run_until_complete(self.dispatch_notifications(context, display_results))
 
     def generate_repro_script(self, context: EvaluationContext):
         """Creates a standalone script to reproduce the evaluation."""
@@ -140,9 +134,7 @@ class ReportingPlugin(BaseEvalPlugin):
 eval-harness run --scenario {scenario_path}
 """
         # Additional safety for scenarios that might contain shell commands
-        content = content.replace("os.system", "[REDACTED]").replace(
-            "subprocess", "[REDACTED]"
-        )
+        content = content.replace("os.system", "[REDACTED]").replace("subprocess", "[REDACTED]")
 
         with open(repro_path, "w") as f:
             f.write(content)
@@ -155,9 +147,7 @@ eval-harness run --scenario {scenario_path}
             print("   [ReportingPlugin] Skip: No 'webhook_url' provided in metadata.")
             return
 
-        print(
-            f"   [ReportingPlugin] Dispatching notification to: {webhook_url[:20]}..."
-        )
+        print(f"   [ReportingPlugin] Dispatching notification to: {webhook_url[:20]}...")
 
         # Simple summary
         total = len(results)
@@ -167,10 +157,7 @@ eval-harness run --scenario {scenario_path}
             # results is [ [task1_res, task2_res], [task1_res, task2_res] ] for attempts
             # If it's a single attempt, it might be just [task1_res, task2_res]
             tasks = attempt_res if isinstance(attempt_res, list) else [attempt_res]
-            if all(
-                all(m.get("success", False) for m in tr.get("metrics", []))
-                for tr in tasks
-            ):
+            if all(all(m.get("success", False) for m in tr.get("metrics", [])) for tr in tasks):
                 successes += 1
 
         payload = {
@@ -187,9 +174,7 @@ eval-harness run --scenario {scenario_path}
             import aiohttp
 
             async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    webhook_url, json=payload, timeout=5
-                ) as response:
+                async with session.post(webhook_url, json=payload, timeout=5) as response:
                     if response.status < 300:
                         print("   [ReportingPlugin] Notification sent successfully.")
                     else:

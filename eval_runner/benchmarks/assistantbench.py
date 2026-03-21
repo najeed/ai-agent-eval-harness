@@ -21,9 +21,7 @@ class AssistantBenchmark:
                         "task_id": "solve_task",
                         "description": "Solve the AssistantBench web-search/tool task.",
                         "expected_outcome": "Goal reached via tools",
-                        "success_criteria": [
-                            {"metric": "state_verification", "threshold": 1.0}
-                        ],
+                        "success_criteria": [{"metric": "state_verification", "threshold": 1.0}],
                     }
                 ],
             }

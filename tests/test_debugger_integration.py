@@ -42,9 +42,7 @@ def test_debugger_state_post_and_get(client):
 def test_debugger_state_history_capping(client):
     """Test that DebuggerStateStore caps events at 50."""
     for i in range(60):
-        client.post(
-            "/api/debugger/state", json={"event": "dummy_event", "data": {"idx": i}}
-        )
+        client.post("/api/debugger/state", json={"event": "dummy_event", "data": {"idx": i}})
 
     response = client.get("/api/debugger/state")
     data = response.get_json()["data"]

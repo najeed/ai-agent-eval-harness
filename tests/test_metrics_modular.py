@@ -21,16 +21,12 @@ def test_calculation_accuracy_logic(mock_extract):
 
     # Scene: Expected 100, Agent says 100
     mock_extract.side_effect = [[100.0], [100.0]]
-    score = calculate_calculation_accuracy(
-        {"expected_outcome": "Result is 100"}, "Agent says 100"
-    )
+    score = calculate_calculation_accuracy({"expected_outcome": "Result is 100"}, "Agent says 100")
     assert score == 1.0
 
     # Scene: Expected 100, Agent says 50
     mock_extract.side_effect = [[100.0], [50.0]]
-    score = calculate_calculation_accuracy(
-        {"expected_outcome": "Result is 100"}, "Agent says 50"
-    )
+    score = calculate_calculation_accuracy({"expected_outcome": "Result is 100"}, "Agent says 50")
     assert score == 0.0
 
 
@@ -55,13 +51,9 @@ async def test_planning_quality_uses_correct_rubric(mock_factory):
     mock_factory.return_value = mock_provider
 
     with patch("eval_runner.rubrics.RubricRegistry.get") as mock_rubric_get:
-        mock_rubric_get.return_value = (
-            "Mock Planning Rubric {expected_outcome} {agent_summary}"
-        )
+        mock_rubric_get.return_value = "Mock Planning Rubric {expected_outcome} {agent_summary}"
 
-        await calculate_planning_quality(
-            {"expected_outcome": "Plan A", "required": True}, "Agent Plan B"
-        )
+        await calculate_planning_quality({"expected_outcome": "Plan A", "required": True}, "Agent Plan B")
 
         # Verify it requested the correct rubric
         mock_rubric_get.assert_called_with("strategic_planning")

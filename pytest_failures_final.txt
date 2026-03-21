@@ -1,0 +1,400 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-8.4.0, pluggy-1.6.0
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 27 items
+
+tests\test_cli_integration.py       [Plugin] Registering OpenAI adapter via on_discover_adapters hook.
+      [Plugin] Registering Gemini adapter via on_discover_adapters hook.
+      [Plugin] Registering Claude adapter via on_discover_adapters hook.
+      [Plugin] Registering Ollama adapter via on_discover_adapters hook.
+      [Plugin] Registering Grok adapter via on_discover_adapters hook.
+      [Plugin] Registering AutoGen adapter via on_discover_adapters hook.
+      [Plugin] Registering CrewAI adapter via on_discover_adapters hook.
+      [Plugin] Registering LangGraph adapter via on_discover_adapters hook.
+      [Plugin] Registering LangChain adapter via on_discover_adapters hook.
+python : Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ python -m pytest -s 
+--tb=short tests/test_c
+li_integration.py 
+tests/te ...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : 
+NotSpecified: (Tra    
+ceback (most recent ca 
+   ll last)::String) 
+[],     RemoteException
+    + 
+FullyQualifiedErrorI   
+ d : NativeCommandError
+ 
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 295, in main
+    handle_lint(args)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 398, in 
+handle_lint
+    linter.run_lint(arg
+s.target)
+                    
+^^^^^^^^^^^
+AttributeError: 
+'Namespace' object has 
+no attribute 'target'
+.F
+[Report] Generating HTML report from: C:\Users\najee\AppData\Local\Temp\pytest-of-najee\pytest-812\test_handle_report_integration0\runs\run.jsonl
+   -> Reconstructing task results from trace...
+   -> Generating Premium HTML Report...
+[OK] HTML Report generated successfully: report.html
+.[OK] test.aes.yaml: Valid
+.[Cleanup] Found 1 files to delete:
+ - old.jsonl
+[OK] Deleted old.jsonl
+
+[Cleanup] Done.
+Traceback (most recent 
+call last):
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 356, in main
+    
+handle_install(args)
+    
+~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 1191, in 
+handle_install
+    print(f"\U0001f4e6 
+Installing {ind} 
+scenarios...")
+    ~~~~~^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Li
+b\encodings\cp1252.py",
+ line 19, in encode
+    return codecs.charm
+ap_encode(input,self.er
+rors,encoding_table)[0]
+           ~~~~~~~~~~~~
+~~~~~~~~~^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 
+'charmap' codec can't 
+encode character 
+'\U0001f4e6' in 
+position 0: character 
+maps to <undefined>
+.
+[Install] Fetching scenario pack: telecom-pack...
+Traceback (most recent 
+call last):
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 361, in main
+    handle_ci_generate(
+args)
+    ~~~~~~~~~~~~~~~~~~^
+^^^^^
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 1243, in 
+handle_ci_generate
+    print(f"\u2714 CI 
+workflow generated at 
+{workflow_path}")
+    ~~~~~^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^
+  File "C:\Python314\Li
+b\encodings\cp1252.py",
+ line 19, in encode
+    return codecs.charm
+ap_encode(input,self.er
+rors,encoding_table)[0]
+           ~~~~~~~~~~~~
+~~~~~~~~~^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 
+'charmap' codec can't 
+encode character 
+'\u2714' in position 
+0: character maps to 
+<undefined>
+Traceback (most recent 
+call last):
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 364, in main
+    handle_failures_sea
+rch(args)
+    ~~~~~~~~~~~~~~~~~~~
+~~~^^^^^^
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 1264, in 
+handle_failures_search
+    print(f"\U0001f50d 
+Found {len(matches)} 
+relevant edge cases:")
+    ~~~~~^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^
+  File "C:\Python314\Li
+b\encodings\cp1252.py",
+ line 19, in encode
+    return codecs.charm
+ap_encode(input,self.er
+rors,encoding_table)[0]
+           ~~~~~~~~~~~~
+~~~~~~~~~^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 
+'charmap' codec can't 
+encode character 
+'\U0001f50d' in 
+position 0: character 
+maps to <undefined>
+FF
+[Failures] Searching corpus for: credit...
+Traceback (most recent 
+call last):
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 305, in main
+    handle_spec_to_eval
+(args)
+    ~~~~~~~~~~~~~~~~~~~
+^^^^^^
+  File "C:\Users\najee\
+OneDrive\Documents\Proj
+ects\ai-agent-eval-harn
+ess\eval_runner\cli.py"
+, line 1124, in 
+handle_spec_to_eval
+    print(
+    ~~~~~^
+        "\U0001f4a1 
+Tip: Use `eval-harness 
+lint` to identify 
+missing fields, or 
+re-run with 
+`--fill-defaults` to 
+auto-fill."
+        ^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+^
+    )
+    ^
+  File "C:\Python314\Li
+b\encodings\cp1252.py",
+ line 19, in encode
+    return codecs.charm
+ap_encode(input,self.er
+rors,encoding_table)[0]
+           ~~~~~~~~~~~~
+~~~~~~~~~^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 
+'charmap' codec can't 
+encode character 
+'\U0001f4a1' in 
+position 0: character 
+maps to <undefined>
+F[CLI] Translating spec: spec.md
+   [SpecParser] Scenario stub saved to: industries\finance\scenarios\scenario-790af922.json
+[OK] Successfully converted C:\Users\najee\AppData\Local\Temp\pytest-of-najee\pytest-812\test_handle_spec_to_eval_integ0\spec.md to industries\finance\scenarios\scenario-790af922.json
+   -> Guessed Industry: finance
+   -> Guessed Use Case: U1
+F[OK] Mutated scenario saved to C:\Users\najee\AppData\Local\Temp\pytest-of-najee\pytest-812\test_handle_mutate_integration0\scen_typo.json
+.
+tests\test_console.py    [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+DEBUG: Loaded 5022 scenarios (in sync).
+DEBUG: Loaded 5022 scenarios (in sync).
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+F   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+F   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+DEBUG: Loading trace from C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\runs\demo\run-loan-risk-fail.jsonl
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for CoveragePlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for CoveragePlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for CoveragePlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for EnterprisePlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for PublicationPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for ArtifactPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for OpenAIAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for GeminiAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for ClaudeAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for OllamaAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for GrokAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for AutoGenAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for CrewAIAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for LangGraphAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for LangChainAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for MockConsolePlugin: cannot join thread before it is started
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.
+
+================================== FAILURES ===================================
+________________________ test_handle_lint_integration _________________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:295: in main
+    handle_lint(args)
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:398: in handle_lint
+    linter.run_lint(args.target)
+                    ^^^^^^^^^^^
+E   AttributeError: 'Namespace' object has no attribute 'target'
+
+During handling of the above exception, another exception occurred:
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:40: in test_handle_lint_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:381: in main
+    sys.exit(1)
+    ^^^
+E   NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+_______________________ test_handle_install_integration _______________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:356: in main
+    handle_install(args)
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:1191: in handle_install
+    print(f"\U0001f4e6 Installing {ind} scenarios...")
+C:\Python314\Lib\encodings\cp1252.py:19: in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4e6' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:92: in test_handle_install_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:381: in main
+    sys.exit(1)
+    ^^^
+E   NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+_____________________ test_handle_ci_generate_integration _____________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:361: in main
+    handle_ci_generate(args)
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:1243: in handle_ci_generate
+    print(f"\u2714 CI workflow generated at {workflow_path}")
+C:\Python314\Lib\encodings\cp1252.py:19: in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   UnicodeEncodeError: 'charmap' codec can't encode character '\u2714' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:99: in test_handle_ci_generate_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:381: in main
+    sys.exit(1)
+    ^^^
+E   NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+___________________ test_handle_failures_search_integration ___________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:364: in main
+    handle_failures_search(args)
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:1264: in handle_failures_search
+    print(f"\U0001f50d Found {len(matches)} relevant edge cases:")
+C:\Python314\Lib\encodings\cp1252.py:19: in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f50d' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:110: in test_handle_failures_search_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:381: in main
+    sys.exit(1)
+    ^^^
+E   NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+____________________ test_handle_spec_to_eval_integration _____________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:305: in main
+    handle_spec_to_eval(args)
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:1124: in handle_spec_to_eval
+    print(
+C:\Python314\Lib\encodings\cp1252.py:19: in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f4a1' in position 0: character maps to <undefined>
+
+During handling of the above exception, another exception occurred:
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:123: in test_handle_spec_to_eval_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:381: in main
+    sys.exit(1)
+    ^^^
+E   NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+__________________________ test_list_runs_with_query __________________________
+tests\test_console.py:147: in test_list_runs_with_query
+    json.dumps({"event": "run_start", "run_id": "test-123", "scenario": "scen-A", "timestamp": "2026-01-01"})
+    ^^^^
+E   NameError: name 'json' is not defined. Did you forget to import 'json'?
+__________________________ test_debugger_load_run_id __________________________
+tests\test_console.py:209: in test_debugger_load_run_id
+    f.write(json.dumps({"event": "world_state_change", "state": "done"}) + "\n")
+            ^^^^
+E   NameError: name 'json' is not defined. Did you forget to import 'json'?
+=========================== short test summary info ===========================
+FAILED tests/test_cli_integration.py::test_handle_lint_integration - NameErro...
+FAILED tests/test_cli_integration.py::test_handle_install_integration - NameE...
+FAILED tests/test_cli_integration.py::test_handle_ci_generate_integration - N...
+FAILED tests/test_cli_integration.py::test_handle_failures_search_integration
+FAILED tests/test_cli_integration.py::test_handle_spec_to_eval_integration - ...
+FAILED tests/test_console.py::test_list_runs_with_query - NameError: name 'js...
+FAILED tests/test_console.py::test_debugger_load_run_id - NameError: name 'js...
+=================== 7 failed, 20 passed in 81.62s (0:01:21) ===================

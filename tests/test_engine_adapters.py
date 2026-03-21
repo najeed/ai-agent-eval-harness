@@ -24,9 +24,7 @@ async def test_call_agent_protocol_selection():
         AgentAdapterRegistry._adapters,
         {"local": AsyncMock(return_value={"action": "final_answer", "content": "ok"})},
     ):
-        result = await AgentAdapterRegistry.call_agent(
-            payload, protocol="local", endpoint="echo 'test'"
-        )
+        result = await AgentAdapterRegistry.call_agent(payload, protocol="local", endpoint="echo 'test'")
         assert result["content"] == "ok"
 
 
@@ -39,11 +37,7 @@ async def test_call_agent_env_fallback():
     with patch.dict(os.environ, {"AGENT_LOCAL_CMD": "python mock_agent.py"}):
         with patch.dict(
             AgentAdapterRegistry._adapters,
-            {
-                "local": AsyncMock(
-                    return_value={"action": "final_answer", "content": "env_ok"}
-                )
-            },
+            {"local": AsyncMock(return_value={"action": "final_answer", "content": "env_ok"})},
         ):
             result = await AgentAdapterRegistry.call_agent(payload, protocol="local")
             assert result["content"] == "env_ok"

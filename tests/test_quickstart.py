@@ -13,9 +13,7 @@ def test_start_sample_agent(mock_popen):
     mock_popen.return_value = mock_process
 
     # Path mocking isn't strictly necessary if it exists, but good for isolation
-    with patch("eval_runner.quickstart.Path.exists", return_value=True), patch(
-        "time.sleep"
-    ):
+    with patch("eval_runner.quickstart.Path.exists", return_value=True), patch("time.sleep"):
         proc = start_sample_agent()
 
     assert proc == mock_process
@@ -34,13 +32,9 @@ async def test_run_quickstart_flow():
     # Mock engine.run_evaluation
     mock_results = [{"task_id": "1", "status": "success"}]
 
-    with patch(
-        "eval_runner.quickstart.start_sample_agent", return_value=mock_process
-    ), patch("eval_runner.quickstart.Path.exists", return_value=True), patch(
-        "builtins.open", MagicMock()
-    ), patch(
-        "json.load", return_value=mock_scenario
-    ), patch(
+    with patch("eval_runner.quickstart.start_sample_agent", return_value=mock_process), patch(
+        "eval_runner.quickstart.Path.exists", return_value=True
+    ), patch("builtins.open", MagicMock()), patch("json.load", return_value=mock_scenario), patch(
         "eval_runner.engine.run_evaluation", AsyncMock(return_value=mock_results)
     ), patch(
         "eval_runner.reporter.generate_report"
@@ -57,7 +51,5 @@ async def test_run_quickstart_flow():
         mock_process.wait.assert_called_once()
 
         # Verify reporting
-        mock_gen_report.assert_called_once_with(
-            mock_scenario, mock_results, export_trajectory=True
-        )
+        mock_gen_report.assert_called_once_with(mock_scenario, mock_results, export_trajectory=True)
         mock_gen_html.assert_called_once_with(mock_scenario, mock_results)

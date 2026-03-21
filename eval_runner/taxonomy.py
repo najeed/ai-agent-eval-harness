@@ -36,10 +36,7 @@ class FailureTaxonomy:
         for turn in history:
             if turn.get("role") == "environment":
                 content = turn.get("content", {})
-                if (
-                    isinstance(content, dict)
-                    and content.get("status") == "policy_violation"
-                ):
+                if isinstance(content, dict) and content.get("status") == "policy_violation":
                     return "sandbox_breach"
 
         # 3. Tool Call Errors

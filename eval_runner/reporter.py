@@ -103,9 +103,7 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
             # Special styling for violations
             if status == "policy_violation":
                 mermaid.append(f"  {node_id}((Violation))")
-                mermaid.append(
-                    f"  style {node_id} fill:#f96,stroke:#333,stroke-width:4px"
-                )
+                mermaid.append(f"  style {node_id} fill:#f96,stroke:#333,stroke-width:4px")
             else:
                 mermaid.append(f'  {node_id}["{label}"]')
 
@@ -117,9 +115,7 @@ def generate_mermaid_trajectory(task_results: dict) -> str:
     return "\n".join(mermaid)
 
 
-def generate_html_report(
-    scenario: dict, results: list, metadata: Optional[dict] = None
-) -> Path:
+def generate_html_report(scenario: dict, results: list, metadata: Optional[dict] = None) -> Path:
     """
     Generates a premium HTML report for the evaluation results.
     """
@@ -154,11 +150,7 @@ def generate_html_report(
                 break
 
     total_tasks = len(results)
-    successful_tasks = sum(
-        1
-        for tr in results
-        if tr.get("metrics") and all(m["success"] for m in tr["metrics"])
-    )
+    successful_tasks = sum(1 for tr in results if tr.get("metrics") and all(m["success"] for m in tr["metrics"]))
     success_rate = (successful_tasks / total_tasks * 100) if total_tasks > 0 else 0
 
     tasks_html = ""
@@ -167,9 +159,7 @@ def generate_html_report(
         metrics = tr.get("metrics", [])
         is_success = bool(metrics) and all(m["success"] for m in metrics)
         status_class = "success" if is_success else "failure"
-        status_text = (
-            "PASSED" if is_success else f"FAILED [{tr.get('triage_tag', 'UNKNOWN')}]"
-        )
+        status_text = "PASSED" if is_success else f"FAILED [{tr.get('triage_tag', 'UNKNOWN')}]"
 
         metrics_html = ""
         for m in tr["metrics"]:
@@ -324,9 +314,7 @@ def generate_report(
     for task_result in results:
         task_id = task_result["task_id"]
         metrics_list = task_result.get("metrics", [])
-        task_is_overall_success = bool(metrics_list) and all(
-            m["success"] for m in metrics_list
-        )
+        task_is_overall_success = bool(metrics_list) and all(m["success"] for m in metrics_list)
 
         if task_is_overall_success:
             status = "SUCCESS"

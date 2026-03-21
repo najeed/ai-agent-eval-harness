@@ -13,24 +13,17 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
 
     def on_discover_adapters(self, registry: Any):
         """Register the gemini:// protocol."""
-        print(
-            "      [Plugin] Registering Gemini adapter via on_discover_adapters hook."
-        )
+        print("      [Plugin] Registering Gemini adapter via on_discover_adapters hook.")
         registry.register("gemini", self.execute_gemini_query)
 
-    async def execute_gemini_query(
-        self, payload: Dict[str, Any], url: str = None
-    ) -> Dict[str, Any]:
+    async def execute_gemini_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Executes a query against the Google Gemini API.
         """
         api_key = payload.get("api_key") or os.getenv("GEMINI_API_KEY")
         model = payload.get("model", "gemini-1.5-pro")
         # Google Generative AI endpoint
-        url = (
-            url
-            or f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
-        )
+        url = url or f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
 
         prompt = payload.get("task") or ""
         if "messages" in payload:
@@ -57,9 +50,7 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
 
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    url, json=gemini_payload, timeout=30
-                ) as response:
+                async with session.post(url, json=gemini_payload, timeout=30) as response:
                     if response.status != 200:
                         err_text = await response.text()
                         return {
@@ -69,12 +60,7 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
 
                     data = await response.json()
                     # Gemini response structure: candidates[0].content.parts[0].text
-                    output = (
-                        data.get("candidates", [{}])[0]
-                        .get("content", {})
-                        .get("parts", [{}])[0]
-                        .get("text", "")
-                    )
+                    output = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
                     return {
                         "status": "success",
                         "output": output,

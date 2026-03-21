@@ -24,18 +24,14 @@ class TestReportingPlugin(unittest.TestCase):
 
         with open(repro_file, "r") as f:
             content = f.read()
-            self.assertIn(
-                "eval-harness run --scenario scenarios/finance/my_test.json", content
-            )
+            self.assertIn("eval-harness run --scenario scenarios/finance/my_test.json", content)
 
         # Cleanup
         # repro_file.unlink()
 
     def test_generate_repro_script_default_path(self):
         plugin = ReportingPlugin()
-        ctx = EvaluationContext(
-            scenario_id="default_test", scenario_data={}, metadata={}
-        )
+        ctx = EvaluationContext(scenario_id="default_test", scenario_data={}, metadata={})
 
         plugin.generate_repro_script(ctx)
 
@@ -44,9 +40,7 @@ class TestReportingPlugin(unittest.TestCase):
 
         with open(repro_file, "r") as f:
             content = f.read()
-            self.assertIn(
-                "eval-harness run --scenario scenarios/default_test.json", content
-            )
+            self.assertIn("eval-harness run --scenario scenarios/default_test.json", content)
 
 
 if __name__ == "__main__":

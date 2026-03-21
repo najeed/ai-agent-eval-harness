@@ -33,11 +33,7 @@ def explain_trace(trace_path: Path) -> dict:
                 diagnosis["suggestion"] = (
                     "Review the AES safety policies and ensure the agent's prompt includes necessary guardrails (e.g., PII protection)."
                 )
-            elif (
-                "system" in reason_lower
-                or "connection" in reason_lower
-                or "tool" in reason_lower
-            ):
+            elif "system" in reason_lower or "connection" in reason_lower or "tool" in reason_lower:
                 diagnosis["suggestion"] = (
                     "Check the tool implementation and infrastructure health at the pinpointed turn."
                 )
@@ -46,8 +42,6 @@ def explain_trace(trace_path: Path) -> dict:
                 "The agent failed to reach a conclusion. Try increasing EVAL_MAX_TURNS or refining the task objective."
             )
         else:
-            diagnosis["suggestion"] = (
-                "Review the full trajectory in the Visual Debugger for subtle logic deviations."
-            )
+            diagnosis["suggestion"] = "Review the full trajectory in the Visual Debugger for subtle logic deviations."
 
     return diagnosis

@@ -242,9 +242,7 @@ class KnowledgeBaseSimulator:
     """Simulates a Knowledge Base (Confluence/Notion/Wiki)."""
 
     def __init__(self):
-        self.docs = [
-            {"id": "D001", "title": "Onboarding", "content": "Welcome to the team!"}
-        ]
+        self.docs = [{"id": "D001", "title": "Onboarding", "content": "Welcome to the team!"}]
 
     def execute(self, action: str, params: dict) -> dict:
         if action == "kb_search":

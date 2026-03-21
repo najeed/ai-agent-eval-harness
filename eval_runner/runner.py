@@ -20,18 +20,14 @@ class BaseRunner(ABC):
     """Abstract interface for evaluation runners."""
 
     @abstractmethod
-    async def run(
-        self, scenario: dict, attempts: int = 1, metadata: Optional[dict] = None
-    ) -> List[Any]:
+    async def run(self, scenario: dict, attempts: int = 1, metadata: Optional[dict] = None) -> List[Any]:
         pass
 
 
 class DefaultRunner(BaseRunner):
     """Standard implementation of the evaluation loop."""
 
-    async def run(
-        self, scenario: dict, attempts: int = 1, metadata: Optional[dict] = None
-    ) -> List[Any]:
+    async def run(self, scenario: dict, attempts: int = 1, metadata: Optional[dict] = None) -> List[Any]:
         from .engine import AgentAdapterRegistry  # Avoid circular import
         from .tool_sandbox import ToolSandbox
         from .session import SessionManager
@@ -69,8 +65,7 @@ class DefaultRunner(BaseRunner):
         for attempt_res in all_attempt_results:
             # A run is successful only if there are metrics and ALL of them passed
             if all(
-                len(tr.get("metrics", [])) > 0
-                and all(m.get("success", False) for m in tr.get("metrics", []))
+                len(tr.get("metrics", [])) > 0 and all(m.get("success", False) for m in tr.get("metrics", []))
                 for tr in attempt_res
             ):
                 successful_attempts += 1

@@ -1,0 +1,977 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-8.4.0, pluggy-1.6.0
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 306 items
+
+tests\test_adapters_discovery.py ..                                      [  0%]
+tests\test_adapters_extended.py ..                                       [  1%]
+tests\test_adapters_unit.py ...                                          [  2%]
+tests\test_aes.py ......                                                 [  4%]
+tests\test_agents.py ...                                                 [  5%]
+tests\test_aggregator.py ...                                             [  6%]
+tests\test_analyzer.py ..                                                [  6%]
+tests\test_artifact_plugin.py ......                                     [  8%]
+tests\test_auto_translate.py ..FF....F.....F                             [ 13%]
+tests\test_catalog.py ..                                                 [ 14%]
+tests\test_cli.py ...............                                        [ 19%]
+tests\test_cli_handlers.py ............                                  [ 23%]
+tests\test_cli_integration.py ...F......                                 [ 26%]
+tests\test_console.py .................                                  [ 32%]
+tests\test_console_handoff.py ....                                       [ 33%]
+tests\test_core_infrastructure.py .s.                                    [ 34%]
+tests\test_coverage.py ..                                                [ 34%]
+tests\test_debugger_integration.py ..                                    [ 35%]
+tests\test_doctor.py ...                                                 [ 36%]
+tests\test_drift_importer.py ...                                         [ 37%]
+tests\test_ecosystem_compatibility.py ...                                [ 38%]
+tests\test_engine.py ............                                        [ 42%]
+tests\test_engine_adapters.py ...                                        [ 43%]
+tests\test_engine_runner.py ......                                       [ 45%]
+tests\test_events.py ...                                                 [ 46%]
+tests\test_explainer.py ...                                              [ 47%]
+tests\test_generation.py .                                               [ 47%]
+tests\test_linter.py ..                                                  [ 48%]
+tests\test_live_bridge.py ...                                            [ 49%]
+tests\test_llm_providers.py .....                                        [ 50%]
+tests\test_loader.py ............                                        [ 54%]
+tests\test_metrics.py ......................                             [ 62%]
+tests\test_metrics_modular.py .....                                      [ 63%]
+tests\test_metrics_planning.py ..                                        [ 64%]
+tests\test_metrics_trajectory.py ....                                    [ 65%]
+tests\test_mutator.py ....                                               [ 66%]
+tests\test_placeholder_fixes.py .....                                    [ 68%]
+tests\test_playground.py ..                                              [ 69%]
+tests\test_policy_guardrails.py ..                                       [ 69%]
+tests\test_quickstart.py ..                                              [ 70%]
+tests\test_reporter.py .....                                             [ 72%]
+tests\test_reporting_plugin.py ..                                        [ 72%]
+tests\test_scaffold.py .                                                 [ 73%]
+tests\test_scenario_compliance.py F                                      [ 73%]
+tests\test_security_audit.py .....................                       [ 80%]
+tests\test_session_advanced.py ...                                       [ 81%]
+tests\test_simulators.py .....................                           [ 88%]
+tests\test_spec_parser.py ..                                             [ 88%]
+tests\test_taxonomy.py ..                                                [ 89%]
+tests\test_tool_sandbox.py .......                                       [ 91%]
+tests\test_trace_loading.py .....                                        [ 93%]
+tests\test_trace_recorder.py ..                                          [ 94%]
+tests\test_triage.py ........                                            [ 96%]
+tests\test_utilities.py .....                                            [ 98%]
+tests\test_world_shims_hotswap.py .....                                  [100%]
+
+================================== FAILURES ===================================
+________________________ test_extract_text_pdf_success ________________________
+
+tmp_path = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-825/test_extract_text_pdf_success0')
+
+    def test_extract_text_pdf_success(tmp_path):
+        """Verifies successful PDF text extraction via PyPDF2 mocking."""
+        pdf_file = tmp_path / "doc.pdf"
+        pdf_file.write_text("fake pdf content")
+    
+        mock_reader = MagicMock()
+        mock_page = MagicMock()
+        mock_page.extract_text.return_value = "Extracted PDF Text"
+        mock_reader.pages = [mock_page]
+    
+>       with patch("PyPDF2.PdfReader", return_value=mock_reader):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_auto_translate.py:41: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:1487: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+C:\Python314\Lib\pkgutil.py:458: in resolve_name
+    mod = importlib.import_module(modname)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'PyPDF2', import_ = <function _gcd_import at 0x000001F40056BE20>
+
+>   ???
+E   ModuleNotFoundError: No module named 'PyPDF2'
+
+<frozen importlib._bootstrap>:1335: ModuleNotFoundError
+_______________________ test_extract_text_docx_success ________________________
+
+tmp_path = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-825/test_extract_text_docx_success0')
+
+    def test_extract_text_docx_success(tmp_path):
+        """Verifies successful DOCX text extraction via python-docx mocking."""
+        docx_file = tmp_path / "doc.docx"
+        docx_file.write_text("fake docx content")
+    
+        mock_doc = MagicMock()
+        mock_para = MagicMock()
+        mock_para.text = "Extracted DOCX Text"
+        mock_doc.paragraphs = [mock_para]
+    
+>       with patch("docx.Document", return_value=mock_doc):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_auto_translate.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:1487: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+C:\Python314\Lib\pkgutil.py:458: in resolve_name
+    mod = importlib.import_module(modname)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'docx', import_ = <function _gcd_import at 0x000001F40056BE20>
+
+>   ???
+E   ModuleNotFoundError: No module named 'docx'
+
+<frozen importlib._bootstrap>:1335: ModuleNotFoundError
+________________ test_translate_to_scenario_missing_id_repair _________________
+
+    @pytest.mark.asyncio
+    async def test_translate_to_scenario_missing_id_repair():
+        """Verifies that translate_to_scenario repairs a missing scenario_id (line 108)."""
+        mock_json = {"response": '{"title": "No ID"}'}
+    
+        with patch("aiohttp.ClientSession.post") as mock_post:
+            mock_resp = AsyncMock()
+            mock_resp.status = 200
+            mock_resp.json.return_value = mock_json
+            mock_post.return_value.__aenter__.return_value = mock_resp
+    
+            result = await auto_translate.translate_to_scenario("some text")
+>           assert result["scenario_id"] == "auto-translated"
+E           AssertionError: assert 'auto-1f40cab2' == 'auto-translated'
+E             
+E             - auto-translated
+E             + auto-1f40cab2
+
+tests\test_auto_translate.py:126: AssertionError
+__________________________ test_save_scenario_error ___________________________
+
+tmp_path = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-825/test_save_scenario_error0')
+
+    def test_save_scenario_error(tmp_path):
+        """Verifies that save_scenario handles writing errors gracefully (line 123)."""
+        scenario = {"scenario_id": "test"}
+        # Use a directory path as if it were a file to trigger an OSError
+        bad_path = tmp_path / "a_directory"
+        bad_path.mkdir()
+        # This should not crash but just print (per the implementation in auto_translate.py:123)
+>       auto_translate.save_scenario(scenario, bad_path)
+
+tests\test_auto_translate.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scenario = {'scenario_id': 'test'}
+output_path = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-825/test_save_scenario_error0/a_directory')
+
+    def save_scenario(scenario: Dict[str, Any], output_path: Path):
+        """Saves the translated JSON scenario to disk."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+>       with open(output_path, "w", encoding="utf-8") as f:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       PermissionError: [Errno 13] Permission denied: 'C:\\Users\\najee\\AppData\\Local\\Temp\\pytest-of-najee\\pytest-825\\test_save_scenario_error0\\a_directory'
+
+eval_runner\auto_translate.py:123: PermissionError
+____________________ test_handle_aes_validate_integration _____________________
+
+cli_runner = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-825/test_handle_aes_validate_integ0')
+
+    def test_handle_aes_validate_integration(cli_runner):
+        """Integrates handle_aes_validate with jsonschema."""
+        # Mock schema file
+        schema_dir = Path(cli.__file__).parent.parent / "spec" / "aes"
+        schema_dir.mkdir(parents=True, exist_ok=True)
+        (schema_dir / "aes.schema.json").write_text("{}")
+    
+        aes_file = cli_runner / "test.aes.yaml"
+        aes_file.write_text("scenario_id: test")
+    
+        with patch("jsonschema.validate") as mock_val:
+            with patch("sys.argv", ["eval-harness", "aes", "validate", "--path", str(aes_file)]):
+                cli.main()
+>               mock_val.assert_called_once()
+
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='validate' id='2147608502896'>
+
+    def assert_called_once(self):
+        """assert that the mock was called only once.
+        """
+        if not self.call_count == 1:
+            msg = ("Expected '%s' to have been called once. Called %s times.%s"
+                   % (self._mock_name or 'mock',
+                      self.call_count,
+                      self._calls_repr()))
+>           raise AssertionError(msg)
+E           AssertionError: Expected 'validate' to have been called once. Called 0 times.
+
+C:\Python314\Lib\unittest\mock.py:964: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[OK] test.aes.yaml: Valid
+________________________ test_all_scenarios_are_valid _________________________
+
+scenario_schema = {'$schema': 'http://json-schema.org/draft-07/schema#', 'definitions': {'state_change': {'properties': {'path': {'descr...string'}, ...}, 'required': ['scenario_id', 'title', 'description', 'use_case', 'core_function', 'industry', ...], ...}
+
+    def test_all_scenarios_are_valid(scenario_schema):
+        """
+        Test that all scenario files conform to the defined JSON schema.
+    
+        This test validates every JSON file in the industries directory
+        against the scenario schema. It collects all validation errors
+        and reports them comprehensively, ensuring that the entire
+        scenario corpus maintains data integrity and consistency.
+    
+        Args:
+            scenario_schema: pytest fixture providing the loaded JSON schema
+    
+        Returns:
+            None
+    
+        Raises:
+            pytest.fail: If any scenario files fail schema validation
+    
+        Example:
+            The test validates files like:
+            - industries/accounting/scenarios/accounts_payable/*.json
+            - industries/aerospace/scenarios/aircraft_manufacturing/*.json
+            - All other scenario files in the industries directory
+    
+            If validation fails, it reports specific errors for each file.
+        """
+        errors = []
+        count = 0
+        for path_str in load_all_scenario_files():
+            count += 1
+            path = Path(path_str)
+            try:
+                scenario = json.loads(path.read_text(encoding="utf-8"))
+                validate(instance=scenario, schema=scenario_schema)
+            except ValidationError as e:
+                errors.append((path_str, str(e)))
+            except Exception as e:
+                errors.append((path_str, f"Unexpected error: {str(e)}"))
+    
+        print(f"\n[DEBUG] Validated {count} scenario files.")
+        if errors:
+            print(f"\n[ERROR] Found {len(errors)} validation failure(s):")
+            for p, err in errors:
+                print(f"  - File: {p}")
+                print(f"    Error: {err}\n")
+>           pytest.fail(f"{len(errors)} scenario file(s) failed schema validation")
+E           Failed: 1 scenario file(s) failed schema validation
+
+tests\test_scenario_compliance.py:130: Failed
+---------------------------- Captured stdout call -----------------------------
+{
+    "name": "service:enforce_sandbox",
+    "context": {
+        "trace_id": "0xe99d01734e4cf4432db6453ecc3bad65",
+        "span_id": "0xea1f57a1e9d275d0",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.304159Z",
+    "end_time": "2026-03-21T02:33:54.304350Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "enforce_sandbox",
+        "arg.0": "unknown",
+        "arg.1": "forbidden_tool",
+        "arg.2": "{}"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:isolate_tool_call",
+    "context": {
+        "trace_id": "0x3628307573cc26a64886980c6dea492d",
+        "span_id": "0x59b1edaf175a4f02",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.305064Z",
+    "end_time": "2026-03-21T02:33:54.455706Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "isolate_tool_call",
+        "arg.0": "forbidden_tool",
+        "arg.1": "{}"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:enforce_sandbox",
+    "context": {
+        "trace_id": "0xc51683f274dd575a72751bc305a29c69",
+        "span_id": "0xfb54628ccfdd1078",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.456153Z",
+    "end_time": "2026-03-21T02:33:54.456232Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "enforce_sandbox",
+        "arg.0": "unknown",
+        "arg.1": "safe_tool",
+        "arg.2": "{}"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:isolate_tool_call",
+    "context": {
+        "trace_id": "0x5f37c44673d9580d390514eb817ec715",
+        "span_id": "0xd17c946d38c5589d",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.456405Z",
+    "end_time": "2026-03-21T02:33:54.603938Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "isolate_tool_call",
+        "arg.0": "safe_tool",
+        "arg.1": "{}"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:generate_trajectory_signature",
+    "context": {
+        "trace_id": "0xbb535ffd9da27c0cc0acf14ae17bc64b",
+        "span_id": "0x31c19e6a9d4f7279",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0x9b249ae2d26738c1",
+    "start_time": "2026-03-21T02:33:54.614987Z",
+    "end_time": "2026-03-21T02:33:54.615079Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "generate_trajectory_signature",
+        "arg.0": "{'timestamp': '2026-03-21T08:03:54.614877', 'event_type': 'EVAL_START', 'run_id': 'run-test_scenario-13264', 'previous_hash': '3ff3f44eb143b7f8632c7795dd188749c353d0355200b57cf98549af5548127b', 'data': {'scenario': {'scenario_id': 'test_scenario', 'tasks': [{'task_id': 't1', 'description': 'test task'}]}}}"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:audit_log_start",
+    "context": {
+        "trace_id": "0xbb535ffd9da27c0cc0acf14ae17bc64b",
+        "span_id": "0x9b249ae2d26738c1",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.614829Z",
+    "end_time": "2026-03-21T02:33:54.615966Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "audit_log_start",
+        "arg.0": "run-test_scenario-13264",
+        "arg.1": "{'scenario_id': 'test_scenario', 'tasks': [{'task_id': 't1', 'description': 'test task'}]}"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:generate_merkle_root",
+    "context": {
+        "trace_id": "0x781542fac16904f894d0a9d8b61aa10f",
+        "span_id": "0xf8ff750543523795",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.616098Z",
+    "end_time": "2026-03-21T02:33:54.616524Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "generate_merkle_root",
+        "arg.0": "{'scenario_id': 'test_scenario', 'tasks': [{'task_id': 't1', 'description': 'test task'}]}"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:generate_trajectory_signature",
+    "context": {
+        "trace_id": "0xca55ff7457fb7a839842416398b14755",
+        "span_id": "0xe587aff48d7445a6",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.629428Z",
+    "end_time": "2026-03-21T02:33:54.629580Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "generate_trajectory_signature",
+        "arg.0": "[[{'task_id': 't1', 'attempt': 1, 'turns_taken': 1, 'conversation_history': [{'role': 'user', 'content': 'test task'}, {'role': 'agent', 'content': {'action': 'final_answer'}, 'protocol': 'http', 'agent': 'http://localhost:5001/execute_task', 'agent_name': None}], 'metrics': []}], [{'task_id': 't1', 'attempt': 2, 'turns_taken': 1, 'conversation_history': [{'role': 'user', 'content': 'test task'}, {'role': 'agent', 'content': {'action': 'final_answer'}, 'protocol': 'http', 'agent': 'http://localhost:5001/execute_task', 'agent_name': None}], 'metrics': []}]]"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:generate_trajectory_signature",
+    "context": {
+        "trace_id": "0x88073bf5e9be7513c3def4308ad44b80",
+        "span_id": "0x7a6c0a3ac69188de",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": "0xc2b81074b7b07fa1",
+    "start_time": "2026-03-21T02:33:54.629862Z",
+    "end_time": "2026-03-21T02:33:54.629910Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "generate_trajectory_signature",
+        "arg.0": "{'timestamp': '2026-03-21T08:03:54.629775', 'event_type': 'EVAL_COMPLETE', 'run_id': 'run-test_scenario-13264', 'previous_hash': '214960d78db212ce0e6a668d46a57468b18279cb0931d40704f58d5151f6965e', 'data': {'signature': '83cea936edad01ace9d83505fe7b5536c4fd96416658c14070a4b90737840401', 'turns': 2}}"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:audit_log_end",
+    "context": {
+        "trace_id": "0x88073bf5e9be7513c3def4308ad44b80",
+        "span_id": "0xc2b81074b7b07fa1",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.629727Z",
+    "end_time": "2026-03-21T02:33:54.630420Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "audit_log_end",
+        "arg.0": "run-test_scenario-13264",
+        "arg.1": "[[{'task_id': 't1', 'attempt': 1, 'turns_taken': 1, 'conversation_history': [{'role': 'user', 'content': 'test task'}, {'role': 'agent', 'content': {'action': 'final_answer'}, 'protocol': 'http', 'agent': 'http://localhost:5001/execute_task', 'agent_name': None}], 'metrics': []}], [{'task_id': 't1', 'attempt': 2, 'turns_taken': 1, 'conversation_history': [{'role': 'user', 'content': 'test task'}, {'role': 'agent', 'content': {'action': 'final_answer'}, 'protocol': 'http', 'agent': 'http://localhost:5001/execute_task', 'agent_name': None}], 'metrics': []}]]",
+        "arg.2": "83cea936edad01ace9d83505fe7b5536c4fd96416658c14070a4b90737840401"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:register_leaderboard_run",
+    "context": {
+        "trace_id": "0xe6e7371721d093de60fd4926a1bebd9c",
+        "span_id": "0x716f4e73f660b011",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.630530Z",
+    "end_time": "2026-03-21T02:33:54.650134Z",
+    "status": {
+        "status_code": "UNSET"
+    },
+    "attributes": {
+        "service.name": "register_leaderboard_run",
+        "arg.0": "run-test_scenario-13264",
+        "arg.1": "[[{'task_id': 't1', 'attempt': 1, 'turns_taken': 1, 'conversation_history': [{'role': 'user', 'content': 'test task'}, {'role': 'agent', 'content': {'action': 'final_answer'}, 'protocol': 'http', 'agent': 'http://localhost:5001/execute_task', 'agent_name': None}], 'metrics': []}], [{'task_id': 't1', 'attempt': 2, 'turns_taken': 1, 'conversation_history': [{'role': 'user', 'content': 'test task'}, {'role': 'agent', 'content': {'action': 'final_answer'}, 'protocol': 'http', 'agent': 'http://localhost:5001/execute_task', 'agent_name': None}], 'metrics': []}]]"
+    },
+    "events": [],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+{
+    "name": "service:check_drift",
+    "context": {
+        "trace_id": "0x4ed77f3dde762f178d9df277d6280419",
+        "span_id": "0xb2cc7423cd3b27b6",
+        "trace_state": "[]"
+    },
+    "kind": "SpanKind.INTERNAL",
+    "parent_id": null,
+    "start_time": "2026-03-21T02:33:54.650285Z",
+    "end_time": "2026-03-21T02:33:54.652821Z",
+    "status": {
+        "status_code": "ERROR",
+        "description": "AttributeError: 'list' object has no attribute 'get'"
+    },
+    "attributes": {
+        "service.name": "check_drift",
+        "arg.0": "run-test_scenario-13264",
+        "arg.1": "[[{'task_id': 't1', 'attempt': 1, 'turns_taken': 1, 'conversation_history': [{'role': 'user', 'content': 'test task'}, {'role': 'agent', 'content': {'action': 'final_answer'}, 'protocol': 'http', 'agent': 'http://localhost:5001/execute_task', 'agent_name': None}], 'metrics': []}], [{'task_id': 't1', 'attempt': 2, 'turns_taken': 1, 'conversation_history': [{'role': 'user', 'content': 'test task'}, {'role': 'agent', 'content': {'action': 'final_answer'}, 'protocol': 'http', 'agent': 'http://localhost:5001/execute_task', 'agent_name': None}], 'metrics': []}]]"
+    },
+    "events": [
+        {
+            "name": "exception",
+            "timestamp": "2026-03-21T02:33:54.652788Z",
+            "attributes": {
+                "exception.type": "AttributeError",
+                "exception.message": "'list' object has no attribute 'get'",
+                "exception.stacktrace": "Traceback (most recent call last):\n  File \"C:\\Users\\najee\\AppData\\Roaming\\Python\\Python314\\site-packages\\opentelemetry\\trace\\__init__.py\", line 619, in use_span\n    yield span\n  File \"C:\\Users\\najee\\AppData\\Roaming\\Python\\Python314\\site-packages\\opentelemetry\\sdk\\trace\\__init__.py\", line 1173, in start_as_current_span\n    yield span\n  File \"C:\\Users\\najee\\OneDrive\\Documents\\Projects\\harness-enterprise\\enterprise\\common\\bus.py\", line 64, in call\n    return self._registry[name](*args, **kwargs)\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\najee\\OneDrive\\Documents\\Projects\\harness-enterprise\\enterprise\\services\\observability.py\", line 87, in check_drift\n    return drift_detector.check_drift(run_id, current_metrics)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\najee\\OneDrive\\Documents\\Projects\\harness-enterprise\\enterprise\\services\\observability.py\", line 62, in check_drift\n    score = sum(r.get(\"score\", 0.0) for r in current_metrics) / (\n            ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\najee\\OneDrive\\Documents\\Projects\\harness-enterprise\\enterprise\\services\\observability.py\", line 62, in <genexpr>\n    score = sum(r.get(\"score\", 0.0) for r in current_metrics) / (\n                ^^^^^\nAttributeError: 'list' object has no attribute 'get'\n",
+                "exception.escaped": "False"
+            }
+        }
+    ],
+    "links": [],
+    "resource": {
+        "attributes": {
+            "service.name": "enterprise-harness"
+        },
+        "schema_url": ""
+    }
+}
+
+
+[DEBUG] Validated 5022 scenario files.
+
+[ERROR] Found 1 validation failure(s):
+  - File: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\industries\test-ind\scenarios\new-scen.json
+    Error: 'use_case' is a required property
+
+Failed validating 'required' in schema:
+    {'$schema': 'http://json-schema.org/draft-07/schema#',
+     'title': 'AI Agent Evaluation Scenario',
+     'type': 'object',
+     'required': ['scenario_id',
+                  'title',
+                  'description',
+                  'use_case',
+                  'core_function',
+                  'industry',
+                  'tasks'],
+     'properties': {'scenario_id': {'type': 'string',
+                                    'description': 'Unique identifier for '
+                                                   'the scenario'},
+                    'title': {'type': 'string',
+                              'description': 'Title of the scenario'},
+                    'description': {'type': 'string',
+                                    'description': 'Background context for '
+                                                   'the scenario'},
+                    'instructions': {'type': 'string',
+                                     'description': 'Prompt or '
+                                                    'instructions to be '
+                                                    'sent to the agent'},
+                    'expected_response': {'type': 'string',
+                                          'description': 'Ideal or '
+                                                         'expected '
+                                                         'response from '
+                                                         'the agent'},
+                    'use_case': {'type': 'string',
+                                 'description': 'The use case for which '
+                                                'the agent is being '
+                                                'evaluated (e.g., customer '
+                                                'support, data analysis)'},
+                    'core_function': {'type': 'string',
+                                      'description': 'The core function in '
+                                                     'the industry that '
+                                                     'the use case belongs '
+                                                     'to (e.g., customer '
+                                                     'service, sales, '
+                                                     'technical support)'},
+                    'industry': {'type': 'string',
+                                 'description': 'Industry tag (e.g. '
+                                                'telecom, finance)'},
+                    'agent_topology': {'type': 'object',
+                                       'additionalProperties': {'type': 'object',
+                                                                'properties': {'reads': {'type': 'array',
+                                                                                         'items': {'type': 'string'}},
+                                                                               'writes': {'type': 'array',
+                                                                                          'items': {'type': 'string'}}}},
+                                       'description': 'Definition of '
+                                                      'agents in the crew '
+                                                      'and their state '
+                                                      'access permissions '
+                                                      '(namespaces)'},
+                    'tasks': {'type': 'array',
+                              'description': 'List of tasks the agent is '
+                                             'expected to perform',
+                              'items': {'type': 'object',
+                                        'required': ['task_id',
+                                                     'description',
+                                                     'expected_outcome',
+                                                     'success_criteria'],
+                                        'properties': {'task_id': {'type': 'string',
+                                                                   'description': 'Unique '
+                                                                                  'identifier '
+                                                                                  'for '
+                                                                                  'the '
+                                                                                  'task'},
+                                                       'description': {'type': 'string',
+                                                                       'description': 'Background '
+                                                                                      'context '
+                                                                                      'for '
+                                                                                      'the '
+                                                                                      'task'},
+                                                       'expected_outcome': {'type': 'string',
+                                                                            'description': 'Ideal '
+                                                                                           'or '
+                                                                                           'expected '
+                                                                                           'response '
+                                                                                           'from '
+                                                                                           'the '
+                                                                                           'agent'},
+                                                       'required_tools': {'type': 'array',
+                                                                          'items': {'type': 'string'},
+                                                                          'description': 'List '
+                                                                                         'of '
+                                                                                         'tools '
+                                                                                         'the '
+                                                                                         'agent '
+                                                                                         'is '
+                                                                                         'expected '
+                                                                                         'to '
+                                                                                         'use'},
+                                                       'expected_delegations': {'type': 'integer',
+                                                                                'minimum': 0,
+                                                                                'description': 'Expected '
+                                                                                               'number '
+                                                                                               'of '
+                                                                                               'agent-to-agent '
+                                                                                               'handoffs '
+                                                                                               'for '
+                                                                                               'this '
+                                                                                               'task'},
+                                                       'success_criteria': {'type': 'array',
+                                                                            'items': {'type': 'object',
+                                                                                      'required': ['metric',
+                                                                                                   'threshold'],
+                                                                                      'properties': {'metric': {'type': 'string',
+                                                                                                                'description': 'The '
+                                                                                                                               'metric '
+                                                                                                                               'to '
+                                                                                                                               'be '
+                                                                                                                               'tested '
+                                                                                                                               'for '
+                                                                                                                               'the '
+                                                                                                                               'task'},
+                                                                                                     'threshold': {'type': 'number',
+                                                                                                                   'description': 'The '
+                                                                                                                                  'threshold '
+                                                                                                                                  'for '
+                                                                                                                                  'the '
+                                                                                                                                  'metric '
+                                                                                                                                  'to '
+                                                                                                                                  'be '
+                                                                                                                                  'considered '
+                                                                                                                                  'successful'}}},
+                                                                            'description': 'Criteria '
+                                                                                           'to '
+                                                                                           'determine '
+                                                                                           'if '
+                                                                                           'the '
+                                                                                           'task '
+                                                                                           'was '
+                                                                                           'successfully '
+                                                                                           'completed'},
+                                                       'crew_success_criteria': {'type': 'array',
+                                                                                 'items': {'type': 'object',
+                                                                                           'required': ['metric',
+                                                                                                        'threshold'],
+                                                                                           'properties': {'metric': {'type': 'string'},
+                                                                                                          'threshold': {'type': 'number'}}},
+                                                                                 'description': 'Multi-agent '
+                                                                                                'specific '
+                                                                                                'metrics '
+                                                                                                '(e.g. '
+                                                                                                'delegation_loop_risk)'},
+                                                       'expected_state_changes': {'type': 'array',
+                                                                                  'items': {'$ref': '#/definitions/state_change'},
+                                                                                  'description': 'Verified '
+                                                                                                 'changes '
+                                                                                                 'to '
+                                                                                                 'the '
+                                                                                                 'sandbox '
+                                                                                                 'state '
+                                                                                                 'after '
+                                                                                                 'task '
+                                                                                                 'execution'}}}},
+                    'tools_required': {'type': 'array',
+                                       'items': {'type': 'string'},
+                                       'description': 'List of tools the '
+                                                      'agent is expected '
+                                                      'to use'},
+                    'complexity_level': {'type': 'string',
+                                         'enum': ['low', 'medium', 'high'],
+                                         'description': 'Relative '
+                                                        'difficulty of the '
+                                                        'scenario'},
+                    'author': {'type': 'string',
+                               'description': 'Contributor of the '
+                                              'scenario'},
+                    'version': {'type': 'string',
+                                'pattern': '^\\d+\\.\\d+(\\.\\d+)?$',
+                                'description': 'Semantic version (e.g., '
+                                               '1.0 or 2.1.3)'},
+                    'initial_state': {'type': 'object',
+                                      'description': 'The starting state '
+                                                     'of the sandbox '
+                                                     '(e.g., database '
+                                                     'records, file '
+                                                     'contents)'},
+                    'policies': {'type': 'object',
+                                 'description': 'Governance policies to be '
+                                                'enforced during execution '
+                                                '(e.g., spending limits, '
+                                                'tool constraints)'},
+                    'enabled_shims': {'type': 'array',
+                                      'items': {'type': 'string'},
+                                      'description': 'List of world shims '
+                                                     'to enable for this '
+                                                     'scenario (e.g., '
+                                                     "['git', 'api']). Use "
+                                                     "['*'] for all."}},
+     'definitions': {'state_change': {'type': 'object',
+                                      'required': ['path', 'value'],
+                                      'properties': {'path': {'type': 'string',
+                                                              'description': 'JSON '
+                                                                             'path '
+                                                                             'or '
+                                                                             'key '
+                                                                             'to '
+                                                                             'the '
+                                                                             'state '
+                                                                             'variable'},
+                                                     'value': {'description': 'The '
+                                                                              'expected '
+                                                                              'value '
+                                                                              'after '
+                                                                              'task '
+                                                                              'completion'}}}}}
+
+On instance:
+    {'scenario_id': 'new-scen',
+     'version': '2.0.0',
+     'title': 'New',
+     'industry': 'test-ind',
+     'description': 'desc',
+     'tasks': [],
+     'metadata': {'difficulty': 1,
+                  'tags': [],
+                  'created_at': '2026-03-21T08:02:33.906365'}}
+
+============================== warnings summary ===============================
+tests/test_adapters_unit.py::test_http_adapter_success
+  C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\adapters\__init__.py:25: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    response.raise_for_status()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_console_handoff.py::test_handoff_token_generation
+tests/test_console_handoff.py::test_handoff_endpoint
+tests/test_console_handoff.py::test_secure_route_protection
+tests/test_security_audit.py::test_auth_jwt_generation
+tests/test_security_audit.py::test_auth_handoff_decorator
+  C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\console\auth.py:15: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=60),
+
+tests/test_console_handoff.py::test_handoff_token_generation
+tests/test_console_handoff.py::test_handoff_endpoint
+tests/test_console_handoff.py::test_secure_route_protection
+tests/test_security_audit.py::test_auth_jwt_generation
+tests/test_security_audit.py::test_auth_handoff_decorator
+  C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\console\auth.py:16: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "iat": datetime.datetime.utcnow(),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.0-final-0 _______________
+
+Name                                       Stmts   Miss  Cover
+--------------------------------------------------------------
+eval_runner\__init__.py                        2      0   100%
+eval_runner\__main__.py                        3      3     0%
+eval_runner\adapters\__init__.py              44     10    77%
+eval_runner\adapters\autogen.py               21      4    81%
+eval_runner\adapters\claude.py                31     22    29%
+eval_runner\adapters\crewai.py                15      2    87%
+eval_runner\adapters\gemini.py                30     21    30%
+eval_runner\adapters\grok.py                  27      4    85%
+eval_runner\adapters\langchain.py             23     15    35%
+eval_runner\adapters\langgraph.py             15      2    87%
+eval_runner\adapters\ollama.py                23     15    35%
+eval_runner\adapters\openai.py                27      4    85%
+eval_runner\analyzer.py                       21      1    95%
+eval_runner\artifact_plugin.py                59      4    93%
+eval_runner\auto_translate.py                 61      8    87%
+eval_runner\benchmarks\__init__.py             3      0   100%
+eval_runner\benchmarks\assistantbench.py       6      2    67%
+eval_runner\benchmarks\gaia.py                 8      0   100%
+eval_runner\catalog.py                        80     27    66%
+eval_runner\cli.py                           853    381    55%
+eval_runner\config.py                         54      0   100%
+eval_runner\console\__init__.py                0      0   100%
+eval_runner\console\app.py                    40      6    85%
+eval_runner\console\auth.py                   27      1    96%
+eval_runner\console\demo_traces.py             6      5    17%
+eval_runner\console\routes.py                252     45    82%
+eval_runner\context.py                        31      0   100%
+eval_runner\coverage_plugin.py                 8      0   100%
+eval_runner\coverage_reporter.py              25      6    76%
+eval_runner\doctor.py                         44      8    82%
+eval_runner\drift_importer.py                 26      2    92%
+eval_runner\engine.py                         72      6    92%
+eval_runner\events.py                         62      2    97%
+eval_runner\explainer.py                      21      4    81%
+eval_runner\exporter.py                       49     16    67%
+eval_runner\flight_recorder.py                40     10    75%
+eval_runner\linter.py                         85     31    64%
+eval_runner\live_bridge_plugin.py             35      4    89%
+eval_runner\llm_providers.py                  93     17    82%
+eval_runner\loader.py                         97     17    82%
+eval_runner\metrics\__init__.py               19      1    95%
+eval_runner\metrics\accuracy.py               78     22    72%
+eval_runner\metrics\core.py                  136     11    92%
+eval_runner\metrics\defense.py                15      7    53%
+eval_runner\metrics\planning.py               18      0   100%
+eval_runner\metrics\technical.py              11      5    55%
+eval_runner\metrics\utils.py                  19      1    95%
+eval_runner\mutator.py                        56     14    75%
+eval_runner\playground.py                     34      6    82%
+eval_runner\plugins.py                       137     31    77%
+eval_runner\publication_plugin.py            105     20    81%
+eval_runner\quickstart.py                     48      5    90%
+eval_runner\reporter.py                      174     11    94%
+eval_runner\reporting_plugin.py               88     15    83%
+eval_runner\rubrics.py                        12      2    83%
+eval_runner\runner.py                         38      1    97%
+eval_runner\scaffold.py                       43      8    81%
+eval_runner\session.py                       214     31    86%
+eval_runner\simulators.py                    203      0   100%
+eval_runner\spec_parser.py                   104      5    95%
+eval_runner\taxonomy.py                       32      1    97%
+eval_runner\tool_sandbox.py                  135     20    85%
+eval_runner\trace_recorder.py                 45      4    91%
+eval_runner\trace_utils.py                    30      3    90%
+eval_runner\triage.py                        115     25    78%
+--------------------------------------------------------------
+TOTAL                                       4328    954    78%
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_core_infrastructure.py:72: Docker not available in this environment
+FAILED tests/test_auto_translate.py::test_extract_text_pdf_success - ModuleNo...
+FAILED tests/test_auto_translate.py::test_extract_text_docx_success - ModuleN...
+FAILED tests/test_auto_translate.py::test_translate_to_scenario_missing_id_repair
+FAILED tests/test_auto_translate.py::test_save_scenario_error - PermissionErr...
+FAILED tests/test_cli_integration.py::test_handle_aes_validate_integration - ...
+FAILED tests/test_scenario_compliance.py::test_all_scenarios_are_valid - Fail...
+====== 6 failed, 299 passed, 1 skipped, 11 warnings in 115.97s (0:01:55) ======

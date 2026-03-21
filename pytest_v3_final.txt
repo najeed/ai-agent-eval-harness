@@ -1,0 +1,176 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-8.4.0, pluggy-1.6.0
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 27 items
+
+tests\test_cli_integration.py       [Plugin] Registering OpenAI adapter via on_discover_adapters hook.
+      [Plugin] Registering Gemini adapter via on_discover_adapters hook.
+      [Plugin] Registering Claude adapter via on_discover_adapters hook.
+      [Plugin] Registering Ollama adapter via on_discover_adapters hook.
+      [Plugin] Registering Grok adapter via on_discover_adapters hook.
+      [Plugin] Registering AutoGen adapter via on_discover_adapters hook.
+      [Plugin] Registering CrewAI adapter via on_discover_adapters hook.
+      [Plugin] Registering LangGraph adapter via on_discover_adapters hook.
+      [Plugin] Registering LangChain adapter via on_discover_adapters hook.
+FFFFFFFFFF
+tests\test_console.py    [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+DEBUG: Loaded 5022 scenarios (in sync).
+DEBUG: Loaded 5022 scenarios (in sync).
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+DEBUG: Loading trace from C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\runs\trace-123.jsonl
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+DEBUG: Loading trace from C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\runs\demo\run-loan-risk-fail.jsonl
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for CoveragePlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for CoveragePlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for CoveragePlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for EnterprisePlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for PublicationPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for ArtifactPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for OpenAIAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for GeminiAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for ClaudeAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for OllamaAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for GrokAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for AutoGenAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for CrewAIAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for LangGraphAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for LangChainAdapterPlugin: cannot join thread before it is started
+   [PluginManager] Timeout (>5.0s) in hook execution.
+   [PluginManager] Error in on_register_simulators for MockConsolePlugin: cannot join thread before it is started
+.   [Enterprise Plugin] Registered Enterprise Console Routes via Secure 302 Bridge.
+.
+
+================================== FAILURES ===================================
+________________________ test_handle_list_integration _________________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:28: in test_handle_list_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+________________________ test_handle_lint_integration _________________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:40: in test_handle_lint_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+_______________________ test_handle_report_integration ________________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:51: in test_handle_report_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+____________________ test_handle_aes_validate_integration _____________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:67: in test_handle_aes_validate_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+____________________ test_handle_cleanup_runs_integration _____________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:85: in test_handle_cleanup_runs_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+_______________________ test_handle_install_integration _______________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:92: in test_handle_install_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+_____________________ test_handle_ci_generate_integration _____________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:99: in test_handle_ci_generate_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+___________________ test_handle_failures_search_integration ___________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:110: in test_handle_failures_search_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+____________________ test_handle_spec_to_eval_integration _____________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:123: in test_handle_spec_to_eval_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+_______________________ test_handle_mutate_integration ________________________
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\tests\test_cli_integration.py:135: in test_handle_mutate_integration
+    cli.main()
+C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness\eval_runner\cli.py:253: in main
+    lint_parser = subparsers.add_parser("lint", help="Static analysis for scenario quality and schema compliance")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Python314\Lib\argparse.py:1257: in add_parser
+    raise ValueError(f'conflicting subparser: {name}')
+E   ValueError: conflicting subparser: lint
+=========================== short test summary info ===========================
+FAILED tests/test_cli_integration.py::test_handle_list_integration - ValueErr...
+FAILED tests/test_cli_integration.py::test_handle_lint_integration - ValueErr...
+FAILED tests/test_cli_integration.py::test_handle_report_integration - ValueE...
+FAILED tests/test_cli_integration.py::test_handle_aes_validate_integration - ...
+FAILED tests/test_cli_integration.py::test_handle_cleanup_runs_integration - ...
+FAILED tests/test_cli_integration.py::test_handle_install_integration - Value...
+FAILED tests/test_cli_integration.py::test_handle_ci_generate_integration - V...
+FAILED tests/test_cli_integration.py::test_handle_failures_search_integration
+FAILED tests/test_cli_integration.py::test_handle_spec_to_eval_integration - ...
+FAILED tests/test_cli_integration.py::test_handle_mutate_integration - ValueE...
+================== 10 failed, 17 passed in 81.81s (0:01:21) ===================

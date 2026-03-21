@@ -30,9 +30,7 @@ async def test_grok_adapter():
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json.return_value = {
-            "choices": [{"message": {"content": "grok response"}}]
-        }
+        mock_response.json.return_value = {"choices": [{"message": {"content": "grok response"}}]}
         mock_post.return_value.__aenter__.return_value = mock_response
 
         result = await adapter.execute_grok_query(payload)

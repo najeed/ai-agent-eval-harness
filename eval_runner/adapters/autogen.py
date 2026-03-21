@@ -13,14 +13,10 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
 
     def on_discover_adapters(self, registry: Any):
         """Register the autogen:// protocol."""
-        print(
-            "      [Plugin] Registering AutoGen adapter via on_discover_adapters hook."
-        )
+        print("      [Plugin] Registering AutoGen adapter via on_discover_adapters hook.")
         registry.register("autogen", self.execute_autogen_query)
 
-    async def execute_autogen_query(
-        self, payload: Dict[str, Any], url: str = None
-    ) -> Dict[str, Any]:
+    async def execute_autogen_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Calls the AutoGen agent endpoint.
         Standardizes the input to AutoGen's expected format.

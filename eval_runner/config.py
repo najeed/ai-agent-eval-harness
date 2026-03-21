@@ -48,16 +48,12 @@ OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
-ANTHROPIC_BASE_URL = os.getenv(
-    "ANTHROPIC_BASE_URL", "https://api.anthropic.com/v1/messages"
-)
+ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL", "https://api.anthropic.com/v1/messages")
 ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20240620")
 ANTHROPIC_VERSION = os.getenv("ANTHROPIC_VERSION", "2023-06-01")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-GEMINI_BASE_URL = os.getenv(
-    "GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/models"
-)
+GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/models")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
 
 XAI_API_KEY = os.getenv("XAI_API_KEY")
@@ -67,18 +63,14 @@ XAI_MODEL = os.getenv("XAI_MODEL", "grok-beta")
 # --- Metric Thresholds & Defaults ---
 CLARITY_MIN_LENGTH = int(os.getenv("CLARITY_MIN_LENGTH", "10"))
 LATENCY_DECAY_PER_HOP = float(os.getenv("LATENCY_DECAY_PER_HOP", "0.2"))
-REFUSAL_KEYWORDS = os.getenv(
-    "REFUSAL_KEYWORDS", "cannot,unable,refuse,policy,against,not allowed,sorry"
-).split(",")
+REFUSAL_KEYWORDS = os.getenv("REFUSAL_KEYWORDS", "cannot,unable,refuse,policy,against,not allowed,sorry").split(",")
 
 # --- Reporter Configuration ---
 REPORTS_DIR = Path(os.getenv("REPORTS_DIR", "reports"))
 TRAJECTORIES_DIR = REPORTS_DIR / "trajectories"
 HTML_REPORTS_DIR = REPORTS_DIR / "html"
 
-MERMAID_CDN = os.getenv(
-    "MERMAID_CDN", "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"
-)
+MERMAID_CDN = os.getenv("MERMAID_CDN", "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js")
 MERMAID_THEME = os.getenv("MERMAID_THEME", "dark")
 
 # HTML Report Styling

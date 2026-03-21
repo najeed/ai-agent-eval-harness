@@ -21,9 +21,7 @@ def execute_task():
 
     # Task 1: Git Simulation (Keywords in base task or current feedback)
     if "clone" in task_desc or any(
-        "clone" in m["content"].get("content", "").lower()
-        for m in history
-        if m["role"] == "agent"
+        "clone" in m["content"].get("content", "").lower() for m in history if m["role"] == "agent"
     ):
         if turn == 1:
             return jsonify(

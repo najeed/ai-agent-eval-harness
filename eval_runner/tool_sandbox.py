@@ -28,10 +28,7 @@ class SharedStateRegistry:
         agent_config = self.topology.get(agent_name, {})
         allowed_writes = agent_config.get("writes", [])
 
-        if (
-            any(self._match_namespace(namespace, pattern) for pattern in allowed_writes)
-            or "*" in allowed_writes
-        ):
+        if any(self._match_namespace(namespace, pattern) for pattern in allowed_writes) or "*" in allowed_writes:
             self.registry[path] = value
             return True
         return False
@@ -43,10 +40,7 @@ class SharedStateRegistry:
         agent_config = self.topology.get(agent_name, {})
         allowed_reads = agent_config.get("reads", [])
 
-        if (
-            any(self._match_namespace(namespace, pattern) for pattern in allowed_reads)
-            or "*" in allowed_reads
-        ):
+        if any(self._match_namespace(namespace, pattern) for pattern in allowed_reads) or "*" in allowed_reads:
             # Track redundant reads (reading same value multiple times)
             # This is a metric mentioned in the roadmap
             return self.registry.get(path)
@@ -72,9 +66,7 @@ class AbstractSandbox(ABC):
         # Workspace management
         from pathlib import Path
 
-        self.workspace_dir = Path("workspace") / self.scenario.get(
-            "scenario_id", "default"
-        )
+        self.workspace_dir = Path("workspace") / self.scenario.get("scenario_id", "default")
 
         # Phase 2: Grounding Coverage Tracking
         # Stores hit counts for 'policies' and 'tools' (KB/Grounding)
@@ -94,18 +86,14 @@ class AbstractSandbox(ABC):
 
         # Only clean up if explicitly requested in scenario metadata or if it's a test run
         metadata = self.scenario.get("metadata", {})
-        if metadata.get(
-            "cleanup_workspace", self.scenario.get("cleanup_workspace", False)
-        ):
+        if metadata.get("cleanup_workspace", self.scenario.get("cleanup_workspace", False)):
             ws_path = Path(self.workspace_dir)
             if ws_path.exists():
                 shutil.rmtree(ws_path)
                 print(f"      [Sandbox] Workspace cleaned up.")
 
     @abstractmethod
-    def execute(
-        self, tool_name: str, params: dict, agent_name: Optional[str] = None
-    ) -> dict:
+    def execute(self, tool_name: str, params: dict, agent_name: Optional[str] = None) -> dict:
         """Executes a tool and returns the result."""
         pass
 
@@ -116,9 +104,7 @@ class ToolSandbox(AbstractSandbox):
     Uses a static mapping of tool behaviors defined in the scenario.
     """
 
-    def execute(
-        self, tool_name: str, params: dict, agent_name: Optional[str] = None
-    ) -> dict:
+    def execute(self, tool_name: str, params: dict, agent_name: Optional[str] = None) -> dict:
         """
         Executes a tool based on the mock behaviors defined in the scenario.
         Updates the internal state and shared state registry.
@@ -137,17 +123,13 @@ class ToolSandbox(AbstractSandbox):
                     return simulator.execute(tool_name, params)
 
         # Record hit for Tool/KB access
-        self.grounding_hits["tools"][tool_name] = (
-            self.grounding_hits["tools"].get(tool_name, 0) + 1
-        )
+        self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1
 
         # 2. Check for Policy Violations
         policies = self.scenario.get("policies", {})
         if tool_name in policies:
             # Record hit for Policy enforcement
-            self.grounding_hits["policies"][tool_name] = (
-                self.grounding_hits["policies"].get(tool_name, 0) + 1
-            )
+            self.grounding_hits["policies"][tool_name] = self.grounding_hits["policies"].get(tool_name, 0) + 1
             limit = policies[tool_name].get("max_limit")
             if limit and params.get("amount", 0) > limit:
                 return {
@@ -195,9 +177,7 @@ class ToolSandbox(AbstractSandbox):
                 )
 
         # 5. Return Output
-        output = tool_def.get(
-            "output", {"status": "success", "message": f"Executed {tool_name}"}
-        )
+        output = tool_def.get("output", {"status": "success", "message": f"Executed {tool_name}"})
 
         # Notify observers of internal state changes
         from .events import EventEmitter, CoreEvents
@@ -238,16 +218,12 @@ class ToolSandbox(AbstractSandbox):
         # Layer 1: Global System Filter (from config.py / environment)
         global_enabled = config.GLOBAL_ENABLED_SHIMS
         if "*" not in global_enabled:
-            registry = {
-                name: sim for name, sim in registry.items() if name in global_enabled
-            }
+            registry = {name: sim for name, sim in registry.items() if name in global_enabled}
 
         # Layer 2: Scenario-Specific Filter (from .json metadata)
         scenario_enabled = self.scenario.get("enabled_shims", ["*"])
         if "*" not in scenario_enabled:
-            registry = {
-                name: sim for name, sim in registry.items() if name in scenario_enabled
-            }
+            registry = {name: sim for name, sim in registry.items() if name in scenario_enabled}
 
         return registry
 

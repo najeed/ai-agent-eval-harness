@@ -7,9 +7,7 @@ from . import MetricRegistry
 @MetricRegistry.register("decision_making_correctness")
 @MetricRegistry.register("roe_compliance_score")
 @MetricRegistry.register("supply_chain_resilience_index")
-async def calculate_defense_high_fidelity_metric(
-    criterion: Dict[str, Any], agent_summary: str
-) -> float:
+async def calculate_defense_high_fidelity_metric(criterion: Dict[str, Any], agent_summary: str) -> float:
     """
     High-fidelity defense evaluation.
     Maps to 'policy_adherence' or a custom defense rubric if complexity demands.
@@ -25,9 +23,7 @@ async def calculate_defense_high_fidelity_metric(
     }
 
     metric_name = criterion.get("metric", "")
-    updated_criterion["judge_config"]["judge_rubric"] = rubric_map.get(
-        metric_name, "generic"
-    )
+    updated_criterion["judge_config"]["judge_rubric"] = rubric_map.get(metric_name, "generic")
 
     from ..metrics import calculate_luna_judge_score
 

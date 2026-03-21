@@ -56,9 +56,7 @@ async def test_gemini_provider():
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_response = AsyncMock()
         mock_response.status = 200
-        mock_response.json.return_value = {
-            "candidates": [{"content": {"parts": [{"text": "0.7"}]}}]
-        }
+        mock_response.json.return_value = {"candidates": [{"content": {"parts": [{"text": "0.7"}]}}]}
         mock_post.return_value.__aenter__.return_value = mock_response
 
         result = await provider.generate("test")

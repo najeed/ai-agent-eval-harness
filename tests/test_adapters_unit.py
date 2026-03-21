@@ -33,9 +33,7 @@ async def test_local_subprocess_adapter_success():
         mock_proc = MagicMock()
         mock_proc.communicate = AsyncMock(
             return_value=(
-                json.dumps(
-                    {"action": "final_answer", "content": "local_success"}
-                ).encode(),
+                json.dumps({"action": "final_answer", "content": "local_success"}).encode(),
                 b"",
             )
         )

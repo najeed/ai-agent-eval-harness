@@ -35,9 +35,7 @@ async def test_dos_attempt_cap_clamp():
         "tasks": [{"task_id": "t1", "description": "test", "success_criteria": []}],
     }
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock:
         mock.return_value = {"action": "final_answer", "summary": "ok"}
         results = await engine.run_evaluation(scenario, attempts=100)
         # Should have been clamped to 50
@@ -75,9 +73,7 @@ async def test_fork_bomb_breadth(monkeypatch):
     async def mock_agent(payload, protocol="http"):
         return {
             "action": "branch",
-            "branches": [
-                {"name": f"b{i}", "message": "x"} for i in range(MAX_FORK_BREADTH + 1)
-            ],
+            "branches": [{"name": f"b{i}", "message": "x"} for i in range(MAX_FORK_BREADTH + 1)],
         }
 
     monkeypatch.setattr(AgentAdapterRegistry, "call_agent", mock_agent)
@@ -110,9 +106,7 @@ def test_context_history_deep_copy():
     from eval_runner.context import TurnContext
 
     original = [{"role": "user", "content": "hello"}]
-    turn = TurnContext(
-        task_id="t1", turn_number=1, current_message="hi", history=original
-    )
+    turn = TurnContext(task_id="t1", turn_number=1, current_message="hi", history=original)
 
     # history is converted to tuple, so mutation of original list is irrelevant
     original.append({"role": "agent", "content": "world"})
@@ -127,9 +121,7 @@ def test_evaluation_context_frozen_dicts():
     """scenario_data and metadata should be read-only MappingProxyType."""
     from eval_runner.context import EvaluationContext
 
-    ctx = EvaluationContext(
-        scenario_id="x", scenario_data={"key": "val"}, metadata={"m": 1}
-    )
+    ctx = EvaluationContext(scenario_id="x", scenario_data={"key": "val"}, metadata={"m": 1})
     assert isinstance(ctx.scenario_data, types.MappingProxyType)
     assert isinstance(ctx.metadata, types.MappingProxyType)
 
@@ -149,9 +141,7 @@ def test_sanitize_jwt():
     """JWT tokens must be redacted."""
     from eval_runner.events import sanitize_payload
 
-    data = {
-        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.Q_w2AVguFXmVt"
-    }
+    data = {"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.Q_w2AVguFXmVt"}
     result = sanitize_payload(data)
     assert "[REDACTED_JWT]" in result["token"]
 
@@ -255,9 +245,7 @@ def test_cli_no_extend_cli():
     """BaseEvalPlugin must NOT have an extend_cli method (deprecated)."""
     from eval_runner.plugins import BaseEvalPlugin
 
-    assert not hasattr(
-        BaseEvalPlugin, "extend_cli"
-    ), "extend_cli was deprecated in favor of on_register_commands."
+    assert not hasattr(BaseEvalPlugin, "extend_cli"), "extend_cli was deprecated in favor of on_register_commands."
 
 
 # ──────────────────────────────────────────────────────────────────────────────

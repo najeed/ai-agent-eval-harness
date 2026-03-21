@@ -54,9 +54,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
     def rotate_logs(self):
         """Keeps only the latest N run-<id>.jsonl files."""
-        run_files = sorted(
-            self.log_dir.glob("*.jsonl"), key=lambda x: x.stat().st_mtime, reverse=True
-        )
+        run_files = sorted(self.log_dir.glob("*.jsonl"), key=lambda x: x.stat().st_mtime, reverse=True)
 
         # Exclude the master log if it exists, and only target files (not directories)
         run_files = [f for f in run_files if f.name != "run.jsonl" and f.is_file()]

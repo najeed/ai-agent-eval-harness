@@ -88,9 +88,7 @@ def test_explain_command():
 def test_evaluate_command():
     """Verify evaluate command handler uses --path."""
     with patch("eval_runner.cli.run_evaluate") as mock_eval:
-        with patch(
-            "sys.argv", ["eval-harness", "evaluate", "--path", "scenarios/finance/"]
-        ):
+        with patch("sys.argv", ["eval-harness", "evaluate", "--path", "scenarios/finance/"]):
             cli.main()
             mock_eval.assert_called_once()
 
@@ -114,9 +112,7 @@ def test_lint_command():
 def test_calibrate_command():
     """Verify calibrate command handler uses --path."""
     with patch("eval_runner.cli.handle_calibrate") as mock_cal:
-        with patch(
-            "sys.argv", ["eval-harness", "calibrate", "--path", "runs/run.jsonl"]
-        ):
+        with patch("sys.argv", ["eval-harness", "calibrate", "--path", "runs/run.jsonl"]):
             cli.main()
             mock_cal.assert_called_once()
 
@@ -124,9 +120,7 @@ def test_calibrate_command():
 def test_aes_validate_command():
     """Verify aes validate command handler uses --path."""
     with patch("eval_runner.cli.handle_aes_validate") as mock_aes:
-        with patch(
-            "sys.argv", ["eval-harness", "aes", "validate", "--path", "spec.aes.yaml"]
-        ):
+        with patch("sys.argv", ["eval-harness", "aes", "validate", "--path", "spec.aes.yaml"]):
             cli.main()
             mock_aes.assert_called_once()
 
@@ -134,9 +128,7 @@ def test_aes_validate_command():
 def test_run_command():
     """Verify run command handler uses --scenario."""
     with patch("eval_runner.cli.run_scenario") as mock_run:
-        with patch(
-            "sys.argv", ["eval-harness", "run", "--scenario", "scenarios/test.json"]
-        ):
+        with patch("sys.argv", ["eval-harness", "run", "--scenario", "scenarios/test.json"]):
             cli.main()
             mock_run.assert_called_once()
 
@@ -158,9 +150,7 @@ def test_handle_init_scaffolding(tmp_path, monkeypatch):
     # We chdir to tmp_path for the duration of this test
     monkeypatch.chdir(tmp_path)
 
-    with patch(
-        "eval_runner.cli.list_industries", return_value=["accounting", "telecom"]
-    ):
+    with patch("eval_runner.cli.list_industries", return_value=["accounting", "telecom"]):
         mock_args = MagicMock()
         mock_args.dir = None
         mock_args.industry = None

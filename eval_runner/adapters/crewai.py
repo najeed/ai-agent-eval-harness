@@ -11,14 +11,10 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
 
     def on_discover_adapters(self, registry: Any):
         """Register the crewai:// protocol."""
-        print(
-            "      [Plugin] Registering CrewAI adapter via on_discover_adapters hook."
-        )
+        print("      [Plugin] Registering CrewAI adapter via on_discover_adapters hook.")
         registry.register("crewai", self.execute_crewai_task)
 
-    async def execute_crewai_task(
-        self, payload: Dict[str, Any], endpoint: str = None
-    ) -> Dict[str, Any]:
+    async def execute_crewai_task(self, payload: Dict[str, Any], endpoint: str = None) -> Dict[str, Any]:
         """Executes a CrewAI task with dynamic import guards."""
         task_id = payload.get("task_id", "default_task")
 
@@ -39,9 +35,7 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
                 },
             }
         except ImportError:
-            print(
-                f"      [Adapter] Warning: 'crewai' SDK not found. Falling back to mock for task: {task_id}"
-            )
+            print(f"      [Adapter] Warning: 'crewai' SDK not found. Falling back to mock for task: {task_id}")
             return {
                 "status": "mock_success",
                 "output": f"Mock completion for {task_id} (CrewAI not installed)",

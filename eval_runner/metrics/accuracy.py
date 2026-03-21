@@ -6,9 +6,7 @@ from ..rubrics import RubricRegistry
 
 
 @MetricRegistry.register("luna_judge_score")
-async def calculate_luna_judge_score(
-    criterion: Dict[str, Any], agent_summary: str
-) -> float:
+async def calculate_luna_judge_score(criterion: Dict[str, Any], agent_summary: str) -> float:
     """
     LLM-based evaluation using a configurable provider.
     Defaults to Jaccard similarity if provider fails or no expected outcome is provided.
@@ -29,9 +27,7 @@ async def calculate_luna_judge_score(
 
         provider_name = judge_config.get("judge_provider") or config.JUDGE_PROVIDER
         model_name = judge_config.get("judge_model") or config.JUDGE_MODEL
-        temperature = float(
-            judge_config.get("judge_temperature", config.LUNA_JUDGE_TEMPERATURE)
-        )
+        temperature = float(judge_config.get("judge_temperature", config.LUNA_JUDGE_TEMPERATURE))
         rubric_name = judge_config.get("judge_rubric", "generic")
 
         # Essential Fix: Required Judge Guard
@@ -52,9 +48,7 @@ async def calculate_luna_judge_score(
 
         # Select rubric
         rubric_template = RubricRegistry.get(rubric_name)
-        prompt = rubric_template.format(
-            expected_outcome=expected_outcome, agent_summary=agent_summary
-        )
+        prompt = rubric_template.format(expected_outcome=expected_outcome, agent_summary=agent_summary)
 
         # Handle model override if provided
         if hasattr(provider, "model") and model_name:
@@ -74,9 +68,7 @@ async def calculate_luna_judge_score(
             print(f"      [Metrics] [Luna-Judge] Provider score: {score:.2f}")
             return max(0.0, min(1.0, score))
         except ValueError:
-            print(
-                f"      [Metrics] [Luna-Judge] Provider returned non-float: '{response_text}'"
-            )
+            print(f"      [Metrics] [Luna-Judge] Provider returned non-float: '{response_text}'")
     except Exception as e:
         if isinstance(e, RuntimeError) and "Judge Configuration Error" in str(e):
             raise e
@@ -92,9 +84,7 @@ async def calculate_luna_judge_score(
 
 
 @MetricRegistry.register("calculation_accuracy")
-def calculate_calculation_accuracy(
-    criterion: Dict[str, Any], agent_summary: str
-) -> float:
+def calculate_calculation_accuracy(criterion: Dict[str, Any], agent_summary: str) -> float:
     """
     High-fidelity numerical accuracy check.
     Extracts numbers from both 'expected_outcome' and 'agent_summary' and compares them.
@@ -117,16 +107,12 @@ def calculate_calculation_accuracy(
             matches += 1
 
     score = matches / len(expected_nums)
-    print(
-        f"      [Metrics] Calculation accuracy: {score:.2f} ({matches}/{len(expected_nums)} numbers matched)"
-    )
+    print(f"      [Metrics] Calculation accuracy: {score:.2f} ({matches}/{len(expected_nums)} numbers matched)")
     return score
 
 
 @MetricRegistry.register("verification_accuracy")
-def calculate_verification_accuracy(
-    criterion: Dict[str, Any], agent_summary: str
-) -> float:
+def calculate_verification_accuracy(criterion: Dict[str, Any], agent_summary: str) -> float:
     """
     High-fidelity verification check.
     Checks for verification keywords and semantic overlap.
@@ -151,7 +137,5 @@ def calculate_verification_accuracy(
     sim = calculate_jaccard(expected_outcome, agent_summary)
 
     score = 0.5 * (1.0 if has_keyword else 0.0) + 0.5 * sim
-    print(
-        f"      [Metrics] Verification accuracy: {score:.2f} (Keyword: {has_keyword}, Similarity: {sim:.2f})"
-    )
+    print(f"      [Metrics] Verification accuracy: {score:.2f} (Keyword: {has_keyword}, Similarity: {sim:.2f})")
     return score

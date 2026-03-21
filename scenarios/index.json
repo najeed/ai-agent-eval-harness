@@ -6000,6 +6000,18 @@
     "status": "warning"
   },
   {
+    "id": "new-scen",
+    "title": "New",
+    "industry": "test-ind",
+    "difficulty": 1,
+    "tags": [],
+    "path": "industries\\test-ind\\scenarios\\new-scen.json",
+    "mtime": 1774060853.1900206,
+    "description": "desc",
+    "lint_score": 95,
+    "status": "warning"
+  },
+  {
     "id": "drift-0fb797af",
     "title": "Imported Drift: run.jsonl",
     "industry": "telecom",
@@ -6114,10 +6126,10 @@
     "difficulty": 1,
     "tags": [],
     "path": "industries\\telecom\\scenarios\\scenario-ee183321.json",
-    "mtime": 1773097955.3833823,
+    "mtime": 1773978940.8095822,
     "description": "Evaluate an agent's ability to handle a complex billing dispute involving data overages and multi-agent coordination.",
-    "lint_score": 60,
-    "status": "fail"
+    "lint_score": 95,
+    "status": "warning"
   },
   {
     "id": "stateful_test_001",
@@ -38634,10 +38646,10 @@
     "difficulty": 1,
     "tags": [],
     "path": "industries\\healthcare\\scenarios\\scenario-48fff5a6.json",
-    "mtime": 1773956132.22812,
+    "mtime": 1773978938.7849355,
     "description": "This scenario tests an agent's ability to handle a medical appointment rescheduling request.",
-    "lint_score": 60,
-    "status": "fail"
+    "lint_score": 95,
+    "status": "warning"
   },
   {
     "id": "hc-as-11358",
@@ -41058,10 +41070,10 @@
     "difficulty": 1,
     "tags": [],
     "path": "industries\\finance\\scenarios\\scenario-39dd9c3d.json",
-    "mtime": 1773956814.9400728,
-    "description": "",
-    "lint_score": 45,
-    "status": "fail"
+    "mtime": 1773976349.8479648,
+    "description": "Evaluation of AI agent's ability to handle complex financial audit inquiries and data retrieval.",
+    "lint_score": 95,
+    "status": "warning"
   },
   {
     "id": "ethical-guardrails-001",

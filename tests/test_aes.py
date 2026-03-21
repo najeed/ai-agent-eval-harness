@@ -30,7 +30,7 @@ def test_aes_validation_success(tmp_path, capsys):
     handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "Valid" in captured.out
+    assert "[OK] valid.aes.yaml: Valid" in captured.out
 
 
 def test_aes_validation_failure(tmp_path, capsys):
@@ -46,7 +46,7 @@ def test_aes_validation_failure(tmp_path, capsys):
     handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "Invalid" in captured.out
+    assert "[FAIL] invalid.aes.yaml: Invalid aes_version" in captured.out
 
 
 def test_aes_validation_with_enabled_shims(tmp_path, capsys):
@@ -66,7 +66,7 @@ def test_aes_validation_with_enabled_shims(tmp_path, capsys):
     handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "Valid" in captured.out
+    assert "[OK] shims.aes.yaml: Valid" in captured.out
 
 
 def test_aes_validation_with_agent_topology(tmp_path, capsys):
@@ -89,7 +89,7 @@ def test_aes_validation_with_agent_topology(tmp_path, capsys):
     handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "Valid" in captured.out
+    assert "[OK] topology.aes.yaml: Valid" in captured.out
 
 
 def test_aes_validation_with_complexity_level(tmp_path, capsys):
@@ -109,7 +109,7 @@ def test_aes_validation_with_complexity_level(tmp_path, capsys):
     handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "Valid" in captured.out
+    assert "[OK] complexity.aes.yaml: Valid" in captured.out
 
 
 def test_aes_validation_invalid_complexity_level(tmp_path, capsys):
@@ -129,4 +129,4 @@ def test_aes_validation_invalid_complexity_level(tmp_path, capsys):
     handle_aes_validate(args)
 
     captured = capsys.readouterr()
-    assert "Invalid" in captured.out
+    assert "[FAIL] bad_complexity.aes.yaml: Invalid complexity_level 'extreme'" in captured.out

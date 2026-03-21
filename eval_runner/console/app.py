@@ -8,9 +8,7 @@ from eval_runner.plugins import manager
 
 def create_app():
     # Set static_folder to the visual debugger UI directory
-    ui_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "ui", "visual-debugger")
-    )
+    ui_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "ui", "visual-debugger"))
     app = Flask(__name__, static_folder=ui_path, static_url_path="")
     CORS(app)
     app.register_blueprint(auth_bp)

@@ -40,9 +40,7 @@ async def run_quickstart():
         return
 
     try:
-        scenario_path = Path(
-            "industries/telecom/scenarios/technical_support/13814_home_internet_slow_speed.json"
-        )
+        scenario_path = Path("industries/telecom/scenarios/technical_support/13814_home_internet_slow_speed.json")
         if not scenario_path.exists():
             print(f"❌ Error: Quickstart scenario not found at {scenario_path}")
             return

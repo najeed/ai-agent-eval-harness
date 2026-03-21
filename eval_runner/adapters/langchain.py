@@ -12,14 +12,10 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
 
     def on_discover_adapters(self, registry: Any):
         """Register the langchain:// protocol."""
-        print(
-            "      [Plugin] Registering LangChain adapter via on_discover_adapters hook."
-        )
+        print("      [Plugin] Registering LangChain adapter via on_discover_adapters hook.")
         registry.register("langchain", self.execute_langserve_query)
 
-    async def execute_langserve_query(
-        self, payload: Dict[str, Any], url: str = None
-    ) -> Dict[str, Any]:
+    async def execute_langserve_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Executes a query against a LangServe remote endpoint.
         Expects payload to contain 'url' and 'input'.
@@ -39,9 +35,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
 
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    url, json=langserve_input, timeout=60
-                ) as response:
+                async with session.post(url, json=langserve_input, timeout=60) as response:
                     if response.status != 200:
                         return {
                             "status": "error",

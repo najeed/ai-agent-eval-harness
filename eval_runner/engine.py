@@ -71,9 +71,7 @@ class AgentAdapterRegistry:
         }
 
     @classmethod
-    async def call_agent(
-        cls, payload: dict, protocol="http", endpoint: Optional[str] = None
-    ):
+    async def call_agent(cls, payload: dict, protocol="http", endpoint: Optional[str] = None):
         cls._discover()
         adapter = cls._adapters.get(protocol)
         if not adapter:
@@ -95,9 +93,7 @@ class AgentAdapterRegistry:
         return await adapter(payload, endpoint)
 
 
-async def run_evaluation(
-    scenario: dict, attempts: int = 1, metadata: Optional[dict] = None
-) -> list:
+async def run_evaluation(scenario: dict, attempts: int = 1, metadata: Optional[dict] = None) -> list:
     """Entry point for evaluation. Delegates to the Runner strategy."""
     from .runner import DefaultRunner
 
@@ -121,4 +117,6 @@ async def run_evaluation(
     results = await runner.run(scenario, attempts, metadata=metadata)
 
     # Backward compatibility: return first attempt if k=1
-    return results[0] if attempts == 1 else results
+    if attempts == 1:
+        return results[0] if results else []
+    return results

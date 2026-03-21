@@ -180,9 +180,7 @@ class PluginManager:
                     hook = getattr(plugin, hook_name)
                     _invoke_with_timeout(hook, *args, **kwargs)
                 except Exception as e:
-                    print(
-                        f"   [PluginManager] Error in {hook_name} for {plugin.__class__.__name__}: {e}"
-                    )
+                    print(f"   [PluginManager] Error in {hook_name} for {plugin.__class__.__name__}: {e}")
 
     def trigger_interceptor(self, hook_name: str, *args, **kwargs) -> bool:
         """
@@ -198,9 +196,7 @@ class PluginManager:
                     if result is False:
                         return False
                 except Exception as e:
-                    print(
-                        f"   [PluginManager] Error in interceptor {hook_name} for {plugin.__class__.__name__}: {e}"
-                    )
+                    print(f"   [PluginManager] Error in interceptor {hook_name} for {plugin.__class__.__name__}: {e}")
         return True
 
 

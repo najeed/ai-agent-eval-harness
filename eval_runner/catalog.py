@@ -62,9 +62,7 @@ class ScenarioCatalog:
                         "tags": meta.get("tags", []),
                         "path": path_str,
                         "mtime": mtime,
-                        "description": data.get(
-                            "description", meta.get("description", "")
-                        ),
+                        "description": data.get("description", meta.get("description", "")),
                         "lint_score": lint_res["score"],
                         "status": lint_res["status"],
                     }
@@ -129,9 +127,7 @@ class ScenarioCatalog:
         # 2. Faceted Filters
         for key, value in filters.items():
             if value:
-                results = [
-                    s for s in results if str(s.get(key)).lower() == str(value).lower()
-                ]
+                results = [s for s in results if str(s.get(key)).lower() == str(value).lower()]
 
         return results
 
@@ -157,9 +153,7 @@ def list_scenarios(query: str = None):
     print(f"{'ID':<30} | {'Industry':<15} | {'Diff':<4} | {'Title'}")
     print("-" * 80)
     for s in results[:50]:  # Cap at 50 for CLI readability
-        print(
-            f"{s['id']:<30} | {s['industry']:<15} | {s['difficulty']:<4} | {s['title']}"
-        )
+        print(f"{s['id']:<30} | {s['industry']:<15} | {s['difficulty']:<4} | {s['title']}")
 
     if len(results) > 50:
         print(f"\n... and {len(results) - 50} more. Use a more specific search term.")

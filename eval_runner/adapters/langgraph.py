@@ -11,14 +11,10 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
 
     def on_discover_adapters(self, registry: Any):
         """Register the langgraph:// protocol."""
-        print(
-            "      [Plugin] Registering LangGraph adapter via on_discover_adapters hook."
-        )
+        print("      [Plugin] Registering LangGraph adapter via on_discover_adapters hook.")
         registry.register("langgraph", self.execute_langgraph_node)
 
-    async def execute_langgraph_node(
-        self, payload: Dict[str, Any], endpoint: str = None
-    ) -> Dict[str, Any]:
+    async def execute_langgraph_node(self, payload: Dict[str, Any], endpoint: str = None) -> Dict[str, Any]:
         """Executes a LangGraph node with dynamic import guards."""
         node_id = payload.get("node_id", "default_node")
 
@@ -39,9 +35,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
                 },
             }
         except ImportError:
-            print(
-                f"      [Adapter] Warning: 'langgraph' SDK not found. Falling back to mock for node: {node_id}"
-            )
+            print(f"      [Adapter] Warning: 'langgraph' SDK not found. Falling back to mock for node: {node_id}")
             return {
                 "status": "mock_success",
                 "output": f"Mock output for {node_id} (LangGraph not installed)",

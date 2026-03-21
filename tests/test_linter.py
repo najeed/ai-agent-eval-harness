@@ -24,9 +24,7 @@ def test_linter_basic(tmp_path):
                         "task_id": "t1",
                         "description": "Do thing",
                         "expected_outcome": "Thing done",
-                        "success_criteria": [
-                            {"metric": "tool_call_correctness", "threshold": 1.0}
-                        ],
+                        "success_criteria": [{"metric": "tool_call_correctness", "threshold": 1.0}],
                     }
                 ],
             },
@@ -58,9 +56,7 @@ def test_linter_basic(tmp_path):
                         "task_id": "t1",
                         "description": "Do thing",
                         "expected_outcome": "Done",
-                        "success_criteria": [
-                            {"metric": "policy_compliance", "threshold": 1.0}
-                        ],
+                        "success_criteria": [{"metric": "policy_compliance", "threshold": 1.0}],
                     }
                 ],
             },
@@ -89,12 +85,8 @@ def test_linter_basic(tmp_path):
         )
 
     res = linter.lint(str(fail_scen))
-    assert (
-        res["status"] == "fail"
-    ), f"Expected fail, got {res['status']}. Errors: {res['errors']}"
-    assert any(
-        "tasks" in e.lower() for e in res["errors"]
-    ), f"Expected error about tasks, got: {res['errors']}"
+    assert res["status"] == "fail", f"Expected fail, got {res['status']}. Errors: {res['errors']}"
+    assert any("tasks" in e.lower() for e in res["errors"]), f"Expected error about tasks, got: {res['errors']}"
 
 
 def test_linter_duplicates(tmp_path):

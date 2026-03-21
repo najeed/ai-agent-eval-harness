@@ -30,9 +30,7 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             return
 
         try:
-            requests.post(
-                self.endpoint, json={"event": event_name, "data": data}, timeout=0.2
-            )
+            requests.post(self.endpoint, json={"event": event_name, "data": data}, timeout=0.2)
         except Exception:
             # If the console dies, stop trying for this run
             self.active = False
@@ -69,6 +67,4 @@ class RemoteBridgePlugin(BaseEvalPlugin):
         self._post_event(CoreEvents.TOOL_RESULT, {"tool": tool_name, "result": result})
 
     def after_evaluation(self, context, results):
-        self._post_event(
-            CoreEvents.RUN_END, {"status": "COMPLETED", "results_count": len(results)}
-        )
+        self._post_event(CoreEvents.RUN_END, {"status": "COMPLETED", "results_count": len(results)})

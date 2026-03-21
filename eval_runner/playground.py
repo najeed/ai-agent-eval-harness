@@ -26,23 +26,17 @@ async def run_playground(agent_url: str):
                 # We mock a minimal scenario/task object for the engine logic
                 # to stay consistent with how we track metrics if we wanted to.
                 # For now, let's keep it direct.
-                async with session.post(
-                    agent_url, json={"task_description": task}, timeout=10
-                ) as response:
+                async with session.post(agent_url, json={"task_description": task}, timeout=10) as response:
                     if response.status == 200:
                         data = await response.json()
 
                         # Use premium formatting for agent response
                         print(f"🤖 AGENT: {data.get('summary', '...')}")
                         if data.get("action") == "call_tool":
-                            print(
-                                f"   🛠 Tool: {data.get('tool_name')} ({data.get('tool_params')})"
-                            )
+                            print(f"   🛠 Tool: {data.get('tool_name')} ({data.get('tool_params')})")
                             print(f"   📦 Output: {data.get('tool_output')}")
                         elif data.get("action") == "call_multiple_tools":
-                            print(
-                                f"   🛠 Tools: {', '.join(data.get('tool_names', []))}"
-                            )
+                            print(f"   🛠 Tools: {', '.join(data.get('tool_names', []))}")
                     else:
                         print(f"❌ Error {response.status}")
             except Exception as e:

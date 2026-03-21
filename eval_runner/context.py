@@ -29,12 +29,8 @@ class EvaluationContext:
     scenario_data: Dict[str, Any]
     metadata: Dict[str, Any] = field(default_factory=dict)
     global_state: Dict[str, Any] = field(default_factory=dict)
-    plugin_data: Dict[str, Any] = field(
-        default_factory=dict
-    )  # Bucket for plugins to store cross-task data
-    grounding_hits: Dict[str, Dict[str, int]] = field(
-        default_factory=lambda: {"policies": {}, "tools": {}}
-    )
+    plugin_data: Dict[str, Any] = field(default_factory=dict)  # Bucket for plugins to store cross-task data
+    grounding_hits: Dict[str, Dict[str, int]] = field(default_factory=lambda: {"policies": {}, "tools": {}})
 
     def __post_init__(self):
         # Deep-copy and freeze mutable dict fields to prevent Prototype Pollution

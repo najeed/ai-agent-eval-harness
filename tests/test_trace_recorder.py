@@ -20,9 +20,7 @@ async def test_record_interaction_flow(tmp_path, monkeypatch):
     # Mock aiohttp ClientSession and response
     mock_response = AsyncMock()
     mock_response.status = 200
-    mock_response.get_json = AsyncMock(
-        return_value={"summary": "This is a joke", "action": "final_answer"}
-    )
+    mock_response.get_json = AsyncMock(return_value={"summary": "This is a joke", "action": "final_answer"})
     mock_response.__aenter__ = AsyncMock(return_value=mock_response)
     mock_response.__aexit__ = AsyncMock(return_value=None)
 
@@ -31,9 +29,7 @@ async def test_record_interaction_flow(tmp_path, monkeypatch):
     mock_session.__aenter__ = AsyncMock(return_value=mock_session)
     mock_session.__aexit__ = AsyncMock(return_value=None)
 
-    with patch("builtins.input", input_mock), patch(
-        "aiohttp.ClientSession", return_value=mock_session
-    ):
+    with patch("builtins.input", input_mock), patch("aiohttp.ClientSession", return_value=mock_session):
 
         # We need to handle the infinite loop and the fact that record_interaction
         # might print things we want to suppress or capture.
@@ -82,13 +78,11 @@ async def test_record_interaction_error(tmp_path, monkeypatch):
     mock_session.__aenter__ = AsyncMock(return_value=mock_session)
     mock_session.__aexit__ = AsyncMock(return_value=None)
 
-    with patch("builtins.input", input_mock), patch(
-        "aiohttp.ClientSession", return_value=mock_session
-    ), patch("builtins.print") as mock_print:
+    with patch("builtins.input", input_mock), patch("aiohttp.ClientSession", return_value=mock_session), patch(
+        "builtins.print"
+    ) as mock_print:
 
         await record_interaction(agent_url)
 
         # Verify error message was printed
-        mock_print.assert_any_call(
-            "  ❌ Error: Failed to contact agent: Connection failed"
-        )
+        mock_print.assert_any_call("  ❌ Error: Failed to contact agent: Connection failed")

@@ -1,0 +1,19 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-8.4.0, pluggy-1.6.0
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 12 items
+
+tests\test_cli_handlers.py [Catalog] Rebuilding index...
+..[Cleanup] Found 1 files to delete:
+ - old.jsonl
+[OK] Deleted old.jsonl
+
+[Cleanup] Done.
+....[OK] Successfully imported drift from trace.jsonl to <MagicMock name='import_trace_as_scenario()' id='1837317306224'>
+....[OK] Triage applied to C:\Users\najee\AppData\Local\Temp\pytest-of-najee\pytest-810\test_handle_triage0\runs
+..
+
+============================= 12 passed in 1.52s ==============================

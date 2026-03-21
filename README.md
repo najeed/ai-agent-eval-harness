@@ -7,6 +7,8 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Compliant-green.svg)](docs/architecture.md#security-guardrails)
 [![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs/guides/help/00_COMPREHENSIVE_GUIDE.md)
+[![Coverage](https://img.shields.io/badge/Coverage-77%25-green.svg)](docs/TESTING.md)
+[![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/test_security_audit.py)
 
 **AI Agent Evaluation Harness** is the enterprise-grade reliability framework for AI agents. It bridges the "Agentic Reliability Gap" through rigorous evaluation, deep-trace replay debugging, and a modular 20-Shim Enterprise Suite for high-fidelity environment simulation.
 
@@ -320,7 +322,7 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Industry Benchmark Set** | ✅ 5,000+ Scenarios | ✅ Prioritized Scenario Updates |
 | **Reliability Metrics** | ✅ `pass@k` multi-attempt scoring | ✅ Persistent Leaderboards & Consensus |
 | **Scenario Mutations** | 🔶 Basic (Typos & Ambiguity) | ✅ Adversarial Fuzzing & Prompt Injections |
-| **Execution Security** | 🔶 Basic Path/Shell Gating | ✅ Tool Sandboxing & Context Payload Caps |
+| **Execution Security** | 🔶 Basic Path/Shell Gating | ✅ Context Payload Caps & Overflow Guards |
 | **Privacy Protections** | ❌ No | ✅ Automatic PII Scanning & Redaction |
 | **Simulation** | 🔶 Real API required | ✅ High-Fidelity Labs (Bank, EHR/HL7, CRM) |
 | **Compliance Suites** | ❌ No | ✅ Production-Ready (HIPAA, FINRA, GDPR, PCI) |
@@ -331,7 +333,7 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Repro |
 | **Parallel Engine** | 🔶 Sequential only | ✅ Ray/Local JobQueue Distributed Runs |
 | **Interactive Triage** | 🔶 Heuristic only | ✅ Multi-user Sync & Human Annotation |
-| **Advanced Sandbox** | 🔶 Path/Shell Gating| ✅ Docker Containerization & Red-Team Probes |
+| **Advanced Sandbox** | 🔶 Path/Shell Gating| ✅ Hardened Docker Isolation & Red-Team Probes |
 | **Auth & Governance** | ❌ None | ✅ OIDC SSO, RBAC, Managed Leaderboards |
 
 **Legend:** ✅ Full Capability • 🔶 Basic/OSS Only • ❌ Enterprise Only

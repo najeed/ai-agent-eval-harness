@@ -16,9 +16,7 @@ class GrokAdapterPlugin(BaseEvalPlugin):
         print("      [Plugin] Registering Grok adapter via on_discover_adapters hook.")
         registry.register("grok", self.execute_grok_query)
 
-    async def execute_grok_query(
-        self, payload: Dict[str, Any], url: str = None
-    ) -> Dict[str, Any]:
+    async def execute_grok_query(self, payload: Dict[str, Any], url: str = None) -> Dict[str, Any]:
         """
         Calls the xAI Grok API.
         Standardizes the output to match the harness expectations.

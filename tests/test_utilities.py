@@ -77,9 +77,7 @@ def test_html_report_generation(tmp_path):
             # In our mock, it might be different depending on how Path was called.
             # Let's just check if ANY html file was written in the tmp_path.
             html_files = list(tmp_path.glob("*.html")) + list(
-                (tmp_path / "reports" / "html").glob("*.html")
-                if (tmp_path / "reports").exists()
-                else []
+                (tmp_path / "reports" / "html").glob("*.html") if (tmp_path / "reports").exists() else []
             )
             # Actually, let's just use the returned filepath and see if it exists
             # Wait, the reporter code does: report_dir = Path("reports") / "html"
@@ -99,9 +97,7 @@ def test_html_report_content(tmp_path, monkeypatch):
     results = [
         {
             "task_id": "task_1",
-            "metrics": [
-                {"metric": "success", "score": 1.0, "threshold": 0.5, "success": True}
-            ],
+            "metrics": [{"metric": "success", "score": 1.0, "threshold": 0.5, "success": True}],
             "conversation_history": [],
         }
     ]

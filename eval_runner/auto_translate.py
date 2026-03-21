@@ -35,9 +35,7 @@ def extract_text(file_path: Path) -> str:
                     text.append(page.extract_text() or "")
                 return "\n".join(text)
         except ImportError:
-            raise ImportError(
-                "PyPDF2 is required to parse PDF files. Run: pip install PyPDF2"
-            )
+            raise ImportError("PyPDF2 is required to parse PDF files. Run: pip install PyPDF2")
 
     elif ext == ".docx":
         try:
@@ -46,14 +44,10 @@ def extract_text(file_path: Path) -> str:
             doc = docx.Document(file_path)
             return "\n".join([paragraph.text for paragraph in doc.paragraphs])
         except ImportError:
-            raise ImportError(
-                "python-docx is required to parse DOCX files. Run: pip install python-docx"
-            )
+            raise ImportError("python-docx is required to parse DOCX files. Run: pip install python-docx")
 
     else:
-        raise ValueError(
-            f"Unsupported file extension: {ext}. Supported: txt, md, pdf, docx."
-        )
+        raise ValueError(f"Unsupported file extension: {ext}. Supported: txt, md, pdf, docx.")
 
 
 async def translate_to_scenario(
@@ -101,9 +95,7 @@ JSON Output:
                 response_text = result.get("response", "")
 
                 # Try parsing the immediate response, checking for markdown blocks just in case
-                json_match = re.search(
-                    r"```json\s*(.*?)\s*```", response_text, re.DOTALL
-                )
+                json_match = re.search(r"```json\s*(.*?)\s*```", response_text, re.DOTALL)
                 if json_match:
                     response_text = json_match.group(1)
 
@@ -120,18 +112,17 @@ JSON Output:
                 return parsed_json
 
     except aiohttp.ClientConnectorError:
-        raise ConnectionError(
-            f"Could not connect to Ollama at {api_url}. Is Ollama running?"
-        )
+        raise ConnectionError(f"Could not connect to Ollama at {api_url}. Is Ollama running?")
     except json.JSONDecodeError as e:
-        raise ValueError(
-            f"Ollama returned invalid JSON: {e}\nRaw Response: {response_text[:200]}..."
-        )
+        raise ValueError(f"Ollama returned invalid JSON: {e}\nRaw Response: {response_text[:200]}...")
 
 
 def save_scenario(scenario: Dict[str, Any], output_path: Path):
     """Saves the translated JSON scenario to disk."""
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(scenario, f, indent=2)
-    print(f"[OK] Generated Scenario saved to: {output_path}")
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(scenario, f, indent=2)
+        print(f"[OK] Translated scenario saved to: {output_path}")
+    except OSError as e:
+        print(f"[ERROR] Could not save scenario to {output_path}: {e}")

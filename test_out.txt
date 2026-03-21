@@ -1,0 +1,298 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.0, pytest-8.4.0, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\najee\OneDrive\Documents\Projects\ai-agent-eval-harness
+configfile: pyproject.toml
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 12 items
+
+tests/test_cli_handlers.py::test_handle_list PASSED                      [  8%]
+tests/test_cli_handlers.py::test_handle_inspect FAILED                   [ 16%]
+tests/test_cli_handlers.py::test_handle_doctor PASSED                    [ 25%]
+tests/test_cli_handlers.py::test_handle_lint FAILED                      [ 33%]
+tests/test_cli_handlers.py::test_handle_cleanup_runs PASSED              [ 41%]
+tests/test_cli_handlers.py::test_handle_export FAILED                    [ 50%]
+tests/test_cli_handlers.py::test_handle_import_drift FAILED              [ 58%]
+tests/test_cli_handlers.py::test_handle_taxonomy FAILED                  [ 66%]
+tests/test_cli_handlers.py::test_handle_catalog_search FAILED            [ 75%]
+tests/test_cli_handlers.py::test_handle_failures_search PASSED           [ 83%]
+tests/test_cli_handlers.py::test_handle_triage FAILED                    [ 91%]
+tests/test_cli_handlers.py::test_handle_explain PASSED                   [100%]
+
+================================== FAILURES ===================================
+_____________________________ test_handle_inspect _____________________________
+
+mock_args = <MagicMock id='1383185590864'>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001420C491D30>
+tmp_path = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-783/test_handle_inspect0')
+
+    def test_handle_inspect(mock_args, capsys, tmp_path):
+        """Test 'inspect' command handler."""
+        scen_path = tmp_path / "scen.json"
+        scen_path.write_text(json.dumps({"scenario_id": "s1", "title": "Inspect Me"}))
+        mock_args.scenario_path = str(scen_path)
+    
+>       cli.handle_inspect(mock_args)
+        ^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'eval_runner.cli' has no attribute 'handle_inspect'. Did you mean: 'handle_init'?
+
+tests\test_cli_handlers.py:31: AttributeError
+______________________________ test_handle_lint _______________________________
+
+mock_args = <MagicMock id='1383185594896'>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001420C5B60D0>
+tmp_path = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-783/test_handle_lint0')
+
+    def test_handle_lint(mock_args, capsys, tmp_path):
+        """Test 'lint' command handler."""
+        scen_path = tmp_path / "scen.json"
+        scen_path.write_text(json.dumps({"scenario_id": "s1"}))
+        mock_args.target = str(scen_path)
+    
+        with patch("eval_runner.linter.run_lint") as mock_run_lint:
+            cli.handle_lint(mock_args)
+>           mock_run_lint.assert_called_once_with(str(scen_path))
+
+tests\test_cli_handlers.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:997: in assert_called_once_with
+    return self.assert_called_with(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <MagicMock name='run_lint' id='1383185594560'>
+args = ('C:\\Users\\najee\\AppData\\Local\\Temp\\pytest-of-najee\\pytest-783\\test_handle_lint0\\scen.json',)
+kwargs = {}
+expected = call('C:\\Users\\najee\\AppData\\Local\\Temp\\pytest-of-najee\\pytest-783\\test_handle_lint0\\scen.json')
+actual = call(<MagicMock name='mock.path' id='1383185595232'>)
+_error_message = <function NonCallableMock.assert_called_with.<locals>._error_message at 0x000001420EEBD380>
+cause = None
+
+    def assert_called_with(self, /, *args, **kwargs):
+        """assert that the last call was made with the specified arguments.
+    
+        Raises an AssertionError if the args and keyword args passed in are
+        different to the last call to the mock."""
+        if self.call_args is None:
+            expected = self._format_mock_call_signature(args, kwargs)
+            actual = 'not called.'
+            error_message = ('expected call not found.\nExpected: %s\n  Actual: %s'
+                    % (expected, actual))
+            raise AssertionError(error_message)
+    
+        def _error_message():
+            msg = self._format_mock_failure_message(args, kwargs)
+            return msg
+        expected = self._call_matcher(_Call((args, kwargs), two=True))
+        actual = self._call_matcher(self.call_args)
+        if actual != expected:
+            cause = expected if isinstance(expected, Exception) else None
+>           raise AssertionError(_error_message()) from cause
+E           AssertionError: expected call not found.
+E           Expected: run_lint('C:\\Users\\najee\\AppData\\Local\\Temp\\pytest-of-najee\\pytest-783\\test_handle_lint0\\scen.json')
+E             Actual: run_lint(<MagicMock name='mock.path' id='1383185595232'>)
+
+C:\Python314\Lib\unittest\mock.py:985: AssertionError
+_____________________________ test_handle_export ______________________________
+
+mock_args = <MagicMock id='1383185589856'>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001420C5EE650>
+
+    def test_handle_export(mock_args, capsys):
+        """Test 'export' command handler."""
+>       with patch("eval_runner.exporter.export_to_compliance") as mock_export:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_handlers.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:1503: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001420C5EE520>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'eval_runner.exporter' from 'C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\eval_runner\\exporter.py'> does not have the attribute 'export_to_compliance'
+
+C:\Python314\Lib\unittest\mock.py:1473: AttributeError
+__________________________ test_handle_import_drift ___________________________
+
+mock_args = <MagicMock id='1383185591872'>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001420C5EEC40>
+
+    def test_handle_import_drift(mock_args, capsys):
+        """Test 'import-drift' command handler."""
+>       with patch("eval_runner.drift_importer.import_from_source") as mock_import:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_handlers.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:1503: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001420C602570>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'eval_runner.drift_importer' from 'C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\eval_runner\\drift_importer.py'> does not have the attribute 'import_from_source'
+
+C:\Python314\Lib\unittest\mock.py:1473: AttributeError
+____________________________ test_handle_taxonomy _____________________________
+
+mock_args = <MagicMock id='1383185595568'>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001420F01C830>
+
+    def test_handle_taxonomy(mock_args, capsys):
+        """Test 'taxonomy' command handler."""
+>       with patch("eval_runner.taxonomy.get_tree") as mock_tree:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_handlers.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:1503: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001420C593350>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'eval_runner.taxonomy' from 'C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\eval_runner\\taxonomy.py'> does not have the attribute 'get_tree'
+
+C:\Python314\Lib\unittest\mock.py:1473: AttributeError
+_________________________ test_handle_catalog_search __________________________
+
+mock_args = <MagicMock id='1383187498384'>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001420C593790>
+
+    def test_handle_catalog_search(mock_args, capsys):
+        """Test 'catalog-search' command handler."""
+>       with patch("eval_runner.catalog.search") as mock_search:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_cli_handlers.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Python314\Lib\unittest\mock.py:1503: in __enter__
+    original, local = self.get_original()
+                      ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000001420C5938A0>
+
+    def get_original(self):
+        target = self.getter()
+        name = self.attribute
+    
+        original = DEFAULT
+        local = False
+    
+        try:
+            original = target.__dict__[name]
+        except (AttributeError, KeyError):
+            original = getattr(target, name, DEFAULT)
+        else:
+            local = True
+    
+        if name in _builtins and isinstance(target, ModuleType):
+            self.create = True
+    
+        if not self.create and original is DEFAULT:
+>           raise AttributeError(
+                "%s does not have the attribute %r" % (target, name)
+            )
+E           AttributeError: <module 'eval_runner.catalog' from 'C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\eval_runner\\catalog.py'> does not have the attribute 'search'
+
+C:\Python314\Lib\unittest\mock.py:1473: AttributeError
+_____________________________ test_handle_triage ______________________________
+
+mock_args = <MagicMock id='1383187500400'>
+capsys = <_pytest.capture.CaptureFixture object at 0x000001420F07D250>
+tmp_path = WindowsPath('C:/Users/najee/AppData/Local/Temp/pytest-of-najee/pytest-783/test_handle_triage0')
+
+    def test_handle_triage(mock_args, capsys, tmp_path):
+        """Test 'triage' command handler."""
+        runs_dir = tmp_path / "runs"
+        runs_dir.mkdir()
+        run_file = runs_dir / "test.jsonl"
+        run_file.write_text(json.dumps({"event": "run_start", "run_id": "r1", "scenario": "s1"}))
+    
+        with patch("eval_runner.cli.Path", return_value=runs_dir), \
+             patch("eval_runner.trace_utils.load_events", return_value=[{"event": "run_start"}]), \
+             patch("eval_runner.triage.TriageEngine.apply_triage") as mock_apply:
+>           cli.handle_triage(mock_args)
+            ^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'eval_runner.cli' has no attribute 'handle_triage'. Did you mean: 'handle_mutate'?
+
+tests\test_cli_handlers.py:126: AttributeError
+=========================== short test summary info ===========================
+FAILED tests/test_cli_handlers.py::test_handle_inspect - AttributeError: modu...
+FAILED tests/test_cli_handlers.py::test_handle_lint - AssertionError: expecte...
+FAILED tests/test_cli_handlers.py::test_handle_export - AttributeError: <modu...
+FAILED tests/test_cli_handlers.py::test_handle_import_drift - AttributeError:...
+FAILED tests/test_cli_handlers.py::test_handle_taxonomy - AttributeError: <mo...
+FAILED tests/test_cli_handlers.py::test_handle_catalog_search - AttributeErro...
+FAILED tests/test_cli_handlers.py::test_handle_triage - AttributeError: modul...
+========================= 7 failed, 5 passed in 1.89s =========================

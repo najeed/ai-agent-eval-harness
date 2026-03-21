@@ -23,9 +23,7 @@ async def test_advanced_adapter_discovery():
     try:
         # AgentAdapterRegistry._discovered should be reset for clean test
         AgentAdapterRegistry._discovered = False
-        response = await AgentAdapterRegistry.call_agent(
-            {}, protocol="mock_proto", endpoint="dummy"
-        )
+        response = await AgentAdapterRegistry.call_agent({}, protocol="mock_proto", endpoint="dummy")
         assert response["content"] == "Mock discovery works!"
     finally:
         manager.plugins.remove(plugin)

@@ -24,9 +24,7 @@ def sanitize_payload(data: dict) -> dict:
 
     def redact_string(s: str) -> str:
         # JWT tokens
-        s = re.sub(
-            r"ey[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+", "[REDACTED_JWT]", s
-        )
+        s = re.sub(r"ey[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+", "[REDACTED_JWT]", s)
         # OpenAI / Stripe style keys
         s = re.sub(r"sk-[a-zA-Z0-9]{32,}", "[REDACTED_KEY]", s)
         # AWS Access Key IDs

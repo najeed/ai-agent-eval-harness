@@ -72,9 +72,7 @@ class SessionManager:
                         "agent_name": agent_name,
                     },
                 )
-                conversation_history.append(
-                    {"role": "user", "content": current_message}
-                )
+                conversation_history.append({"role": "user", "content": current_message})
 
                 for turn in range(1, self.max_turns + 1):
                     turn_ctx = TurnContext(
@@ -84,9 +82,7 @@ class SessionManager:
                         history=copy.deepcopy(conversation_history),
                     )
 
-                    EventEmitter.emit(
-                        CoreEvents.TURN_START, {"turn": turn, "task_id": task_id}
-                    )
+                    EventEmitter.emit(CoreEvents.TURN_START, {"turn": turn, "task_id": task_id})
                     plugins.manager.trigger("on_agent_turn_start", turn_ctx)
 
                     try:
@@ -136,9 +132,7 @@ class SessionManager:
                                 or agent_response.get("metadata", {}).get("agent_name")
                             )
                             if not discovered_name:
-                                discovered_name = agent_response.get(
-                                    "metadata", {}
-                                ).get("model")
+                                discovered_name = agent_response.get("metadata", {}).get("model")
 
                             if discovered_name:
                                 agent_name = discovered_name
@@ -158,9 +152,7 @@ class SessionManager:
                             },
                         )
                     except Exception as e:
-                        EventEmitter.emit(
-                            CoreEvents.ERROR, {"message": f"Agent Error: {str(e)}"}
-                        )
+                        EventEmitter.emit(CoreEvents.ERROR, {"message": f"Agent Error: {str(e)}"})
                         break
 
                     conversation_history.append(
@@ -183,13 +175,8 @@ class SessionManager:
                             agent_actions,
                             turn_ctx,
                         )
-                        current_message = self._get_last_env_message(
-                            conversation_history
-                        )
-                    elif (
-                        action == "call_multiple_tools"
-                        and "tool_names" in agent_response
-                    ):
+                        current_message = self._get_last_env_message(conversation_history)
+                    elif action == "call_multiple_tools" and "tool_names" in agent_response:
                         await self._handle_multiple_tools(
                             turn,
                             agent_response,
@@ -198,57 +185,39 @@ class SessionManager:
                             agent_actions,
                             turn_ctx,
                         )
-                        current_message = self._get_last_env_message(
-                            conversation_history
-                        )
+                        current_message = self._get_last_env_message(conversation_history)
                     elif action == "hitl_pause":
                         # HITL logic
-                        EventEmitter.emit(
-                            CoreEvents.HITL_PAUSE, {"task_id": task_id, "turn": turn}
-                        )
+                        EventEmitter.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "turn": turn})
 
-                        prompt = agent_response.get(
-                            "prompt", "Human intervention required."
-                        )
+                        prompt = agent_response.get("prompt", "Human intervention required.")
                         print(f"\n   [HITL PAUSE] Task: {task_id} | Turn: {turn}")
                         print(f"      Context: {prompt}")
 
                         # 1. Check CI/Non-Interactive environment
                         if os.getenv("CI") or os.getenv("EVAL_BATCH_MODE") == "true":
                             user_input = "Auto-approved in batch/CI mode."
-                            print(
-                                "      [Session] CI/Batch mode detected. Auto-resuming..."
-                            )
+                            print("      [Session] CI/Batch mode detected. Auto-resuming...")
                         # 2. Try interactive input
                         else:
                             try:
                                 import sys
 
                                 if sys.stdin.isatty():
-                                    user_input = input(
-                                        "      > Provide guidance or press Enter to approve: "
-                                    ).strip()
+                                    user_input = input("      > Provide guidance or press Enter to approve: ").strip()
                                     if not user_input:
-                                        user_input = (
-                                            "Human has reviewed and approved. Proceed."
-                                        )
+                                        user_input = "Human has reviewed and approved. Proceed."
                                 else:
-                                    user_input = (
-                                        "Non-interactive shell. Auto-approving."
-                                    )
+                                    user_input = "Non-interactive shell. Auto-approving."
                             except (EOFError, KeyboardInterrupt):
-                                user_input = (
-                                    "Human intervention aborted. Stopping task."
-                                )
+                                user_input = "Human intervention aborted. Stopping task."
                                 EventEmitter.emit(
                                     CoreEvents.ERROR,
                                     {"message": "HITL Aborted by user."},
                                 )
                                 break
 
-                        conversation_history.append(
-                            {"role": "human", "content": user_input}
-                        )
+                        conversation_history.append({"role": "human", "content": user_input})
                         current_message = user_input
                         EventEmitter.emit(CoreEvents.HITL_RESUME, {"task_id": task_id})
                     elif action == "branch" and "branches" in agent_response:
@@ -270,9 +239,7 @@ class SessionManager:
                                 },
                             )
                             break
-                        print(
-                            f"   [Session] Branching detected: {len(branch_data)} new paths."
-                        )
+                        print(f"   [Session] Branching detected: {len(branch_data)} new paths.")
                         # This is a research-phase implementation: we'll only execute the first branch here
                         # but in a full system we would queue separate evaluation attempts for each fork.
                         current_message = branch_data[0].get("message", current_message)
@@ -300,26 +267,20 @@ class SessionManager:
                     agent_actions,
                 )
                 all_task_results.append(task_results)
-                EventEmitter.emit(
-                    CoreEvents.TASK_END, {"task_id": task_id, "results": task_results}
-                )
+                EventEmitter.emit(CoreEvents.TASK_END, {"task_id": task_id, "results": task_results})
 
         finally:
             sandbox.teardown()
 
         return all_task_results
 
-    async def _handle_tool_call(
-        self, turn, agent_response, sandbox, history, actions, turn_ctx
-    ):
+    async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]
         tool_params = agent_response.get("tool_params", {})
 
         # Interception Hook
         # Note: In a real implementation, we'd check if any plugin returns False
-        allowed = plugins.manager.trigger_interceptor(
-            "on_tool_request", turn_ctx, tool_name, tool_params
-        )
+        allowed = plugins.manager.trigger_interceptor("on_tool_request", turn_ctx, tool_name, tool_params)
         if not allowed:
             EventEmitter.emit(
                 CoreEvents.ERROR,
@@ -337,9 +298,7 @@ class SessionManager:
         result = sandbox.execute(tool_name, tool_params)
         state_after = sandbox.state.copy()
 
-        EventEmitter.emit(
-            CoreEvents.TOOL_RESULT, {"step": turn, "tool": tool_name, "result": result}
-        )
+        EventEmitter.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tool_name, "result": result})
 
         history.append(
             {
@@ -351,34 +310,24 @@ class SessionManager:
         )
         plugins.manager.trigger("on_tool_result", turn_ctx, tool_name, result)
 
-    async def _handle_multiple_tools(
-        self, turn, agent_response, sandbox, history, actions, turn_ctx
-    ):
+    async def _handle_multiple_tools(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_names = agent_response["tool_names"]
         actions["used_tools"].extend(tool_names)
 
         for tn in tool_names:
-            EventEmitter.emit(
-                CoreEvents.TOOL_CALL, {"step": turn, "tool": tn, "arguments": {}}
-            )
+            EventEmitter.emit(CoreEvents.TOOL_CALL, {"step": turn, "tool": tn, "arguments": {}})
 
         all_tool_results = []
         state_before = sandbox.state.copy()
         for tn in tool_names:
             # Note: Single interception for multiple tools could be complex; here we check each
-            allowed = plugins.manager.trigger_interceptor(
-                "on_tool_request", turn_ctx, tn, {}
-            )
+            allowed = plugins.manager.trigger_interceptor("on_tool_request", turn_ctx, tn, {})
             if allowed:
                 res = sandbox.execute(tn, {})
                 all_tool_results.append(res)
-                EventEmitter.emit(
-                    CoreEvents.TOOL_RESULT, {"step": turn, "tool": tn, "result": res}
-                )
+                EventEmitter.emit(CoreEvents.TOOL_RESULT, {"step": turn, "tool": tn, "result": res})
             else:
-                all_tool_results.append(
-                    {"status": "blocked", "message": f"Tool {tn} blocked by plugin."}
-                )
+                all_tool_results.append({"status": "blocked", "message": f"Tool {tn} blocked by plugin."})
         state_after = sandbox.state.copy()
 
         history.append(
@@ -414,9 +363,7 @@ class SessionManager:
 
         criteria = task.get("success_criteria", []).copy()
         # Ensure default metrics
-        if "expected_state_changes" in task and not any(
-            c["metric"] == "state_verification" for c in criteria
-        ):
+        if "expected_state_changes" in task and not any(c["metric"] == "state_verification" for c in criteria):
             criteria.append({"metric": "state_verification", "threshold": 1.0})
 
         for criterion in criteria:
@@ -427,13 +374,9 @@ class SessionManager:
 
                 score = 0.0
                 if m_name == "tool_call_correctness" and metric_func:
-                    score = metric_func(
-                        task.get("required_tools", []), actions["used_tools"]
-                    )
+                    score = metric_func(task.get("required_tools", []), actions["used_tools"])
                 elif m_name == "state_verification" and metric_func:
-                    score = metric_func(
-                        task.get("expected_state_changes", []), sandbox.state
-                    )
+                    score = metric_func(task.get("expected_state_changes", []), sandbox.state)
                 elif m_name == "policy_compliance" and metric_func:
                     score = metric_func(history)
                 elif m_name == "path_parsimony" and metric_func:
@@ -461,9 +404,7 @@ class SessionManager:
                     {"metric": m_name, "value": score, "attempt": k},
                 )
             except Exception as e:
-                print(
-                    f"      [Session] Error calculating metric '{criterion.get('metric')}': {e}"
-                )
+                print(f"      [Session] Error calculating metric '{criterion.get('metric')}': {e}")
                 results["metrics"].append(
                     {
                         "metric": criterion.get("metric"),
@@ -483,31 +424,20 @@ class SessionManager:
         last_content = agent_msgs[-1].get("content", "")
         if isinstance(last_content, dict):
             # Try to find a meaningful string across common fields
-            return (
-                last_content.get("summary")
-                or last_content.get("instructions")
-                or last_content.get("content")
-                or ""
-            )
+            return last_content.get("summary") or last_content.get("instructions") or last_content.get("content") or ""
         return str(last_content)
 
-    def fork(
-        self, history: List[Dict[str, Any]], sandbox_state: Dict[str, Any]
-    ) -> SessionManager:
+    def fork(self, history: List[Dict[str, Any]], sandbox_state: Dict[str, Any]) -> SessionManager:
         """
         Creates a clone of the current session at a specific checkpoint.
         Supports research into non-linear trajectories.
         """
         if getattr(self, "fork_depth", 0) >= MAX_FORK_DEPTH:
-            raise RuntimeError(
-                f"Fork Bomb Prevention: Maximum depth ({MAX_FORK_DEPTH}) reached."
-            )
+            raise RuntimeError(f"Fork Bomb Prevention: Maximum depth ({MAX_FORK_DEPTH}) reached.")
         scenario_copy = copy.deepcopy(self.scenario)
         scenario_copy["_fork_depth"] = getattr(self, "fork_depth", 0) + 1
         new_session = SessionManager(scenario_copy)
         # Note: In a full implementation, we'd need to deep copy the sandbox
         # and ensure the conversation history is properly partitioned.
-        print(
-            f"   [Session] Forking trajectory with {len(history)} messages in history."
-        )
+        print(f"   [Session] Forking trajectory with {len(history)} messages in history.")
         return new_session

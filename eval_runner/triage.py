@@ -29,10 +29,7 @@ class TriageEngine:
         for turn in history:
             if turn.get("role") == "environment":
                 content = turn.get("content", {})
-                if (
-                    isinstance(content, dict)
-                    and content.get("status") == "policy_violation"
-                ):
+                if isinstance(content, dict) and content.get("status") == "policy_violation":
                     return "POLICY_VIOLATION"
 
         # Check for stalls (repeated actions)
@@ -43,10 +40,7 @@ class TriageEngine:
         ]
         if len(agent_actions) >= 3:
             for i in range(len(agent_actions) - 2):
-                if (
-                    agent_actions[i] == agent_actions[i + 1] == agent_actions[i + 2]
-                    and agent_actions[i] is not None
-                ):
+                if agent_actions[i] == agent_actions[i + 1] == agent_actions[i + 2] and agent_actions[i] is not None:
                     return "STALL"
 
         # Check for Tool Errors (Environment status 'error')
@@ -76,9 +70,7 @@ class TriageEngine:
 
         # 0. Check for failure signature (Include 'failure' and 'failed' and results)
         has_failure = any(
-            turn.get("event") in ("run_end", "evaluation")
-            or turn.get("role") == "run_end"
-            for turn in history
+            turn.get("event") in ("run_end", "evaluation") or turn.get("role") == "run_end" for turn in history
         )
 
         # Explicit fail status check
@@ -92,10 +84,7 @@ class TriageEngine:
         for i, turn in enumerate(history):
             content = turn.get("content") or {}
             # Check content for explicit violation status
-            if (
-                isinstance(content, dict)
-                and content.get("status") == "policy_violation"
-            ):
+            if isinstance(content, dict) and content.get("status") == "policy_violation":
                 return {
                     "index": i,
                     "confidence": 1.0,
@@ -109,10 +98,7 @@ class TriageEngine:
             if (
                 ev == "policy_violation"
                 or status == "policy_violation"
-                or (
-                    isinstance(content, dict)
-                    and content.get("status") == "policy_violation"
-                )
+                or (isinstance(content, dict) and content.get("status") == "policy_violation")
             ):
                 return {
                     "index": i,
@@ -123,10 +109,7 @@ class TriageEngine:
             if (
                 ev == "safety_block"
                 or status == "safety_block"
-                or (
-                    isinstance(content, dict)
-                    and content.get("status") == "safety_block"
-                )
+                or (isinstance(content, dict) and content.get("status") == "safety_block")
             ):
                 return {
                     "index": i,
@@ -135,11 +118,7 @@ class TriageEngine:
                     "suggestion": "Check the evaluation guardrails and input sanitization.",
                 }
             # Check evaluation events for policy compliance failure (common in tests)
-            if (
-                ev == "evaluation"
-                and turn.get("metric") == "policy_compliance"
-                and turn.get("value") == 0.0
-            ):
+            if ev == "evaluation" and turn.get("metric") == "policy_compliance" and turn.get("value") == 0.0:
                 return {
                     "index": i,
                     "confidence": 1.0,
@@ -157,13 +136,13 @@ class TriageEngine:
                             "index": j,
                             "confidence": 0.9,
                             "reason": f"Metric Failure: '{turn.get('metric', 'unspecified')}' failed (Value: {turn.get('value')}). Deviation pinpointed to agent action at turn {j}.",
-                            "suggestion": "Review the agent's reasoning leading to this specific metric failure."
+                            "suggestion": "Review the agent's reasoning leading to this specific metric failure.",
                         }
                 return {
                     "index": i,
                     "confidence": 0.8,
                     "reason": f"Metric Failure: '{turn.get('metric', 'unspecified')}' failed (Value: {turn.get('value')}).",
-                    "suggestion": "Review the evaluation criteria for this scenario."
+                    "suggestion": "Review the evaluation criteria for this scenario.",
                 }
 
         # 3. Explicitly marked root cause in a turn (if plugin added it)
@@ -172,8 +151,7 @@ class TriageEngine:
                 return {
                     "index": i,
                     "confidence": 1.0,
-                    "reason": turn.get("root_cause_reason")
-                    or "Explicitly marked as root cause by evaluation plugin.",
+                    "reason": turn.get("root_cause_reason") or "Explicitly marked as root cause by evaluation plugin.",
                     "suggestion": turn.get("root_cause_suggestion")
                     or "Review the specific metric failure in the report.",
                 }
@@ -184,10 +162,7 @@ class TriageEngine:
             if turn.get("event") == "tool_result" or turn.get("role") == "environment":
                 content = turn.get("content") or {}
                 raw_result = str(
-                    turn.get("result")
-                    or (
-                        content.get("message") if isinstance(content, dict) else content
-                    )
+                    turn.get("result") or (content.get("message") if isinstance(content, dict) else content)
                 )
                 result_val = raw_result.lower()
 
@@ -206,13 +181,12 @@ class TriageEngine:
                     }
                 if is_error:
                     # Trace back to agent if possible
-                    inner_reason = (
-                        f"Tool Error in {turn.get('tool') or 'executor'}: {raw_result}"
-                    )
+                    inner_reason = f"Tool Error in {turn.get('tool') or 'executor'}: {raw_result}"
                     for j in range(i - 1, -1, -1):
-                        if history[j].get("role") == "agent" or history[j].get(
-                            "event"
-                        ) in ("agent_response", "tool_call"):
+                        if history[j].get("role") == "agent" or history[j].get("event") in (
+                            "agent_response",
+                            "tool_call",
+                        ):
                             return {
                                 "index": j,
                                 "confidence": 0.85,
@@ -230,9 +204,7 @@ class TriageEngine:
         for i, turn in enumerate(history):
             if turn.get("role") == "system" or turn.get("event") == "system_error":
                 content = turn.get("content") or {}
-                if (
-                    isinstance(content, dict) and content.get("status") == "error"
-                ) or "error" in str(content).lower():
+                if (isinstance(content, dict) and content.get("status") == "error") or "error" in str(content).lower():
                     return {
                         "index": i,
                         "confidence": 0.9,
@@ -249,11 +221,7 @@ class TriageEngine:
         if len(agent_actions) >= 3:
             for i in range(len(agent_actions) - 2):
                 idx, act = agent_actions[i]
-                if (
-                    act == agent_actions[i + 1][1] == agent_actions[i + 2][1]
-                    and act is not None
-                    and act != "thought"
-                ):
+                if act == agent_actions[i + 1][1] == agent_actions[i + 2][1] and act is not None and act != "thought":
                     return {
                         "index": idx,
                         "confidence": 0.8,
@@ -262,11 +230,7 @@ class TriageEngine:
                     }
 
         # 6. Infinite Loop Detection
-        prompts = [
-            e.get("content")
-            for e in history
-            if e.get("event") == "prompt" or e.get("role") == "user"
-        ]
+        prompts = [e.get("content") for e in history if e.get("event") == "prompt" or e.get("role") == "user"]
         if len(prompts) > 10:
             unique_prompts = set([str(p) for p in prompts])
             if len(unique_prompts) < len(prompts) / 2:
@@ -306,8 +270,7 @@ class TriageEngine:
 
         # If it reached here and it's not an explicit fail, it might be a success or inconclusive
         if not is_explicit_fail and any(
-            turn.get("event") == "run_end" and turn.get("status") == "success"
-            for turn in history
+            turn.get("event") == "run_end" and turn.get("status") == "success" for turn in history
         ):
             return {"index": -1, "confidence": 1.0, "reason": "Execution succeeded"}
 

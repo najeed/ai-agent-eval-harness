@@ -4,9 +4,7 @@ from . import MetricRegistry
 
 @MetricRegistry.register("planning_quality")
 @MetricRegistry.register("strategic_planning")
-async def calculate_planning_quality(
-    criterion: Dict[str, Any], agent_summary: str
-) -> float:
+async def calculate_planning_quality(criterion: Dict[str, Any], agent_summary: str) -> float:
     """
     High-fidelity planning evaluation using Luna-Judge.
     Maps to the 'strategic_planning' rubric.
@@ -25,9 +23,7 @@ async def calculate_planning_quality(
 
 @MetricRegistry.register("root_cause_analysis_correctness")
 @MetricRegistry.register("causal_inference")
-async def calculate_root_cause_analysis(
-    criterion: Dict[str, Any], agent_summary: str
-) -> float:
+async def calculate_root_cause_analysis(criterion: Dict[str, Any], agent_summary: str) -> float:
     """
     High-fidelity root cause evaluation using Luna-Judge.
     Maps to the 'causal_inference' rubric.

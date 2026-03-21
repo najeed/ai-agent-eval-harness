@@ -81,9 +81,7 @@ class OpenAIProvider(LLMProvider):
                         return data["choices"][0]["message"]["content"].strip()
                     else:
                         error_data = await response.text()
-                        raise Exception(
-                            f"OpenAI error: {response.status} - {error_data}"
-                        )
+                        raise Exception(f"OpenAI error: {response.status} - {error_data}")
             except Exception as e:
                 raise Exception(f"OpenAI request failed: {e}")
 
@@ -158,9 +156,7 @@ class GrokProvider(LLMProvider):
 
     async def generate(self, prompt: str, **kwargs) -> str:
         # Grok uses OpenAI-compatible API
-        provider = OpenAIProvider(
-            api_key=self.api_key, base_url=config.XAI_BASE_URL, model=self.model
-        )
+        provider = OpenAIProvider(api_key=self.api_key, base_url=config.XAI_BASE_URL, model=self.model)
         return await provider.generate(prompt, **kwargs)
 
 

@@ -46,14 +46,10 @@ async def record_interaction(agent_url: str):
                 print("  Thinking...")
 
                 try:
-                    async with session.post(
-                        agent_url, json={"task_description": task}, timeout=10
-                    ) as response:
+                    async with session.post(agent_url, json={"task_description": task}, timeout=10) as response:
                         if response.status == 200:
                             data = await response.get_json()
-                            print(
-                                f"  Agent: {data.get('summary', 'No summary provided')}"
-                            )
+                            print(f"  Agent: {data.get('summary', 'No summary provided')}")
 
                             # Record response
                             res_event = {
@@ -63,9 +59,7 @@ async def record_interaction(agent_url: str):
                             }
                             events.append(res_event)
                         else:
-                            print(
-                                f"  ❌ Error: Agent returned status {response.status}"
-                            )
+                            print(f"  ❌ Error: Agent returned status {response.status}")
                 except Exception as e:
                     print(f"  ❌ Error: Failed to contact agent: {e}")
 

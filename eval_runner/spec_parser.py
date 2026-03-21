@@ -25,28 +25,20 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
     }
 
     # 1. Extract Title (H1)
-    title_match = re.search(
-        r"^#\s+(?:PRD:\s*)?(.*)", markdown_text, re.MULTILINE | re.IGNORECASE
-    )
+    title_match = re.search(r"^#\s+(?:PRD:\s*)?(.*)", markdown_text, re.MULTILINE | re.IGNORECASE)
     if title_match:
         scenario["title"] = title_match.group(1).strip()
 
     # 2. Extract Metadata (Industry, Use Case, Core Function)
-    industry_match = re.search(
-        r"\*\*Industry:\*\*\s*(.*)", markdown_text, re.IGNORECASE
-    )
+    industry_match = re.search(r"\*\*Industry:\*\*\s*(.*)", markdown_text, re.IGNORECASE)
     if industry_match:
         scenario["industry"] = industry_match.group(1).strip()
 
-    use_case_match = re.search(
-        r"\*\*Use Case:\*\*\s*(.*)", markdown_text, re.IGNORECASE
-    )
+    use_case_match = re.search(r"\*\*Use Case:\*\*\s*(.*)", markdown_text, re.IGNORECASE)
     if use_case_match:
         scenario["use_case"] = use_case_match.group(1).strip()
 
-    core_func_match = re.search(
-        r"\*\*Core Function:\*\*\s*(.*)", markdown_text, re.IGNORECASE
-    )
+    core_func_match = re.search(r"\*\*Core Function:\*\*\s*(.*)", markdown_text, re.IGNORECASE)
     if core_func_match:
         scenario["core_function"] = core_func_match.group(1).strip()
 
@@ -64,17 +56,11 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
             scenario["description"] = body
         elif "tasks" in header:
             # Find all H3 headers in the tasks section (numbered or unnumbered)
-            task_headers = list(
-                re.finditer(r"^###\s+(?:\d+\.\s*)?(.*)", body, re.MULTILINE)
-            )
+            task_headers = list(re.finditer(r"^###\s+(?:\d+\.\s*)?(.*)", body, re.MULTILINE))
             for i, match in enumerate(task_headers):
                 task_title = match.group(1).strip()
                 start_pos = match.end()
-                end_pos = (
-                    task_headers[i + 1].start()
-                    if i + 1 < len(task_headers)
-                    else len(body)
-                )
+                end_pos = task_headers[i + 1].start() if i + 1 < len(task_headers) else len(body)
 
                 task_body = body[start_pos:end_pos].strip()
                 t_lines = task_body.split("\n")
@@ -92,10 +78,7 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                         expected_outcome = cl.split("**Expected Outcome:**")[-1].strip()
                     elif "**Tools:**" in cl:
                         t_str = cl.split("**Tools:**")[-1].strip()
-                        tools = [
-                            t.strip().strip("`").strip("[]").strip('"')
-                            for t in t_str.split(",")
-                        ]
+                        tools = [t.strip().strip("`").strip("[]").strip('"') for t in t_str.split(",")]
                     elif "**Criteria:**" in cl:
                         c_str = cl.split("**Criteria:**")[-1].strip()
                         c_match = re.search(r"([a-zA-Z_]+)(?:\s*\((.*)\))?", c_str)
@@ -117,8 +100,7 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                         "description": "\n".join(final_desc).strip(),
                         "expected_outcome": expected_outcome,
                         "required_tools": tools,
-                        "success_criteria": criteria
-                        or [{"metric": "generic_accuracy", "threshold": 0.5}],
+                        "success_criteria": criteria or [{"metric": "generic_accuracy", "threshold": 0.5}],
                     }
                 )
         elif "topology" in header:
@@ -131,24 +113,14 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                 agent = name_match.group(1).strip()
 
                 writes = []
-                w_match = re.search(
-                    r"writes to\s*[`\[\]\"']*(.*?)[`\[\]\"']*(?:,|$|\.|\s)", cl
-                )
+                w_match = re.search(r"writes to\s*[`\[\]\"']*(.*?)[`\[\]\"']*(?:,|$|\.|\s)", cl)
                 if w_match:
-                    writes = [
-                        w.strip().strip("`").strip('"')
-                        for w in w_match.group(1).split(",")
-                    ]
+                    writes = [w.strip().strip("`").strip('"') for w in w_match.group(1).split(",")]
 
                 reads = []
-                r_match = re.search(
-                    r"reads from\s*[`\[\]\"']*(.*?)[`\[\]\"']*(?:,|$|\.|\s)", cl
-                )
+                r_match = re.search(r"reads from\s*[`\[\]\"']*(.*?)[`\[\]\"']*(?:,|$|\.|\s)", cl)
                 if r_match:
-                    reads = [
-                        r.strip().strip("`").strip('"')
-                        for r in r_match.group(1).split(",")
-                    ]
+                    reads = [r.strip().strip("`").strip('"') for r in r_match.group(1).split(",")]
 
                 topology[agent] = {
                     "writes": [w for w in writes if w],

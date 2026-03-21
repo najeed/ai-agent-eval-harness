@@ -8,8 +8,6 @@ Also acts as a package container for ecosystem-specific adapters.
 
 import json
 import asyncio
-import subprocess
-import sys
 from typing import Dict, Any, Optional
 from .. import config
 
@@ -45,9 +43,7 @@ async def local_subprocess_adapter(payload: dict, command: str):
 
     if process.returncode != 0:
         error_msg = stderr.decode().strip()
-        raise RuntimeError(
-            f"Agent subprocess failed (exit code {process.returncode}): {error_msg}"
-        )
+        raise RuntimeError(f"Agent subprocess failed (exit code {process.returncode}): {error_msg}")
 
     try:
         return json.loads(stdout.decode())

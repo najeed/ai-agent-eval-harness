@@ -47,10 +47,7 @@ class PublicationPlugin(BaseEvalPlugin):
         failure_counts = {}
 
         for attempt in attempts:
-            is_success = all(
-                all(m.get("success", False) for m in tr.get("metrics", []))
-                for tr in attempt
-            )
+            is_success = all(all(m.get("success", False) for m in tr.get("metrics", [])) for tr in attempt)
             pass_flags.append(is_success)
 
             # Aggregate per-attempt metrics
@@ -76,12 +73,8 @@ class PublicationPlugin(BaseEvalPlugin):
                 "avg_latency": sum(latencies) / len(latencies) if latencies else 0,
                 "p95_latency": self._percentile(latencies, 95) if latencies else 0,
                 "avg_cost": sum(costs) / len(costs) if costs else 0,
-                "confidence_interval": self._wilson_score_interval(
-                    pass_rate, len(pass_flags)
-                ),
-                "failure_distribution": {
-                    k: v / len(latencies) for k, v in failure_counts.items()
-                },
+                "confidence_interval": self._wilson_score_interval(pass_rate, len(pass_flags)),
+                "failure_distribution": {k: v / len(latencies) for k, v in failure_counts.items()},
             },
             "metadata": {
                 "industry": scenario.get("industry"),
@@ -133,9 +126,7 @@ class PublicationPlugin(BaseEvalPlugin):
             if n < k:
                 continue
             # Simplified pass@k estimation
-            res[f"pass@{k}"] = (
-                1 - math.comb(n - c, k) / math.comb(n, k) if n - c >= k else 1.0
-            )
+            res[f"pass@{k}"] = 1 - math.comb(n - c, k) / math.comb(n, k) if n - c >= k else 1.0
         return res
 
     def _percentile(self, data, p):
@@ -166,9 +157,7 @@ class PublicationPlugin(BaseEvalPlugin):
                 threshold = self.config.get("regression_threshold", 0.03)
 
                 if old_rate - new_rate > threshold:
-                    print(
-                        f"   [PublicationPlugin] 🚩 REGRESSION DETECTED on {s_id}: {old_rate:.2f} -> {new_rate:.2f}"
-                    )
+                    print(f"   [PublicationPlugin] 🚩 REGRESSION DETECTED on {s_id}: {old_rate:.2f} -> {new_rate:.2f}")
         except:
             pass
 

@@ -34,9 +34,9 @@ async def test_run_playground_flow(monkeypatch):
     mock_session.__aexit__ = AsyncMock(return_value=None)
 
     # Capture prints to verify formatting
-    with patch("builtins.input", input_mock), patch(
-        "aiohttp.ClientSession", return_value=mock_session
-    ), patch("builtins.print") as mock_print:
+    with patch("builtins.input", input_mock), patch("aiohttp.ClientSession", return_value=mock_session), patch(
+        "builtins.print"
+    ) as mock_print:
 
         await run_playground(agent_url)
 
@@ -60,9 +60,9 @@ async def test_run_playground_error(monkeypatch):
     mock_session.__aenter__ = AsyncMock(return_value=mock_session)
     mock_session.__aexit__ = AsyncMock(return_value=None)
 
-    with patch("builtins.input", input_mock), patch(
-        "aiohttp.ClientSession", return_value=mock_session
-    ), patch("builtins.print") as mock_print:
+    with patch("builtins.input", input_mock), patch("aiohttp.ClientSession", return_value=mock_session), patch(
+        "builtins.print"
+    ) as mock_print:
 
         await run_playground(agent_url)
 

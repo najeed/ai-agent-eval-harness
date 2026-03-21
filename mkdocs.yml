@@ -1,0 +1,70 @@
+site_name: AI Agent Evaluation Harness
+site_description: Enterprise-grade reliability framework for AI agents.
+site_author: Najeed Khan
+site_url: https://najeed.github.io/ai-agent-eval-harness/
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quickstart: guides/help/01_QUICK_START.md
+      - User Manual: guides/help/02_USER_MANUAL.md
+      - Developer Guide: guides/help/03_DEVELOPER_GUIDE.md
+  - Architecture: architecture.md
+  - Features:
+      - Inventory: feature_inventory.md
+      - API Reference: agent_api.md
+      - CLI Reference: cli_reference.md
+      - Plugins: plugins.md
+  - Advanced Guides:
+      - Evaluation: guides/01_EVALUATION_GUIDE.md
+      - Triage & Drift: guides/05_DRIFT_AND_TRIAGE.md
+      - AES Specification: guides/04_AES_SPECIFICATION.md
+      - Publication: publication_guide.md
+  - Ecosystem:
+      - Onboarding: guides/help/04_ONBOARDING_TUTORIAL.md
+      - World Shims: guides/help/07_WORLD_SHIMS_REFERENCE.md
+      - Verification: guides/help/05_ECOSYSTEM_VERIFICATION_GUIDE.md
+  - Reference:
+      - Code of Conduct: CODE_OF_CONDUCT.md

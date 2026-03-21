@@ -64,17 +64,13 @@ def generate_coverage_report(context: EvaluationContext, output_path: Path):
     for p in all_policies:
         count = hits["policies"].get(p, 0)
         cls = "hit" if count > 0 else "miss"
-        policy_html += (
-            f'<div class="item {cls}">{p}<span class="count">{count} hits</span></div>'
-        )
+        policy_html += f'<div class="item {cls}">{p}<span class="count">{count} hits</span></div>'
 
     tool_html = ""
     for t in all_tools:
         count = hits["tools"].get(t, 0)
         cls = "hit" if count > 0 else "miss"
-        tool_html += (
-            f'<div class="item {cls}">{t}<span class="count">{count} hits</span></div>'
-        )
+        tool_html += f'<div class="item {cls}">{t}<span class="count">{count} hits</span></div>'
 
     html = HTML_TEMPLATE.format(
         scenario_id=context.scenario_id,

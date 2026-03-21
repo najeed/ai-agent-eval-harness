@@ -1,1 +1,233 @@
-[]
+[
+  {
+    "run_id": "run-test_scenario-17232",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774047127.5171309,
+    "iso_time": "2026-03-20T22:52:07.517133+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-10288",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774047240.0740876,
+    "iso_time": "2026-03-20T22:54:00.074090+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-13756",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774047272.773071,
+    "iso_time": "2026-03-20T22:54:32.773072+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-26860",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774047356.654637,
+    "iso_time": "2026-03-20T22:55:56.654639+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-14012",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774048363.8364072,
+    "iso_time": "2026-03-20T23:12:43.836408+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-8772",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774048805.961597,
+    "iso_time": "2026-03-20T23:20:05.961597+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-pass-k-test-10356",
+    "team": "default",
+    "agent": "pass",
+    "timestamp": 1774048881.7557843,
+    "iso_time": "2026-03-20T23:21:21.755785+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-pass-k-test-20096",
+    "team": "default",
+    "agent": "pass",
+    "timestamp": 1774048901.1335163,
+    "iso_time": "2026-03-20T23:21:41.133518+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-5220",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774048996.141701,
+    "iso_time": "2026-03-20T23:23:16.141701+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-14884",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774049187.8890557,
+    "iso_time": "2026-03-20T23:26:27.889057+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-25340",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774049888.8063343,
+    "iso_time": "2026-03-20T23:38:08.806335+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-27632",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774051567.4429383,
+    "iso_time": "2026-03-21T00:06:07.442939+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-24568",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774051686.0364103,
+    "iso_time": "2026-03-21T00:08:06.036412+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-4132",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774051959.1800015,
+    "iso_time": "2026-03-21T00:12:39.180004+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-21084",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774054356.1756213,
+    "iso_time": "2026-03-21T00:52:36.175622+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-20248",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774054473.6470108,
+    "iso_time": "2026-03-21T00:54:33.647014+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-21360",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774059516.1332488,
+    "iso_time": "2026-03-21T02:18:36.133249+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-25404",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774059641.2981799,
+    "iso_time": "2026-03-21T02:20:41.298180+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-13264",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774060434.6306036,
+    "iso_time": "2026-03-21T02:33:54.630605+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-21424",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774060763.7587607,
+    "iso_time": "2026-03-21T02:39:23.758761+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-5240",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774060956.1594176,
+    "iso_time": "2026-03-21T02:42:36.159419+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  }
+]

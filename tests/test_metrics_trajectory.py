@@ -54,9 +54,7 @@ async def test_engine_captures_state_transitions():
         "tool_params": {"status": "active"},
     }
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         # Turn 1: Tool call
         # Turn 2: Signal final_answer
         mock_call.side_effect = [

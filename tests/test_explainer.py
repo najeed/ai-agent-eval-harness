@@ -52,9 +52,7 @@ def test_explain_trace_no_suggestion_high_confidence(monkeypatch):
     }
 
     monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
-    monkeypatch.setattr(
-        "eval_runner.explainer.trace_utils.load_events", MagicMock(return_value=[])
-    )
+    monkeypatch.setattr("eval_runner.explainer.trace_utils.load_events", MagicMock(return_value=[]))
 
     result = explain_trace(Path("fake.jsonl"))
     # The suggestion should be overridden by explainer logic for "system" reason

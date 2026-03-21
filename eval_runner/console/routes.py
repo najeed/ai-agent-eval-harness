@@ -132,11 +132,7 @@ def list_runs():
                             scenario = event.get("scenario")
 
                             # Filter by query if provided
-                            if (
-                                query
-                                and query not in run_id.lower()
-                                and query not in scenario.lower()
-                            ):
+                            if query and query not in run_id.lower() and query not in scenario.lower():
                                 continue
 
                             runs.append(
@@ -271,9 +267,7 @@ class DebuggerStateStore:
         data = event.data
 
         # Track history for timeline
-        cls._events.append(
-            {"event": name, "timestamp": datetime.now().isoformat(), **data}
-        )
+        cls._events.append({"event": name, "timestamp": datetime.now().isoformat(), **data})
         # Keep only the last 50 events
         if len(cls._events) > 50:
             cls._events.pop(0)
@@ -343,18 +337,16 @@ def get_debugger_state():
         project_root = Path(__file__).parent.parent.parent
         runs_dir = project_root / "runs"
         demo_dir = runs_dir / "demo"
-        
+
         # 1. Try standard locations
-        paths_to_check = [
-            runs_dir / f"{run_id}.jsonl",
-            demo_dir / f"{run_id}.jsonl"
-        ]
-        
+        paths_to_check = [runs_dir / f"{run_id}.jsonl", demo_dir / f"{run_id}.jsonl"]
+
         trace_file = next((p for p in paths_to_check if p.exists()), None)
-        
+
         # 2. Dynamic generation for demo IDs if not found on disk
         if not trace_file and run_id in ["run-loan-risk-fail", "run-loan-risk-pass"]:
             from .demo_traces import get_demo_trace
+
             events = get_demo_trace(run_id)
             if events:
                 try:
@@ -369,15 +361,18 @@ def get_debugger_state():
                     # Fallback to serving in-memory if disk write fails
                     summary = {"message": f"Demo Narrative: {run_id.replace('-', ' ').title()}"}
                     from ..triage import TriageEngine
-                    return jsonify({
-                        "status": "ok",
-                        "message": "Demo trace loaded from memory (disk write failed)",
-                        "data": {
-                            "summary": summary,
-                            "timeline": events,
-                            "root_cause": TriageEngine.identify_root_cause(events),
+
+                    return jsonify(
+                        {
+                            "status": "ok",
+                            "message": "Demo trace loaded from memory (disk write failed)",
+                            "data": {
+                                "summary": summary,
+                                "timeline": events,
+                                "root_cause": TriageEngine.identify_root_cause(events),
+                            },
                         }
-                    })
+                    )
 
         if not trace_file:
             print(f"DEBUG: Trace file MISSING for {run_id}", flush=True)
@@ -395,9 +390,9 @@ def get_debugger_state():
         events = []
         summary = {"message": f"Historical Trace: {run_id}"}
         if run_id.startswith("run-loan-risk"):
-             summary["message"] = f"Demo Narrative: {run_id.replace('-', ' ').title()}"
-             if run_id == "run-loan-risk-fail":
-                 summary["message"] = "Demo Narrative: Loan Approval Failure Analysis"
+            summary["message"] = f"Demo Narrative: {run_id.replace('-', ' ').title()}"
+            if run_id == "run-loan-risk-fail":
+                summary["message"] = "Demo Narrative: Loan Approval Failure Analysis"
 
         try:
             with open(trace_file, "r", encoding="utf-8-sig") as f:

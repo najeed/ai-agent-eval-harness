@@ -103,9 +103,7 @@ def load_scenario(
         try:
             scenario_data = json.loads(f.read())
         except json.JSONDecodeError as e:
-            raise json.JSONDecodeError(
-                f"Error decoding JSON from {file_path}: {e.msg}", e.doc, e.pos
-            )
+            raise json.JSONDecodeError(f"Error decoding JSON from {file_path}: {e.msg}", e.doc, e.pos)
 
     # 3. Resolve Relative Dataset Paths (Path Decoupling)
     if "dataset" in scenario_data and isinstance(scenario_data["dataset"], dict):
@@ -114,9 +112,7 @@ def load_scenario(
             # Resolve relative to the scenario file's directory
             absolute_ds_path = (file_path.parent / ds_path).resolve()
             scenario_data["dataset"]["path"] = str(absolute_ds_path)
-            print(
-                f"      [Loader] Resolved relative dataset path: {ds_path} -> {absolute_ds_path}"
-            )
+            print(f"      [Loader] Resolved relative dataset path: {ds_path} -> {absolute_ds_path}")
 
     # Note: validation is only for standard scenario files
     validate(instance=scenario_data, schema=_get_schema())
@@ -127,9 +123,7 @@ def load_scenario(
     return scenario_data
 
 
-def load_dataset(
-    file_path: Union[str, Path], format_type: Optional[str] = None
-) -> List[Dict]:
+def load_dataset(file_path: Union[str, Path], format_type: Optional[str] = None) -> List[Dict]:
     """Loads a dataset file or scenario(s) using the registered loaders."""
     # Handle Benchmark URIs before Path normalization
     if isinstance(file_path, str) and "://" in file_path:

@@ -53,9 +53,7 @@ async def test_pass_at_k_protocol():
                 "summary": "",
             }  # Fails generic_accuracy (length > 0)
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_agent:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_agent:
         mock_agent.side_effect = mock_agent_call
         results = await engine.run_evaluation(scenario, attempts=2)
 
@@ -63,14 +61,7 @@ async def test_pass_at_k_protocol():
 
         successes = 0
         for attempt in results:
-            if all(
-                all(
-                    m["success"]
-                    for m in tr["metrics"]
-                    if m["metric"] != "consistency_score"
-                )
-                for tr in attempt
-            ):
+            if all(all(m["success"] for m in tr["metrics"] if m["metric"] != "consistency_score") for tr in attempt):
                 successes += 1
 
         assert successes == 1
@@ -81,9 +72,7 @@ async def test_consistency_score_integration():
     """Verify that consistency score is calculated across attempts. (Migrated from test_phase3.py)"""
     scenario = {
         "scenario_id": "test-consistency",
-        "tasks": [
-            {"task_id": "task-1", "description": "Do something", "success_criteria": []}
-        ],
+        "tasks": [{"task_id": "task-1", "description": "Do something", "success_criteria": []}],
     }
 
     # Mock agent to give same answer twice
@@ -98,9 +87,7 @@ async def test_consistency_score_integration():
 
         # Check task metrics in the last attempt
         task_res = results[-1][0]
-        consistency_metric = next(
-            (m for m in task_res["metrics"] if m["metric"] == "consistency_score"), None
-        )
+        consistency_metric = next((m for m in task_res["metrics"] if m["metric"] == "consistency_score"), None)
 
         assert consistency_metric is not None
         assert consistency_metric["score"] == 1.0
@@ -124,9 +111,7 @@ def _make_scenario(required_tools=None):
                 "description": "Do the thing.",
                 "expected_outcome": "Thing is done.",
                 "required_tools": required_tools or ["tool_a"],
-                "success_criteria": [
-                    {"metric": "tool_call_correctness", "threshold": 1.0}
-                ],
+                "success_criteria": [{"metric": "tool_call_correctness", "threshold": 1.0}],
             }
         ],
     }
@@ -151,9 +136,7 @@ async def test_engine_single_tool_call():
         },
     ]
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
@@ -163,9 +146,7 @@ async def test_engine_single_tool_call():
     assert len(task_result["conversation_history"]) >= 2
 
     # Find tool_call_correctness metric
-    metric = next(
-        m for m in task_result["metrics"] if m["metric"] == "tool_call_correctness"
-    )
+    metric = next(m for m in task_result["metrics"] if m["metric"] == "tool_call_correctness")
     assert metric["score"] == 1.0
     assert metric["success"] is True
 
@@ -186,15 +167,11 @@ async def test_engine_multiple_tools():
     ]
     scenario = _make_scenario(["tool_a", "tool_b"])
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
-    metric = next(
-        m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness"
-    )
+    metric = next(m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness")
     assert metric["score"] == 1.0
 
 
@@ -208,16 +185,12 @@ async def test_engine_final_answer_first_turn():
         },
     ]
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
     # No tools were used, so tool_call_correctness should be 0.0
-    metric = next(
-        m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness"
-    )
+    metric = next(m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness")
     assert metric["score"] == 0.0
     assert results[0]["turns_taken"] == 1
 
@@ -237,9 +210,7 @@ async def test_engine_max_turns_reached(monkeypatch):
         for i in range(5)
     ]
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
@@ -258,9 +229,7 @@ async def test_engine_connection_error():
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
     assert len(results) == 1
-    metric = next(
-        m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness"
-    )
+    metric = next(m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness")
     assert metric["score"] == 0.0
 
 
@@ -274,9 +243,7 @@ async def test_engine_timeout():
         results = await engine.run_evaluation(_make_scenario())
 
     assert len(results) == 1
-    metric = next(
-        m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness"
-    )
+    metric = next(m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness")
     assert metric["success"] is False
 
 
@@ -290,9 +257,7 @@ async def test_engine_generic_accuracy_metric():
                 "task_id": "task-1",
                 "description": "Retrieve info.",
                 "required_tools": [],
-                "success_criteria": [
-                    {"metric": "information_retrieval_accuracy", "threshold": 0.8}
-                ],
+                "success_criteria": [{"metric": "information_retrieval_accuracy", "threshold": 0.8}],
             }
         ],
     }
@@ -303,17 +268,11 @@ async def test_engine_generic_accuracy_metric():
         },
     ]
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
-    metric = next(
-        m
-        for m in results[0]["metrics"]
-        if m["metric"] == "information_retrieval_accuracy"
-    )
+    metric = next(m for m in results[0]["metrics"] if m["metric"] == "information_retrieval_accuracy")
     assert metric["score"] == 1.0
 
 
@@ -327,9 +286,7 @@ async def test_engine_communication_clarity_metric():
                 "task_id": "task-1",
                 "description": "Explain the issue.",
                 "required_tools": [],
-                "success_criteria": [
-                    {"metric": "communication_clarity", "threshold": 1.0}
-                ],
+                "success_criteria": [{"metric": "communication_clarity", "threshold": 1.0}],
             }
         ],
     }
@@ -340,15 +297,11 @@ async def test_engine_communication_clarity_metric():
         },
     ]
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
-    metric = next(
-        m for m in results[0]["metrics"] if m["metric"] == "communication_clarity"
-    )
+    metric = next(m for m in results[0]["metrics"] if m["metric"] == "communication_clarity")
     assert metric["score"] == 1.0
 
 
@@ -377,16 +330,12 @@ async def test_engine_policy_violation_feedback_loop():
         {"action": "final_answer", "summary": "Limited the refund to 50."},
     ]
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
     task_result = results[0]
-    compliance = next(
-        m for m in task_result["metrics"] if m["metric"] == "policy_compliance"
-    )
+    compliance = next(m for m in task_result["metrics"] if m["metric"] == "policy_compliance")
     assert compliance["score"] == 0.0
     assert compliance["success"] is False
 
@@ -408,12 +357,8 @@ async def test_engine_state_verification_metric():
             {
                 "task_id": "task-1",
                 "required_tools": ["update_plan"],
-                "expected_state_changes": [
-                    {"path": "current_plan", "value": "Premium"}
-                ],
-                "success_criteria": [
-                    {"metric": "state_verification", "threshold": 1.0}
-                ],
+                "expected_state_changes": [{"path": "current_plan", "value": "Premium"}],
+                "success_criteria": [{"metric": "state_verification", "threshold": 1.0}],
             }
         ],
     }
@@ -427,15 +372,11 @@ async def test_engine_state_verification_metric():
         {"action": "final_answer", "summary": "Plan updated."},
     ]
 
-    with patch(
-        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
-    ) as mock_call:
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call:
         mock_call.side_effect = responses
         results = await engine.run_evaluation(scenario)
 
     task_result = results[0]
-    state_metric = next(
-        m for m in task_result["metrics"] if m["metric"] == "state_verification"
-    )
+    state_metric = next(m for m in task_result["metrics"] if m["metric"] == "state_verification")
     assert state_metric["score"] == 1.0
     assert state_metric["success"] is True

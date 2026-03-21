@@ -58,14 +58,10 @@ async def test_plugin_interception():
     # Simulate interceptor check
     ctx = MagicMock(spec=TurnContext)
     try:
-        allowed = manager.trigger_interceptor(
-            "on_tool_request", ctx, "forbidden_tool", {}
-        )
+        allowed = manager.trigger_interceptor("on_tool_request", ctx, "forbidden_tool", {})
         assert allowed is False
 
-        allowed_safe = manager.trigger_interceptor(
-            "on_tool_request", ctx, "safe_tool", {}
-        )
+        allowed_safe = manager.trigger_interceptor("on_tool_request", ctx, "safe_tool", {})
         # If the environment lacks docker, the EnterprisePlugin might return False (block) on error,
         # so we check if it either allowed OR if it failed with a connection error.
         assert allowed_safe is True or "failed to connect to the docker API" in str(

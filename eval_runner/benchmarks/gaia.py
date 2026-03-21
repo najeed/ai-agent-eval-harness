@@ -29,9 +29,7 @@ class GAIABenchmark:
                         "task_id": "step_1",
                         "description": "Identify the 2022 population for San Francisco and San Jose.",
                         "expected_outcome": "Correct population counts retrieved from a reliable source.",
-                        "success_criteria": [
-                            {"metric": "factual_accuracy", "threshold": 1.0}
-                        ],
+                        "success_criteria": [{"metric": "factual_accuracy", "threshold": 1.0}],
                     }
                 ],
             },
@@ -47,9 +45,7 @@ class GAIABenchmark:
                         "task_id": "step_1",
                         "description": "Find citation counts for the provided DOIs.",
                         "expected_outcome": "Correct identification of the most cited paper.",
-                        "success_criteria": [
-                            {"metric": "factual_accuracy", "threshold": 0.9}
-                        ],
+                        "success_criteria": [{"metric": "factual_accuracy", "threshold": 0.9}],
                     }
                 ],
             },

@@ -53,9 +53,7 @@ class ArtifactPlugin(BaseEvalPlugin):
             "files": [],
         }
 
-        print(
-            f"📦 [ArtifactPlugin] Bundling {len(files_to_include)} files in {base_path.name}..."
-        )
+        print(f"📦 [ArtifactPlugin] Bundling {len(files_to_include)} files in {base_path.name}...")
 
         with zipfile.ZipFile(zip_path, "w") as zipf:
             for filename in files_to_include:
@@ -63,9 +61,7 @@ class ArtifactPlugin(BaseEvalPlugin):
                 if f_path.exists():
                     zipf.write(f_path, arcname=filename)
                     if generate_manifest:
-                        manifest["files"].append(
-                            {"name": filename, "sha256": self._calculate_sha256(f_path)}
-                        )
+                        manifest["files"].append({"name": filename, "sha256": self._calculate_sha256(f_path)})
                 else:
                     print(f"⚠️ [ArtifactPlugin] Skipping missing file: {filename}")
 
@@ -78,9 +74,7 @@ class ArtifactPlugin(BaseEvalPlugin):
         print(f"✅ [ArtifactPlugin] Bundle created: {zip_path}")
         return {
             "bundle_path": str(zip_path),
-            "manifest_path": (
-                str(base_path / "audit_manifest.json") if generate_manifest else None
-            ),
+            "manifest_path": (str(base_path / "audit_manifest.json") if generate_manifest else None),
             "status": "success",
         }
 
