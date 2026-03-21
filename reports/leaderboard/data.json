@@ -295,5 +295,82 @@
     "cost": 0.022,
     "resolutions": 0,
     "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-18136",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774066125.7765474,
+    "iso_time": "2026-03-21T04:08:45.776548+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-6572",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774066180.1572356,
+    "iso_time": "2026-03-21T04:09:40.157239+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-5260",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774066323.8557532,
+    "iso_time": "2026-03-21T04:12:03.855759+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-24864",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774066446.8057206,
+    "iso_time": "2026-03-21T04:14:06.805724+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-25316",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774066715.0998156,
+    "iso_time": "2026-03-21T04:18:35.099816+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-20356",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774081657.7452126,
+    "iso_time": "2026-03-21T08:27:37.745213+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test_scenario-28924",
+    "team": "default",
+    "agent": "test_scenario",
+    "timestamp": 1774081689.2234776,
+    "iso_time": "2026-03-21T08:28:09.223479+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
   }
 ]

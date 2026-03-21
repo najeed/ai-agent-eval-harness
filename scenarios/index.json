@@ -6000,18 +6000,6 @@
     "status": "warning"
   },
   {
-    "id": "new-scen",
-    "title": "New",
-    "industry": "test-ind",
-    "difficulty": 1,
-    "tags": [],
-    "path": "industries\\test-ind\\scenarios\\new-scen.json",
-    "mtime": 1774064966.1965506,
-    "description": "desc",
-    "lint_score": 30,
-    "status": "fail"
-  },
-  {
     "id": "drift-0fb797af",
     "title": "Imported Drift: run.jsonl",
     "industry": "telecom",

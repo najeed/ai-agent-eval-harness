@@ -175,10 +175,13 @@ def test_save_scenario_success(client, tmp_path):
     """Test successful scenario saving."""
     payload = {"scenario_id": "new-scen", "title": "New", "industry": "test-ind", "description": "desc"}
     with patch("eval_runner.catalog.ScenarioCatalog.build_index") as mock_build:
-        response = client.post("/api/scenarios", json=payload)
-        assert response.status_code == 200
-        assert response.get_json()["status"] == "success"
-        mock_build.assert_called_once()
+        with patch("eval_runner.console.routes.open", create=True) as mock_open:
+            with patch("eval_runner.console.routes.Path.mkdir"):
+                response = client.post("/api/scenarios", json=payload)
+                assert response.status_code == 200
+                assert response.get_json()["status"] == "success"
+                mock_build.assert_called_once()
+                mock_open.assert_called_once()
 
 
 def test_save_scenario_errors(client):
