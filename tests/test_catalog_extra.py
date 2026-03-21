@@ -94,9 +94,12 @@ def test_search_auto_load(tmp_path):
     with open(index_path, "w") as f:
         json.dump(cat_data, f)
     cat = ScenarioCatalog(index_path=str(index_path))
-    # search() should call load_index() if scenarios is empty
-    res = cat.search(query="t1")
-    assert len(res) == 1
+    
+    # Avoid rebuild by mocking check_for_updates
+    with patch.object(cat, "check_for_updates", return_value=False):
+        # search() should call load_index() if scenarios is empty
+        res = cat.search(query="t1")
+        assert len(res) == 1
 
 def test_search_faceted_filters():
     cat = ScenarioCatalog()
@@ -110,9 +113,29 @@ def test_search_faceted_filters():
     assert res[0]["id"] == "s1"
 
 def test_list_scenarios_no_query(capsys):
-    with patch("eval_runner.catalog.ScenarioCatalog.load_index"), \
-         patch("eval_runner.catalog.ScenarioCatalog.scenarios", [{"id": "s1", "industry": "i", "difficulty": 1, "title": "t"}]):
+    mock_cat = MagicMock()
+    mock_cat.scenarios = [{"id": "s1", "industry": "i", "difficulty": 1, "title": "t"}]
+    mock_cat.search.return_value = mock_cat.scenarios
+    
+    with patch("eval_runner.catalog.ScenarioCatalog", return_value=mock_cat):
         list_scenarios(query=None)
         out, _ = capsys.readouterr()
         assert "Scenario Catalog: (1 total)" in out
+
+def test_check_for_updates_sync(tmp_path):
+    # Use a mock instead of a real Path object to avoid read-only attribute errors
+    mock_path = MagicMock()
+    mock_path.exists.return_value = True
+    mock_path.glob.return_value = [MagicMock(), MagicMock()] # count = 2
+    
+    cat = ScenarioCatalog()
+    cat.scenarios = [{}, {}] # count = 2
+    
+    # Mock Path("industries") to return our mock_path
+    with patch("eval_runner.catalog.Path", return_value=mock_path):
+         # Hits lines 87-88
+         assert cat.check_for_updates() is False
+
+
+
 
