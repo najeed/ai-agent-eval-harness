@@ -65,7 +65,7 @@ Beyond the CLI, the harness provides a **Unified React SPA** Admin Console for v
 
 Launch with:
 ```bash
-eval-harness console
+multiagent-eval console
 ```
 
 
@@ -86,14 +86,14 @@ eval-harness console
 
 ## Community Benchmarks
 
-Instead of relying solely on local `.json` or `.aes.yaml` files, the `eval-harness` can now pull and format datasets from major community benchmarks on-the-fly using URIs.
+Instead of relying solely on local `.json` or `.aes.yaml` files, the `multiagent-eval` can now pull and format datasets from major community benchmarks on-the-fly using URIs.
 
 ```bash
 # Load the 2023 GAIA validation set
-eval-harness evaluate --path gaia://2023
+multiagent-eval evaluate --path gaia://2023
 
 # Load AssistantBench tasks
-eval-harness evaluate --path assistantbench://v1
+multiagent-eval evaluate --path assistantbench://v1
 ```
 The universal loader will dynamically download these datasets, wrap them in compatible `Scenario` objects, and apply the correct specific evaluation metrics.
 

@@ -53,7 +53,7 @@ python -c "from eval_runner.loader import load_scenario; from pathlib import Pat
 Launch the dashboard to ensure your new industry and scenarios are appearing correctly in the library:
 
 ```bash
-eval-harness console
+multiagent-eval console
 ```
 
 Navigate to the **Library** tab to view your JSON structure and trigger a test run visually.

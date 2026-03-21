@@ -7,8 +7,8 @@ Before building a plugin, set up your local development environment:
 
 ```bash
 # 1. Clone & activate virtual environment
-git clone https://github.com/najeed/ai-multi-agent-eval.git
-cd ai-multi-agent-eval
+git clone https://github.com/najeed/ai-agent-multiagent-eval.git
+cd ai-agent-multiagent-eval
 python -m venv venv
 venv\Scripts\activate  # Windows
 # source venv/bin/activate # Mac/Linux
@@ -57,7 +57,7 @@ class MyCustomPlugin(BaseEvalPlugin):
 | `on_register_simulators`| `registry: dict` | Shim Registration. Add your World Shims to the registry. |
 | `on_register_console_routes` | `app: Flask`, `nav: list` | Inject custom REST routes and React navigation links. |
 
-> **⚠️ Security Note:** All plugins must use `on_register_commands` which isolates commands under `eval-harness plugin <plugin_name>`.
+> **⚠️ Security Note:** All plugins must use `on_register_commands` which isolates commands under `multiagent-eval plugin <plugin_name>`.
 
 ## Typed Context Objects
 
@@ -97,12 +97,12 @@ All plugin hooks are subject to a **5-second timeout** (`PLUGIN_TIMEOUT = 5.0`).
 
 ## Registering Commands (Secure Namespace)
 
-Plugins register CLI subcommands via the `on_register_commands` hook. Commands are automatically scoped under `eval-harness plugin <plugin_name>` to prevent core command hijacking.
+Plugins register CLI subcommands via the `on_register_commands` hook. Commands are automatically scoped under `multiagent-eval plugin <plugin_name>` to prevent core command hijacking.
 
 ```python
 class MyReportPlugin(BaseEvalPlugin):
     def on_register_commands(self, registry):
-        # Registers: eval-harness plugin myreport generate
+        # Registers: multiagent-eval plugin myreport generate
         sub = registry.register_command("generate", self.handle_generate, help_text="Generate a report")
         sub.add_argument("--format", default="html")
 
@@ -127,7 +127,7 @@ Once registered, any scenario mentioning `s3_bucket` in its `tasks` will automat
 
 ## Extending the Visual Suite (Integrated Console)
 
-Plugins can inject custom views and API endpoints into the `eval-harness console`.
+Plugins can inject custom views and API endpoints into the `multiagent-eval console`.
 
 ### 1. Secure Route Registration
 The `on_register_console_routes` hook provides access to the Flask `app` and a `nav_registry` list for the sidebar.

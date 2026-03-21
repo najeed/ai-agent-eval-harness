@@ -25,10 +25,10 @@ git commit -s -m "Your commit message"
 ## 🏗️ How to Contribute
 
 ### 1. Adding New Industries & Scenarios
-- **Schema Compliance**: All JSON files must pass the validation checks via `eval-harness aes validate --path <path>`.
-- **Scaffolding**: Use `eval-harness init --dir <name> --industry <ind>` to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.
-- **Quality Verification**: All scenarios must pass the quality linter (`eval-harness lint --path <path>`). We target a score of **90+** for all official industry libraries.
-- **Execution**: Ensure your scenario runs correctly with `eval-harness evaluate --path <your_path>`. The harness now supports **Path Decoupling**, allowing you to host and run benchmarks from any directory without repository-internal dependencies.
+- **Schema Compliance**: All JSON files must pass the validation checks via `multiagent-eval aes validate --path <path>`.
+- **Scaffolding**: Use `multiagent-eval init --dir <name> --industry <ind>` to bootstrap a new benchmark suite automatically linked to a synthetic CSV dataset.
+- **Quality Verification**: All scenarios must pass the quality linter (`multiagent-eval lint --path <path>`). We target a score of **90+** for all official industry libraries.
+- **Execution**: Ensure your scenario runs correctly with `multiagent-eval evaluate --path <your_path>`. The harness now supports **Path Decoupling**, allowing you to host and run benchmarks from any directory without repository-internal dependencies.
 
 ### 2. The Zero-Touch Core Philosophy
 We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests that modify the core orchestration (`eval_runner/runner.py`, `eval_runner/metrics.py`) to handle edge cases or custom platforms will generally be rejected.
@@ -42,7 +42,7 @@ We strictly adhere to a **Zero-Touch Core** architectural mandate. Pull Requests
 The Zero-Touch Core is designed to be extended without core PRs.
 - **Lifecycle Hooks**: Subscribe to `before_evaluation`, `on_agent_turn_start`, `on_turn_end`, `on_metrics_calculated`, and `after_evaluation`.
 - **Interception**: Use `on_tool_request` to enforce safety or HITL proxies. Return `False` to block a tool call.
-- **CLI Commands**: Use `on_register_commands` to register namespaced CLI subcommands (under `eval-harness plugin <name>`).
+- **CLI Commands**: Use `on_register_commands` to register namespaced CLI subcommands (under `multiagent-eval plugin <name>`).
 - **Event Bus**: Use `EventEmitter.subscribe(callback)` for passive monitoring.
 - **Entry Points**: Register your plugins in your `pyproject.toml` under `eval_runner.plugins`.
 - **Timeouts**: All plugin hooks are subject to a 5-second timeout to prevent hang conditions.

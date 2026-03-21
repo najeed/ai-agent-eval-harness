@@ -23,10 +23,10 @@ async def execute(request: dict):
 
 ## 2. Register the Agent
 ```bash
-eval-harness evaluate --path scenarios/ --agent http://localhost:8000/execute_task --agent-name "Gemini-1.5-Pro-Live"
+multiagent-eval evaluate --path scenarios/ --agent http://localhost:8000/execute_task --agent-name "Gemini-1.5-Pro-Live"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-eval-harness report --path runs/run.jsonl --share
+multiagent-eval report --path runs/run.jsonl --share
 ```

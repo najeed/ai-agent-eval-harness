@@ -8,7 +8,7 @@ The Drift Importer allows you to convert production traces (agent/user interacti
 
 ### Usage
 ```bash
-eval-harness import-drift --input path/to/trace.json --industry telecom
+multiagent-eval import-drift --input path/to/trace.json --industry telecom
 ```
 
 ### Trace Format
@@ -50,7 +50,7 @@ While triage applies categorical tags, the `explain` command performs a deep for
 
 ### Usage
 ```bash
-eval-harness explain --path runs/run.jsonl
+multiagent-eval explain --path runs/run.jsonl
 ```
 
 ### Forensic Features
@@ -59,5 +59,5 @@ eval-harness explain --path runs/run.jsonl
 - **Pinpoint Diagnostics**: Identifies the exact turn (index) where the failure logic diverged.
 
 > [!TIP]
-> **Visual Triage**: Use `eval-harness console` to view these failure tags interactively. The dashboard highlights `POLICY_VIOLATION` and `STALL` events with visual cues in the trajectory timeline.
+> **Visual Triage**: Use `multiagent-eval console` to view these failure tags interactively. The dashboard highlights `POLICY_VIOLATION` and `STALL` events with visual cues in the trajectory timeline.
 

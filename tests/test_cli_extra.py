@@ -86,11 +86,14 @@ async def test_run_evaluate_success(mock_args, tmp_path):
     mock_args.run_log_dir = str(tmp_path / "logs")
     mock_args.attempts = 2
     
+    from unittest.mock import mock_open
+    mock_file = mock_open(read_data=b"test trace content")
+    
     with patch("eval_runner.cli.Path.exists", return_value=True), \
          patch("eval_runner.loader.load_scenario", return_value=[{"scenario_id": "t1", "title": "T1"}]), \
          patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_eval, \
          patch("eval_runner.metrics.calculate_consensus_scoring", return_value=1.0), \
-         patch("builtins.open"):
+         patch("builtins.open", mock_file):
          
         mock_eval.return_value = [
             {"metrics": [{"success": True}], "conversation_history": [{"role": "agent", "content": {"summary": "done"}}]}

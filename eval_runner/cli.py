@@ -115,7 +115,7 @@ def main():
     lint_parser.add_argument("--path", dest="target", required=True, help="Path to scenario file or directory")
 
     # Security Guardrails: Command Hijacking Prevention
-    # Removed `extend_cli` hook. Plugins must register via namespaced registry `eval-harness plugin <name>`
+    # Removed `extend_cli` hook. Plugins must register via namespaced registry `multiagent-eval plugin <name>`
 
     # --- AES COMMAND ---
     aes_parser = subparsers.add_parser("aes", help="Agent Eval Specification (AES) utilities")
@@ -945,7 +945,7 @@ Evaluation suite for {framework} agent in the {industry} industry.
 
 ## How to run
 1. Start your agent
-2. Run `eval-harness evaluate --path scenarios/`
+2. Run `multiagent-eval evaluate --path scenarios/`
 """
     with open("README.md", "w") as f:
         f.write(readme_content)
@@ -1167,7 +1167,7 @@ def handle_spec_to_eval(args):
     print(f"   -> Guessed Use Case: {scenario['use_case']}")
     if not args.fill_defaults:
         print(
-            "[TIP] Tip: Use `eval-harness lint` to identify missing fields, or re-run with `--fill-defaults` to auto-fill."
+            "[TIP] Tip: Use `multiagent-eval lint` to identify missing fields, or re-run with `--fill-defaults` to auto-fill."
         )
 
 
@@ -1307,7 +1307,7 @@ jobs:
       - name: Install Harness
         run: pip install -e .
       - name: Run Scenarios
-        run: eval-harness evaluate --path scenarios/ --attempts 3
+        run: multiagent-eval evaluate --path scenarios/ --attempts 3
 """
     with open(workflow_path, "w") as f:
         f.write(content)

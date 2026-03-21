@@ -28,7 +28,7 @@ This occurs when a package lacks a pre-built wheel for Python 3.14 and requires 
 Before verifying individual integrations, ensure the harness is installed in editable mode:
 
 ```bash
-cd ai-multi-agent-eval
+cd ai-agent-multiagent-eval
 pip install -e .
 ```
 
@@ -60,11 +60,11 @@ AUTOGEN_API_URL=http://localhost:5002/query
    ```
 3. **Verify Adapter**:
    ```bash
-   eval-harness run --scenario scenarios/luna_demo.json --protocol ollama --agent ollama://llama3
+   multiagent-eval run --scenario scenarios/luna_demo.json --protocol ollama --agent ollama://llama3
    ```
 4. **Verify Luna-Judge (Ollama fallback)**:
    - Ensure `JUDGE_PROVIDER=ollama` in `.env`.
-   - Run: `eval-harness evaluate --path scenarios/luna_demo.json`
+   - Run: `multiagent-eval evaluate --path scenarios/luna_demo.json`
 
 ---
 
@@ -80,7 +80,7 @@ AUTOGEN_API_URL=http://localhost:5002/query
 2. **Run Sample AutoGen Agent**: (Requires a separate server script or the `quickstart` mock).
 3. **Run Evaluation**:
    ```bash
-   eval-harness evaluate --path industries/telecom --protocol autogen --agent autogen://localhost:5002
+   multiagent-eval evaluate --path industries/telecom --protocol autogen --agent autogen://localhost:5002
    ```
 
 ### B. LangChain / LangGraph
@@ -92,11 +92,11 @@ AUTOGEN_API_URL=http://localhost:5002/query
    ```
 2. **Verify LangChain Adapter**:
    ```bash
-   eval-harness evaluate --path scenarios/telecom_troubleshooting.json --protocol langchain --agent langchain://localhost:8000/my-agent
+   multiagent-eval evaluate --path scenarios/telecom_troubleshooting.json --protocol langchain --agent langchain://localhost:8000/my-agent
    ```
 3. **Verify LangGraph (Structural)**:
    - Since the LangGraph adapter is currently an **Architectural Mock**, verification confirms the engine's ability to route requests through the plugin hook without hardcoding.
-   - Run: `eval-harness evaluate --path industries/telecom --protocol langgraph`
+   - Run: `multiagent-eval evaluate --path industries/telecom --protocol langgraph`
 
 ### C. CrewAI
 **Goal**: Verify task-based multi-agent orchestration.
@@ -107,7 +107,7 @@ AUTOGEN_API_URL=http://localhost:5002/query
    ```
 2. **Verify Adapter (Structural Mock)**:
    - Verification confirms the lifecycle hook `on_discover_adapters` correctly registers the `crewai://` protocol.
-   - Run: `eval-harness evaluate --path industries/telecom --protocol crewai`
+   - Run: `multiagent-eval evaluate --path industries/telecom --protocol crewai`
 
 ---
 
@@ -117,22 +117,22 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
 
 | Provider | Protocol | Verification Command |
 | :--- | :--- | :--- |
-| **OpenAI** | `openai://` | `eval-harness run --protocol openai --agent openai://gpt-4-turbo` |
-| **Anthropic**| `claude://` | `eval-harness run --protocol claude --agent claude://claude-3-5-sonnet-20240620` |
-| **Google** | `gemini://` | `eval-harness run --protocol gemini --agent gemini://gemini-1.5-pro` |
-| **xAI** | `grok://` | `eval-harness run --protocol grok --agent grok://grok-beta` |
+| **OpenAI** | `openai://` | `multiagent-eval run --protocol openai --agent openai://gpt-4-turbo` |
+| **Anthropic**| `claude://` | `multiagent-eval run --protocol claude --agent claude://claude-3-5-sonnet-20240620` |
+| **Google** | `gemini://` | `multiagent-eval run --protocol gemini --agent gemini://gemini-1.5-pro` |
+| **xAI** | `grok://` | `multiagent-eval run --protocol grok --agent grok://grok-beta` |
 
 ---
 
 ## 🔌 5. Plugin Verification
 
 ### A. RemoteBridgePlugin (Live Debugger)
-1. Launch the console: `eval-harness console`.
+1. Launch the console: `multiagent-eval console`.
 2. Run an evaluation.
 3. Observe real-time state updates in the **Visual Debugger** tab. This verifies the `on_agent_turn_start` and `on_turn_end` hooks.
 
 ### C. CoveragePlugin (Grounding Heatmaps)
-1. Run: `eval-harness evaluate --path industries/telecom`.
+1. Run: `multiagent-eval evaluate --path industries/telecom`.
 2. Check `reports/coverage/`: Verify that `telecom_coverage.html` is generated. This ensures the `on_tool_result` hook is correctly capturing grounding events.
 
 ---
@@ -144,7 +144,7 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
 1. **Verify Rubric Selection**:
    - Run a scenario with a specialized rubric:
      ```bash
-     eval-harness evaluate --path scenarios/clinical_safety_test.json
+     multiagent-eval evaluate --path scenarios/clinical_safety_test.json
      ```
    - Check the `run.jsonl` trace to ensure the correct rubric prompt was injected (requires inspecting the event payload).
 
@@ -152,7 +152,7 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
    - Ensure you have a `run.jsonl` with both `luna_judge_score` and `human_score` field.
    - Run:
      ```bash
-     eval-harness calibrate --path runs/latest_run.jsonl
+     multiagent-eval calibrate --path runs/latest_run.jsonl
      ```
    - Verify the ASCII "JUDGE CALIBRATION REPORT" is displayed with MAE and Pearson Correlation.
 
@@ -160,7 +160,7 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
 
 ## ✅ 7. Final "Production-Ready" Checklist
 
-- [ ] `eval-harness doctor` returns all GREEN status.
+- [ ] `multiagent-eval doctor` returns all GREEN status.
 - [ ] No `ImportError` when running any ecosystem adapter.
 - [ ] API keys are correctly masked in log outputs.
 - [ ] Timeouts are respected (verified by setting `DEFAULT_ADAPTER_TIMEOUT=1`).

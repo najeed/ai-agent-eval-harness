@@ -11,12 +11,12 @@ AES is the foundational standard for shareable, deterministic agent benchmarks.
 
 ### Validating an AES file
 ```bash
-eval-harness aes validate --path path/to/benchmark.aes.yaml
+multiagent-eval aes validate --path path/to/benchmark.aes.yaml
 ```
 
 ### Scaffolding a new benchmark
 ```bash
-eval-harness aes scaffold --output path/to/new_benchmark.aes.yaml
+multiagent-eval aes scaffold --output path/to/new_benchmark.aes.yaml
 ```
 
 ## 3. Core Components
@@ -103,5 +103,5 @@ AES benchmarks are now fully portable.
 ## 6. Replaying Execution (`run.jsonl`)
 Every AES evaluation produces a `run.jsonl` flight recorder log. You can replay this log to debug specific "crashes" or "wrong turns":
 ```bash
-eval-harness replay --path runs/run.jsonl
+multiagent-eval replay --path runs/run.jsonl
 ```

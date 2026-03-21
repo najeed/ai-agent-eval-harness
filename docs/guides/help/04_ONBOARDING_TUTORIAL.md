@@ -23,8 +23,8 @@ Welcome to the harness! This tutorial walks a first-time user (e.g., a Product M
 Run:
 
 ```bash
-git clone https://github.com/najeed/ai-multi-agent-eval.git
-cd ai-multi-agent-eval
+git clone https://github.com/najeed/ai-agent-multiagent-eval.git
+cd ai-agent-multiagent-eval
 python -m venv .venv
 # Activate the venv (macOS/Linux)
 source .venv/bin/activate
@@ -38,7 +38,7 @@ python -m pip install -r requirements.txt
 > ✅ Expected output snippet:
 >
 > ```text
-> Successfully installed ai-multi-agent-eval-<version> ...
+> Successfully installed ai-agent-multiagent-eval-<version> ...
 > ```
 
 ### ✅ Step 2: Verify the CLI is available
@@ -46,13 +46,13 @@ python -m pip install -r requirements.txt
 Run:
 
 ```bash
-eval-harness --help
+multiagent-eval --help
 ```
 
 > ✅ Expected output snippet:
 >
 > ```text
-> usage: eval-harness [-h] {evaluate,aes,spec-to-eval,import-drift,run,replay,mutate,list,lint} ...
+> usage: multiagent-eval [-h] {evaluate,aes,spec-to-eval,import-drift,run,replay,mutate,list,lint} ...
 > 
 > MultiAgentEval (OpenCore)
 > ```
@@ -63,7 +63,7 @@ Before running an evaluation, discover what's available:
 
 ```bash
 # List all telecom scenarios
-eval-harness list --search "telecom"
+multiagent-eval list --search "telecom"
 ```
 
 > ✅ Expected output: A table of matching scenarios with IDs and titles.
@@ -79,7 +79,7 @@ The harness includes industry scenarios under `industries/`. You can use the `li
 ### ✅ Step 2: Run the evaluation
 
 ```bash
-eval-harness evaluate --path industries/telecom --export
+multiagent-eval evaluate --path industries/telecom --export
 ```
 
 ---
@@ -91,13 +91,13 @@ Instead of manually typing out JSON, the easiest way to start a new industry ben
 1. Scaffold the environment:
 
 ```bash
-eval-harness init --dir industries/retail --industry retail
+multiagent-eval init --dir industries/retail --industry retail
 ```
 
 2. Run the newly generated scenario:
 
 ```bash
-eval-harness run --scenario industries/retail/scenarios/starter_scenario.json
+multiagent-eval run --scenario industries/retail/scenarios/starter_scenario.json
 ```
 
 ---
@@ -107,7 +107,7 @@ eval-harness run --scenario industries/retail/scenarios/starter_scenario.json
 Before sharing or running complex benchmarks, ensure your scenarios meet the AES standard:
 
 ```bash
-eval-harness lint --path industries/retail/scenarios/starter_scenario.json
+multiagent-eval lint --path industries/retail/scenarios/starter_scenario.json
 ```
 
 ---
@@ -117,13 +117,13 @@ eval-harness lint --path industries/retail/scenarios/starter_scenario.json
 ### ✅ Replay the run trace
 
 ```bash
-eval-harness replay --path runs/run.jsonl
+multiagent-eval replay --path runs/run.jsonl
 ```
 
 ### ✅ View in the Visual Dashboard
 
 ```bash
-eval-harness console
+multiagent-eval console
 ```
 
 Inspect results natively using the **Admin Console**. The console provides a unified hub for the entire lifecycle:
@@ -140,6 +140,6 @@ Inspect results natively using the **Admin Console**. The console provides a uni
 
 - ✅ Read the **User Manual** (`docs/guides/help/02_USER_MANUAL.md`).
 - 🧠 Read the **Developer Guide** (`docs/guides/help/03_DEVELOPER_GUIDE.md`) for adapters and plugins.
-- 📂 **Path Decoupling (v1.1+)**: You don't have to keep scenarios in `industries/`. You can now run `eval-harness evaluate --path <any_folder>` and it will work out of the box!
+- 📂 **Path Decoupling (v1.1+)**: You don't have to keep scenarios in `industries/`. You can now run `multiagent-eval evaluate --path <any_folder>` and it will work out of the box!
 
 Happy evaluating!

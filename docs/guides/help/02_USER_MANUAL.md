@@ -63,7 +63,7 @@ Metrics score an agent’s performance. Built-in metrics include:
 ### 🧪 `evaluate` — batch evaluation
 
 ```bash
-eval-harness evaluate --path industries/telecom --format jsonl --output reports/latest_results.json --attempts 3
+multiagent-eval evaluate --path industries/telecom --format jsonl --output reports/latest_results.json --attempts 3
 ```
 
 **Key options:**
@@ -85,31 +85,31 @@ eval-harness evaluate --path industries/telecom --format jsonl --output reports/
 
 | Command | Common options | What it does |
 |---|---|---|
-| `eval-harness evaluate` | `--path`, `--format`, `--output`, `--limit`, `--attempts` / `-k` | Run a set of scenarios (batch mode) |
-| `eval-harness run` | `-k` | Run a single scenario JSON file |
-| `eval-harness replay` | `--path` | Replay a recorded run trace |
-| `eval-harness aes validate` | `--path` | Validate AES benchmark YAML (v1.1) |
-| `eval-harness aes scaffold` | `--output` | Generate a starter AES v1.1 template |
-| `eval-harness console` | `--port` | Launch the Admin Console local API and interactive GUI (Integrated Visual Suite) |
-| `eval-harness quickstart` | (none) | 60-second CLI demo (spawns agent + runs evaluation). |
-| `eval-harness doctor` | (none) | Check environment, dependencies, and configuration |
-| `eval-harness init` | `--dir`, `--industry` | Scaffold a new benchmark environment and linked datasets |
-| `eval-harness report` | `--path` | Generate a **Premium HTML report** with reconstructed trajectories |
-| `eval-harness scenario generate` | (none) | Interactively bootstrap new scenarios |
-| `eval-harness record` | `--agent` | Capture real interactions into an executable trace |
-| `eval-harness playground` | `--agent` | Interactive REPL for rapid experimentation |
-| `eval-harness spec-to-eval` | `--input`, `--output` | Convert Markdown spec to scenario JSON |
-| `eval-harness auto-translate` | `--input`, `--model`, `--industry` | Translate raw documents (PDF, DOCX) into scenario JSON via a local LLM |
-| `eval-harness import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |
-| `eval-harness mutate` | `--input`, `--type`, `--output` | Generate adversarial scenario variants |
-| `eval-harness list` | `--search` | Search and explore the scenario catalog |
-| `eval-harness lint` | `--path` | Score and validate scenario quality/compliance |
-| `eval-harness plugin` | `<plugin_name> <cmd>` | Secure namespace for executing 3rd-party plugin commands |
+| `multiagent-eval evaluate` | `--path`, `--format`, `--output`, `--limit`, `--attempts` / `-k` | Run a set of scenarios (batch mode) |
+| `multiagent-eval run` | `-k` | Run a single scenario JSON file |
+| `multiagent-eval replay` | `--path` | Replay a recorded run trace |
+| `multiagent-eval aes validate` | `--path` | Validate AES benchmark YAML (v1.1) |
+| `multiagent-eval aes scaffold` | `--output` | Generate a starter AES v1.1 template |
+| `multiagent-eval console` | `--port` | Launch the Admin Console local API and interactive GUI (Integrated Visual Suite) |
+| `multiagent-eval quickstart` | (none) | 60-second CLI demo (spawns agent + runs evaluation). |
+| `multiagent-eval doctor` | (none) | Check environment, dependencies, and configuration |
+| `multiagent-eval init` | `--dir`, `--industry` | Scaffold a new benchmark environment and linked datasets |
+| `multiagent-eval report` | `--path` | Generate a **Premium HTML report** with reconstructed trajectories |
+| `multiagent-eval scenario generate` | (none) | Interactively bootstrap new scenarios |
+| `multiagent-eval record` | `--agent` | Capture real interactions into an executable trace |
+| `multiagent-eval playground` | `--agent` | Interactive REPL for rapid experimentation |
+| `multiagent-eval spec-to-eval` | `--input`, `--output` | Convert Markdown spec to scenario JSON |
+| `multiagent-eval auto-translate` | `--input`, `--model`, `--industry` | Translate raw documents (PDF, DOCX) into scenario JSON via a local LLM |
+| `multiagent-eval import-drift` | `--input`, `--industry`, `--output-dir` | Convert production trace to scenario |
+| `multiagent-eval mutate` | `--input`, `--type`, `--output` | Generate adversarial scenario variants |
+| `multiagent-eval list` | `--search` | Search and explore the scenario catalog |
+| `multiagent-eval lint` | `--path` | Score and validate scenario quality/compliance |
+| `multiagent-eval plugin` | `<plugin_name> <cmd>` | Secure namespace for executing 3rd-party plugin commands |
 
 ### 🧩 `run` — single scenario
 
 ```bash
-eval-harness run --scenario scenarios/your_scenario.json -k 2
+multiagent-eval run --scenario scenarios/your_scenario.json -k 2
 ```
 
 Use this for rapid iteration and debugging.
@@ -139,12 +139,12 @@ These utilities are designed to get you from "installation" to "first eval" in s
 ### 🏃 `quickstart` — The 60-Second Demo
 Runs a complete evaluation loop using the built-in sample agent in your terminal.
 ```bash
-eval-harness quickstart
+multiagent-eval quickstart
 ```
 *   Spawns the sample agent server process.
 *   Runs a telecom troubleshooting scenario.
 *   Generates a **Premium HTML report** (Mermaid trajectories enabled) in `reports/`.
-*   **Note:** This command is designed for CLI-only instant feedback; use `eval-harness console` for the visual experience.
+*   **Note:** This command is designed for CLI-only instant feedback; use `multiagent-eval console` for the visual experience.
 
 ### 🖥️ `console` — React Native Admin Console GUI
 Launch a high-fidelity visual dashboard to run scenarios, inspect trace lines chronologically, and review system documentation locally.
@@ -156,49 +156,49 @@ Launch a high-fidelity visual dashboard to run scenarios, inspect trace lines ch
 - **API Reference**: Integrated technical documentation drawer for one-click access to guides.
 
 ```bash
-eval-harness console --port 5000
+multiagent-eval console --port 5000
 ```
 
 ### 🔍 `doctor` — Environment Validator
 Troubleshoot your installation and connectivity.
 ```bash
-eval-harness doctor
+multiagent-eval doctor
 ```
 
 ### 🎨 `report` — Premium Visual Reporting
 Generate a premium HTML report with interactive trajectory maps reconstructed from historical trace events.
 ```bash
-eval-harness report --path runs/run_<id>.jsonl
+multiagent-eval report --path runs/run_<id>.jsonl
 ```
 
 ### ✨ `scenario generate` — Interactive Scaffolding
 Bootstrap new test cases without writing JSON by hand.
 ```bash
-eval-harness scenario generate
+multiagent-eval scenario generate
 ```
 
 ### ⏺ `record` — Trace Capture
 Capture real interactions with your agent to create new eval scenarios.
 ```bash
-eval-harness record --agent http://localhost:5001/execute_task
+multiagent-eval record --agent http://localhost:5001/execute_task
 ```
 
 ### 🎮 `playground` — Interactive Experimentation
 Talk to your agent directly in the CLI and see how it performs.
 ```bash
-eval-harness playground --agent http://localhost:5001/execute_task
+multiagent-eval playground --agent http://localhost:5001/execute_task
 ```
 
 ### 🔍 `list` — Scenario Catalog Search
 Discover scenarios across the built-in and downloaded libraries.
 ```bash
-eval-harness list --search "telecom"
+multiagent-eval list --search "telecom"
 ```
 
 ### 🧹 `lint` — Quality Scoring
 Check your scenarios for AES compliance and technical quality.
 ```bash
-eval-harness lint --path industries/telecom/scenarios/troubleshooting_v1.json
+multiagent-eval lint --path industries/telecom/scenarios/troubleshooting_v1.json
 ```
 - **90-100**: High quality, CI-ready.
 - **70-89**: Warning (Missing metadata or low complexity).
@@ -211,23 +211,23 @@ eval-harness lint --path industries/telecom/scenarios/troubleshooting_v1.json
 ### 📦 `install` — Scenario Packs
 Rapidly deploy industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
 ```bash
-eval-harness install telecom-pack
+multiagent-eval install telecom-pack
 ```
 
 ### 🔬 `analyze` — Repo Scanning
 Scan agent repositories to identify tool patterns and auto-generate matching AES scenarios.
 ```bash
-eval-harness analyze https://github.com/example/agent
+multiagent-eval analyze https://github.com/example/agent
 ```
 
 ### 🤖 `explain` — Trace Analysis
 Automated diagnostic analysis of `run.jsonl` traces to identify root causes of agent failures.
 ```bash
-eval-harness explain --path runs/run.jsonl
+multiagent-eval explain --path runs/run.jsonl
 ```
 
 ### 🛠️ Visual Scenario Editor
-Built into the Admin Console (`eval-harness console`), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.
+Built into the Admin Console (`multiagent-eval console`), this tool provides a visual interface for constructing complex AES logic and saving it directly to the local industry catalog.
 
 ---
 
@@ -257,7 +257,7 @@ Built into the Admin Console (`eval-harness console`), this tool provides a visu
 The simplest way to add a completely new industry is to generate a bootstrapped setup using `init`, which automatically creates a starter scenario and linked synthetic datasets.
 
 ```bash
-eval-harness init --dir industries/my_industry --industry my_industry
+multiagent-eval init --dir industries/my_industry --industry my_industry
 ```
 
 If you prefer to add them manually:
@@ -283,13 +283,13 @@ mkdir -p industries/<your_industry>/scenarios
 3. Run it via CLI:
 
 ```bash
-eval-harness run --scenario industries/<your_industry>/scenarios/<file>.json
+multiagent-eval run --scenario industries/<your_industry>/scenarios/<file>.json
 ```
 
 4. (Optional) Run an industry batch:
 
 ```bash
-eval-harness evaluate --path industries/<your_industry>
+multiagent-eval evaluate --path industries/<your_industry>
 ```
 
 ### 🔎 Tip
@@ -380,7 +380,7 @@ Used when `--attempts > 1` to measure stability across runs.
 Convert production traces into evaluation scenarios:
 
 ```bash
-eval-harness import-drift --input production_trace.jsonl --industry telecom --output-dir industries/telecom/scenarios
+multiagent-eval import-drift --input production_trace.jsonl --industry telecom --output-dir industries/telecom/scenarios
 ```
 
 ### 🔬 5.2 State-Level Trajectory Triage (How Root Cause Isolation Works)

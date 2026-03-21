@@ -1,13 +1,13 @@
 # CLI Reference
 
-The `eval-harness` (or `python -m eval_runner`) CLI provides a comprehensive suite of tools for agent evaluation, management, and debugging.
+The `multiagent-eval` (or `python -m eval_runner`) CLI provides a comprehensive suite of tools for agent evaluation, management, and debugging.
 
 ## Core Commands
 
 ### `evaluate`
 Run evaluations on one or more scenarios.
 ```bash
-eval-harness evaluate --path <path> [--attempts K] [--limit N] [--verbose]
+multiagent-eval evaluate --path <path> [--attempts K] [--limit N] [--verbose]
 ```
 - `--path`: Path to a single Scenario JSON file, a directory containing scenarios, or a Benchmark URI (e.g., `gaia://2023`). Supports Path Decoupling: If a scenario is located outside the standard `/industries` directory, the harness automatically resolves relative dataset paths and tags the scenario as `local`/`unclassified`.
 - `--attempts`: Number of attempts (K) per scenario for `pass@k` calculation.
@@ -45,14 +45,14 @@ When `--attempts` > 1, the harness generates:
 ### `run`
 Execute a single scenario file or a Benchmark URI.
 ```bash
-eval-harness run --scenario <path_or_uri>
+multiagent-eval run --scenario <path_or_uri>
 ```
-**Example (Benchmark):** `eval-harness run --scenario gaia://2023` (Executes all scenarios in the GAIA 2023 benchmark).
+**Example (Benchmark):** `multiagent-eval run --scenario gaia://2023` (Executes all scenarios in the GAIA 2023 benchmark).
 
 ### `list`
 Search the scenario catalog with keyword and faceted filtering.
 ```bash
-eval-harness list [--search <query>]
+multiagent-eval list [--search <query>]
 ```
 - `--search`: Search scenarios by title, industry, or tags.
 - `--refresh`: Rebuild the scenario index from source.
@@ -60,7 +60,7 @@ eval-harness list [--search <query>]
 ### `lint`
 Verify scenario quality and AES specification compliance.
 ```bash
-eval-harness lint --path <path_to_scenario_or_dir>
+multiagent-eval lint --path <path_to_scenario_or_dir>
 ```
 - Runs automated checks for metadata quality, valid structure, and duplicate detection.
 - Provides a quality score (0-100) and detailed warning/error report.
@@ -68,29 +68,29 @@ eval-harness lint --path <path_to_scenario_or_dir>
 ### `init`
 Scaffold a new benchmark directory with starter scenarios for a specific industry. Automatically links the scenario to realistic synthetic CSV datasets.
 ```bash
-eval-harness init --dir <directory_name> --industry <industry_name>
+multiagent-eval init --dir <directory_name> --industry <industry_name>
 ```
 
 ### `install`
 Install curated scenario packs (e.g., `telecom-pack`, `rag-agent-pack`).
 ```bash
-eval-harness install <pack-name>
+multiagent-eval install <pack-name>
 ```
-**Example:** `eval-harness install telecom-pack` downloads and registers a bundle of 100+ telecom-specific agent scenarios.
+**Example:** `multiagent-eval install telecom-pack` downloads and registers a bundle of 100+ telecom-specific agent scenarios.
 
 ### `analyze`
 Scan an agent's GitHub repository to identify tool patterns and auto-generate matching AES scenarios.
 ```bash
-eval-harness analyze <github_url>
+multiagent-eval analyze <github_url>
 ```
-**Example:** `eval-harness analyze https://github.com/my-org/my-agent` scaffolds scenarios in `scenarios/auto/` based on detected tool definitions.
+**Example:** `multiagent-eval analyze https://github.com/my-org/my-agent` scaffolds scenarios in `scenarios/auto/` based on detected tool definitions.
 
 ## Specification & Validation
 
 ### `aes validate`
 Validate Agent Eval Specification (.aes.yaml) files against the official schema.
 ```bash
-eval-harness aes validate --path <path>
+multiagent-eval aes validate --path <path>
 ```
 - Performs deep structure checking using `jsonschema`.
 - Ensures all mandatory benchmark fields are present.
@@ -98,14 +98,14 @@ eval-harness aes validate --path <path>
 ### `aes scaffold`
 Automatically generate a template Agent Eval Specification (.aes.yaml) file.
 ```bash
-eval-harness aes scaffold --output <path>
+multiagent-eval aes scaffold --output <path>
 ```
 - Creates a baseline YAML structure compliant with the latest benchmark standards.
 
 ### `spec-to-eval`
 Convert a Markdown PRD/Spec file into a structured Scenario JSON.
 ```bash
-eval-harness spec-to-eval --input <prd.md> [--output <scenario.json>] [--fill-defaults]
+multiagent-eval spec-to-eval --input <prd.md> [--output <scenario.json>] [--fill-defaults]
 ```
 - `--input`: Path to the Markdown specification file.
 - `--output`: Optional. Custom output path for the generated JSON.
@@ -115,14 +115,14 @@ eval-harness spec-to-eval --input <prd.md> [--output <scenario.json>] [--fill-de
 ### `auto-translate`
 Translate raw, unstructured documents (TXT, MD, PDF, DOCX) into structured Scenario JSON files using a local LLM.
 ```bash
-eval-harness auto-translate --input <document.pdf> --model <model_name> --industry <industry>
+multiagent-eval auto-translate --input <document.pdf> --model <model_name> --industry <industry>
 ```
 **Requirement:** `Ollama` must be running locally.
 
 ### `ci generate`
 Scaffold a `.github/workflows/agent_eval.yml` file to run evaluations automatically on Pull Requests.
 ```bash
-eval-harness ci generate
+multiagent-eval ci generate
 ```
 
 ## Drift & Research
@@ -130,40 +130,40 @@ eval-harness ci generate
 ### `import-drift`
 Convert production traces (interaction logs) into reusable evaluation scenarios.
 ```bash
-eval-harness import-drift --input <trace.json> --industry <industry>
+multiagent-eval import-drift --input <trace.json> --industry <industry>
 ```
 
 ### `mutate`
 Generate adversarial variants of a scenario (e.g., adding typos, prompt injection).
 ```bash
-eval-harness mutate --input <scenario.json> --type <mutation_type>
+multiagent-eval mutate --input <scenario.json> --type <mutation_type>
 ```
 
 ### `export`
 Convert internal execution traces (`run.jsonl`) into externally shareable dataset formats (like HuggingFace Datasets).
 ```bash
-eval-harness export --input <run.jsonl> --format hf --output <dataset.json>
+multiagent-eval export --input <run.jsonl> --format hf --output <dataset.json>
 ```
 
 ### `failures search`
 Query the global Failure Corpus to retrieve known failing edge cases for specific topics (e.g., PII, timeouts).
 ```bash
-eval-harness failures search <query>
+multiagent-eval failures search <query>
 ```
-**Example:** `eval-harness failures search "pii leaks"` discovers and imports 5 realistic failing scenarios from the corpus.
+**Example:** `multiagent-eval failures search "pii leaks"` discovers and imports 5 realistic failing scenarios from the corpus.
 
 ## Debugging & Exploration
 
 ### `replay`
 Re-execute a `run.jsonl` flight recorder log to debug "wrong turns".
 ```bash
-eval-harness replay --path <path/to/run.jsonl>
+multiagent-eval replay --path <path/to/run.jsonl>
 ```
 
 ### `explain`
 Automatically analyze a `run.jsonl` trace to diagnose root causes with high-fidelity tiered scoring and actionable technical fixes.
 ```bash
-eval-harness explain --path <path/to/run.jsonl>
+multiagent-eval explain --path <path/to/run.jsonl>
 ```
 **Forensic Features:**
 - **Tiered Confidence Scoring**: Distinguishes between explicit policy violations (100%), induced system/tool errors (85%), and heuristic fallbacks (50%).
@@ -173,20 +173,20 @@ eval-harness explain --path <path/to/run.jsonl>
 ### `calibrate`
 Measure alignment between the LLM judge and human ground truth in a flight recorder log.
 ```bash
-eval-harness calibrate --path <path/to/run.jsonl>
+multiagent-eval calibrate --path <path/to/run.jsonl>
 ```
 **Metrics:** Calculates Pearson Correlation and Mean Absolute Error (MAE) based on paired `luna_judge_score` and `human_score` events.
 
 ### `playground`
 Launch an interactive REPL to talk to an agent directly in the terminal.
 ```bash
-eval-harness playground [--agent <url>]
+multiagent-eval playground [--agent <url>]
 ```
 
 ### `record`
 Record a live interaction with an agent and save it as a structured trace.
 ```bash
-eval-harness record [--agent <url>]
+multiagent-eval record [--agent <url>]
 ```
 
 ## Utilities
@@ -198,25 +198,25 @@ Launch the Web Admin Console backend API and Unified React SPA. The console prov
 - **Background Evaluation**: Trigger runs directly from the UI; the console handles background execution and event streaming.
 - **Visual Debugger**: Real-time trajectory playback with interactive state inspection powered by the `DebuggerStateStore`.
 ```bash
-eval-harness console [--host 127.0.0.1] [--port 5000]
+multiagent-eval console [--host 127.0.0.1] [--port 5000]
 ```
 
 ### `doctor`
 Check the local environment for missing dependencies or configuration issues.
 ```bash
-eval-harness doctor
+multiagent-eval doctor
 ```
 
 ### `quickstart`
 Run a 60-second guided demo that spawns a mock agent and executes an evaluation.
 ```bash
-eval-harness quickstart
+multiagent-eval quickstart
 ```
 
 ### `report`
 Generate a standalone Premium HTML report from an execution trace.
 ```bash
-eval-harness report --path <path/to/run.jsonl>
+multiagent-eval report --path <path/to/run.jsonl>
 ```
 **Feature Highlights:**
 - **Trace Reconstruction**: Automatically reconstructs hierarchical task results, metrics, and triage tags from historical JSONL events.
@@ -226,7 +226,7 @@ eval-harness report --path <path/to/run.jsonl>
 ### `scenario generate`
 Interactively workspace to generate new test scenarios via a terminal wizard.
 ```bash
-eval-harness scenario generate
+multiagent-eval scenario generate
 ```
 
 ## Plugin Commands
@@ -234,8 +234,8 @@ eval-harness scenario generate
 ### `plugin <name> <command>`
 Execute plugin-specific subcommands. Plugins register their own commands under a secure namespace to prevent command hijacking.
 ```bash
-eval-harness plugin <plugin_name> <command> [options]
+multiagent-eval plugin <plugin_name> <command> [options]
 ```
 
-> **Security Note:** All plugin commands are namespaced under `eval-harness plugin <name>` to prevent command hijacking. The legacy `extend_cli` hook has been removed.
+> **Security Note:** All plugin commands are namespaced under `multiagent-eval plugin <name>` to prevent command hijacking. The legacy `extend_cli` hook has been removed.
 

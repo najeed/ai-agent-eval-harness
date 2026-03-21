@@ -13,7 +13,7 @@ The fastest way to see the harness in action is the `quickstart` command. It aut
 pip install -e .
 
 # 2. Run the Quickstart
-eval-harness quickstart
+multiagent-eval quickstart
 ```
 
 **What happens:**
@@ -31,13 +31,13 @@ When you're ready to start building benchmarks for your own use-case:
 ### 1. Scaffold the Project
 Generate a starter workspace linked to automatically generated realistic datasets.
 ```bash
-eval-harness init --dir my_benchmarks --industry finance
+multiagent-eval init --dir my_benchmarks --industry finance
 ```
 
 ### 2. Auto-Translate Existing Specs
 If you already have PDF or Markdown guidelines, convert them into JSON scenarios automatically (requires local `Ollama`):
 ```bash
-eval-harness auto-translate --input specs/loan_approval.pdf --industry finance
+multiagent-eval auto-translate --input specs/loan_approval.pdf --industry finance
 ```
 
 ---
@@ -63,13 +63,13 @@ set AGENT_API_URL=http://localhost:5001/execute_task
 ### 3. Run an Evaluation
 Access the global library of **5,000+ industry-grade scenarios**.
 ```bash
-eval-harness evaluate --path industries/telecom
+multiagent-eval evaluate --path industries/telecom
 ```
 
 ### 4. Validate Benchmarks
 Ensure your custom benchmarks are AES v0.2 compliant.
 ```bash
-eval-harness aes validate --path my_benchmarks
+multiagent-eval aes validate --path my_benchmarks
 ```
 
 ---
@@ -80,7 +80,7 @@ After the run, you'll see a summary in the console and detailed logs in:
 - `reports/latest_results.json`
 - `runs/run.jsonl` (Flight Recorder)
 - `reports/report_<id>.html` (**Premium HTML Report** with trace reconstruction)
-- **Interactive Dashboard:** Run `eval-harness console` for visual background evaluation and live DNA debugging.
+- **Interactive Dashboard:** Run `multiagent-eval console` for visual background evaluation and live DNA debugging.
 
 ---
 
@@ -89,7 +89,7 @@ After the run, you'll see a summary in the console and detailed logs in:
 Inspect exactly what happened during an evaluation (agent prompts, tool calls, metrics):
 
 ```bash
-eval-harness replay --path runs/run.jsonl
+multiagent-eval replay --path runs/run.jsonl
 ```
 
 ---

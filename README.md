@@ -40,10 +40,10 @@
 Get from zero to evaluated in seconds:
 ```bash
 pip install -e .
-eval-harness quickstart
+multiagent-eval quickstart
 ```
 *   **Result**: Launches mock agent, executes a telecom scenario, and builds a report.
-*   **Next Step**: `eval-harness console` for the visual dashboard.
+*   **Next Step**: `multiagent-eval console` for the visual dashboard.
 
 ## Mission
 
@@ -80,8 +80,8 @@ The harness is organized into the following key components:
 >
 > ```bash
 > # 1. Clone the repository
-> git clone https://github.com/najeed/ai-multi-agent-eval.git
-> cd ai-multi-agent-eval
+> git clone https://github.com/najeed/ai-agent-eval-harness.git
+> cd ai-agent-eval-harness
 >
 > # 2. Set up a virtual environment (Recommended)
 > python -m venv venv
@@ -92,13 +92,13 @@ The harness is organized into the following key components:
 > pip install -e .
 >
 > # 4. Run the Quickstart Demo (CLI)
-> eval-harness quickstart
+> multiagent-eval quickstart
 > ```
 >
 > **What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a rich legacy HTML report in `reports/`.
 
 > [!TIP]
-> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `eval-harness console`.
+> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `multiagent-eval console`.
 
 ## 📂 The Global Scenario Corpus (v1.1)
 
@@ -134,13 +134,13 @@ Comprehensive coverage for **50+ sectors** including:
 3.  **Run Evaluation**: 
     ```bash
     # Standard HTTP (default)
-    eval-harness evaluate --path industries/telecom
+    multiagent-eval evaluate --path industries/telecom
 
     # Local Subprocess (stdin/stdout)
-    eval-harness evaluate --path my_scenarios/ --protocol local --agent-cmd "python my_agent.py"
+    multiagent-eval evaluate --path my_scenarios/ --protocol local --agent-cmd "python my_agent.py"
 
     # Socket (TCP/Unix)
-    eval-harness evaluate --path tests/scenarios --protocol socket --agent-socket "localhost:9000"
+    multiagent-eval evaluate --path tests/scenarios --protocol socket --agent-socket "localhost:9000"
     ```
 
 > [!NOTE]
@@ -227,7 +227,7 @@ The harness includes a unified **React-powered SPA** that simplifies management 
 
 **Quick Launch:**
 ```bash
-eval-harness console
+multiagent-eval console
 ```
 *Access via browser at `http://localhost:5000`. The console features an adaptive, premium dark-mode UI with high-density data visualizations.*
 
@@ -272,7 +272,7 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **Audit Points**: 100% compliance with the 8-point Enterprise Security Audit (DoS caps, Fork Bomb prevention, RCE guards).
 
 ### Run Trace Warning
-All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory via `eval-harness cleanup-runs --days 7`.
+All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory via `multiagent-eval cleanup-runs --days 7`.
 
 ### Troubleshooting
 
@@ -283,7 +283,7 @@ All evaluation execution logs are appended to `runs/run.jsonl`. Because this act
 - **Running Lab Mode without Docker**:
     If you cannot install Docker, run these 3 commands in separate terminals:
     1. `python sample_agent/agent_app.py`
-    2. `eval-harness console`
+    2. `multiagent-eval console`
     3. `streamlit run dashboard/app.py` (requires `pip install streamlit`)
 
 ## How to Contribute

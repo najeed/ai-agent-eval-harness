@@ -79,7 +79,7 @@ class MyEcoPlugin(BaseEvalPlugin):
 ```
 
 ### 3. Verify on Dashboard
-Restart the console or run `eval-harness console`. Your shim will be automatically discovered and reflected in the "World Shims" count.
+Restart the console or run `multiagent-eval console`. Your shim will be automatically discovered and reflected in the "World Shims" count.
 
 ## Using the Shim in Scenarios
 You can now reference this shim in your scenario's `tasks`:

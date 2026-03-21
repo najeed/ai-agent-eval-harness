@@ -5,16 +5,16 @@ from eval_runner import cli
 
 # Test simple synchronous or asynchronous command routes by patching the ultimate handler.
 @pytest.mark.parametrize("args, mock_target", [
-    (["eval-harness", "init"], "eval_runner.cli.handle_init"),
-    (["eval-harness", "import-drift", "--input", "x", "--industry", "x"], "eval_runner.cli.handle_import_drift"),
-    (["eval-harness", "auto-translate", "--input", "x"], "eval_runner.cli.handle_auto_translate"),
-    (["eval-harness", "replay"], "eval_runner.cli.handle_replay"),
-    (["eval-harness", "mutate", "--input", "x", "--type", "typo"], "eval_runner.cli.handle_mutate"),
-    (["eval-harness", "doctor"], "eval_runner.cli.handle_doctor"),
-    (["eval-harness", "inspect", "--scenario-path", "x"], "eval_runner.cli.handle_inspect"),
-    (["eval-harness", "taxonomy"], "eval_runner.cli.handle_taxonomy"),
-    (["eval-harness", "catalog-search", "--query", "x"], "eval_runner.cli.handle_catalog_search"),
-    (["eval-harness", "export", "--input", "i", "--output", "o"], "eval_runner.cli.handle_export"),
+    (["multiagent-eval", "init"], "eval_runner.cli.handle_init"),
+    (["multiagent-eval", "import-drift", "--input", "x", "--industry", "x"], "eval_runner.cli.handle_import_drift"),
+    (["multiagent-eval", "auto-translate", "--input", "x"], "eval_runner.cli.handle_auto_translate"),
+    (["multiagent-eval", "replay"], "eval_runner.cli.handle_replay"),
+    (["multiagent-eval", "mutate", "--input", "x", "--type", "typo"], "eval_runner.cli.handle_mutate"),
+    (["multiagent-eval", "doctor"], "eval_runner.cli.handle_doctor"),
+    (["multiagent-eval", "inspect", "--scenario-path", "x"], "eval_runner.cli.handle_inspect"),
+    (["multiagent-eval", "taxonomy"], "eval_runner.cli.handle_taxonomy"),
+    (["multiagent-eval", "catalog-search", "--query", "x"], "eval_runner.cli.handle_catalog_search"),
+    (["multiagent-eval", "export", "--input", "i", "--output", "o"], "eval_runner.cli.handle_export"),
 ])
 def test_router_sync_handlers(args, mock_target):
     with patch("sys.argv", args):
@@ -33,38 +33,38 @@ def test_router_sync_handlers(args, mock_target):
 # Test commands that call specific modules
 
 def test_router_console():
-    with patch("sys.argv", ["eval-harness", "console"]), \
+    with patch("sys.argv", ["multiagent-eval", "console"]), \
          patch("eval_runner.console.app.run_server") as mock_server:
         cli.main()
         mock_server.assert_called_once()
 
 def test_router_quickstart():
-    with patch("sys.argv", ["eval-harness", "quickstart"]), \
+    with patch("sys.argv", ["multiagent-eval", "quickstart"]), \
          patch("eval_runner.cli.asyncio.run") as mock_run:
         cli.main()
         mock_run.assert_called_once()
 
 def test_router_scenario_generate():
-    with patch("sys.argv", ["eval-harness", "scenario", "generate"]), \
+    with patch("sys.argv", ["multiagent-eval", "scenario", "generate"]), \
          patch("eval_runner.scaffold.generate_interactive") as mock_gen:
         cli.main()
         mock_gen.assert_called_once()
 
 def test_router_record():
-    with patch("sys.argv", ["eval-harness", "record"]), \
+    with patch("sys.argv", ["multiagent-eval", "record"]), \
          patch("eval_runner.cli.asyncio.run") as mock_run:
         cli.main()
         mock_run.assert_called_once()
 
 def test_router_playground():
-    with patch("sys.argv", ["eval-harness", "playground"]), \
+    with patch("sys.argv", ["multiagent-eval", "playground"]), \
          patch("eval_runner.cli.asyncio.run") as mock_run:
         cli.main()
         mock_run.assert_called_once()
 
 def test_router_exception_exit():
     # Force an exception inside main to hit the traceback and sys.exit(1) block
-    with patch("sys.argv", ["eval-harness", "list"]), \
+    with patch("sys.argv", ["multiagent-eval", "list"]), \
          patch("eval_runner.cli.handle_list", side_effect=Exception("Crash")), \
          patch("traceback.print_exc") as mock_exc:
         with pytest.raises(SystemExit) as e:

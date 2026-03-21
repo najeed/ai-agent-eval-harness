@@ -84,7 +84,7 @@ HTML_SUB_TEXT_COLOR = os.getenv("HTML_SUB_TEXT_COLOR", "#94a3b8")
 
 # --- Sandbox Security ---
 SANDBOX_VFS_PREFIX = os.getenv("SANDBOX_VFS_PREFIX", "vfs:/")
-SHELL_METABLOCKS = os.getenv("SHELL_METABLOCKS", ";,|,&&,`").split(",")
+SHELL_METABLOCKS = os.getenv("SHELL_METABLOCKS", ";,|,&&,`,$,(,),>,<,&").split(",")
 GLOBAL_ENABLED_SHIMS = os.getenv("GLOBAL_ENABLED_SHIMS", "*").split(",")
 
 # --- Timeouts ---

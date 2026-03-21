@@ -17,8 +17,8 @@ Ensure the `version` in `pyproject.toml` is correct for your new release.
 
 ```toml
 [project]
-name = "eval_runner"
-version = "0.1.0" # Update this
+name = "multi-agent-eval"
+version = "1.1.0" # Update this
 ...
 ```
 
@@ -68,7 +68,7 @@ twine upload --repository testpypi dist/*
 You can then try installing it from TestPyPI:
 ```bash
 # Use the new package name
-pip install --index-url https://test.pypi.org/simple/ --no-deps ai-multi-agent-eval
+pip install --index-url https://test.pypi.org/simple/ --no-deps multi-agent-eval
 ```
 
 ## Step 5: Upload to PyPI

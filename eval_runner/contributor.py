@@ -78,7 +78,7 @@ class ContributeWizard:
         print(f"{'🏁 NEXT STEPS':^60}")
         print("=" * 60)
         print(f"1. Open {target_path} and fill in the 'tasks' section.")
-        print("2. Run 'eval-harness lint scenarios/' to verify again.")
+        print("2. Run 'multiagent-eval lint scenarios/' to verify again.")
         print(f"3. Run 'git checkout -b contrib/{scenario_id}'")
         print("4. Commit and push your changes to GitHub.")
         print("5. Open a Pull Request! We appreciate your contribution.")

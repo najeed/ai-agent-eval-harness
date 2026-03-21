@@ -24,10 +24,10 @@ async def execute(request: dict):
 
 ## 2. Register Your Assistant
 ```bash
-eval-harness evaluate --path scenarios/ --agent http://localhost:8000/execute_task --agent-name "OpenAI-Assistant-V2"
+multiagent-eval evaluate --path scenarios/ --agent http://localhost:8000/execute_task --agent-name "OpenAI-Assistant-V2"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-eval-harness report --path runs/run.jsonl --share
+multiagent-eval report --path runs/run.jsonl --share
 ```

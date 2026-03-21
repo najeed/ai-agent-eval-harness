@@ -12,8 +12,8 @@
       "description": "User asks a basic question about...",
       "expected_outcome": "Agent provides a clear, accurate answer...",
       "success_criteria": [
-        "Accuracy",
-        "Clarity"
+        { "metric": "Accuracy", "threshold": 0.8 },
+        { "metric": "Clarity", "threshold": 0.8 }
       ],
       "tools": []
     }

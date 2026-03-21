@@ -21,10 +21,10 @@ async def execute(request: dict):
 
 ## 2. Register Your Agent
 ```bash
-eval-harness evaluate --path scenarios/ --agent http://localhost:8000/execute_task --agent-name "LangChain-Agent-V1"
+multiagent-eval evaluate --path scenarios/ --agent http://localhost:8000/execute_task --agent-name "LangChain-Agent-V1"
 ```
 
 ## 3. Generate Verified Report
 ```bash
-eval-harness report --path runs/run.jsonl --share
+multiagent-eval report --path runs/run.jsonl --share
 ```

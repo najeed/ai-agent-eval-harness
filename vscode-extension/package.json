@@ -16,17 +16,17 @@
   "contributes": {
     "commands": [
       {
-        "command": "eval-harness.runScenario",
+        "command": "multiagent-eval.runScenario",
         "title": "Eval: Run Scenario"
       },
       {
-        "command": "eval-harness.openConsole",
+        "command": "multiagent-eval.openConsole",
         "title": "Eval: Open Admin Console"
       }
     ],
     "keybindings": [
       {
-        "command": "eval-harness.openConsole",
+        "command": "multiagent-eval.openConsole",
         "key": "f5",
         "when": "editorTextFocus"
       }

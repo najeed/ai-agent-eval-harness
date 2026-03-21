@@ -24,7 +24,7 @@ def test_handle_list_integration(cli_runner):
         "eval_runner.catalog.list_scenarios"
     ) as mock_list:
 
-        with patch("sys.argv", ["eval-harness", "list"]):
+        with patch("sys.argv", ["multiagent-eval", "list"]):
             cli.main()
             mock_load.assert_called_once()
             mock_list.assert_called_once()
@@ -36,7 +36,7 @@ def test_handle_lint_integration(cli_runner):
     scenario_path.write_text("{}")
 
     with patch("eval_runner.linter.run_lint") as mock_lint:
-        with patch("sys.argv", ["eval-harness", "lint", "--path", str(scenario_path)]):
+        with patch("sys.argv", ["multiagent-eval", "lint", "--path", str(scenario_path)]):
             cli.main()
             mock_lint.assert_called_once_with(str(scenario_path))
 
@@ -47,7 +47,7 @@ def test_handle_report_integration(cli_runner):
     trace_path.write_text(json.dumps({"event": "run_start", "run_id": "r1", "scenario": "s1"}) + "\n")
 
     with patch("eval_runner.reporter.generate_html_report", return_value="report.html") as mock_gen:
-        with patch("sys.argv", ["eval-harness", "report", "--path", str(trace_path)]):
+        with patch("sys.argv", ["multiagent-eval", "report", "--path", str(trace_path)]):
             cli.main()
             mock_gen.assert_called_once()
 
@@ -66,7 +66,7 @@ def test_handle_aes_validate_integration(cli_runner):
          patch("json.load") as mock_json_load:
          
         mock_json_load.return_value = {} # empty generic schema
-        with patch("sys.argv", ["eval-harness", "aes", "validate", "--path", str(aes_file)]):
+        with patch("sys.argv", ["multiagent-eval", "aes", "validate", "--path", str(aes_file)]):
             cli.main()
             mock_val.assert_called_once()
 
@@ -84,21 +84,21 @@ def test_handle_cleanup_runs_integration(cli_runner, monkeypatch):
     # Mock confirmation to 'y'
     monkeypatch.setattr("builtins.input", lambda _: "y")
 
-    with patch("sys.argv", ["eval-harness", "cleanup-runs", "--days", "7"]):
+    with patch("sys.argv", ["multiagent-eval", "cleanup-runs", "--days", "7"]):
         cli.main()
         assert not old_file.exists()
 
 
 def test_handle_install_integration(cli_runner):
     """Integrates handle_install logic."""
-    with patch("sys.argv", ["eval-harness", "install", "telecom-pack"]):
+    with patch("sys.argv", ["multiagent-eval", "install", "telecom-pack"]):
         cli.main()
         assert (cli_runner / "industries" / "telecom").exists()
 
 
 def test_handle_ci_generate_integration(cli_runner):
     """Integrates handle_ci_generate logic."""
-    with patch("sys.argv", ["eval-harness", "ci", "generate"]):
+    with patch("sys.argv", ["multiagent-eval", "ci", "generate"]):
         cli.main()
         assert (cli_runner / ".github" / "workflows" / "agent_eval.yml").exists()
 
@@ -109,7 +109,7 @@ def test_handle_failures_search_integration(cli_runner):
     scen_file.parent.mkdir(parents=True)
     scen_file.write_text('{"content": "credit card failure"}')
 
-    with patch("sys.argv", ["eval-harness", "failures", "search", "credit"]):
+    with patch("sys.argv", ["multiagent-eval", "failures", "search", "credit"]):
         cli.main()
         # Coverage check
 
@@ -122,7 +122,7 @@ def test_handle_spec_to_eval_integration(cli_runner):
     # Mock classifier to avoid torch dependency in tests
     with patch("eval_runner.cli.classify_scenario") as mock_class:
         mock_class.return_value = {"industry": "finance", "use_case": "U1", "core_function": "F1"}
-        with patch("sys.argv", ["eval-harness", "spec-to-eval", "--input", str(md_file), "--output", "s123.json"]):
+        with patch("sys.argv", ["multiagent-eval", "spec-to-eval", "--input", str(md_file), "--output", "s123.json"]):
             cli.main()
             assert (cli_runner / "s123.json").exists()
 
@@ -134,6 +134,6 @@ def test_handle_mutate_integration(cli_runner):
 
     with patch("eval_runner.mutator.mutate_scenario") as mock_mutate:
         mock_mutate.return_value = {"scenario_id": "s1_mut", "description": "mutated"}
-        with patch("sys.argv", ["eval-harness", "mutate", "--input", str(scen_file), "--type", "typo"]):
+        with patch("sys.argv", ["multiagent-eval", "mutate", "--input", str(scen_file), "--type", "typo"]):
             cli.main()
             assert (cli_runner / "scen_typo.json").exists()

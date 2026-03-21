@@ -84,7 +84,7 @@ def generate_interactive():
     print(f"\n✅ Successfully generated {len(generated_files)} scenarios in {output_dir}/")
     for f in generated_files:
         print(f"  - {f.name}")
-    print("\nTip: Run these with 'eval-harness evaluate --path <path_or_dir>'")
+    print("\nTip: Run these with 'multiagent-eval evaluate --path <path_or_dir>'")
 
 
 if __name__ == "__main__":

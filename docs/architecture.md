@@ -130,7 +130,7 @@ Phase 3 introduces advanced orchestration capabilities for research and complex 
 
 Phase 4 elevates the Harness from an isolated tool to an integrated participant in the open AI evaluation ecosystem:
 - **Community Benchmark Integration**: The harness natively supports downloading and structuring data from major AI benchmarks. Passing URIs like `gaia://...` to the loader transparently fetches and wraps the datasets into executable `Scenario` objects with compatible metrics.
-- **HuggingFace Distribution**: The `HFExporter` enables a one-click CLI flow (`eval-harness export --format hf`) to transform deterministic internal `run.jsonl` flight logs into normalized datasets ready for HuggingFace publication and leaderboards.
+- **HuggingFace Distribution**: The `HFExporter` enables a one-click CLI flow (`multiagent-eval export --format hf`) to transform deterministic internal `run.jsonl` flight logs into normalized datasets ready for HuggingFace publication and leaderboards.
 - **Framework Adapters via Plugins**: Supporting frameworks like `LangGraph`, `CrewAI`, and **Microsoft AutoGen** (via `autogen://`) without "polluting" the core engine. These are implemented as modular `BaseEvalPlugin` classes that hook into the `on_discover_adapters` lifecycle to register their custom execution protocols.
 - **Ecosystem Hub**: A unified registry for LLM providers (**OpenAI**, **Gemini**, **Claude**, **Ollama**, **xAI Grok**) and orchestration frameworks. The Ecosystem Hub ensures the core evaluator remains "Zero-Touch"—swapping a provider requires zero core code changes. The LLM judge is now configurable via the `JUDGE_PROVIDER` environment variable, with support for per-scenario `judge_config` overrides.
 - **Industry-Standard Rubrics**: The `rubrics.py` module provides a hot-swappable registry for clinical, fiduciary, and legal scoring logic, enabling precise evaluation without modifying engine code.
@@ -160,7 +160,7 @@ The following mitigations are enforced at the core level:
 |---|---|---|---|
 | 1 | DoS / CPU Exhaustion | `MAX_ENGINE_ATTEMPTS = 50` hard cap | `config.py` |
 | 2 | PII / Token Leakage | `sanitize_payload()` redacts JWT, AWS, GitHub, Bearer tokens and neutralizes format-string injection | `events.py` |
-| 3 | CLI Command Hijacking | `extend_cli` removed; plugins use namespaced `on_register_commands` under `eval-harness plugin <name>` | `cli.py`, `plugins.py` |
+| 3 | CLI Command Hijacking | `extend_cli` removed; plugins use namespaced `on_register_commands` under `multiagent-eval plugin <name>` | `cli.py`, `plugins.py` |
 | 4 | Plugin Halt (Hang) | All hooks wrapped in `PLUGIN_TIMEOUT = 5.0s` via `_invoke_with_timeout()` | `config.py` |
 | 5 | Sandbox Escape | Chroot on emitted state keys **and** values; shell meta-characters (`;`, `\|`, `&&`, `` ` ``) stripped | `config.py` |
 | 6 | Fork Bomb | `MAX_FORK_DEPTH = 3`, `MAX_FORK_BREADTH = 5` enforced in `SessionManager` | `config.py` |

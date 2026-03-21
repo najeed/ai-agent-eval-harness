@@ -70,7 +70,7 @@ async def record_interaction(agent_url: str):
                 f.write(json.dumps(e) + "\n")
 
         print(f"\n✅ Recording saved to: {log_file}")
-        print(f"Tip: You can replay this with 'eval-harness replay --path {log_file}'")
+        print(f"Tip: You can replay this with 'multiagent-eval replay --path {log_file}'")
 
 
 if __name__ == "__main__":

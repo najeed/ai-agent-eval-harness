@@ -225,5 +225,5 @@ The following industry-standard rubrics are available out-of-the-box:
 ```
 
 ## Admin Console Integration
-The **Admin Console** (`eval-harness console`) utilizes this REST API as its backbone. Enterprise plugins can extend this contract via the `on_register_console_routes` hook to inject custom monitoring or debugging endpoints into the React Native dashboard.
+The **Admin Console** (`multiagent-eval console`) utilizes this REST API as its backbone. Enterprise plugins can extend this contract via the `on_register_console_routes` hook to inject custom monitoring or debugging endpoints into the React Native dashboard.
 

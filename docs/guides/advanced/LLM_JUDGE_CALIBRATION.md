@@ -28,14 +28,14 @@ Ensure your scenarios include a `human_score` field in the criteria metadata. Th
 Run your evaluation as normal. The harness will record the judge's score alongside the human score in the flight recorder (`run.jsonl`).
 
 ```bash
-eval-harness evaluate --path scenarios/healthcare/
+multiagent-eval evaluate --path scenarios/healthcare/
 ```
 
 ### 3. Running the Calibrator
 Use the `calibrate` command to generate an alignment report.
 
 ```bash
-eval-harness calibrate --path runs/latest_run.jsonl
+multiagent-eval calibrate --path runs/latest_run.jsonl
 ```
 
 ## Interpreting Alignment Metrics

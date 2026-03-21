@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -7,16 +7,16 @@ const { exec } = require('child_process');
 function activate(context) {
 	console.log('MultiAgentEval is now active!');
 
-	let runScenario = vscode.commands.registerCommand('eval-harness.runScenario', function () {
+	let runScenario = vscode.commands.registerCommand('multiagent-eval.runScenario', function () {
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor && activeEditor.document.fileName.endsWith('.json')) {
 			const filePath = activeEditor.document.fileName;
 			vscode.window.showInformationMessage(`Running Eval Trace for: ${filePath}`);
 			
-			// Simulate running the CLI
-			exec(`eval-harness evaluate --path ${filePath}`, (error, stdout, stderr) => {
+			// Safely run the CLI using execFile to prevent shell injection
+			execFile('multiagent-eval', ['evaluate', '--path', filePath], (error, stdout, stderr) => {
 				if (error) {
-					vscode.window.showErrorMessage(`Eval Failed: ${stderr}`);
+					vscode.window.showErrorMessage(`Eval Failed: ${stderr || error.message}`);
 					return;
 				}
 				vscode.window.showInformationMessage('Eval Complete! View results in Admin Console.');
@@ -26,7 +26,7 @@ function activate(context) {
 		}
 	});
 
-	let openConsole = vscode.commands.registerCommand('eval-harness.openConsole', function () {
+	let openConsole = vscode.commands.registerCommand('multiagent-eval.openConsole', function () {
 		vscode.env.openExternal(vscode.Uri.parse('http://localhost:5000'));
 	});
 
