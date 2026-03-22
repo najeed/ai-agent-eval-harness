@@ -1,0 +1,23 @@
+[project]
+name = "dataproc-engine"
+version = "0.1.0"
+description = "High-Signal Industry Dataset Utility"
+authors = [
+    { name = "Najeed Khan", email = "ai.eval.harness.contact+najeed@gmail.com" }
+]
+dependencies = [
+    "click",
+    "pydantic",
+    "aiohttp",
+    "pandas",
+    "pyarrow"
+]
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.scripts]
+dataproc-cli = "dataproc_engine.cli.main:cli"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
