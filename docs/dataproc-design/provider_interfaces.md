@@ -17,8 +17,8 @@ class BaseProvider(ABC):
         pass
         
     @abstractmethod
-    def transform(self, raw_data: list[RawArtifact]) -> list[StandardSchema]:
-        """Convert raw artifacts into the normalized industry schema."""
+    async def transform(self, raw_data: list[RawArtifact]) -> list[StandardSchema]:
+        """Convert raw artifacts into the normalized industry schema (Async)."""
         pass
         
     @abstractmethod
@@ -27,32 +27,19 @@ class BaseProvider(ABC):
         pass
 ```
 
-## Modular Components
+## Industrial Implementation Examples
 
-### 1. FinanceProvider (Pilot)
-*   **Sources**: `SEC_EDGAR`, `FRED_API`.
-*   **Extraction**: REST API calls (SEC) and `fredapi` library.
-*   **Transformation**: XBRL to JSON conversion; time-series alignment of macro vs corporate data.
+### 1. FinanceProvider
+*   **Sources**: SEC EDGAR, EIA API, Market Trends.
+*   **Matching**: Uses `DataCorrelator` for fuzzy identity resolution (e.g., linking CIKs to industry signatures).
+*   **Infrastructure**: Fully asynchronous transformation supporting tiered LLM failover.
 
-### 2. Provider Registration
-Providers are registered in a centralized `registry.json`:
-
-```json
-{
-  "industries": {
-    "finance": {
-      "provider": "dataproc_engine.providers.finance.FinanceProvider",
-      "config": {
-        "sec_user_agent": "...",
-        "fred_api_key": "..."
-      }
-    }
-  }
-}
-```
+### 2. UnstructuredProvider
+*   **Universal Input**: Handles Local Paths, URLs, and PDF files.
+*   **Intelligence**: Integrates `LLMManager` for heuristic or probabilistic metric extraction.
 
 ## Extensibility for New Industries
 Adding a new industry requires zero changes to the `DatasetEngine`. The developer only needs to:
 1.  Implement a new class inheriting from `BaseProvider`.
-2.  Specify the industry-specific transformation logic.
-3.  Register the new class in the `Registry`.
+2.  Specify the industry-specific transformation logic (async).
+3.  Register the new class in the CLI orchestrator.

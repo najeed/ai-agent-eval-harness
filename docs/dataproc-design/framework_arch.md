@@ -14,34 +14,41 @@ The central controller that:
 ### 2. Provider Lifecycle
 Each industry pilot implements a `Provider` that follows a standardized 4-stage lifecycle:
 
-1.  **Extract**: Fetches raw data from external APIs or files. Stores raw artifacts for auditability.
-2.  **Transform**: Maps raw data (XML, XBRL, JSON, PDF) into the `StandardIndustrySchema`.
-3.  **Validate**: Performs integrity checks (checksums, cross-references, business logic consistency).
-4.  **Export**: Saves the normalized dataset in evaluation-ready formats (JSONL, Parquet).
+1.  **Extract**: Fetches raw data from external APIs or files. Supports PDF/Web/REST.
+2.  **Transform (Async)**: Maps raw data into `StandardSchema` using Tiered LLM extraction (Cloud -> Local -> Heuristic).
+3.  **Validate**: Performs integrity checks and domain-specific consistency verification.
+4.  **Correlate**: Establishes cross-industry links and enriches records with fuzzy-matched identity resolution.
+
+## Deep Hardening Layers
+
+### 🛡️ 1. Resiliency & Fault Tolerance
+The `BaseProvider` implements a mission-critical resiliency layer:
+*   **Circuit Breaker**: Detects repeated failures (e.g., API 500s or 429s) and trips to prevent cascading exhaustion of resources.
+*   **Exponential Backoff**: Automatic retries with randomized jitter to handle transient network instability gracefully.
+
+### 🔐 2. Security Layer
+To ensure enterprise-grade compliance during industrial signal extraction:
+*   **Autonomous PII Scrubbing**: A regex-based engine in the `BaseProvider` cleans emails, phone numbers, and sensitive identifiers from raw unstructured text *before* it reaches the LLM inference tier.
+*   **Immutable Checksums**: All records are now secured with a SHA-256 hash of their content, ensuring data-aware integrity throughout the pipeline.
 
 ## Data Flow Diagram
 
 ```mermaid
 graph TD
-    A[Dataset Engine] --> B[Registry]
-    A --> C[Task Queue]
-    C --> D{Provider Instance}
-    D --> E[Extractor]
-    D --> F[Transformer]
+    A[Dataset Engine] -->|Register| D{Provider Instance}
+    D --> Resiliency[Circuit Breaker/Retry]
+    Resiliency --> E[Async Extractor]
+    D --> Security[PII Scrubber]
+    Security --> F[Async Transformer]
+    F -->|Tiered Fallback| LLM[LLMManager]
     D --> G[Validator]
-    E --> H[(Raw Storage)]
-    F --> I{Standard Schema}
+    D --> L[DataCorrelator]
+    L -->|Fuzzy Match| identity[Identity Resolution]
     G --> J[(Final Dataset)]
-    
-    subgraph "Industry Extensions"
-    K[FinanceProvider] -- implements --> D
-    L[TransitProvider] -- implements --> D
-    M[ECommerceProvider] -- implements --> D
-    end
 ```
 
 ## Extensibility Pattern
 To add a new industry (e.g., "Healthcare"):
-1.  Define the `HealthcareSchema` (extending the base schema).
-2.  Implement `HealthcareProvider` (overriding `extract()` and `transform()`).
-3.  Register the provider in `registry.json`.
+1.  Implement `HealthcareProvider` (overriding `extract()` and `transform()`).
+2.  Register the provider in `dataproc_engine/cli/main.py`.
+3.  The `DatasetEngine` and `DataCorrelator` automatically handle the orchestration and cross-vertical matching.

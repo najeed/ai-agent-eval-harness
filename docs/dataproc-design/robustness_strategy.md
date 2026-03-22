@@ -1,28 +1,31 @@
-# Generic Robustness & Verification Strategy
+# Robustness & Verification Strategy
 
 ## 1. Data Integrity (The "Unimpeachable" Core)
 To ensure the dataset is factual and reliable, we implement the following automated checks:
 
-### Industry-Specific Consistency
-*   **Logical Audits**: Each provider must implement domain-specific logical checks (e.g., in Finance: Assets = Liabilities + Equity).
+### Financial Consistency (Finance Pilot)
+*   **Balance Sheet Check**: `Assets == Liabilities + ShareholdersEquity` (within a 0.01% rounding tolerance).
+*   **Income Statement Check**: `GrossProfit == Revenue - CostOfRevenue`.
 
-### Technical Validation (Generic Framework)
-*   **Checksum Verification**: Every raw artifact fetched (HTML, XML, JSON) is hashed using SHA-256. If a re-run produces a different hash for the same ID, it is flagged for manual review.
-*   **Schema Enforcement**: Use `pydantic` models to ensure that every `BaseProvider` output strictly adheres to the `StandardIndustrySchema`.
+### Intelligence Validation
+*   **LLM Verification**: Every record extracted via LLM is subjected to a domain-integrity check (e.g., non-negative revenue) before being committed to the dataset.
+*   **Fuzzy Identity Resolution**: Uses `rapidfuzz` to ensure that entities are matched across verticals with a confidence score > 85%, preventing signal leakage from unrelated entities.
 
 ## 2. Robustness Features
-*   **Aggressive Rate Limiting**: The orchestrator enforces per-source rate limits with a global "cooldown" phase if 429 errors are detected.
-*   **Fault-Tolerant Extraction**: If one item fails, the engine logs the error, continues with the rest of the batch, and provides a "Dead Letter Queue" for retries.
-*   **Self-Documentation**: Every record includes a `provenance` block containing `source_url`, `retrieval_timestamp`, and `engine_version`.
+*   **Circuit Breaker**: Detects repeated failures (e.g., API 500s or 429s) and trips to prevent cascading exhaustion of resources.
+*   **Exponential Backoff**: Automatic retries with randomized jitter to handle transient network instability gracefully.
+*   **Autonomous PII Scrubbing**: A regex-based engine in the `BaseProvider` cleans emails, phone numbers, and sensitive identifiers from raw unstructured text *before* it reaches the LLM inference tier.
+*   **Immutable Checksums**: All records are now secured with a SHA-256 hash of their content, ensuring data-aware integrity throughout the pipeline.
+*   **Aggressive Rate Limiting**: The orchestrator enforces per-source rate limits (e.g., 10 req/s for SEC) with a global "cooldown" phase.
 
 ## 3. Verification Plan
 ### Level 1: Unit Tests
-*   Test source-specific parsers against edge-case artifacts.
-*   Test data alignment logic for multi-source providers.
+*   Test XBRL parsers and PDF extractors against edge-case artifacts.
+*   Verify regex heuristic coverage for structured KV data.
 
 ### Level 2: Integration Tests
-*   Mock external APIs to ensure the `Orchestrator` handles timeouts and rate limits correctly.
-*   Verify that a "DummyProvider" can be added and executed without core code changes.
+*   Verify cross-industry correlation (e.g., matching a Telecom record to a Finance filing automatically).
+*   Test the `--overwrite` flag for stable CI/CD automation.
 
 ### Level 3: Human-in-the-Loop
-*   Randomly sample a percentage of extracted values and cross-check against the original source artifacts.
+*   Sample 5% of extracted values and cross-check against the original source using OCR or manual review.

@@ -1,27 +1,28 @@
 # data-to-agentdata: Automated Document Extraction & Formatting
 
-## 1. Feasibility Analysis
-A `data-to-agentdata` utility is **highly feasible** by leveraging the existing `dataproc-engine` core. However, the primary challenge is transitioning from deterministic API extraction (structured JSON) to probabilistic document extraction (unstructured PDF/Text).
+## 1. Implementation Overview
+The `data-to-agentdata` utility is **fully implemented** as a core component of the `dataproc-engine`. It facilitates the transition from raw, unstructured documents (PDF, Text, Web) to high-signal metrics for the Agent Evaluation System (AES).
 
-### Technical Requirements:
-*   **Parsing**: Integration with `unstructured` or `pypdf` for raw text recovery.
-*   **LLM Extraction**: Using an LLM (e.g., Gemini) to locate and normalize specific fields (Metric, Value, Period) from the recovered text.
-*   **Existing Infrastructure**: We can reuse the `Orchestrator`, `Validator`, and `AESFormatter` (CSV/JSONL) layers already built in `dataproc-engine`.
+### Technical Capabilities:
+*   **Parsing**: Native PDF extraction via `pypdf` and raw text/web retrieval via `aiohttp`.
+*   **Tiered LLM Extraction**: 
+    1. **Cloud**: High-precision extraction (Gemini, Claude, GPT, Grok).
+    2. **Local**: Privacy-first extraction (Ollama: DeepSeek, Qwen).
+    3. **Heuristics**: Zero-cost regex fallback for structured logs and KV pairs.
+*   **Unified Orchestration**: Uses the same `DatasetEngine` and `DataCorrelator` layers as the deterministic API providers.
 
-## 2. Proposed Architecture
-
-### [New] FileProvider
-A new `BaseProvider` implementation that:
-1.  **Extracts**: Reads files from a local `--input-dir`.
-2.  **Transforms**: Sends text chunks to an LLM with a strict schema prompt to extract the high-signal metrics.
-3.  **Validates**: Applies the same domain-specific logic (e.g., Balance Sheet check) to ensure LLM extraction was hallucination-free.
+## 2. Architecture: UnstructuredProvider
+The `UnstructuredProvider` implements the `BaseProvider` interface with a unified asynchronous transformation pipeline:
+1.  **Extracts**: Recovers text from documents or URIs.
+2.  **Transforms**: Utilizes the `LLMManager` tiers to map text to the AES-compliant schema.
+3.  **Correlates**: Automatically links extracted entities with existing industrial datasets (e.g., matching a document's company name with an SEC CIK).
 
 ## 3. Workflow Example
-1.  **User provides**: Annual Report PDF (internal/unlisted).
-2.  **Command**: `python dataproc-cli extract --provider file --input-dir ./my_reports --format csv --target-industries finance`
-3.  **Engine outputs**: A high-signal `finance_records.csv` derived from the user's proprietary docs.
+1.  **Input**: Annual Report PDF (internal) or raw text dump.
+2.  **Command**: `python dataproc_engine/cli/main.py extract --source file --input-uri ./reports/apple_q1.pdf --industry finance`
+3.  **Output**: A correlated Finance record enriched with infrastructure signals discovered in `/industries/telecom/datasets/`.
 
-## 4. Practical Roadmap
-1.  **v1 (Current)**: Deterministic API sources (SEC/FRED).
-2.  **v2 (Proposed)**: Local file ingestion with simple regex/keyword extraction.
-3.  **v3 (Pro)**: Intelligent LLM-powered extraction for truly complex, unstructured documentation.
+## 4. Operational Status
+- [x] **v1**: Deterministic API sources (SEC/FRED/EIA).
+- [x] **v2**: Local file ingestion and regex heuristics.
+- [x] **v3**: Intelligent LLM-powered extraction with fuzzy cross-vertical correlation.

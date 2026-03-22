@@ -1,17 +1,19 @@
 import logging
-from typing import Dict, Any
-from dataproc_engine.core.base_provider import BaseProvider
+from typing import Dict, Any, List, Optional
+from dataproc_engine.core.base_provider import BaseProvider, StandardSchema
 from dataproc_engine.core.config import ConfigLoader
+from dataproc_engine.core.correlator import DataCorrelator
+from dataproc_engine.core.logger import StructuredLogger
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-logger = logging.getLogger("dataproc-Engine")
+logger = StructuredLogger("DatasetEngine")
 
 class DatasetEngine:
     """
     Orchestrator for the dataproc ETL process.
     """
-    def __init__(self):
+    def __init__(self, llm_manager: Optional[Any] = None):
         self.providers: Dict[str, BaseProvider] = {}
+        self.llm_manager = llm_manager
 
     def register_provider(self, industry: str, provider: BaseProvider):
         """
@@ -20,7 +22,45 @@ class DatasetEngine:
         self.providers[industry] = provider
         logger.info(f"Registered provider for industry: {industry}")
 
-    async def run_industry_pipeline(self, industry: str):
+    def get_provider(self, industry: str, config: Dict[str, Any]) -> BaseProvider:
+        """
+        Factory method to return a provider instance by industry name.
+        """
+        # Ensure the industry name is always in the config for metadata propagation
+        config["industry"] = industry
+        
+        if industry in self.providers:
+            return self.providers[industry]
+
+        # Dynamic imports for all industrial providers
+        if industry == "finance":
+            from dataproc_engine.providers.finance import FinanceProvider
+            return FinanceProvider(config, llm_manager=self.llm_manager)
+        elif industry == "energy":
+            from dataproc_engine.providers.energy import EnergyProvider
+            return EnergyProvider(config, llm_manager=self.llm_manager)
+        elif industry == "healthcare":
+            from dataproc_engine.providers.healthcare import HealthcareProvider
+            return HealthcareProvider(config, llm_manager=self.llm_manager)
+        elif industry == "telecom":
+            from dataproc_engine.providers.telecom import TelecomProvider
+            return TelecomProvider(config, llm_manager=self.llm_manager)
+        elif industry == "ecommerce":
+            from dataproc_engine.providers.ecommerce import EcommerceProvider
+            return EcommerceProvider(config, llm_manager=self.llm_manager)
+        elif industry == "unstructured":
+            from dataproc_engine.providers.unstructured_provider import UnstructuredProvider
+            return UnstructuredProvider(config, llm_manager=self.llm_manager)
+        elif industry == "agriculture":
+            from dataproc_engine.providers.agriculture import AgricultureProvider
+            return AgricultureProvider(config, llm_manager=self.llm_manager)
+        elif industry == "transportation":
+            from dataproc_engine.providers.transportation import TransportationProvider
+            return TransportationProvider(config, llm_manager=self.llm_manager)
+        else:
+            raise ValueError(f"Unknown industry: {industry}")
+
+    async def run_industry_pipeline(self, industry: str, target_dir: Optional[str] = None):
         """
         Execute the full ETL pipeline for a given industry.
         """
@@ -42,7 +82,7 @@ class DatasetEngine:
 
         # 2. Transformation
         logger.info(f"[{industry}] Transforming data...")
-        transformed_data = provider.transform(raw_artifacts)
+        transformed_data = await provider.transform(raw_artifacts)
         logger.info(f"[{industry}] Transformed {len(transformed_data)} records.")
 
         # 3. Validation
@@ -54,4 +94,8 @@ class DatasetEngine:
             return None
 
         logger.info(f"[{industry}] Validation successful.")
-        return transformed_data
+        
+        # 4. Correlation (Inter-industry signals)
+        datasets = {industry: transformed_data}
+        correlated_datasets = DataCorrelator.correlate(datasets, target_dir=target_dir)
+        return correlated_datasets[industry]

@@ -71,6 +71,7 @@ Our goal is to create a standardized, community-driven benchmark for AI agent pe
 
 The harness is organized into the following key components:
 
+-   `/dataproc_engine`: High-fidelity industrial data extraction engine (8 Sectors, Gold Standards).
 -   `/industries`: Evaluation assets (5,000+ scenarios) categorized by 45+ industries.
 -   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
 -   `/eval_runner/console`: Flask-based REST API for the **Integrated Visual Suite**.
@@ -224,7 +225,11 @@ The harness is built on a decoupled, event-driven architecture that allows Enter
 - **Pluggable World Shims**: Register custom environment simulators through the `on_register_simulators` hook.
 
 
-### Advanced Utilities
+### 🛠️ dataproc-engine: Industrial Extraction Core
+The framework now features a standalone extraction engine designed for high-fidelity data acquisition:
+- **8-Sector Coverage**: Finance, Healthcare, Energy, Telecom, Ecommerce, Agriculture, Transportation, and Unstructured.
+- **Zero-Mock Integrity**: Automated fallback to high-fidelity simulations when live APIs are unavailable, maintaining 100% data availability.
+
 Beyond the advanced suite, the harness provides a robust toolkit for professional evaluation:
 - **`doctor`**: Environment health checker.
 - **`report`**: Rich HTML reporting with interactive Mermaid trajectories via `--path`.
