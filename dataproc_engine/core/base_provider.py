@@ -1,5 +1,5 @@
-﻿from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, asdict
 from dataproc_engine.core.logger import StructuredLogger
 

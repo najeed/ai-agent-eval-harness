@@ -181,6 +181,7 @@ class UnstructuredProvider(BaseProvider):
             safe_content = self.scrub_pii(raw.content)
             
             # 2. Extraction via LLM (Tiers: Cloud -> Local -> Heuristic)
+            source_hint = f"Industry: {self.config.get('industry', 'generic')} | Source: {raw.source_url}"
             extracted_data = await self.llm_manager.extract_structured_data(
                 safe_content, 
                 target_schema,

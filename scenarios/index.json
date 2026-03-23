@@ -50550,7 +50550,7 @@
     "difficulty": 1,
     "tags": [],
     "path": "industries\\consulting\\scenarios\\management_consulting\\00192_find_supporting_data_for_claim.json",
-    "mtime": 1774124317.3326006,
+    "mtime": 1774275166.3655045,
     "description": "A consultant has made a claim in a report ('the market for electric vehicles will double by 2030'). An agent must find a credible source to support this claim.",
     "lint_score": 95,
     "status": "warning"
