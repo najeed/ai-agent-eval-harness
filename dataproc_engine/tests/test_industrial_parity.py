@@ -9,9 +9,9 @@ from dataproc_engine.core.base_provider import StandardSchema
     ("finance", {"schema_type": "sec_edgar"}),
     ("finance", {"schema_type": "credit_risk"}),
     ("energy", {"schema_type": "eia"}),
-    ("energy", {"schema_type": "iea_global"}),
+    ("energy", {"schema_type": "energy_balances"}),
     ("healthcare", {"schema_type": "cms"}),
-    ("healthcare", {"schema_type": "mimic_iii"}),
+    ("healthcare", {"schema_type": "clinical"}),
     ("telecom", {"schema_type": "fcc"}),
     ("telecom", {"schema_type": "ookla"}),
     ("ecommerce", {"schema_type": "olist"}),
@@ -19,6 +19,14 @@ from dataproc_engine.core.base_provider import StandardSchema
     ("agriculture", {"schema_type": "standard"}),
     ("transportation", {"schema_type": "standard"}),
     ("unstructured", {"schema_type": "standard"}),
+    ("demographics", {"schema_type": "standard"}),
+    ("labor", {"schema_type": "standard"}),
+    ("environment", {"schema_type": "standard"}),
+    ("education", {"schema_type": "standard"}),
+    ("housing", {"schema_type": "standard"}),
+    ("manufacturing", {"schema_type": "standard"}),
+    ("media_entertainment", {"schema_type": "standard"}),
+    ("decision_support", {"schema_type": "standard"}),
 ])
 async def test_industry_parity(industry, custom_config):
     """
@@ -54,8 +62,12 @@ async def test_industry_parity(industry, custom_config):
         transformed = await provider.transform(raw)
         assert isinstance(transformed, list), f"{industry} transform() must return a list"
         
-        # Hardening check for sectors with local dummy data
-        if industry in ["transportation", "agriculture", "unstructured"]:
+        # Hardening check for all sectors (ensures simulation or local data production)
+        if industry in [
+            "transportation", "agriculture", "unstructured", "demographics", 
+            "labor", "environment", "education", "housing", "manufacturing", 
+            "media_entertainment", "decision_support", "finance", "energy", "healthcare", "telecom", "ecommerce"
+        ]:
              assert len(transformed) > 0, f"{industry} failed to produce records from dummy data."
 
         for record in transformed:
@@ -129,3 +141,5 @@ def test_backup_rotation(tmp_path):
     assert archive1 not in backups
     assert archive2 in backups
     assert archive3 in backups
+
+

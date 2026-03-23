@@ -20,8 +20,9 @@ To ensure `dataproc-engine` outputs are consumable by AES evaluation agents, the
       "expected_outcome": "The verifiable ground truth derived from dataproc_engine.",
       "success_criteria": [
         {
-          "metric": "generic_accuracy",
-          "threshold": 1.0
+          "metric": "industrial_parity",
+          "threshold": 1.0,
+          "v_type": "DataVeracityMatch"
         }
       ]
     }

@@ -1,27 +1,20 @@
-# ✈️ Transportation Sector: Deep-Dive Guide
+# ✈️ Transportation Guide
 
-## 🛰️ Data Source Strategy
-The transportation sector provides the "Gold Standard" for airline operational veracity and disruptive modeling.
+High-fidelity logistics and on-time performance metrics for AI agents. This sector is the foundational "Anchor" for supply chain and urban mobility agents.
 
-### 1. U.S. DOT (BTS)
-*   **Role**: Primary source for airline on-time performance and cancellation data.
-*   **Logic**:
-    *   Fetch **Aviation Database** exports (Monthly/Annual).
-    *   Field focus: `DEP_DELAY`, `CANCELLED`, `DIVERTED`.
-    *   **Normalization**: Standardize Airline Carrier Codes (IATA) and Airport Codes (ICAO).
+## Status: **HARDENED**
+- **Architecture**: US DOT & BTS Logistics Core.
+- **Verification**: 100% Parity.
 
-### 2. GTFS (General Transit Feed Specification)
-*   **Role**: Global benchmark for ground transit reliability.
-*   **Logic**:
-    *   **Logic**: Map GTFS `Real-time` feeds to agentic task goals.
-    *   **Zero-Mock Simulation**: Ships with high-fidelity disruption events (Traffic, Weather).
+## Data Sources
+- **DOT/BTS**: Bureau of Transportation Statistics (On-time performance).
+- **OSM**: OpenStreetMap (Geospatial parity).
 
-## 🛠️ ETL & Transformation
-1.  **Latency Modeling**: Convert delays into probabilistic failure scores for transit planning agents.
-2.  **Carrier Correlation**: Match flight performance with economic health of the parent airline.
-3.  **Disruption Logic**: High-reasoning injection for canceled flight rerouting.
+## 🛠️ Schema (`StandardSchema`)
+- `carrier`: Airline name, Rail ID, or Fleet identifier.
+- `metric`: `arrival_delay_minutes`, `cancellation_rate`, or `ton_miles_logistics`.
+- `value`: Numerical reading.
+- `origin_dest`: Pairwise location identifiers.
 
-## 🛡️ Robustness & Safety
-*   **License Compliance**: Public domain (BTS) and Apache 2.0 (GTFS Spec) compliant.
-*   **Veracity**: Direct link provided to official DOT source reports.
-*   **Fallback**: High-fidelity airline performance simulation active by default.
+---
+[**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)

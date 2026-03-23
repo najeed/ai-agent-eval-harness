@@ -23,7 +23,7 @@ def test_cli_rotational_backup_integration(tmp_path):
     runner = CliRunner()
     target_dir = str(tmp_path / "output")
     os.makedirs(target_dir)
-    output_file = os.path.join(target_dir, "finance_records.jsonl")
+    output_file = os.path.join(target_dir, "finance_kb.jsonl")
     
     # 1. Create initial file
     with open(output_file, "w") as f: f.write('{"id": "old"}')
@@ -55,5 +55,5 @@ def test_cli_unsupported_industry():
     """Verify graceful failure for unsupported industries."""
     runner = CliRunner()
     result = runner.invoke(cli, ["extract", "--industry", "unknown_industry"])
-    assert result.exit_code == 0 # It fails gracefully by printing an error message
+    assert result.exit_code == 1 # Now it returns 1 for unsupported industry
     assert "Error: API Source for 'unknown_industry' not supported" in result.output

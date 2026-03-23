@@ -7,7 +7,7 @@ The ETL framework is designed to be modular, extensible, and robust. It uses a *
 
 ### 1. Dataset Engine (Orchestrator)
 The central controller that:
-*   Loads industry configurations from a `Registry`.
+*   Loads industry configurations from a **Unified 16-Sector Registry**.
 *   Instantiates the appropriate `Provider` lifecycle.
 *   Handles parallel execution and resource management (e.g., rate limiting).
 

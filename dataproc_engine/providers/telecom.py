@@ -1,11 +1,11 @@
-import hashlib
+﻿import hashlib
 import json
 import asyncio
 import aiohttp
 import os
 import pandas as pd
 from typing import List, Dict, Any
-from datetime import datetime
+import datetime
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
 
@@ -23,9 +23,27 @@ class TelecomProvider(BaseProvider):
         ]
         self.urls = config.get("source_urls", default_urls)
         self.api_key = config.get("ookla_api_key")
-        self.schema_type = config.get("schema_type", "fcc") # fcc (default), ookla
+        self.schema_type = config.get("schema_type", "fcc") # fcc, ookla, itu
 
     async def extract(self) -> List[RawArtifact]:
+        if self.schema_type == "itu":
+            # Gold Standard: ITU ICT Statistics (UN International Telecommunication Union)
+            indicator = self.config.get("indicator", "i271") # Individuals using the Internet
+            url = f"https://www.itu.int/itu-d/sites/ictdata/api/v1/indicators/{indicator}"
+            
+            if self.allow_simulation:
+                simulated_itu = [
+                    {"Country": "USA", "Year": 2022, "Value": 91.8, "Unit": "%"},
+                    {"Country": "CHN", "Year": 2022, "Value": 75.6, "Unit": "%"}
+                ]
+                return [self.create_simulated_artifact(
+                    id=f"ITU-{indicator}",
+                    content=simulated_itu,
+                    source_url=url,
+                    metadata={"indicator": indicator}
+                )]
+            return []
+
         if self.schema_type == "ookla":
             # Gold Standard: Ookla Speedtest Open Data (Simulated Tiles)
             
@@ -39,25 +57,25 @@ class TelecomProvider(BaseProvider):
                     source_url=path,
                     content=df.to_dict(orient="records"),
                     metadata={"dataset": "Ookla Speedtest", "source": "User-Provided"},
-                    timestamp=datetime.utcnow().isoformat()
+                    timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                 )]
             
             if self.api_key:
                 logger.info("using_ookla_api_key", key_preview=self.api_key[:4] + "...")
                 # In a real scenario, we would fetch from Ookla API here
             
-            simulated_tiles = [
-                {"quadkey": "02313013", "avg_d_kbps": 150400, "avg_u_kbps": 45000, "avg_lat_ms": 12, "tests": 50, "devices": 12},
-                {"quadkey": "02313014", "avg_d_kbps": 98000, "avg_u_kbps": 22000, "avg_lat_ms": 24, "tests": 120, "devices": 45},
-                {"quadkey": "03102100", "avg_d_kbps": 32000, "avg_u_kbps": 5000, "avg_lat_ms": 45, "tests": 15, "devices": 4}
-            ]
-            return [RawArtifact(
-                id="OOKLA-TILE-SIM",
-                source_url="https://github.com/ookla/speedtest-datasets",
-                content=simulated_tiles,
-                metadata={"dataset": "Ookla Speedtest Global Performance Tiles", "type": "fixed_broadband"},
-                timestamp=datetime.utcnow().isoformat()
-            )]
+            if self.allow_simulation:
+                simulated_tiles = [
+                    {"quadkey": "02313013", "avg_d_kbps": 150400, "avg_u_kbps": 45000, "avg_lat_ms": 12, "tests": 50, "devices": 12},
+                    {"quadkey": "02313014", "avg_d_kbps": 98000, "avg_u_kbps": 22000, "avg_lat_ms": 24, "tests": 120, "devices": 45}
+                ]
+                return [self.create_simulated_artifact(
+                    id="OOKLA-TILE",
+                    content=simulated_tiles,
+                    source_url="https://github.com/ookla/speedtest-datasets",
+                    metadata={"dataset": "Ookla Speedtest Global Performance Tiles", "type": "fixed_broadband"}
+                )]
+            return []
 
         """Fetch Telecom data from FCC API or local CSV."""
         # Unified Data Acquisition (Local or Web URL)
@@ -70,7 +88,7 @@ class TelecomProvider(BaseProvider):
                 source_url=path,
                 content=df.to_dict(orient="records"),
                 metadata={},
-                timestamp=datetime.utcnow().isoformat()
+                timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )]
             
         # FCC Data streams
@@ -101,7 +119,7 @@ class TelecomProvider(BaseProvider):
                         source_url=url,
                         content=features,
                         metadata={"type": "geojson", "source": "FCC"},
-                        timestamp=datetime.utcnow().isoformat()
+                        timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                     )
                 except Exception as e:
                     logger.error("fcc_extraction_failed", url=url, error=str(e))
@@ -111,11 +129,42 @@ class TelecomProvider(BaseProvider):
             results = await asyncio.gather(*tasks)
             artifacts = [r for r in results if r]
             
+        if not artifacts and self.allow_simulation:
+            return [self.create_simulated_artifact(
+                id="sim-FCC-broadband",
+                content=[{"id": "sim_fcc_1", "technology_type": "Fiber", "max_ad_down": 1000, "max_ad_up": 1000, "provider_name": "Simulated Fiber Co"}],
+                source_url="https://opendata.fcc.gov/",
+                metadata={"source": "FCC-Simulation"}
+            )]
+            
+        return artifacts
+
         return artifacts
 
     async def transform(self, raw_artifacts: List[RawArtifact]) -> List[StandardSchema]:
         results = []
-        
+
+        if self.schema_type == "itu":
+            TARGET_SCHEMA = {"country": "string", "year": "integer", "usage_value": "number", "unit": "string"}
+            for raw in raw_artifacts:
+                for row in raw.content:
+                    raw_data = {
+                        "country": row.get("Country", "Unknown"),
+                        "year": int(row.get("Year", 0)),
+                        "usage_value": float(row.get("Value", 0)),
+                        "unit": row.get("Unit", "Unknown")
+                    }
+                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    if verified:
+                        results.append(StandardSchema(
+                            id=hashlib.md5(f"ITU-{raw_data['country']}-{raw_data['year']}".encode()).hexdigest()[:16],
+                            industry="telecom",
+                            data=verified,
+                            provenance={"source": raw.source_url, "provider": "ITU"},
+                            checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
+                        ))
+            return results
+
         if self.schema_type == "ookla":
             TARGET_SCHEMA = {
                 "geo_tile_id": "string",
@@ -192,10 +241,17 @@ class TelecomProvider(BaseProvider):
     def validate(self, normalized_data: List[StandardSchema]) -> bool:
         for record in normalized_data:
             if self.schema_type == "ookla":
-                if record.data["avg_download_speed"] < 0: return False
+                if record.data.get("avg_download_speed", 0) < 0: return False
+            elif self.schema_type == "itu":
+                if record.data.get("usage_value", 0) < 0: return False
             else:
                 # Industrial sanity: speeds should be non-negative
                 if record.data["download_speed"] < 0 or record.data["upload_speed"] < 0:
                     logger.warning("anomaly_detected", record_id=record.id, reason="Negative speed")
                     return False
         return True
+
+
+
+
+

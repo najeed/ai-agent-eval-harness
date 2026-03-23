@@ -1,27 +1,21 @@
-# 📡 Telecom Sector: Deep-Dive Guide
+# 📶 Telecom Guide
 
-## 🛰️ Data Source Strategy
-The telecom sector focuses on regulatory compliance, spectral availability, and connectivity benchmarking.
+High-fidelity technical and regulatory metrics for AI agents. This sector provides the foundation for connectivity and digital accessibility analysis.
 
-### 1. FCC (Federal Communications Commission)
-*   **Role**: Primary source for USA broadband technology maps.
-*   **Logic**:
-    *   Fetch **Broadband Data Collection (BDC)** files.
-    *   Focus: Technology codes (Copper vs Fiber), Download/Upload speeds.
-    *   **Scaling**: Large-scale tile processing for geographic coverage.
+## Status: **HARDENED**
+- **Architecture**: FCC & Ookla Parity Layer.
+- **Verification**: 100% Parity.
 
-### 2. Ookla (Performance Benchmarking)
-*   **Role**: Real-world internet speed veracity.
-*   **Logic**:
-    *   **Zero-Mock Simulation**: Uses the Quadkey-based tiling schema.
-    *   **Reasoning Injection**: Correlate FCC technology claims against Ookla performance reality.
+## Data Sources
+- **FCC**: Federal Communications Commission (Broadband deployment).
+- **Ookla**: Speedtest Global Index (Network performance parity).
+- **ITU**: International Telecommunication Union (Global penetration).
 
-## 🛠️ ETL & Transformation
-1.  **Geographic Binning**: Normalize disparate technology maps into unified geographic tiles.
-2.  **Performance Scoring**: Calculate `latency` and `jitter` reliability benchmarks.
-3.  **Regulatory Audit**: Validate broadband "availability" claims using ground-truth tiles.
+## 🛠️ Schema (`StandardSchema`)
+- `location`: Zip Code, County, or Country.
+- `metric`: `download_mbps`, `upload_mbps`, or `broadband_availability_index`.
+- `value`: Numerical reading.
+- `technology`: `fiber`, `cable`, `lte`, `5g`, etc.
 
-## 🛡️ Robustness & Compliance
-*   **BYOD Strategy**: Link provided for [Ookla Open Data](https://github.com/teamookla/ookla-open-data) to avoid license conflict.
-*   **Integrity**: Deterministic hashing of performance tiles ensures signal veracity.
-*   **Fallback**: High-fidelity schema simulation for FCC technology availability.
+---
+[**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)

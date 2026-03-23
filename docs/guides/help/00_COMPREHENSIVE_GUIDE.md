@@ -1,6 +1,6 @@
-# MultiAgentEval — Comprehensive Guide
+# MultiAgentEval Guide
 
-> This document is the single authoritative reference for using, extending, and developing the MultiAgentEval.
+> This document is the single authoritative reference for using, extending, and developing the MultiAgentEval framework.
 > It is organized into three levels: **Quick Start**, **User Manual**, and **Developer Guide**.
 
 ---

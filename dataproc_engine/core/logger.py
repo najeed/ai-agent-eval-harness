@@ -1,4 +1,4 @@
-import json
+﻿import json
 import logging
 import datetime
 from typing import Any, Dict
@@ -13,7 +13,7 @@ class StructuredLogger:
 
     def _log(self, level: int, event: str, **kwargs):
         log_entry = {
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "level": logging.getLevelName(level),
             "logger": self.name,
             "event": event,
@@ -32,3 +32,8 @@ class StructuredLogger:
 
     def critical(self, event: str, **kwargs):
         self._log(logging.CRITICAL, event, **kwargs)
+
+
+
+
+

@@ -22,7 +22,7 @@
     },
     {
       "task_id": "task-2",
-      "description": "Find a specific report from a reputable source (e.g., BloombergNEF, IEA) that contains a forecast supporting the claim.",
+      "description": "Find a specific report from a reputable source (e.g., BloombergNEF, Energy Provider Agency) that contains a forecast supporting the claim.",
       "expected_outcome": "Agent locates a suitable report and the relevant chart or statement.",
       "required_tools": [
         "document_finder"

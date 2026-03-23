@@ -15,13 +15,13 @@ The `dataproc-engine` is designed to provide the underlying verifiable ground tr
 To be useful for agents, the engine supports two primary output formats:
 
 ### A. Tabular CSV (Legacy Support)
-Matches existing `industries/{industry}/datasets/` schemas. Useful for agents using simple table-lookup tools.
-*   **Location**: `industries/finance/datasets/finance_records.csv`
-*   **Fields**: `record_id`, `entity_name`, `status`, `revenue`, `assets`, `updated_at`.
+Matches existing `industries/{industry}/datasets/` schemas across the 16-sector fleet. Useful for agents using simple table-lookup tools.
+*   **Location**: `industries/{industry}/datasets/{industry}_records.csv`
+*   **Fields**: `record_id`, `entity_name`, `status`, `value`, `updated_at`.
 
 ### B. High-Signal JSONL (Knowledge Base)
-Rich, hierarchical data for RAG-enabled or sophisticated reasoning agents. Contains technical units, units of measure, and deep source provenance.
-*   **Location**: `dataproc_engine/output/{industry}_kb.jsonl`
+Rich, hierarchical data for RAG-enabled or sophisticated reasoning agents. Contains technical units, units of measure, and deep source provenance for all 16 domains.
+*   **Location**: `industries/{industry}/datasets/{industry}_kb.jsonl`
 
 ## 3. Direct Integration Workflow
 By using the `--target industries` flag, the engine will:

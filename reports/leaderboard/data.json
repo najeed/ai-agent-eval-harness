@@ -660,6 +660,28 @@
     "total_scenarios": 2
   },
   {
+    "run_id": "run-test-k-20724",
+    "team": "default",
+    "agent": "test",
+    "timestamp": 1774295982.839946,
+    "iso_time": "2026-03-23T19:59:42.839947+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
+    "run_id": "run-test-k-28040",
+    "team": "default",
+    "agent": "test",
+    "timestamp": 1774295987.9136367,
+    "iso_time": "2026-03-23T19:59:47.913637+00:00Z",
+    "score": 0.0,
+    "cost": 0.022,
+    "resolutions": 0,
+    "total_scenarios": 2
+  },
+  {
     "run_id": "run-telecom-ts-13814-29964",
     "team": "default",
     "agent": "telecom",

@@ -18,12 +18,29 @@ class LLMManager:
         self.strategy = config.get("llm_strategy", "auto")
         self.preferred_provider = config.get("llm_provider", "gemini")
         self.preferred_model = config.get("model")
+        self.estimated_cost_cents = 0.0
         
-    async def extract_structured_data(self, content: str, target_schema: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        # 2026 Tier 1 Economic Mapping (Cents per 1k tokens)
+        self.pricing = {
+            "gemini-1.5-pro": {"in": 0.35, "out": 1.05},
+            "gemini-1.5-flash": {"in": 0.0075, "out": 0.03},
+            "gpt-4o": {"in": 0.50, "out": 1.50},
+            "gpt-4o-mini": {"in": 0.015, "out": 0.06},
+            "claude-3-5-sonnet": {"in": 0.30, "out": 1.50},
+        }
+
+    async def extract_structured_data(self, content: str, target_schema: Dict[str, Any], source_hint: Optional[str] = None) -> Optional[Dict[str, Any]]:
         """
-        Extract data from unstructured text using the tiered fallback strategy.
+        Extract data with V2.0 TokenGuard (Check-API-First).
         """
-        # 0. Tier 0: Mock (Dynamic Generation for testing)
+        # 0. V2: TokenGuard (Economic Interception)
+        if source_hint and self.strategy != "mock":
+             interception = self._token_guard_intercept(content, source_hint)
+             if interception:
+                 logger.info(f"V2: TokenGuard intercepted request for {source_hint}. Routing to Tier 3 (Heuristic).")
+                 self.strategy = "heuristic" # Force bypass to cheap tier
+        
+        # 0.5 Tier 0: Mock
         if self.strategy == "mock":
             import random
             mock_data = {}
@@ -165,6 +182,7 @@ class LLMManager:
                 async with session.post(url, headers=headers, json=payload) as resp:
                     if resp.status == 200:
                         data = await resp.json()
+                        self._record_usage(data.get("usage", {}), model)
                         return json.loads(data["choices"][0]["message"]["content"])
             except Exception as e:
                 logger.error(f"OpenAI call failed: {e}")
@@ -274,11 +292,11 @@ class LLMManager:
         for key, expected_type in schema.items():
             clean_key = key.replace('_', ' ')
             patterns = [
-                rf"{key}\s*[:=]\s*([^,\n\r\|]+)",               # revenue: 100
-                rf"{clean_key}\s*[:=]\s*([^,\n\r\|]+)",         # total revenue: 100
-                rf'"{key}"\s*:\s*"([^"]+)"',                     # "revenue": "100"
-                rf'"{key}"\s*:\s*([\d\.]+)',                    # "revenue": 100.0
-                rf"<{key}>(.*?)</{key}>",                       # <revenue>100</revenue>
+                rf"{key}\s*[:=]\s*([^;\n\r\|]+)",               # Allow commas as they might be thousands separators
+                rf"{clean_key}\s*[:=]\s*([^;\n\r\|]+)",         # Stop at semicolon or newline instead
+                rf'"{key}"\s*:\s*"([^"]+)"',
+                rf'"{key}"\s*:\s*([\d\.,]+)',                    # Allow dots and commas
+                rf"<{key}>(.*?)</{key}>",
             ]
             
             for pattern in patterns:
@@ -364,4 +382,36 @@ class LLMManager:
                     logger.error(f"Type failure for '{key}': {val} is not a valid integer.")
                     return None
 
-        return corrected_data
+
+    def _token_guard_intercept(self, content: str, source_hint: str) -> bool:
+        """
+        V2: Check if source is a known public entity that should bypass Tier 1.
+        """
+        public_domains = ["sec.gov", "census.gov", "worldbank.org", "who.int", "fcc.gov", "noaa.gov"]
+        for domain in public_domains:
+            if domain in source_hint.lower() or domain in content[:500].lower():
+                return True
+        return False
+
+    def _record_usage(self, usage: Dict[str, Any], model: str):
+        """
+        V2: Tracks estimated spend in cents based on 2026 pricing.
+        """
+        if not usage or model not in self.pricing:
+            return
+            
+        prices = self.pricing[model]
+        prompt_tokens = usage.get("prompt_tokens", 0)
+        completion_tokens = usage.get("completion_tokens", 0)
+        
+        cost = (prompt_tokens / 1000 * prices["in"]) + (completion_tokens / 1000 * prices["out"])
+        self.estimated_cost_cents += cost
+        logger.info(f"V2: Extraction cost: {cost:.4f} cents. Total session: {self.estimated_cost_cents:.2f} cents.")
+
+    def get_session_economics(self) -> Dict[str, Any]:
+        return {
+            "total_cost_cents": round(self.estimated_cost_cents, 4),
+            "roi_status": "positive" if self.estimated_cost_cents < 5.0 else "divergent"
+        }
+
+

@@ -8,8 +8,8 @@ The `DatasetEngine` orchestrates the following sequential algorithm for each reg
 1.  **Initialize**: Load sector-specific configurations (API keys, input URIs, LLM strategies).
 2.  **Extract**: Execute the `Universal Source Acquisition` algorithm (see below).
 3.  **Transform**: Map raw artifacts to the `StandardSchema` using sector-specific parsers.
-4.  **Validate**: Verify semantic integrity (e.g., Financial balance sheet checks, Healthcare schema constraints).
-5.  **Correlate**: Run the `Fuzzy Identity Resolution` algorithm to link records across industry boundaries.
+4.  **Validate**: Verify semantic integrity (e.g., Financial balance sheet checks, Healthcare schema constraints, Manufacturing productivity bounds).
+5.  **Correlate**: Run the `Fuzzy Identity Resolution` algorithm to link records across the 16 industrial sectors.
 6.  **Persist**: Serialize to `JSONL` or `CSV` with integrity SHA-256 checksums.
 
 ---
@@ -47,4 +47,5 @@ To link a "Finance" record (e.g., Apple Inc.) with a "Telecom" record (e.g., App
 Every record produced by the engine passes through two final algorithms:
 
 *   **PII Scrubbing**: Regex-based pattern matching to mask emails, phone numbers, and IP addresses before any LLM processing.
+*   **Zero-Bundling Compliance**: For restricted-license benchmarks (e.g., Clinical Database V2, Industrial Statistics Agency), the engine utilizes **High-Fidelity Simulation** to generate schema-compliant records without redistributing protected data. Users must explicitly provide local paths (BYOD) to unlock real-world data extraction.
 *   **SHA-256 Verification**: A deterministic hash of the final JSON content is generated and stored in `record.integrity_hash`, ensuring the data is tamper-evident.

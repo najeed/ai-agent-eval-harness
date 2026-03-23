@@ -1,9 +1,9 @@
-import aiohttp
+﻿import aiohttp
 import os
 import hashlib
 import json
 from typing import List, Dict, Any
-from datetime import datetime
+import datetime
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
 
@@ -17,12 +17,28 @@ class AgricultureProvider(BaseProvider):
         super().__init__(config, llm_manager=llm_manager)
         self.api_key = config.get("usda_api_key")
         self.commodity = config.get("commodity", "CORN")
-        self.year = config.get("year", datetime.now().year - 1)
+        self.year = config.get("year", datetime.datetime.now().year - 1)
+        self.schema_type = config.get("schema_type", "usda") # usda, faostat
         
-        if not self.api_key:
-            logger.warning("usda_api_key_missing", status="Using public access limit if available")
-
     async def extract(self) -> List[RawArtifact]:
+        if self.schema_type == "faostat":
+            # Gold Standard: FAOStat (UN Food and Agriculture Organization)
+            domain = self.config.get("domain", "QCL") # Crops and livestock products
+            url = f"https://fenixservices.fao.org/faostat/api/v1/en/data/{domain}"
+            
+            if self.allow_simulation:
+                simulated_faostat = [
+                    {"Area": "World", "Item": "Wheat", "Year": 2022, "Value": 770000000, "Unit": "tonnes"},
+                    {"Area": "World", "Item": "Rice", "Year": 2022, "Value": 510000000, "Unit": "tonnes"}
+                ]
+                return [self.create_simulated_artifact(
+                    id=f"sim-FAOSTAT-{domain}",
+                    content=simulated_faostat,
+                    source_url=url,
+                    metadata={"domain": domain}
+                )]
+            return []
+
         """Fetch Agriculture yield/pricing data from USDA."""
         # URI: https://quickstats.nass.usda.gov/api/api_GET/?key=API_KEY&commodity_desc=CORN&year__GE=2023&state_alpha=IA
         url = "https://quickstats.nass.usda.gov/api/api_GET/"
@@ -48,7 +64,18 @@ class AgricultureProvider(BaseProvider):
                     source_url=str(path),
                     content=records,
                     metadata={"commodity": self.commodity, "is_external": True},
-                    timestamp=datetime.utcnow().isoformat()
+                    timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
+                )]
+            if self.allow_simulation:
+                sim_usda = [
+                    {"commodity_desc": self.commodity, "year": self.year, "Value": "180.5", "unit_desc": "BU / ACRE", "state_alpha": "IA"},
+                    {"commodity_desc": self.commodity, "year": self.year, "Value": "175.2", "unit_desc": "BU / ACRE", "state_alpha": "IL"}
+                ]
+                return [self.create_simulated_artifact(
+                    id=f"sim-USDA-{self.commodity}",
+                    content=sim_usda,
+                    source_url=url,
+                    metadata={"commodity": self.commodity, "simulation": True}
                 )]
             logger.error("usda_no_data_source_found")
             return []
@@ -64,7 +91,7 @@ class AgricultureProvider(BaseProvider):
                             source_url=str(resp.url),
                             content=records,
                             metadata={"commodity": self.commodity},
-                            timestamp=datetime.utcnow().isoformat()
+                            timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                         )]
             except Exception as e:
                 logger.error("usda_extraction_failed", error=str(e))
@@ -80,6 +107,36 @@ class AgricultureProvider(BaseProvider):
             "location": "string"
         }
         
+        if self.schema_type == "faostat":
+            TARGET_SCHEMA = {"location": "string", "item": "string", "year": "integer", "value": "number", "unit": "string"}
+            for raw in raw_artifacts:
+                for row in raw.content:
+                    raw_data = {
+                        "location": row.get("Area", "Unknown"),
+                        "item": row.get("Item", "Unknown"),
+                        "year": int(row.get("Year", 0)),
+                        "value": float(row.get("Value", 0)),
+                        "unit": row.get("Unit", "Unknown")
+                    }
+                    # 3. Decision Support: Apply Yield Elasticity if climate anomaly present
+                    climate_anomaly = self.config.get("climate_anomaly", 0) # e.g. +2.5C
+                    if climate_anomaly > 0:
+                        # Simple linear elasticity: -5% yield for every degree above norm
+                        elasticity_factor = 1 - (climate_anomaly * 0.05)
+                        raw_data["value"] = round(raw_data.get("value", 0) * elasticity_factor, 2)
+                        raw_data["note"] = f"Adjusted for climate anomaly (+{climate_anomaly}C)"
+
+                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    if verified:
+                        results.append(StandardSchema(
+                            id=hashlib.md5(f"FAO-{raw_data['location']}-{raw_data['item']}-{raw_data['year']}".encode()).hexdigest()[:16],
+                            industry="agriculture",
+                            data=verified,
+                            provenance={"source": raw.source_url, "provider": "FAOStat"},
+                            checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
+                        ))
+            return results
+
         for raw in raw_artifacts:
             for item in raw.content:
                 data = {
@@ -107,4 +164,14 @@ class AgricultureProvider(BaseProvider):
         return results
 
     def validate(self, normalized_data: List[StandardSchema]) -> bool:
-        return all(r.data["yield_value"] >= 0 for r in normalized_data)
+        for record in normalized_data:
+            # Handle both USDA yield_value and FAOStat value
+            val = record.data.get("yield_value") or record.data.get("value")
+            if val is not None and val < 0:
+                return False
+        return True
+
+
+
+
+

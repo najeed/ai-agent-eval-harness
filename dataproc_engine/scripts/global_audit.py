@@ -1,7 +1,7 @@
 import asyncio
 import json
 import os
-from datetime import datetime
+import datetime
 from dataproc_engine.core.engine import DatasetEngine
 from dataproc_engine.core.llm_manager import LLMManager
 from dataproc_engine.core.correlator import DataCorrelator
@@ -13,7 +13,7 @@ async def run_global_audit():
     """
     Triggers a unified extraction and correlation run across all industrial sectors.
     """
-    logger.info("global_audit_started", timestamp=datetime.utcnow().isoformat())
+    logger.info("global_audit_started", timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat())
     
     # Initialize Engine with a mock-capable LLM manager for the audit baseline
     llm = LLMManager({"strategy": "mock"})
@@ -24,10 +24,9 @@ async def run_global_audit():
         ("finance", {"schema_type": "sec_edgar"}),
         ("finance", {"schema_type": "credit_risk"}),
         ("energy", {"schema_type": "eia"}),
-        ("energy", {"schema_type": "iea_global"}),
+        ("energy", {"schema_type": "energy_balances"}),
         ("healthcare", {"schema_type": "cms"}),
-        ("healthcare", {"schema_type": "mimic_iii"}),
-        ("healthcare", {"schema_type": "mimic_iv"}),
+        ("healthcare", {"schema_type": "clinical"}),
         ("telecom", {"schema_type": "fcc"}),
         ("telecom", {"schema_type": "ookla"}),
         ("ecommerce", {"schema_type": "olist"}),
@@ -82,10 +81,10 @@ async def run_global_audit():
     # 3. Persistence
     output_dir = "output"
     os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, f"global_audit_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json")
+    output_path = os.path.join(output_dir, f"global_audit_{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d_%H%M%S')}.json")
     
     final_output = {
-        "audit_timestamp": datetime.utcnow().isoformat(),
+        "audit_timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "total_records": sum(len(d) for d in correlated_data.values()),
         "datasets": {ind: [r.to_dict() for r in records] for ind, records in correlated_data.items()}
     }
@@ -97,3 +96,8 @@ async def run_global_audit():
 
 if __name__ == "__main__":
     asyncio.run(run_global_audit())
+
+
+
+
+

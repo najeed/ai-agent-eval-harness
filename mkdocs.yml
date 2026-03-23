@@ -64,19 +64,35 @@ nav:
       - Core Evaluator: api/core_evaluator.md
       - Plugins: plugins.md
   - Dataproc Engine:
+      - Overview: dataproc-design/index.md
       - User Manual: dataproc-design/user_manual.md
-      - Algorithm Overview: dataproc-design/algorithm_overview.md
+      - Distribution Manifest: dataproc-design/distribution_manifest.md
+      - Local Synthesis Guide: dataproc-design/local_synthesis_guide.md
       - Data Veracity: dataproc-design/data_veracity_report.md
-      - Industrial Sectors: dataproc-design/industrial_sectors.md
-      - Industry Guides:
+      - Industry Prioritization: dataproc-design/pilot_prioritization.md
+      - Sector Guides:
           - Agriculture: dataproc-design/agriculture/agriculture_guide.md
-          - eCommerce: dataproc-design/ecommerce/ecommerce_guide.md
-          - Energy: dataproc-design/energy/energy_guide.md
-          - Finance: dataproc-design/finance/finance_guide.md
-          - Healthcare: dataproc-design/healthcare/healthcare_guide.md
-          - Telecom: dataproc-design/telecom/telecom_guide.md
-          - Transportation: dataproc-design/transportation/transportation_guide.md
-          - Unstructured: dataproc-design/unstructured/unstructured_guide.md
+          - Commercial & Clinical:
+              - Finance: dataproc-design/finance/finance_guide.md
+              - Healthcare: dataproc-design/healthcare/healthcare_guide.md
+              - E-Commerce: dataproc-design/ecommerce/ecommerce_guide.md
+              - Manufacturing: dataproc-design/manufacturing/manufacturing_guide.md
+          - Public Sector:
+              - Demographics: dataproc-design/public_sector/demographics/demographics_guide.md
+              - Housing: dataproc-design/public_sector/housing/housing_guide.md
+              - Labor Market: dataproc-design/public_sector/labor/labor_guide.md
+              - Environment: dataproc-design/public_sector/environment/environment_guide.md
+              - Education: dataproc-design/education/education_guide.md
+          - Infrastructure & Core:
+              - Energy: dataproc-design/energy/energy_guide.md
+              - Telecom: dataproc-design/telecom/telecom_guide.md
+              - Implementation Strategy: dataproc-design/implementation_strategy.md
+          - Cross-Sector & Foundational:
+              - Media & Entertainment: dataproc-design/media_entertainment/media_entertainment_guide.md
+              - Decision Support: dataproc-design/cross_sector/decision_support_guide.md
+              - Unstructured: dataproc-design/cross_sector/unstructured_guide.md
+              - Algorithm Overview: dataproc-design/cross_sector/algorithm_overview.md
+              - Sector Taxonomy: dataproc-design/cross_sector/industrial_sectors.md
   - Industry Guides:
       - Evaluation: guides/01_EVALUATION_GUIDE.md
       - Adding an Industry: guides/02_ADDING_AN_INDUSTRY.md

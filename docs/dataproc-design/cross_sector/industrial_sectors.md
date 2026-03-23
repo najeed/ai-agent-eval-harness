@@ -10,12 +10,12 @@ The `dataproc-engine` supports 8 core industrial sectors, each hardened with "Go
 
 ## 2. 🏥 Healthcare
 *   **Primary Source**: [CMS Hospital General Info](https://data.cms.gov/provider-data/dataset/x7fx-mvoc)
-*   **Benchmarks**: [MIMIC-IV Clinical Database](https://mimic.mit.edu/) (Simulated)
+*   **Benchmarks**: [Clinical Database V2 Clinical Database](https://Clinical Database.mit.edu/) (Simulated)
 *   **Key Capabilities**: Deep clinical lab-event simulation, PII scrubbing (HIPAA-compliant), and patient experience metric normalization.
 
 ## 3. ⚡ Energy
 *   **Primary Source**: [EIA Open Data](https://www.eia.gov/opendata/) (WTI/Brent/NatGas Prices)
-*   **Benchmarks**: [IEA World Energy Balances](https://www.iea.org/data-and-statistics/data-product/world-energy-balances)
+*   **Benchmarks**: [Energy Provider Agency World Energy Balances](https://www.Energy Provider Agency.org/data-and-statistics/data-product/world-energy-balances)
 *   **Key Capabilities**: Multi-series price tracking, national production/consumption balance modeling.
 
 ## 4. 📡 Telecom
@@ -41,6 +41,40 @@ The `dataproc-engine` supports 8 core industrial sectors, each hardened with "Go
 *   **Source**: Arbitrary PDF, DocX, or Web URLs.
 *   **Logic**: LLM-Gated Extraction.
 *   **Key Capabilities**: Asynchronous multi-document processing, schema-aware field extraction from plain text.
+
+## 9. 🌍 Demographics
+*   **Primary Source**: [World Bank Open Data](https://data.worldbank.org/) (Population/GDP)
+*   **Key Capabilities**: Global fertility/mortality tracking and urbanization modeling.
+
+## 10. 👷 Labor
+*   **Primary Source**: [ILOSTAT](https://ilostat.ilo.org/) (International Labour Organization)
+*   **Key Capabilities**: Unemployment rate forecasting and sectoral employment distribution.
+
+## 11. 🌿 Environment
+*   **Primary Source**: [NOAA Climate Data Online](https://www.ncei.noaa.gov/)
+*   **Key Capabilities**: Temperature anomalies and carbon-intensity modeling.
+
+## 12. 📚 Education
+*   **Primary Source**: [NCES](https://nces.ed.gov/) / [UNESCO](https://uis.unesco.org/)
+*   **Benchmarks**: [MOOC Analytics (Coursera Simulation)]
+*   **Key Capabilities**: Literacy rate tracking and digital learning (EdTech) trajectories.
+
+## 13. 🏠 Housing
+*   **Primary Source**: [HUD PDR Data](https://www.huduser.gov/portal/datasets/pdrdata.html)
+*   **Key Capabilities**: Fair market rent and housing affordability modeling.
+
+## 14. 🏭 Manufacturing
+*   **Primary Source**: [Industrial Statistics Agency Industrial Statistics](https://stat.Industrial Statistics Agency.org/)
+*   **Key Capabilities**: Industrial production indices and efficiency benchmarking.
+
+## 15. 🎬 Media & Entertainment
+*   **Primary Source**: [IMDb Datasets](https://www.imdb.com/interfaces/)
+*   **Secondary Source**: [Spotify Trends (Simulated)]
+*   **Key Capabilities**: Cultural trend analysis and content rating distributions.
+
+## 16. 🎯 Decision Support
+*   **Source**: Multi-Sector Integrated Core.
+*   **Key Capabilities**: Cross-sector correlation and agent reasoning validation.
 
 ---
 

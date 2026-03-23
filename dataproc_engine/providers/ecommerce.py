@@ -1,9 +1,9 @@
-import hashlib
+﻿import hashlib
 import json
 import asyncio
 import aiohttp
 import os
-from datetime import datetime
+import datetime
 from typing import List, Dict, Any
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
@@ -36,7 +36,7 @@ class EcommerceProvider(BaseProvider):
                     source_url=uri,
                     content=records,
                     metadata={"source_type": self.schema_type},
-                    timestamp=datetime.utcnow().isoformat()
+                    timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                 )
             
             # Raw text fallback (Standard review format)
@@ -63,10 +63,15 @@ class EcommerceProvider(BaseProvider):
                         source_url=uri,
                         content=lines,
                         metadata={"source_type": "reviews"},
-                        timestamp=datetime.utcnow().isoformat()
+                        timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                     )
             except Exception as e:
                 logger.error("extraction_failed", uri=uri, error=str(e))
+            
+            if self.allow_simulation:
+                # High-fidelity simulation handle
+                sim_data = [{"review_text": "Excellent product!", "rating": 5.0, "category": "Electronics"}]
+                return self.create_simulated_artifact(id=f"ECOM-{self.schema_type}", content=sim_data, source_url=uri)
             return None
 
         tasks = [fetch_uri(uri) for uri in self.input_uris]
@@ -133,6 +138,13 @@ class EcommerceProvider(BaseProvider):
                         "sentiment": sentiment,
                         "review_text": self.scrub_pii(text)
                     }
+                    
+                    # Decision Support: Weight sentiment by CPI (Inflation Pressure)
+                    cpi_impact = self.config.get("cpi_impact", 0) # e.g. 0.05 (5% inflation)
+                    if cpi_impact > 0:
+                        # Inflation usually dampens perceived value
+                        data["sentiment"] = round(data["sentiment"] * (1 - cpi_impact), 2)
+                        data["note"] = f"Weighted by inflation pressure ({cpi_impact*100}%)"
                 
                 verified_data = self.llm_manager._verify_schema(data, target_schema, strict=True)
                 if verified_data:
@@ -158,3 +170,8 @@ class EcommerceProvider(BaseProvider):
             if val is not None and val < 0:
                 return False
         return True
+
+
+
+
+

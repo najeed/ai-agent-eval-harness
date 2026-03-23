@@ -12,6 +12,13 @@ class DataCorrelator:
     """
     
     @staticmethod
+    def correlate_cross_sector(primary_dataset: List[StandardSchema], secondary_dataset: List[StandardSchema], correlation_type: str) -> List[StandardSchema]:
+        """Convenience wrapper for two-dataset correlation."""
+        datasets = {"primary": primary_dataset, "secondary": secondary_dataset}
+        results = DataCorrelator.correlate(datasets)
+        return results.get("primary", [])
+
+    @staticmethod
     def correlate(datasets: Dict[str, List[StandardSchema]], target_dir: Optional[str] = None) -> Dict[str, List[StandardSchema]]:
         """
         Main entry point for cross-dataset correlation.
@@ -115,3 +122,5 @@ class DataCorrelator:
             return (val - min_val) / (max_val - min_val) if max_val > min_val else 0.5
         except (ValueError, TypeError):
             return 0.0
+
+

@@ -27,10 +27,11 @@ class BaseProvider(ABC):
         pass
 ```
 
-## Industrial Implementation Examples
+## Industrial Implementation Registry
+The framework currently supports **16 hardened industrial sectors**, each implementing the lifecycle above:
 
-### 1. FinanceProvider
-*   **Sources**: SEC EDGAR, EIA API, Market Trends.
+### 1. Anchor Foundations
+*   **Finance, Healthcare, Energy, Transportation**: Deep API integrations (SEC, CMS, EIA, BTS).
 *   **Matching**: Uses `DataCorrelator` for fuzzy identity resolution (e.g., linking CIKs to industry signatures).
 *   **Infrastructure**: Fully asynchronous transformation supporting tiered LLM failover.
 

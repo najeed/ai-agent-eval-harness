@@ -1,8 +1,8 @@
-import aiohttp
+﻿import aiohttp
 import asyncio
 import hashlib
 import json
-from datetime import datetime
+import datetime
 from typing import List, Dict, Any
 from dataproc_engine.core.base_provider import BaseProvider, RawArtifact, StandardSchema
 from dataproc_engine.core.logger import StructuredLogger
@@ -21,9 +21,49 @@ class FinanceProvider(BaseProvider):
         self.sec_user_agent = config.get("sec_user_agent", "Mozilla/5.0 (Evaluation Harness)")
         self.taxonomy = config.get("taxonomy", "us-gaap") 
         self.currency = config.get("currency", "USD")
-        self.schema_type = config.get("schema_type", "sec_edgar") # sec_edgar (default), credit_risk
+        self.schema_type = config.get("schema_type", "sec_edgar") # sec_edgar, credit_risk, world_bank
 
     async def extract(self) -> List[RawArtifact]:
+        if self.schema_type == "world_bank":
+            # Gold Standard: World Bank Global Macro Indicators
+            # Default indicator: GDP (current US$) - NY.GDP.MKTP.CD
+            indicator = self.config.get("indicator", "NY.GDP.MKTP.CD")
+            country = self.config.get("country", "all")
+            url = f"https://api.worldbank.org/v2/country/{country}/indicator/{indicator}?format=json&per_page=100"
+            
+            async with aiohttp.ClientSession() as session:
+                async def fetch_wb():
+                    async with session.get(url) as resp:
+                        if resp.status == 200:
+                            return await resp.json()
+                        raise Exception(f"World Bank API Error: {resp.status}")
+                
+                try:
+                    content = await self.request_with_retry(fetch_wb)
+                    if content and len(content) > 1:
+                        return [RawArtifact(
+                            id=f"WB-{indicator}-{country}",
+                            source_url=url,
+                            content=content[1], # Index 1 contains the actual data records
+                            metadata={"indicator": indicator, "country": country},
+                            timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
+                        )]
+                except Exception as e:
+                    logger.error("wb_extraction_failed", indicator=indicator, error=str(e))
+                
+                if self.allow_simulation:
+                    simulated_wb = [
+                        {"country": {"value": "United States"}, "indicator": {"value": "GDP"}, "value": 23315081000000, "date": "2021"},
+                        {"country": {"value": "China"}, "indicator": {"value": "GDP"}, "value": 17734062000000, "date": "2021"}
+                    ]
+                    return [self.create_simulated_artifact(
+                        id=f"WB-{indicator}",
+                        content=simulated_wb,
+                        source_url=url,
+                        metadata={"indicator": indicator}
+                    )]
+                return []
+
         if self.schema_type == "credit_risk":
             # Gold Standard: UCI Default of Credit Card Clients
             url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/default%20of%20credit%20card%20clients.xls"
@@ -38,22 +78,21 @@ class FinanceProvider(BaseProvider):
                     source_url=path,
                     content=df.to_dict(orient="records"),
                     metadata={"dataset": "UCI Default Credits", "source": "User-Provided"},
-                    timestamp=datetime.utcnow().isoformat()
+                    timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                 )]
 
-            # Simulated high-fidelity extraction for the harness
-            simulated_data = [
-                {"ID": 1, "LIMIT_BAL": 20000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 24, "PAY_0": 2, "BILL_AMT1": 3913, "PAY_AMT1": 0, "default": 1},
-                {"ID": 2, "LIMIT_BAL": 120000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 2, "AGE": 26, "PAY_0": -1, "BILL_AMT1": 2682, "PAY_AMT1": 0, "default": 1},
-                {"ID": 3, "LIMIT_BAL": 90000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 2, "AGE": 34, "PAY_0": 0, "BILL_AMT1": 29239, "PAY_AMT1": 1518, "default": 0}
-            ]
-            return [RawArtifact(
-                id="UCI-CREDIT-SIM",
-                source_url=url,
-                content=simulated_data,
-                metadata={"dataset": "UCI Default of Credit Card Clients", "total_records": 30000},
-                timestamp=datetime.utcnow().isoformat()
-            )]
+            if self.allow_simulation:
+                simulated_data = [
+                    {"ID": 1, "LIMIT_BAL": 20000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 24, "PAY_0": 2, "BILL_AMT1": 3913, "PAY_AMT1": 0, "default": 1},
+                    {"ID": 2, "LIMIT_BAL": 120000, "SEX": 2, "EDUCATION": 2, "MARRIAGE": 2, "AGE": 26, "PAY_0": -1, "BILL_AMT1": 2682, "PAY_AMT1": 0, "default": 1}
+                ]
+                return [self.create_simulated_artifact(
+                    id="UCI-CREDIT",
+                    content=simulated_data,
+                    source_url=url,
+                    metadata={"dataset": "UCI Default Credits"}
+                )]
+            return []
 
         ciks = self.config.get("ciks") or self.DEFAULT_CIKS
         limit = self.config.get("limit", len(ciks))
@@ -85,7 +124,7 @@ class FinanceProvider(BaseProvider):
                         source_url=url,
                         content=content,
                         metadata={"company": company_name, "cik": cik},
-                        timestamp=datetime.utcnow().isoformat()
+                        timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
                     )
                 except Exception as e:
                     logger.error("sec_extraction_failed", cik=padded_cik, error=str(e))
@@ -129,6 +168,35 @@ class FinanceProvider(BaseProvider):
                             industry="finance",
                             data=verified,
                             provenance={"source": raw.source_url, "schema": "UCI-Credit"},
+                            checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
+                        ))
+            return results
+
+        if self.schema_type == "world_bank":
+            TARGET_SCHEMA = {
+                "country": "string",
+                "indicator": "string",
+                "value": "number",
+                "year": "string"
+            }
+            for raw in raw_artifacts:
+                for row in raw.content:
+                    if row.get("value") is None: continue
+                    raw_data = {
+                        "country": row.get("country", {}).get("value", "Unknown"),
+                        "indicator": row.get("indicator", {}).get("value", "Unknown"),
+                        "value": float(row.get("value", 0)),
+                        "year": str(row.get("date", "0000"))
+                    }
+                    verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
+                    if verified:
+                        # Deterministic ID based on Country and Year
+                        source_id = f"WB-{row.get('country', {}).get('id', 'XX')}-{row.get('date')}"
+                        results.append(StandardSchema(
+                            id=hashlib.md5(source_id.encode()).hexdigest()[:16],
+                            industry="finance",
+                            data=verified,
+                            provenance={"source": raw.source_url, "schema": "World-Bank-Macro"},
                             checksum=hashlib.sha256(json.dumps(verified, sort_keys=True).encode()).hexdigest()
                         ))
             return results
@@ -190,10 +258,19 @@ class FinanceProvider(BaseProvider):
     def validate(self, normalized_data: List[StandardSchema]) -> bool:
         for record in normalized_data:
             if self.schema_type == "credit_risk":
-                if record.data["limit_balance"] < 0:
+                if record.data.get("limit_balance", 0) < 0:
+                    return False
+            elif self.schema_type == "world_bank":
+                if record.data.get("value") is None:
                     return False
             else:
-                if record.data["total_assets"] <= 0:
-                    logger.warning("validation_failed", record_id=record.id, reason="Zero or negative assets")
+                if record.data.get("total_assets", 0) <= 0:
+                    record_id = getattr(record, "id", "unknown")
+                    logger.warning("validation_failed", record_id=record_id, reason="Zero or negative assets")
                     return False
         return True
+
+
+
+
+

@@ -2,6 +2,10 @@ import click
 import asyncio
 import sys
 import os
+from dotenv import load_dotenv
+
+# Load .env variables at start
+load_dotenv()
 
 # Ensure the parent directory is in the path so we can import dataproc_engine
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -16,12 +20,12 @@ def run_rotational_backup(output_file: str, max_backups: int):
     """
     import os
     import glob
-    from datetime import datetime
+    import datetime
     
     if not os.path.exists(output_file):
         return
         
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')
     archive_name = f"{output_file}.{timestamp}.bak"
     os.rename(output_file, archive_name)
     
@@ -57,8 +61,10 @@ def cli():
 @click.option("--currency", default="USD", help="Reporting currency unit (USD, EUR, etc.).")
 @click.option("--series-id", help="EIA Series ID (Energy only).")
 @click.option("--overwrite", is_flag=True, help="Overwrite existing output file without prompting.")
-@click.option("--max-backups", default=5, help="Maximum number of rolling backups to keep.")
-def extract(industry, limit, format, target_dir, output_name, source, input_uri, llm_provider, llm_strategy, model, ciks, taxonomy, currency, series_id, overwrite, max_backups):
+@click.option("--max-backups", default=int(os.environ.get("DATAPROC_MAX_BACKUPS", 5)), help="Maximum number of rolling backups to keep.")
+@click.option("--allow-simulation", is_flag=True, default=True, help="Allow simulation fallback if data fetch fails.")
+@click.option("--schema-type", help="Specific schema to use for the industry.")
+def extract(industry, limit, format, target_dir, output_name, source, input_uri, llm_provider, llm_strategy, model, ciks, taxonomy, currency, series_id, overwrite, max_backups, allow_simulation, schema_type):
     """Run the extraction and transformation pipeline."""
     # 1. Validation: Mandatory Source for file mode
     if source == "file" and not input_uri:
@@ -78,7 +84,9 @@ def extract(industry, limit, format, target_dir, output_name, source, input_uri,
         "ciks": ciks.split(",") if ciks else None,
         "taxonomy": taxonomy,
         "currency": currency,
-        "series_id": series_id
+        "series_id": series_id,
+        "allow_simulation": allow_simulation,
+        "schema_type": schema_type
     }
     
     try:
@@ -106,9 +114,33 @@ def extract(industry, limit, format, target_dir, output_name, source, input_uri,
             elif industry == "transportation":
                 from dataproc_engine.providers.transportation import TransportationProvider
                 provider = TransportationProvider(config, llm_manager=llm_manager)
+            elif industry == "demographics":
+                from dataproc_engine.providers.public_sector.demographics import DemographicsProvider
+                provider = DemographicsProvider(config, llm_manager=llm_manager)
+            elif industry == "labor":
+                from dataproc_engine.providers.public_sector.labor import LaborProvider
+                provider = LaborProvider(config, llm_manager=llm_manager)
+            elif industry == "environment":
+                from dataproc_engine.providers.public_sector.environment import EnvironmentProvider
+                provider = EnvironmentProvider(config, llm_manager=llm_manager)
+            elif industry == "housing":
+                from dataproc_engine.providers.public_sector.housing import HousingProvider
+                provider = HousingProvider(config, llm_manager=llm_manager)
+            elif industry == "manufacturing":
+                from dataproc_engine.providers.manufacturing import ManufacturingProvider
+                provider = ManufacturingProvider(config, llm_manager=llm_manager)
+            elif industry == "media_entertainment":
+                from dataproc_engine.providers.media_entertainment import MediaProvider
+                provider = MediaProvider(config, llm_manager=llm_manager)
+            elif industry == "decision_support":
+                from dataproc_engine.providers.decision_support import DecisionSupportProvider
+                provider = DecisionSupportProvider(config, llm_manager=llm_manager)
+            elif industry == "education":
+                from dataproc_engine.providers.education import EducationProvider
+                provider = EducationProvider(config, llm_manager=llm_manager)
             else:
                 click.echo(f"Error: API Source for '{industry}' not supported.")
-                return
+                sys.exit(1)
             engine.register_provider(industry, provider)
         else:
             from dataproc_engine.providers.unstructured_provider import UnstructuredProvider
@@ -119,9 +151,20 @@ def extract(industry, limit, format, target_dir, output_name, source, input_uri,
         results = asyncio.run(engine.run_industry_pipeline(industry, target_dir=target_dir))
         
         if results:
-            os.makedirs(target_dir, exist_ok=True)
-            default_name = f"{industry}_records.{format}"
-            output_file = os.path.join(target_dir, output_name or default_name)
+            # Dynamic default: If target_dir is 'output', relocate to industries/{industry}/datasets
+            effective_target_dir = target_dir
+            if target_dir == "output":
+                effective_target_dir = os.path.join("industries", industry, "datasets")
+            
+            os.makedirs(effective_target_dir, exist_ok=True)
+            
+            # Dynamic filename: Match documentation parity (kb.jsonl or records.csv)
+            if format == "jsonl":
+                default_name = f"{industry}_kb.jsonl"
+            else:
+                default_name = f"{industry}_records.csv"
+                
+            output_file = os.path.join(effective_target_dir, output_name or default_name)
             
             # 2. Conflict Handling with Rotational Backup
             if os.path.exists(output_file):
@@ -170,3 +213,5 @@ def extract(industry, limit, format, target_dir, output_name, source, input_uri,
 
 if __name__ == "__main__":
     cli()
+
+

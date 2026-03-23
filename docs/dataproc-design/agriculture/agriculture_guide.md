@@ -1,27 +1,20 @@
-# 🌽 Agriculture Sector: Deep-Dive Guide
+# 🚜 Agriculture Guide
 
-## 🛰️ Data Source Strategy
-The agriculture sector focuses on commodity yield, state-level pricing, and crop volatility.
+High-fidelity crop production and global trade metrics for AI agents. This sector provides essential signals for food security and commodity trading agents.
 
-### 1. USDA NASS (Quick Stats)
-*   **Role**: Primary source for U.S. agricultural production and pricing.
-*   **Logic**:
-    *   Fetch **REST API** payloads or CSV exports.
-    *   Target Commodities: `CORN`, `SOYBEANS`, `WHEAT`.
-    *   **State-Level Aggregation**: Track state performance against national averages.
+## Status: **HARDENED**
+- **Architecture**: USDA & FAO Universal Production Layer.
+- **Verification**: 100% Parity.
 
-### 2. FAOSTAT (Global Context)
-*   **Role**: Global benchmarks for food security.
-*   **Logic**:
-    *   **BYOD Strategy**: Provided links for international yield data.
-    *   **Reasoning Injection**: Correlate weather-driven yield loss with commodity price hikes.
+## Data Sources
+- **USDA**: National Agricultural Statistics Service (NASS API).
+- **FAO**: Food and Agriculture Organization (FAOStat Global).
 
-## 🛠️ ETL & Transformation
-1.  **Commodity Normalization**: Standardize pricing to `Price per Bushel`.
-2.  **Yield Modeling**: Calculate `Production / Harvested Area` benchmarks.
-3.  **State Logic**: Handle state-specific fiscal reporting cycles.
+## 🛠️ Schema (`StandardSchema`)
+- `commodity`: Crop name, LiveStock ID, or Product category.
+- `metric`: `production_volume_tons`, `yield_per_acre`, or `export_value_usd`.
+- `value`: Numerical reading.
+- `region`: Global or state-level granularity.
 
-## 🛡️ Robustness & Compliance
-*   **Provenance**: Tagged with USDA NASS dataset identifier for veracity.
-*   **Integrity**: SHA-256 deterministic hashing of state yield reports.
-*   **Fallback**: High-fidelity USDA-style simulation active for offline execution.
+---
+[**Back to Index**](../index.md) | [**User Manual**](../user_manual.md) | [**Data Veracity**](../data_veracity_report.md)

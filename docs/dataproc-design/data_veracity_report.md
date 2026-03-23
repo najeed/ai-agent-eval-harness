@@ -1,156 +1,96 @@
-# Data Veracity Report ⚖️
+# Data Veracity & Provenance Report (Hardened)
 
-This report documents the primary data sources, gold-standard benchmarks, and veracity standards applied across the 8 industrial sectors supported by the `dataproc-engine`.
+## Licensing & Synthesis Compliance Matrix ⚖️
 
-## 🛡️ Licensing & Redistribution Compliance
+To ensure Apache 2.0 compatibility across the 16-sector fleet, the engine adheres to the following distribution matrix:
 
-The `dataproc-engine` is an Apache 2.0 licensed project. To maintain compliance, we adhere to a **Zero-Redistribution Policy** for restricted datasets.
+| Source Category | Examples | Safe to Embed? | Generator Mode | Licensing Conditions |
+| :--- | :--- | :---: | :--- | :--- |
+| **Public Domain** | SEC, Census, NOAA, HUD, CMS | ✅ Yes | **Moment Parity** | Derived/Synthetic twins allowed. |
+| **CC BY / CC0** | World Bank, WHO, UNESCO | ✅ Yes | **Moment Parity** | Attribution required (CC BY). |
+| **NC-SA / NC** | Olist, Ookla, Zillow, IMDb | ❌ No | **Logic Only** | NC/SA prevents redistribution. |
+| **Restricted (DUA)** | Clinical Repository, Industrial Stats | ❌ No | **Logic Only** | Contractual gates (Credentialed). |
 
-### Dataset Licensing Compliance Matrix
-
-| Dataset License / Source | Safe to Embed in Apache 2.0 Repo? | Link-Provided (User Download)? | Conditions |
-| :--- | :--- | :--- | :--- |
-| **Public Domain** (SEC, USDA, BTS, CMS, FCC, EIA) | ✅ Yes | ✅ Yes | Free use; attribution recommended. |
-| **CC BY 4.0** (UCI Credit/Retail, some GTFS) | ✅ Yes | ✅ Yes | Attribution required; commercial use allowed. |
-| **CC BY-NC-SA 4.0** (Olist, Ookla) | ❌ No | ✅ Yes | Non-commercial + share-alike conflict with Apache 2.0. |
-| **GTFS Specification** (Apache 2.0) | ✅ Yes | ✅ Yes | Specification is Apache 2.0; **feeds vary by agency**. |
-| **PhysioNet Restricted** (MIMIC-III/IV) | ❌ No | ✅ Yes | Credentialed access only; redistribution prohibited. |
-| **IEA Terms & Conditions** (Energy) | ❌ No | ✅ Yes | Paywalled/gated; redistribution prohibited. |
-
-> [!TIP]
-> **Best Practice**: Embed only Public Domain and CC BY 4.0 datasets in the repo. Link to CC BY-NC-SA, PhysioNet, and IEA datasets with clear instructions for users to obtain them under their own credentials or API keys.
+### Parity Generation Principles (Conservative Stance)
+1. **Conservative Default**: If a license is NC (Non-Commercial) or Restricted (DUA), the engine distributes **Logic Only**. No synthetic approximations are embedded in the core repo for these sources.
+2. **Provenance Audit**: All synthetic data includes a defensible audit trail link back to the permissive original.
+3. **Parameter Integrity**: Parameters for restricted generators are sourced exclusively from public literature (e.g., Merck Manuals, Energy Statistics Yearbooks), not from gated raw data.
+4. **License Contamination (NC-SA)**: Because CC BY-NC-SA 4.0 carries a "ShareAlike" clause, synthetic outputs generated from these sources may inherit Non-Commercial restrictions. To protect the Apache 2.0 core, these generators are isolated from the embedded package.
 
 ### ⚠️ Licensing Nuances
-- **FRED (Federal Reserve)**: While broadly open, it is governed by **Terms of Use** (requiring attribution and prohibiting misrepresentation), not strictly Public Domain.
-- **GTFS Feeds**: The Specification is Apache 2.0, but actual transit feeds vary by agency. Always check the individual feed license before redistribution.
-- **CMS Data**: Public domain, but official attribution is best practice for data veracity audit trails.
-
-> [!IMPORTANT]
-> **Shipped Data**: The `.csv` files provided in the `industries/` directory are **Synthetic Templates** designed for boilerplate testing. They do NOT contain restricted real-world records.
+- **FRED (Federal Reserve)**: Licensing is **upstream-dependent**. Series sourced from the Federal Reserve are Public Domain; others (BIS, ECB) carry their own terms.
+- **Copernicus**: Licensed under the Copernicus Data Information and Access Services license (CC BY 4.0 equivalent). Mandatory attribution: "Generated using Copernicus Climate Change Service information 2026."
+- **HUD User**: Fair Market Rents (FMR) data is U.S. Government Public Domain. Attribution is best practice for data veracity audit trails.
+- **Zillow Research**: Personal/Academic use only. Prohibits bulk redistribution or commercial derivative services per [Developer Terms](https://www.zillowgroup.com/developers/terms/).
+- **IMDb**: Non-Commercial by ToS. No "ShareAlike" clause; derivative restriction analysis differs from CC BY-NC-SA sources.
 
 ---
 
 ## 🏗️ Data Onboarding (BYOD)
 
-To unlock the full "Gold Standard" evaluation, download the following datasets and provide the path via the `--input-uri` flag or in your provider configuration. Please review the respective licensing restrictions for redistribution.
+To unlock the full "Gold Standard" evaluation, download the following datasets and provide the path via the `--input-uri` flag. Please review the respective licensing restrictions for use and redistribution.
 
-| Industry | Benchmark | Download Link | License |
+| Industry | Target Benchmark | Download Link | License |
 | :--- | :--- | :--- | :--- |
-| **Finance** | UCI Credit Card | [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients) | CC BY 4.0 |
-| **Healthcare** | MIMIC-IV | [PhysioNet MIMIC-IV](https://physionet.org/content/mimiciv/) | PhysioNet RL |
-| **Telecom** | Ookla Speedtest | [GitHub (teamookla)](https://github.com/teamookla/ookla-open-data) | CC BY-NC-SA 4.0 |
-| **Energy** | IEA Balances | [IEA Statistics](https://www.iea.org/data-and-statistics/data-products?filter=energy-balances) | IEA Terms |
-| **Retail** | Olist Ecommerce | [Kaggle Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) | CC BY-NC-SA 4.0 |
+| **Finance**| UCI Credit Card | [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients) | CC BY 4.0 |
+| **Healthcare**| Clinical Data Example | [Restricted Access](https://physionet.org/content/mimiciv/) | Restricted (Credentialed) |
+| **Manufacturing**| Industrial Benchmarking | [Production Statistics](https://stat.unido.org/) | Restricted |
+| **Energy**| Global Energy Standard | [Global Statistics](https://www.iea.org/data-and-statistics) | Restricted |
+| **Retail**| E-Commerce Parity | [Transaction Logs](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) | CC BY-NC-SA 4.0 |
+| **Agriculture**| Global Agri-Stats | [FAOStat](https://www.fao.org/faostat/) | CC BY-NC-SA 3.0 |
+| **Media** | Creative Metadata | [IMDb Datasets](https://datasets.imdbws.com/) | Non-Commercial |
 
 ---
+
+## 🛡️ Sector Diagnostics
 
 ## 1. Finance
-- **Securities and Exchange Commission (SEC) EDGAR**:
-    - *Usage*: Company fundamentals, XBRL facts.
-    - *Status*: **LIVE** (Public API).
-    - *License*: **Public Domain**.
-- **Federal Reserve Economic Data (FRED)**:
-    - *Usage*: Macroeconomic indicators.
-    - *Status*: **LIVE** (Public API).
-    - *License*: **Terms of Use (Open)**.
-- **UCI Default of Credit Card Clients**:
-    - *Usage*: Credit risk behavior.
-    - *Status*: **SIMULATED** (Shipped) / **BYOD** (Unlocked).
-    - *License*: **CC BY 4.0**.
+- **SEC EDGAR**: Public Domain fundamentals. Synthetic templates embedded.
+- **FRED**: Open (Attribution required) macro data. Live API integration.
 
-## 2. E-Commerce
-- **Olist Brazilian E-Commerce Dataset**:
-    - *Usage*: Relational modeling of orders/payments.
-    - *Status*: **SYNTHETIC TEMPLATE** (Shipped) / **BYOD** (Unlocked).
-    - *License*: **CC BY-NC-SA 4.0** (Non-Commercial).
-    - *Implications*:
-        - ❌ **Apache 2.0 Conflict**: Non-Commercial/Share-Alike terms prevent embedding in this repo.
-        - ✅ **External Linking**: Users must download directly from Kaggle.
-        - ✅ **Research Use**: Permitted under CC BY-NC-SA terms.
-    - *Unlock*: Provide `input_uri` to Olist CSV files.
-- **UCI Online Retail Dataset**:
-    - *Usage*: Transactional retail analysis.
-    - *Source*: [UCI Online Retail](https://archive.ics.uci.edu/ml/datasets/online+retail)
-    - *License*: **CC BY 4.0**.
+## 2. Housing
+- **HUD User**: Public Domain¹ rental trends. Synthetic parity embedded.
+- **Zillow Research**: Non-Commercial macro housing metrics. Live download required.
 
-## 3. Agriculture
-- **USDA NASS Quick Stats**:
-    - *Usage*: Crop yields and commodity pricing.
-    - *Status*: **LIVE / LOCAL TEMPLATE**.
-    - *License*: **Public Domain**.
+## 3. Environment
+- **NOAA**: Public Domain station data. Climatology synthetic records embedded.
+- **Copernicus**: CC BY 4.0 monitoring data. Embedded with mandatory attribution.
 
-## 4. Transportation
-- **U.S. Bureau of Transportation Statistics (BTS)**:
-    - *Usage*: Airline on-time performance.
-    - *Status*: **SYNTHETIC TEMPLATE** (Shipped) / **BYOD** (Unlocked).
-    - *License*: **Public Domain**.
+## 4. Manufacturing
+- **Industrial Stats**: Restricted benchmarking. **Logic-only** parity synthesis.
+- **Census ASM**: Public Domain manufacturing aggregates. Synthetic templates available.
 
 ## 5. Healthcare
-- **CMS Hospital General Information**:
-    - *Usage*: Quality ratings and patient experience.
-    - *Status*: **LIVE / LOCAL TEMPLATE**.
-    - *License*: **Public Domain**.
-- **MIMIC-IV Clinical Database** (Recommended):
-    - *Usage*: Modern, modular ICU clinical data (2008-2019). Supports ICD-10 and granular patient trajectories.
-    - *Status*: **SIMULATED** (Shipped) / **BYOD** (Unlocked).
-    - *License*: **PhysioNet Credentialed Data Use Agreement (DUA)**.
-    - *Implications*:
-        - ❌ **Not Public Domain**: Access requires credentialing (Human subjects training + approval).
-        - ❌ **Redistribution Prohibited**: Cannot be included in Apache 2.0 or commercial products.
-        - ✅ **Internal Use Permitted**: Research and testing allowed once credentialed.
-    - *Unlock*: Provide `input_uri` to restricted-access CSVs (e.g., `hosp/labevents.csv.gz`).
-    - *Download*: [PhysioNet MIMIC-IV](https://physionet.org/content/mimiciv/)
-- **MIMIC-III Clinical Database** (Legacy):
-    - *Usage*: Older clinical research data (2001-2012). Primarily ICD-9 based.
-    - *Status*: **SIMULATED** (Shipped) / **BYOD** (Unlocked).
-    - *License*: **PhysioNet Credentialed DUA**.
-
-## 6. Telecom
-- **FCC Broadband Data Collection (BDC)**:
-    - *Usage*: Connectivity maps and technology availability.
-    - *Status*: **LIVE / LOCAL TEMPLATE**.
-    - *License*: **Public Domain**.
-- **Ookla Open Data**:
-    - *Usage*: Global network performance benchmarking.
-    - *Status*: **SIMULATED** (Shipped) / **BYOD** (Unlocked).
-    - *License*: **CC BY-NC-SA 4.0**.
-    - *Implications*:
-        - ❌ **Commercial Restriction**: License prohibits commercial redistribution.
-        - ❌ **Embedding Prohibited**: Must be kept external to Apache 2.0 projects.
-    - *Unlock*: Provide `ookla_api_key` or `input_uri` to performance tiles.
-    - *Download*: [Ookla Open Data GitHub](https://github.com/teamookla/ookla-open-data)
-
-## 7. Energy
-- **U.S. Energy Information Administration (EIA)**:
-    - *Usage*: Energy production and pricing.
-    - *Status*: **LIVE** (Public API) / **LOCAL TEMPLATE**.
-    - *License*: **Public Domain**.
-- **International Energy Agency (IEA)**:
-    - *Usage*: Global energy balances.
-    - *Status*: **SIMULATED** (Shipped) / **BYOD** (Unlocked).
-    - *License*: **IEA Terms and Conditions**.
-    - *Implications*:
-        - ❌ **Paywalled/Gated**: Requires purchase or authorized registration.
-        - ❌ **No Redistribution**: IEA strictly prohibits repackaging data.
-        - ✅ **Simulation Allowed**: Harness provides high-fidelity schema for logic testing.
-    - *Unlock*: Provide `iea_api_key` or `input_uri` to licensed balance sheets.
+- **CMS**: [Hospital General Info](https://data.cms.gov/)
+    - *Usage*: Quality outcomes and provider metadata. **LIVE** (Public Domain).
+- **WHO GHO**: [Global Health Observatory](https://www.who.int/data/gho)
+    - *Usage*: Global health trends. **LIVE** (CC BY 4.0).
+- **Clinical Database**:
+    - *Usage*: Intensive care records. **BYOD / SIMULATED** (Restricted).
 
 ---
 
-## 🛡️ Provenance & Dataset Safety
+## 🏛️ Comprehensive Registry (Citations)
 
-To ensure the integrity of the evaluation cycle, the `dataproc-engine` implements two primary safety layers:
-
-### 1. Rotational Dataset Archiving
-When executing the `extract` command, existing datasets are never silently overwritten. Instead, the engine performs a **microsecond-precision rotation**:
-- Existing files are renamed to `<filename>.<timestamp>.bak`.
-- A rolling history of up to 5 backups (default) is maintained.
-- Users can customize history depth via `--max-backups`.
-
-### 2. Universal Remote Acquisition
-The engine supports direct ingestion from remote HTTPS/S URLs. To ensure veracity during transit:
-- **Resilient Fetching**: Automatic exponential backoff and circuit breaker logic protect against transient network failures.
-- **Deterministic Checksums**: All ingested artifacts are tagged with a SHA-256 hash of their raw content, ensuring that "Gold Standard" sources remain untampered.
+| Industry | Primary Source / Citation URL | Format | License |
+| :--- | :--- | :---: | :--- |
+| **Finance** | [SEC EDGAR (Fundamentals)](https://www.sec.gov/edgar/searchedgar/companysearch.html) | XBRL/CSV | Public Domain |
+| **Finance** | [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.org/) | API/CSV | Public Domain |
+| **Environment** | [NOAA Climate Data Online](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily) | API/CSV | Public Domain |
+| **Environment** | [Copernicus Climate Change Service](https://climate.copernicus.eu/data) | GRIB/NetCDF | CC BY 4.0 |
+| **Healthcare** | [CMS Hospital General Information](https://data.cms.gov/provider-data/dataset/x7fx-mvoc) | CSV/API | Public Domain |
+| **Healthcare** | [WHO Global Health Observatory](https://www.who.int/data/gho) | API/CSV | CC BY 4.0 |
+| **Labor** | [U.S. Bureau of Labor Statistics (BLS)](https://www.bls.gov/data/) | API/CSV | Public Domain |
+| **Labor** | [ILOSTAT (International Labour Organization)](https://ilostat.ilo.org/data/) | REST API | CC BY 4.0 |
+| **Agriculture** | [FAOStat (Food and Agriculture Organization)](https://www.fao.org/faostat/en/#data) | CSV/API | CC BY-NC-SA 3.0 |
+| **Agriculture** | [USDA NASS (Quick Stats)](https://quickstats.nass.usda.gov/) | CSV/API | Public Domain |
+| **Commerce** | [Marketplace Parity Repository (Olist)](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) | CSV | CC BY-NC-SA 4.0 |
+| **Housing** | [HUD User (Fair Market Rents)](https://www.huduser.gov/portal/datasets/fmr.html) | CSV | Public Domain |
+| **Housing** | [Zillow Research (Economic Data)](https://www.zillow.com/research/data/) | CSV | Non-Commercial |
+| **Media** | [IMDb Dataset Interface](https://www.imdb.com/interfaces/) | TSV | Non-Commercial |
+| **Telecom** | [Ookla Open Data (Speedtest Intelligence)](https://www.ookla.com/ookla-for-good/open-data) | Parquet | CC BY-NC-SA 4.0 |
+| **Telecom** | [FCC Fixed Broadband Deployment](https://www.fcc.gov/economics-analytics/broadband-insights-data/fixed-broadband-deployment-data) | CSV/API | Public Domain |
+| **Manufact.** | [U.S. Census Bureau (ASM)](https://www.census.gov/programs-surveys/asm.html) | CSV/API | Public Domain |
 
 ---
-*Last Updated: 2026-03-23*
+*Last Updated: 2026-03-24 (Hardened)* ⚖️🛡️🏁

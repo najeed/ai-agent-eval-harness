@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 from dataclasses import dataclass, asdict
 from dataproc_engine.core.logger import StructuredLogger
@@ -90,6 +90,25 @@ class BaseProvider(ABC):
         self._circuit_open = False
         self._failure_count = 0
         self._max_failures = config.get("max_failures", 3)
+        
+        # Hardening: Standardized Simulation Control
+        self.allow_simulation = config.get("allow_simulation", True)
+
+    def create_simulated_artifact(self, id: str, content: Any, source_url: str = "simulation://local", metadata: Dict = None) -> RawArtifact:
+        """
+        Standardized factory for high-fidelity simulations. 
+        Ensures strict tagging for Zero-Bundling compliance.
+        """
+        import datetime
+        final_metadata = metadata or {}
+        final_metadata["simulation"] = True
+        return RawArtifact(
+            id=f"sim-{id}",
+            source_url=source_url,
+            content=content,
+            metadata=final_metadata,
+            timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat()
+        )
         
     def scrub_pii(self, text: str) -> str:
         """
@@ -191,3 +210,16 @@ class BaseProvider(ABC):
         Validate the integrity and factual consistency of the transformed data.
         """
         pass
+
+    def heuristic_transform(self, raw_content: str, target_schema: Dict[str, str]) -> Optional[Dict[str, Any]]:
+        """
+        Tier 3: Heuristic Fallback. 
+        Regex-based pattern extraction when LLM verification fails.
+        Should be overridden by providers with domain-specific patterns.
+        """
+        return None
+
+
+
+
+
