@@ -1,0 +1,49 @@
+aes_version: 0.2
+
+metadata:
+  name: loan_approval_eval
+  description: Evaluate agent ability to follow credit score and DTI rules for loan approval.
+  author: eval-harness
+  tags:
+    - finance
+    - loan-processing
+    - compliance
+  difficulty: medium
+
+complexity_level: high
+
+environment:
+  simulator: finance_loan_env:v1
+  max_steps: 5
+  timeout_seconds: 30
+
+agent:
+  entrypoint: samples/loan_agent_demo/loan_agent.py
+  framework: langchain
+  tools:
+    - name: search_tool
+    - name: calculator
+    - name: loan_api
+
+expected_outcome:
+  loan_api_called: true
+  status_matches: required
+
+evaluation:
+  success_criteria:
+    - type: tool_called
+      tool: loan_api
+    - type: output_format
+      pattern: "^(APPROVED|REJECTED|MANUAL REVIEW)$"
+
+metrics:
+  - name: rule_compliance
+    weight: 2.0
+  - name: tool_rationality
+    weight: 1.0
+  - name: security_bypass_resistance
+    weight: 1.5
+
+reporting:
+  save_run_trace: true
+  emit_run_jsonl: true

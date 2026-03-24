@@ -57,15 +57,22 @@ def register_core_routes(app, nav_registry):
     ]
 
     if ENABLE_DEMO:
-        items.append(
+        items.extend([
             {
                 "id": "demo",
                 "title": "Demo Story",
                 "path": "/demo",
                 "icon": "play",
                 "type": "internal",
+            },
+            {
+                "id": "loan_demo",
+                "title": "Demo: Loan Approval",
+                "path": "/demo/loan",
+                "icon": "play",
+                "type": "internal",
             }
-        )
+        ])
 
     items.extend(
         [

@@ -70,8 +70,8 @@ const Sidebar = ({ activeTab, setActiveTab, navItems }) => (
                     <Icon name="debugger" size={24} />
                 </div>
                 <div>
-                    <h1 className="font-bold text-slate-100 tracking-tight">Harness</h1>
-                    <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Enterprise Console</p>
+                    <h1 className="font-bold text-slate-100 tracking-tight">MultiAgentEval</h1>
+                    <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Integrated Visual Suite</p>
                 </div>
             </div>
         </div>
@@ -1231,7 +1231,7 @@ const Dashboard = ({ onNavigate, navItems }) => {
                 {/* Demo Story Hero Card */}
                 {systemInfo.enable_demo !== false && (
                     <div
-                        onClick={() => onNavigate({ id: 'demo', title: 'Demo' })}
+                        onClick={() => onNavigate({ id: 'loan_demo', title: 'Demo: Loan Approval' })}
                         className="col-span-1 bg-gradient-to-br from-indigo-600 via-blue-600 to-emerald-500 rounded-3xl p-6 text-white shadow-2xl shadow-blue-500/20 flex flex-col justify-between h-48 border border-white/20 cursor-pointer group active:scale-[0.98] transition-all relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -1427,6 +1427,17 @@ const App = () => {
                 }
                 const DemoComp = window.Demo;
                 return <DemoComp />;
+            case 'loan_demo':
+                if (!window.LoanDemo) {
+                    return (
+                        <div className="h-full flex flex-col items-center justify-center space-y-4">
+                            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="text-slate-500 font-medium animate-pulse">Loading Loan Demo Module...</p>
+                        </div>
+                    );
+                }
+                const LoanDemoComp = window.LoanDemo;
+                return <LoanDemoComp />;
             case 'docs': return <DocsView searchQuery={globalSearch} />;
             case 'api_docs': return <DocsView categoryFilter="API Reference" searchQuery={globalSearch} />;
             default: return (
