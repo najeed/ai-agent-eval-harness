@@ -114,3 +114,6 @@ desktop.ini
 
 # --- Logs ---
 *.log
+
+# --- Sample output ---
+sample_agent/output/

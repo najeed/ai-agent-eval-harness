@@ -13,14 +13,19 @@ from typing import List, Dict, Any
 class ScenarioCatalog:
     """Central index for all discoverable scenarios."""
 
-    def __init__(self, index_path: str = "scenarios/index.json"):
-        self.index_path = Path(index_path)
+    def __init__(self, index_path: str = None):
+        self.root_dir = Path(__file__).parent.parent
+        if index_path:
+            self.index_path = Path(index_path)
+        else:
+            self.index_path = self.root_dir / "scenarios" / "index.json"
+        
         self.scenarios: List[Dict[str, Any]] = []
 
-    def build_index(self, root_dir: str = "industries"):
+    def build_index(self, root_dir: str = None):
         """Scans the industries directory and builds a metadata index with caching."""
         new_scenarios = []
-        root_path = Path(root_dir)
+        root_path = Path(root_dir) if root_dir else (self.root_dir / "industries")
 
         if not root_path.exists():
             return
@@ -79,7 +84,7 @@ class ScenarioCatalog:
 
     def check_for_updates(self) -> bool:
         """Quickly checks if the number of files on disk matches the index."""
-        root_path = Path("industries")
+        root_path = self.root_dir / "industries"
         if not root_path.exists():
             return False
 

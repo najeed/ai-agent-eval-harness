@@ -6,11 +6,76 @@ from datetime import datetime
 
 core_bp = Blueprint("core", __name__, url_prefix="/api")
 
+@core_bp.route("/demo/loan/context", methods=["GET"])
+def get_loan_demo_context():
+    """Retrieve dynamic context files for the Loan Approval Demo."""
+    project_root = Path(__file__).parent.parent.parent
+    demo_dir = project_root / "sample_agent" / "loan_agent_demo"
+    
+    prd_path = demo_dir / "loan_prd.md"
+    aes_path = demo_dir / "loan_approval.aes.yaml"
+    scenario_path = demo_dir / "loan_approval_scenario.json"
+    
+    context = {
+        "prd": prd_path.read_text(encoding="utf-8") if prd_path.exists() else "# PRD missing",
+        "aes": aes_path.read_text(encoding="utf-8") if aes_path.exists() else "# AES missing",
+        "scenario": scenario_path.read_text(encoding="utf-8") if scenario_path.exists() else "{}",
+        "updated_at": datetime.now().isoformat()
+    }
+    return jsonify(context)
+
+@core_bp.route("/demo/execute", methods=["POST"])
+def execute_demo_command():
+    """Execute a CLI command for the demo and return results."""
+    import subprocess
+    data = request.json or {}
+    cmd = data.get("command")
+    if not cmd:
+        return jsonify({"error": "Missing command"}), 400
+    
+    # Simple whitelist for demo safety
+    allowed_prefixes = ["multiagent-eval spec-to-eval", "multiagent-eval evaluate", "multiagent-eval triage", "python ", "copy ", "cp ", "type ", "cat ", "type", "cat"]
+    allowed_files = ["loan_agent.py", "loan_agent_fixed.py", "loan_approval.aes.yaml", "loan_prd.md", "loan_approval_scenario.json"]
+    
+    # Check prefixes
+    if not any(cmd.lower().startswith(a.lower()) for a in allowed_prefixes):
+         return jsonify({"error": f"Command not allowed: {cmd}"}), 403
+    
+    # Secondary check: ensure we only touch demo files in reading/writing commands
+    check_cmds = ["type", "cat", "python", "copy", "cp"]
+    if any(c in cmd.lower() for c in check_cmds):
+        # For reading commands (type, cat), allow any file in the demo directory
+        if cmd.lower().startswith(("type", "cat")):
+            demo_dir = Path(__file__).parent.parent.parent / "sample_agent" / "loan_agent_demo"
+            # Get the filename from the command - simple split and check existence
+            parts = cmd.split()
+            if len(parts) > 1:
+                target_path = Path(parts[-1].replace("\\", "/"))
+                # If it's a relative path to the demo dir or a full path within it
+                if any(f.lower() in str(target_path).lower() for f in allowed_files):
+                    pass # Explicitly allowed
+                else:
+                    return jsonify({"error": f"Access to this file path is not permitted: {cmd}"}), 403
+        elif not any(f.lower() in cmd.lower() for f in allowed_files):
+             return jsonify({"error": f"Access to this file path is not permitted: {cmd}"}), 403
+
+    try:
+        # Run the command and capture output
+        # We use shell=True because multiagent-eval is a script/entry point
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=60)
+        return jsonify({
+            "status": "success" if result.returncode == 0 else "error",
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+            "code": result.returncode
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 def register_core_routes(app, nav_registry):
     # Add core navigation items with metadata for dynamic rendering
     from ..config import ENABLE_DEMO
-
     items = [
         {
             "id": "dashboard",
@@ -57,15 +122,22 @@ def register_core_routes(app, nav_registry):
     ]
 
     if ENABLE_DEMO:
-        items.append(
+        items.extend([
             {
                 "id": "demo",
-                "title": "Demo Story",
+                "title": "Demo: Risk Check",
                 "path": "/demo",
+                "icon": "shield-check",
+                "type": "internal",
+            },
+            {
+                "id": "loan_demo",
+                "title": "Demo: Loan Approval",
+                "path": "/demo/loan",
                 "icon": "play",
                 "type": "internal",
             }
-        )
+        ])
 
     items.extend(
         [
@@ -87,7 +159,6 @@ def register_core_routes(app, nav_registry):
     )
 
     nav_registry.extend(items)
-    app.register_blueprint(core_bp)
 
 
 @core_bp.route("/scenarios", methods=["GET"])
@@ -120,7 +191,8 @@ def list_runs():
     """Returns a list of recent run traces."""
     query = request.args.get("q", "").lower()
     runs = []
-    run_log = Path("runs") / "run.jsonl"
+    project_root = Path(__file__).parent.parent.parent
+    run_log = project_root / "runs" / "run.jsonl"
     if run_log.exists():
         try:
             with open(run_log, "r", encoding="utf-8") as f:
@@ -146,6 +218,16 @@ def list_runs():
                         pass
         except Exception:
             pass
+    # Add static demo traces to the list for visibility/quick-access
+    from .demo_traces import DEMO_IDS
+    for d_id in DEMO_IDS:
+        runs.append({
+            "run_id": d_id,
+            "scenario": d_id.replace("run-", "").replace("-", " ").title(),
+            "timestamp": datetime.now().isoformat(),
+            "is_demo": True
+        })
+
     # Reverse to show newest first
     runs.reverse()
     return jsonify({"runs": runs[:100]})
@@ -209,7 +291,8 @@ def save_scenario():
         return jsonify({"error": "Invalid scenario_id"}), 400
 
     industry = data.get("industry", "generic")
-    output_dir = Path("industries") / industry / "scenarios"
+    project_root = Path(__file__).parent.parent.parent
+    output_dir = project_root / "industries" / industry / "scenarios"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     file_path = output_dir / f"{safe_id}.json"
@@ -344,9 +427,9 @@ def get_debugger_state():
         trace_file = next((p for p in paths_to_check if p.exists()), None)
 
         # 2. Dynamic generation for demo IDs if not found on disk
-        if not trace_file and run_id in ["run-loan-risk-fail", "run-loan-risk-pass"]:
-            from .demo_traces import get_demo_trace
+        from .demo_traces import DEMO_IDS, get_demo_trace
 
+        if not trace_file and run_id in DEMO_IDS:
             events = get_demo_trace(run_id)
             if events:
                 try:
@@ -389,10 +472,12 @@ def get_debugger_state():
         print(f"DEBUG: Loading trace from {trace_file}", flush=True)
         events = []
         summary = {"message": f"Historical Trace: {run_id}"}
-        if run_id.startswith("run-loan-risk"):
+        if run_id.startswith("run-loan-") or run_id.startswith("run-alice-"):
             summary["message"] = f"Demo Narrative: {run_id.replace('-', ' ').title()}"
-            if run_id == "run-loan-risk-fail":
-                summary["message"] = "Demo Narrative: Loan Approval Failure Analysis"
+            if "fail" in run_id:
+                summary["message"] = f"Demo Narrative: {run_id.split('-')[2].title()} Failure Analysis"
+            elif "pass" in run_id:
+                summary["message"] = f"Demo Narrative: {run_id.split('-')[2].title()} Verification (Success)"
 
         try:
             with open(trace_file, "r", encoding="utf-8-sig") as f:
@@ -458,7 +543,8 @@ def list_docs():
     """Retrieve available documentation guides and API reference."""
     docs = []
     seen_ids = set()
-    base = Path("docs")
+    project_root = Path(__file__).parent.parent.parent
+    base = project_root / "docs"
 
     # Check for auto-generated API docs first to give them priority/specific category
     api_base = base / "api"
@@ -490,7 +576,8 @@ def list_docs():
 @core_bp.route("/docs/<path:doc_path>", methods=["GET"])
 def read_doc(doc_path):
     """Read a specific documentation markdown file."""
-    base = Path("docs")
+    project_root = Path(__file__).parent.parent.parent
+    base = project_root / "docs"
     target = base / doc_path
 
     # Simple path traversal protection
@@ -507,32 +594,55 @@ def read_doc(doc_path):
 
 @core_bp.route("/info", methods=["GET"])
 def get_info():
-    """Returns basic system info with dynamic provider detection."""
+    """Returns basic system info with multi-agent detection."""
     from ..config import (
         ENABLE_DEMO,
-        AGENT_API_URL,
+        AGENT_API_URLS,
         GOOGLE_API_KEY,
         ANTHROPIC_API_KEY,
         OPENAI_API_KEY,
     )
 
-    agent = "Custom Endpoint"
-    if GOOGLE_API_KEY:
-        agent = "Gemini Pro (Active)"
-    elif ANTHROPIC_API_KEY:
-        agent = "Claude 3.5 (Active)"
-    elif OPENAI_API_KEY:
-        agent = "GPT-4o (Active)"
+    agents = []
+    for url in AGENT_API_URLS:
+        label = "Custom Endpoint"
+        provider = "custom"
+        
+        if GOOGLE_API_KEY and ("google" in url or "gemini" in url or "localhost" in url):
+            label = "Gemini Pro (Cloud)"
+            provider = "google"
+        elif ANTHROPIC_API_KEY and "anthropic" in url:
+            label = "Claude 3.5 (Cloud)"
+            provider = "anthropic"
+        elif OPENAI_API_KEY and "openai" in url:
+            label = "GPT-4o (Cloud)"
+            provider = "openai"
+        elif "localhost:11434" in url:
+            label = "Ollama (Local)"
+            provider = "ollama"
+        elif "localhost:5001" in url:
+            label = "Default Dev Agent (Local)"
+            provider = "local"
+        elif "localhost" in url:
+            label = "Local Host Agent"
+            provider = "local"
+            
+        agents.append({"label": label, "url": url, "provider": provider})
 
     from ..simulators import get_simulator_registry
+
+    # Legacy compatibility fields
+    primary_agent = agents[0] if agents else {"label": "None", "url": "", "provider": "none"}
 
     return jsonify(
         {
             "version": "v1.2.0-stable",
             "status": "active",
             "world_shims": len(get_simulator_registry()),
-            "agent_endpoint": agent,
-            "api_url": AGENT_API_URL,
+            "agent_endpoint": primary_agent["label"],
+            "api_url": primary_agent["url"],
+            "agents": agents,
+            "agent_count": len(agents),
             "enable_demo": ENABLE_DEMO,
             "uptime": datetime.now().isoformat(),
         }

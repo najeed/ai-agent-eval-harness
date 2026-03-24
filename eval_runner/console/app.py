@@ -1,7 +1,7 @@
 import os
 from flask import Flask, send_from_directory
 from flask_cors import CORS
-from .routes import register_core_routes
+from .routes import register_core_routes, core_bp
 from .auth import auth_bp
 from eval_runner.plugins import manager
 
@@ -12,6 +12,7 @@ def create_app():
     app = Flask(__name__, static_folder=ui_path, static_url_path="")
     CORS(app)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(core_bp)
 
     # Load external hooks for zero-touch discovery
     manager.load_plugins()
@@ -21,6 +22,8 @@ def create_app():
     @app.route("/reports")
     @app.route("/editor")
     @app.route("/debugger")
+    @app.route("/demo")
+    @app.route("/demo/loan")
     @app.route("/docs")
     @app.route("/docs/api")
     def index():
@@ -40,6 +43,16 @@ def create_app():
                 method(app, nav_registry)
             except Exception as e:
                 pass
+ 
+    # Re-assert core paths to prevent plugin overrides
+    core_paths = {
+        "community": "https://github.com/najeed/ai-agent-eval-harness",
+        "demo": "/demo",
+        "loan_demo": "/demo/loan"
+    }
+    for item in nav_registry:
+        if item.get('id') in core_paths:
+            item['path'] = core_paths[item['id']]
 
     # Endpoint to serve the unified navigation menu
     @app.route("/api/nav", methods=["GET"])
@@ -51,9 +64,10 @@ def create_app():
     return app
 
 
-def run_server(host="127.0.0.1", port=5000):
+def run_server(host="127.0.0.1", port=5000, debug=False):
     app = create_app()
-    app.run(host=host, port=port, debug=True, use_reloader=False)
+    # Increase interval to 2s to avoid over-eager site-packages reloads
+    app.run(host=host, port=port, debug=debug, use_reloader=debug, reloader_interval=2)
 
 
 if __name__ == "__main__":

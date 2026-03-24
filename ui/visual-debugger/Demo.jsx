@@ -8,74 +8,7 @@ const Demo = () => {
     const [step, setStep] = useState(1);
     const [fixing, setFixing] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-
-    const DraggableCard = ({ children, initialPos = null, className = "", style = {} }) => {
-        const [pos, setPos] = useState(initialPos);
-        const [dragging, setDragging] = useState(false);
-        const [rel, setRel] = useState({ x: 0, y: 0 });
-        const ref = React.useRef(null);
-
-        const onMouseDown = (e) => {
-            if (e.button !== 0) return;
-            const element = ref.current;
-            if (!element) return;
-            
-            const rect = element.getBoundingClientRect();
-            const currentX = pos ? pos.x : rect.left;
-            const currentY = pos ? pos.y : rect.top;
-
-            setDragging(true);
-            setRel({
-                x: e.pageX - currentX,
-                y: e.pageY - currentY
-            });
-            e.stopPropagation();
-        };
-
-        useEffect(() => {
-            const onMouseMove = (e) => {
-                if (!dragging) return;
-                setPos({
-                    x: e.pageX - rel.x,
-                    y: e.pageY - rel.y
-                });
-            };
-            const onMouseUp = () => setDragging(false);
-
-            if (dragging) {
-                window.addEventListener('mousemove', onMouseMove);
-                window.addEventListener('mouseup', onMouseUp);
-            }
-            return () => {
-                window.removeEventListener('mousemove', onMouseMove);
-                window.removeEventListener('mouseup', onMouseUp);
-            };
-        }, [dragging, rel]);
-
-        const positionStyle = pos ? {
-            position: 'fixed',
-            left: pos.x,
-            top: pos.y,
-            margin: 0
-        } : {};
-
-        return (
-            <div
-                ref={ref}
-                style={{
-                    ...style,
-                    ...positionStyle,
-                    cursor: dragging ? 'grabbing' : 'grab',
-                    touchAction: 'none',
-                    zIndex: 100
-                }}
-                onMouseDown={onMouseDown}
-                className={className}
-            >
-                {children}
-            </div>
-        );
-    };
+    const { DraggableCard } = window.DemoHelper;
 
     const nextStep = () => setStep(s => Math.min(s + 1, 7));
     const prevStep = () => setStep(s => Math.max(s - 1, 1));

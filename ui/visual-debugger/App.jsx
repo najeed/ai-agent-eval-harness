@@ -62,7 +62,7 @@ const Icon = ({ name, size = 20, className = "" }) => {
 
 // --- Components ---
 
-const Sidebar = ({ activeTab, setActiveTab, navItems }) => (
+const Sidebar = ({ activeTab, setActiveTab, navItems, systemInfo }) => (
     <div className="w-64 bg-[#0d1117] border-r border-slate-800 flex flex-col h-full overflow-y-auto">
         <div className="p-6 mb-4">
             <div className="flex items-center gap-3">
@@ -70,8 +70,8 @@ const Sidebar = ({ activeTab, setActiveTab, navItems }) => (
                     <Icon name="debugger" size={24} />
                 </div>
                 <div>
-                    <h1 className="font-bold text-slate-100 tracking-tight">Harness</h1>
-                    <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Enterprise Console</p>
+                    <h1 className="font-bold text-slate-100 tracking-tight">MultiAgentEval</h1>
+                    <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">Visual Suite</p>
                 </div>
             </div>
         </div>
@@ -105,10 +105,29 @@ const Sidebar = ({ activeTab, setActiveTab, navItems }) => (
         <div className="p-4 border-t border-slate-800">
             <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-800">
                 <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Status</p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mb-1">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                     <span className="text-xs text-slate-300 font-medium">Core API Online</span>
                 </div>
+                {systemInfo && systemInfo.agents && (
+                    <div className="mt-2 pt-2 border-t border-slate-800/50">
+                        <div className="flex justify-between items-center mb-2">
+                            <p className="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Agent Registry</p>
+                            <span className="text-[8px] bg-blue-500/20 text-blue-400 px-1 py-0.5 rounded-full font-bold">{systemInfo.agent_count}</span>
+                        </div>
+                        <div className="space-y-2 max-h-24 overflow-y-auto custom-scrollbar pr-1">
+                            {systemInfo.agents.map((agent, idx) => (
+                                <div key={idx} className="group/agent">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className={`w-1 h-1 rounded-full ${agent.provider === 'google' ? 'bg-blue-400' : 'bg-emerald-400'}`}></div>
+                                        <p className="text-[9px] text-slate-400 font-bold truncate group-hover/agent:text-blue-400" title={agent.label}>{agent.label}</p>
+                                    </div>
+                                    <p className="text-[8px] font-mono text-slate-600 truncate opacity-50 ml-2.5" title={agent.url}>{agent.url}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     </div>
@@ -1150,12 +1169,11 @@ const DocsView = ({ categoryFilter, searchQuery = "" }) => {
 };
 
 
-const Dashboard = ({ onNavigate, navItems }) => {
+const Dashboard = ({ onNavigate, navItems, systemInfo, onRefreshInfo }) => {
     const [search, setSearch] = useState('');
     const [scenarioCount, setScenarioCount] = useState('0');
     const [lastSync, setLastSync] = useState(new Date().toLocaleTimeString());
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [systemInfo, setSystemInfo] = useState({ version: 'Loading...', world_shims: 0, status: 'Checking...', agent_endpoint: 'Connecting...' });
 
     const fetchState = () => {
         fetch('/api/scenarios')
@@ -1166,10 +1184,7 @@ const Dashboard = ({ onNavigate, navItems }) => {
             })
             .catch(() => setScenarioCount('Err'));
 
-        fetch('/api/info')
-            .then(res => res.json())
-            .then(data => setSystemInfo(data))
-            .catch(() => setSystemInfo({ version: 'Unknown', world_shims: 0, status: 'Offline', agent_endpoint: 'None' }));
+        if (onRefreshInfo) onRefreshInfo();
     };
 
     useEffect(() => {
@@ -1193,7 +1208,11 @@ const Dashboard = ({ onNavigate, navItems }) => {
     };
 
     const statusItems = [
-        { label: 'Agent Endpoint', value: systemInfo.agent_endpoint || 'Offline', icon: 'activity' },
+        {
+            label: 'Agent Registry',
+            value: systemInfo.agent_count > 1 ? `${systemInfo.agent_count} Active Agents` : (systemInfo.agent_endpoint || 'Offline'),
+            icon: 'activity'
+        },
         { label: 'Engine Version', value: systemInfo.version, icon: 'box' },
         { label: 'Control Plane', value: systemInfo.status === 'active' ? 'Active' : 'Standby', icon: 'check' },
         { label: 'World Shims', value: `${systemInfo.world_shims || 0} Registered`, icon: 'debugger' }
@@ -1231,8 +1250,8 @@ const Dashboard = ({ onNavigate, navItems }) => {
                 {/* Demo Story Hero Card */}
                 {systemInfo.enable_demo !== false && (
                     <div
-                        onClick={() => onNavigate({ id: 'demo', title: 'Demo' })}
-                        className="col-span-1 bg-gradient-to-br from-indigo-600 via-blue-600 to-emerald-500 rounded-3xl p-6 text-white shadow-2xl shadow-blue-500/20 flex flex-col justify-between h-48 border border-white/20 cursor-pointer group active:scale-[0.98] transition-all relative overflow-hidden"
+                        onClick={() => onNavigate({ id: 'loan_demo', title: 'Loan Demo' })}
+                        className="col-span-1 bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 rounded-3xl p-6 text-white shadow-2xl shadow-blue-500/20 flex flex-col justify-between h-48 border border-white/20 cursor-pointer group active:scale-[0.98] transition-all relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Icon name="play" size={120} />
@@ -1241,11 +1260,11 @@ const Dashboard = ({ onNavigate, navItems }) => {
                             <div className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
                                 <Icon name="play" size={20} />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-white/20 px-2 py-1 rounded-full backdrop-blur-md">Interactive Demo</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-white/20 px-2 py-1 rounded-full backdrop-blur-md">Interactive Story</span>
                         </div>
                         <div className="z-10">
-                            <h3 className="text-2xl font-black mb-1 group-hover:translate-x-1 transition-transform">Run Demo</h3>
-                            <p className="text-xs font-bold opacity-80 uppercase tracking-widest">Loan Approval Failure</p>
+                            <h3 className="text-2xl font-black mb-1 group-hover:translate-x-1 transition-transform">Loan Approval Demo</h3>
+                            <p className="text-xs font-bold opacity-80 uppercase tracking-widest">Adversarial Testing Flow</p>
                         </div>
                     </div>
                 )}
@@ -1327,11 +1346,23 @@ const Dashboard = ({ onNavigate, navItems }) => {
 const App = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [navItems, setNavItems] = useState([]);
+    const [systemInfo, setSystemInfo] = useState(null);
     const [searching, setSearching] = useState(false);
     const [globalSearch, setGlobalSearch] = useState('');
     const [toast, setToast] = useState(null);
     const [selectedRunId, setSelectedRunId] = useState(null);
     const [isDemoReady, setIsDemoReady] = useState(!!window.Demo);
+
+    const fetchSystemInfo = () => {
+        fetch('/api/info')
+            .then(res => res.json())
+            .then(data => setSystemInfo(data))
+            .catch(() => { });
+    };
+
+    useEffect(() => {
+        fetchSystemInfo();
+    }, []);
 
     useEffect(() => {
         if (isDemoReady) return;
@@ -1355,7 +1386,7 @@ const App = () => {
         } else {
             setActiveTab(item.id);
             if (item.id !== 'debugger') setSelectedRunId(null);
-            window.history.pushState({}, '', `/${item.id === 'dashboard' ? '' : item.id === 'api_docs' ? 'docs/api' : item.id}`);
+            window.history.pushState({}, '', item.path);
         }
     }, [navItems]);
 
@@ -1381,8 +1412,13 @@ const App = () => {
 
         window.addEventListener('message', handleMessage);
 
-        const path = window.location.pathname.substring(1);
-        if (path) setActiveTab(path === 'docs/api' ? 'api_docs' : path);
+        const path = window.location.pathname;
+        const matched = navItems.find(n => n.path === path || (n.path === '/' && path === ''));
+        if (matched) {
+            setActiveTab(matched.id);
+        } else if (path === '/docs/api') {
+            setActiveTab('api_docs');
+        }
 
         return () => window.removeEventListener('message', handleMessage);
     }, [navItems, handleNavClick]);
@@ -1411,7 +1447,7 @@ const App = () => {
         }
 
         switch (activeTab) {
-            case 'dashboard': return <Dashboard onNavigate={handleNavClick} navItems={navItems} />;
+            case 'dashboard': return <Dashboard onNavigate={handleNavClick} navItems={navItems} systemInfo={systemInfo || {}} onRefreshInfo={fetchSystemInfo} />;
             case 'scenarios': return <ScenarioExplorer onNotify={showToast} searchQuery={globalSearch} />;
             case 'reports': return <ReportsView onViewReport={handleViewReport} searchQuery={globalSearch} />;
             case 'editor': return <ScenarioEditor />;
@@ -1427,6 +1463,17 @@ const App = () => {
                 }
                 const DemoComp = window.Demo;
                 return <DemoComp />;
+            case 'loan_demo':
+                if (!window.LoanDemo) {
+                    return (
+                        <div className="h-full flex flex-col items-center justify-center space-y-4">
+                            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="text-slate-500 font-medium animate-pulse">Loading Loan Demo Module...</p>
+                        </div>
+                    );
+                }
+                const LoanDemoComp = window.LoanDemo;
+                return <LoanDemoComp />;
             case 'docs': return <DocsView searchQuery={globalSearch} />;
             case 'api_docs': return <DocsView categoryFilter="API Reference" searchQuery={globalSearch} />;
             default: return (
@@ -1440,7 +1487,7 @@ const App = () => {
 
     return (
         <React.Fragment>
-            <Sidebar activeTab={activeTab} setActiveTab={(id) => handleNavClick(navItems.find(n => n.id === id))} navItems={navItems} />
+            <Sidebar activeTab={activeTab} setActiveTab={(id) => handleNavClick(navItems.find(n => n.id === id))} navItems={navItems} systemInfo={systemInfo} />
             <main className="flex-1 flex flex-col overflow-hidden bg-[#0b0e14]">
                 <header className="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-[#0b0e14]/50 backdrop-blur-xl sticky top-0 z-20">
                     <div className="flex items-center gap-2">

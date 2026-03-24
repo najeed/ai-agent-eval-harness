@@ -1,8 +1,14 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if it exists
+load_dotenv()
 
 # --- Engine Configuration ---
-AGENT_API_URL = os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")
+AGENT_API_URLS = [url.strip() for url in os.getenv("AGENT_API_URLS", os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")).split(",")]
+# Legacy support for single-endpoint modules
+AGENT_API_URL = AGENT_API_URLS[0] if AGENT_API_URLS else "http://localhost:5001/execute_task"
 EVAL_MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "5"))
 MAX_ENGINE_ATTEMPTS = int(os.getenv("MAX_ENGINE_ATTEMPTS", "50"))
 DEFAULT_INDUSTRY = os.getenv("DEFAULT_INDUSTRY", "telecom")
@@ -45,20 +51,20 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.4-pro")
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL", "https://api.anthropic.com/v1/messages")
-ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-20240620")
+ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-4-6-sonnet")
 ANTHROPIC_VERSION = os.getenv("ANTHROPIC_VERSION", "2023-06-01")
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 GEMINI_BASE_URL = os.getenv("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/models")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 XAI_API_KEY = os.getenv("XAI_API_KEY")
 XAI_BASE_URL = os.getenv("XAI_BASE_URL", "https://api.x.ai/v1")
-XAI_MODEL = os.getenv("XAI_MODEL", "grok-beta")
+XAI_MODEL = os.getenv("XAI_MODEL", "grok-4.20-beta-0309")
 
 # --- Metric Thresholds & Defaults ---
 CLARITY_MIN_LENGTH = int(os.getenv("CLARITY_MIN_LENGTH", "10"))

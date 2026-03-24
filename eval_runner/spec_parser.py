@@ -9,8 +9,11 @@ Utility for parsing Markdown PRDs into validated JSON scenario stubs for the Mul
 import re
 import json
 import uuid
+import asyncio
 from pathlib import Path
 from typing import Dict, Any, List
+from . import config
+from .llm_providers import GeminiProvider
 
 
 def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
@@ -146,6 +149,69 @@ def parse_markdown_to_scenario(markdown_text: str) -> Dict[str, Any]:
                 scenario["policies"] = policies
 
     return scenario
+
+
+async def synthesize_tasks_from_prd(markdown_text: str) -> List[Dict[str, Any]]:
+    """
+    Uses an LLM to derive high-fidelity test tasks from PRD business rules.
+    """
+    print(f"   [SpecParser] Starting LLM synthesis...")
+    try:
+        # Use our internal provider for consistency and reliability
+        api_key = config.GOOGLE_API_KEY
+        # Fallback to env directly if config is not yet loaded or overridden
+        if not api_key:
+             import os
+             api_key = os.environ.get("GOOGLE_API_KEY")
+
+        if not api_key:
+             print("   [SpecParser] Error: GOOGLE_API_KEY not found in config or environment.")
+             return []
+
+        model_name = config.GEMINI_MODEL or "gemini-2.5-flash"
+        provider = GeminiProvider(api_key=api_key, model=model_name)
+        
+        print(f"   [SpecParser] Initializing Gemini ({model_name}) via Native Provider...")
+        
+        prompt = f"""
+        Extract evaluation tasks from the following PRD. 
+        If no tasks are explicitly listed, derive a balanced set of 3-5 tasks based on 'Business Rules' and 'Tools'.
+        Include:
+        1. At least one Positive case (successful flow).
+        2. At least one Negative case (rejected or manual review flow).
+        3. At least one Adversarial case (attempt to bypass security/policy).
+
+        PRD:
+        {markdown_text}
+
+        Return ONLY a JSON list of tasks following this schema:
+        [
+          {{
+            "task_id": "task-1",
+            "title": "...",
+            "description": "...",
+            "expected_outcome": "...",
+            "required_tools": ["tool_names", "..."],
+            "success_criteria": [{{"metric": "...", "threshold": 0.8}}]
+          }}
+        ]
+        """
+        
+        # Native provider uses async generate
+        content = await provider.generate(prompt, temperature=0.1)
+        
+        print(f"   [SpecParser] LLM Response received. Parsing JSON...")
+        
+        # Extract JSON from potential markdown block
+        content = content.strip()
+        if "```json" in content:
+            content = content.split("```json")[-1].split("```")[0].strip()
+        
+        tasks = json.loads(content)
+        return tasks
+    except Exception as e:
+        print(f"   [SpecParser] Warning: LLM Task Synthesis failed - {e}")
+        return []
 
 
 def save_scenario_stub(scenario: Dict[str, Any], output_path: Path):

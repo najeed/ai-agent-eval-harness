@@ -38,7 +38,7 @@ class AgentAdapterRegistry:
 
     @classmethod
     def _discover(cls):
-        """Triggers plugin-based discovery of adapters."""
+        """Triggers standard discovery of core adapters."""
         if cls._discovered:
             return
 
@@ -49,9 +49,7 @@ class AgentAdapterRegistry:
         cls.register("local", adapters.local_subprocess_adapter)
         cls.register("socket", adapters.socket_adapter)
 
-        plugins.manager.trigger("on_discover_adapters", cls)
-
-        # Register default human adapter if not already registered
+        # Register default human adapter
         if "human" not in cls._adapters:
             cls._adapters["human"] = cls._human_adapter
 
@@ -70,9 +68,17 @@ class AgentAdapterRegistry:
             ),
         }
 
+    _plugins_discovered: bool = False
+
     @classmethod
     async def call_agent(cls, payload: dict, protocol="http", endpoint: Optional[str] = None):
         cls._discover()
+        
+        if protocol not in cls._adapters and not cls._plugins_discovered:
+            # Lazy plugin discovery: only triggered if core adapters don't suffice
+            plugins.manager.trigger("on_discover_adapters", cls)
+            cls._plugins_discovered = True
+
         adapter = cls._adapters.get(protocol)
         if not adapter:
             raise ValueError(f"No adapter registered for protocol: {protocol}")
