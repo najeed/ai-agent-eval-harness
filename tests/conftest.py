@@ -32,3 +32,21 @@ def shutdown_tracer():
         except Exception:
             # Best-effort shutdown; ignore errors during process teardown
             pass
+
+
+@pytest.fixture(autouse=True)
+def reset_plugins():
+    """
+    Ensures that the PluginManager and AgentAdapterRegistry are formally reset before each test.
+    This respects Guardrail 4.6.6 (Singleton & Event-Bus Integrity).
+    """
+    from eval_runner.plugins import manager
+    from eval_runner.engine import AgentAdapterRegistry
+    from eval_runner.events import EventEmitter
+    from eval_runner.console.routes import DebuggerStateStore
+    
+    manager.reset()
+    AgentAdapterRegistry.reset()
+    EventEmitter.reset()
+    DebuggerStateStore.reset()
+    yield

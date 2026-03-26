@@ -93,20 +93,13 @@ async def test_run_evaluation_plugin_init():
     """Test that run_evaluation initializes missing internal plugins."""
     from eval_runner import plugins
 
-    # Temporarily clear plugins
-    original_plugins = plugins.manager.plugins[:]
-    plugins.manager.plugins = []
+    # The reset_plugins autouse fixture in conftest.py already ensures manager.plugins = []
+    scenario = {"scenario_id": "plugin-init-test"}
+    with patch("eval_runner.runner.DefaultRunner.run", new_callable=AsyncMock) as mock_run:
+        mock_run.return_value = []
+        await run_evaluation(scenario)
 
-    try:
-        scenario = {"scenario_id": "plugin-init-test"}
-        with patch("eval_runner.runner.DefaultRunner.run", new_callable=AsyncMock) as mock_run:
-            mock_run.return_value = []
-            await run_evaluation(scenario)
-
-            # Check if FlightRecorderPlugin and ReportingPlugin were added
-            plugin_types = [type(p).__name__ for p in plugins.manager.plugins]
-            assert "FlightRecorderPlugin" in plugin_types
-            assert "ReportingPlugin" in plugin_types
-    finally:
-        # Restore plugins
-        plugins.manager.plugins = original_plugins
+        # Check if FlightRecorderPlugin and ReportingPlugin were added
+        plugin_types = [type(p).__name__ for p in plugins.manager.plugins]
+        assert "FlightRecorderPlugin" in plugin_types
+        assert "ReportingPlugin" in plugin_types

@@ -24,7 +24,7 @@ import pytest
 from pathlib import Path
 from jsonschema import validate, ValidationError  # type: ignore
 
-# Systemic path resolution (Guardrail 4.7)
+# Systemic path resolution
 BASE_DIR = Path(__file__).parent.parent
 SCHEMA_PATH = BASE_DIR / "schemas" / "scenario.schema.json"
 SCENARIOS_ROOT = BASE_DIR / "industries"

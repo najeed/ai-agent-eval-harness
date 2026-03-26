@@ -3,14 +3,14 @@ import os
 from pathlib import Path
 import json
 from datetime import datetime
+from .. import config
 
 core_bp = Blueprint("core", __name__, url_prefix="/api")
 
 @core_bp.route("/demo/loan/context", methods=["GET"])
 def get_loan_demo_context():
     """Retrieve dynamic context files for the Loan Approval Demo."""
-    project_root = Path(__file__).parent.parent.parent
-    demo_dir = project_root / "sample_agent" / "loan_agent_demo"
+    demo_dir = config.PROJECT_ROOT / "sample_agent" / "loan_agent_demo"
     
     prd_path = demo_dir / "loan_prd.md"
     aes_path = demo_dir / "loan_approval.aes.yaml"
@@ -191,8 +191,7 @@ def list_runs():
     """Returns a list of recent run traces."""
     query = request.args.get("q", "").lower()
     runs = []
-    project_root = Path(__file__).parent.parent.parent
-    run_log = project_root / "runs" / "run.jsonl"
+    run_log = config.RUN_LOG_DIR / "run.jsonl"
     if run_log.exists():
         try:
             with open(run_log, "r", encoding="utf-8") as f:
@@ -221,9 +220,14 @@ def list_runs():
     # Add static demo traces to the list for visibility/quick-access
     from .demo_traces import DEMO_IDS
     for d_id in DEMO_IDS:
+        scenario_name = d_id.replace("run-", "").replace("-", " ").title()
+        # Filter demo traces by query as well
+        if query and query not in d_id.lower() and query not in scenario_name.lower():
+            continue
+
         runs.append({
             "run_id": d_id,
-            "scenario": d_id.replace("run-", "").replace("-", " ").title(),
+            "scenario": scenario_name,
             "timestamp": datetime.now().isoformat(),
             "is_demo": True
         })
@@ -244,7 +248,7 @@ def evaluate_scenario():
     path = Path(path_str)
     if not path.exists():
         # Try relative to root?
-        path = Path(__file__).parent.parent.parent / path_str
+        path = config.PROJECT_ROOT / path_str
         if not path.exists():
             return jsonify({"error": f"Scenario not found at {path_str}"}), 404
 
@@ -291,8 +295,7 @@ def save_scenario():
         return jsonify({"error": "Invalid scenario_id"}), 400
 
     industry = data.get("industry", "generic")
-    project_root = Path(__file__).parent.parent.parent
-    output_dir = project_root / "industries" / industry / "scenarios"
+    output_dir = config.PROJECT_ROOT / "industries" / industry / "scenarios"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     file_path = output_dir / f"{safe_id}.json"
@@ -343,6 +346,13 @@ class DebuggerStateStore:
     _is_active = False
 
     @classmethod
+    def reset(cls):
+        """Reset state for testing stabilization."""
+        cls._last_state = {"message": "Waiting for evaluation..."}
+        cls._events = []
+        cls._is_active = False
+
+    @classmethod
     def handle_event(cls, event):
         from ..events import CoreEvents
 
@@ -378,10 +388,16 @@ class DebuggerStateStore:
         return {"summary": cls._last_state, "timeline": cls._events}
 
 
-# Subscribe to events for the debugger
-from ..events import EventEmitter
 
-EventEmitter.subscribe(DebuggerStateStore.handle_event)
+# Subscribe to events for the debugger
+_debugger_subscribed = False
+
+def subscribe_debugger():
+    global _debugger_subscribed
+    if not _debugger_subscribed:
+        from ..events import EventEmitter
+        EventEmitter.subscribe(DebuggerStateStore.handle_event)
+        _debugger_subscribed = True
 
 
 @core_bp.route("/ping")
@@ -417,8 +433,7 @@ def get_debugger_state():
     # Check for run_id to load historical trace
     run_id = request.args.get("run_id")
     if run_id:
-        project_root = Path(__file__).parent.parent.parent
-        runs_dir = project_root / "runs"
+        runs_dir = config.RUN_LOG_DIR
         demo_dir = runs_dir / "demo"
 
         # 1. Try standard locations
@@ -543,8 +558,7 @@ def list_docs():
     """Retrieve available documentation guides and API reference."""
     docs = []
     seen_ids = set()
-    project_root = Path(__file__).parent.parent.parent
-    base = project_root / "docs"
+    base = config.PROJECT_ROOT / "docs"
 
     # Check for auto-generated API docs first to give them priority/specific category
     api_base = base / "api"
@@ -576,8 +590,7 @@ def list_docs():
 @core_bp.route("/docs/<path:doc_path>", methods=["GET"])
 def read_doc(doc_path):
     """Read a specific documentation markdown file."""
-    project_root = Path(__file__).parent.parent.parent
-    base = project_root / "docs"
+    base = config.PROJECT_ROOT / "docs"
     target = base / doc_path
 
     # Simple path traversal protection

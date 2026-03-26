@@ -73,6 +73,11 @@ class EventEmitter:
             cls._subscribers.append(subscriber)
 
     @classmethod
+    def reset(cls):
+        """Clear all subscribers (used for testing stabilization)."""
+        cls._subscribers = []
+
+    @classmethod
     def emit(cls, name: str, data: Dict[str, Any]):
         """Emit an event to all subscribers."""
         sanitized_data = sanitize_payload(data)

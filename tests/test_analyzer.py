@@ -18,9 +18,12 @@ async def test_analyze_repo_telecom(tmp_path, monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_analyze_repo_default(tmp_path, monkeypatch):
+async def test_analyze_repo_finance(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    results = await analyze_repo("http://github.com/unknown-agent")
-    assert len(results) == 1
-    assert "main.py" in results[0]["metadata"]["source_file"]
+    results = await analyze_repo("http://github.com/finance-agent")
+    assert len(results) > 0
+    assert "market.py" in results[1]["metadata"]["source_file"]
+    
+    auto_dir = tmp_path / "scenarios" / "auto"
+    assert len(list(auto_dir.glob("*.json"))) >= 2

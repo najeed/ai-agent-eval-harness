@@ -41082,10 +41082,34 @@
     "difficulty": 1,
     "tags": [],
     "path": "C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\industries\\finance\\scenarios\\scenario-78596367.json",
-    "mtime": 1774387597.6457467,
+    "mtime": 1774465999.808215,
     "description": "The Loan Approval Agent is an AI-powered assistant that evaluates loan applications based on specific financial criteria. It uses external tools to verify credit scores and perform debt-to-income (DTI) calculations.",
     "lint_score": 60,
     "status": "fail"
+  },
+  {
+    "id": "scenario-a4c00bcb",
+    "title": "Loan Approval Agent",
+    "industry": "finance",
+    "difficulty": 1,
+    "tags": [],
+    "path": "C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\industries\\finance\\scenarios\\scenario-a4c00bcb.json",
+    "mtime": 1774401120.415529,
+    "description": "The Loan Approval Agent is an AI-powered assistant that evaluates loan applications based on specific financial criteria. It uses external tools to verify credit scores and perform debt-to-income (DTI) calculations.",
+    "lint_score": 95,
+    "status": "warning"
+  },
+  {
+    "id": "scenario-b5434893",
+    "title": "Loan Approval Agent",
+    "industry": "finance",
+    "difficulty": 1,
+    "tags": [],
+    "path": "C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\industries\\finance\\scenarios\\scenario-b5434893.json",
+    "mtime": 1774401223.6698995,
+    "description": "The Loan Approval Agent is an AI-powered assistant that evaluates loan applications based on specific financial criteria. It uses external tools to verify credit scores and perform debt-to-income (DTI) calculations.",
+    "lint_score": 95,
+    "status": "warning"
   },
   {
     "id": "scenario-c01573d1",
@@ -41094,10 +41118,22 @@
     "difficulty": 1,
     "tags": [],
     "path": "C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\industries\\finance\\scenarios\\scenario-c01573d1.json",
-    "mtime": 1774387394.4261034,
+    "mtime": 1774465999.808215,
     "description": "The Loan Approval Agent is an AI-powered assistant that evaluates loan applications based on specific financial criteria. It uses external tools to verify credit scores and perform debt-to-income (DTI) calculations.",
     "lint_score": 60,
     "status": "fail"
+  },
+  {
+    "id": "scenario-eb71fbfb",
+    "title": "Loan Approval Agent",
+    "industry": "finance",
+    "difficulty": 1,
+    "tags": [],
+    "path": "C:\\Users\\najee\\OneDrive\\Documents\\Projects\\ai-agent-eval-harness\\industries\\finance\\scenarios\\scenario-eb71fbfb.json",
+    "mtime": 1774401080.7879546,
+    "description": "The Loan Approval Agent is an AI-powered assistant that evaluates loan applications based on specific financial criteria. It uses external tools to verify credit scores and perform debt-to-income (DTI) calculations.",
+    "lint_score": 95,
+    "status": "warning"
   },
   {
     "id": "ethical-guardrails-001",

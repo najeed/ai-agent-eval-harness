@@ -48,9 +48,10 @@ def test_build_index_exception(tmp_path):
 
 def test_check_for_updates_no_industries(tmp_path):
     cat = ScenarioCatalog()
-    # Need to move industries out of the way or mock Path.exists
-    with patch("eval_runner.catalog.Path.exists", return_value=False):
-        assert cat.check_for_updates() is False
+    # Set root_dir to an empty temp path
+    cat.root_dir = tmp_path / "empty_catalog"
+    cat.root_dir.mkdir()
+    assert cat.check_for_updates() is False
 
 def test_load_index_sync_mismatch(tmp_path):
     index_path = tmp_path / "index.json"
@@ -123,18 +124,23 @@ def test_list_scenarios_no_query(capsys):
         assert "Scenario Catalog: (1 total)" in out
 
 def test_check_for_updates_sync(tmp_path):
-    # Use a mock instead of a real Path object to avoid read-only attribute errors
-    mock_path = MagicMock()
-    mock_path.exists.return_value = True
-    mock_path.glob.return_value = [MagicMock(), MagicMock()] # count = 2
-    
+    # Create a catalog with a controlled root_dir
     cat = ScenarioCatalog()
-    cat.scenarios = [{}, {}] # count = 2
+    cat.root_dir = MagicMock(spec=Path)
     
-    # Mock Path("industries") to return our mock_path
-    with patch("eval_runner.catalog.Path", return_value=mock_path):
-         # Hits lines 87-88
-         assert cat.check_for_updates() is False
+    # Configure the mock industries path
+    mock_industries = MagicMock(spec=Path)
+    cat.root_dir.__truediv__.return_value = mock_industries
+    mock_industries.exists.return_value = True
+    
+    # Configure glob to return 2 items
+    mock_industries.glob.return_value = [MagicMock(), MagicMock()]
+    
+    # Set internal state to 2 items
+    cat.scenarios = [{}, {}]
+    
+    # Now disk_count (2) == len(self.scenarios) (2), so False (no updates needed)
+    assert cat.check_for_updates() is False
 
 
 

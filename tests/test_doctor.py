@@ -26,3 +26,26 @@ async def test_run_doctor_smoke():
         with patch("eval_runner.doctor.check_agent_reachable", return_value=True):
             await run_doctor()
             assert mock_print.called
+
+
+@pytest.mark.asyncio
+async def test_run_doctor_old_python():
+    from collections import namedtuple
+    VersionInfo = namedtuple("VersionInfo", ["major", "minor", "micro"])
+    with patch("sys.version_info", VersionInfo(3, 8, 0)):
+        with patch("builtins.print") as mock_print:
+            await run_doctor()
+            # Verify it printed the version warning
+            calls = [c[0][0] for c in mock_print.call_args_list if c[0]]
+            assert any("too old" in str(c) for c in calls)
+
+
+@pytest.mark.asyncio
+async def test_run_doctor_missing_deps(monkeypatch):
+    with patch("builtins.__import__", side_effect=ImportError("Missing")):
+        # We need to ensure we don't break other imports during the test
+        # But run_doctor only calls __import__ inside its loop
+        with patch("builtins.print") as mock_print:
+            await run_doctor()
+            calls = [c[0][0] for c in mock_print.call_args_list if c[0]]
+            assert any("missing" in str(c).lower() for c in calls)

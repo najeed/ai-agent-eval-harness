@@ -77,19 +77,17 @@ def test_linter_find_duplicates_exception(tmp_path):
     dupes = linter.find_duplicates(str(tmp_path))
     assert len(dupes) == 0
 
-def test_run_lint_cli_directory_failure(tmp_path, capsys):
+def test_run_lint_cli_directory_failure(tmp_path, monkeypatch, capsys):
     # Setup a failing scenario inside a directory
+    monkeypatch.chdir(tmp_path)
     p = tmp_path / "fail.json"
     p.write_text('{"bad": 1}', encoding="utf-8")
     
-    # We patch Path.is_file to be False so it assumes directory
-    with patch("eval_runner.linter.Path.is_file", return_value=False):
-        # We also need to patch the internal iter glob to just yield our file
-        with patch("eval_runner.linter.Path.glob", return_value=[p]):
-            run_lint(str(tmp_path))
-            captured = capsys.readouterr()
-            assert "failed." in captured.out
-            assert "1 failed" in captured.out
+    # run_lint searches in the directory. We just need to give it the dir path.
+    run_lint(str(tmp_path))
+    captured = capsys.readouterr()
+    assert "failed." in captured.out
+    assert "1 failed" in captured.out
 
 def test_run_lint_cli_file(tmp_path, capsys):
     p = tmp_path / "single.json"

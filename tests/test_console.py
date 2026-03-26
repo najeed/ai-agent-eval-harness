@@ -42,8 +42,8 @@ def client():
 
     yield app.test_client()
 
-    # Clean up
-    manager.plugins = mgr_plugins
+    # Clean up via slice assignment to preserve Singleton identity
+    manager.plugins[:] = mgr_plugins
 
 
 @pytest.fixture(autouse=True)
@@ -141,8 +141,11 @@ def test_docs_uniqueness(client):
 
 def test_list_runs_with_query(client, tmp_path):
     """Test filtering runs by query."""
-    run_log = Path("runs") / "run.jsonl"
-    run_log.parent.mkdir(exist_ok=True)
+    # Isolate the runs directory
+    runs_dir = tmp_path / "runs"
+    runs_dir.mkdir()
+    run_log = runs_dir / "run.jsonl"
+    
     with open(run_log, "w", encoding="utf-8") as f:
         f.write(
             json.dumps({"event": "run_start", "run_id": "test-123", "scenario": "scen-A", "timestamp": "2026-01-01"})
@@ -153,10 +156,13 @@ def test_list_runs_with_query(client, tmp_path):
             + "\n"
         )
 
-    response = client.get("/api/runs?q=test")
-    data = response.get_json()
-    assert len(data["runs"]) == 1
-    assert data["runs"][0]["run_id"] == "test-123"
+    # Patch central config to point to isolated directory
+    with patch("eval_runner.console.routes.config.RUN_LOG_DIR", runs_dir):
+        response = client.get("/api/runs?q=test")
+        data = response.get_json()
+        # Verify the fix in routes.py also correctly filtered demo traces
+        assert len(data["runs"]) == 1
+        assert data["runs"][0]["run_id"] == "test-123"
 
 
 def test_evaluate_error_cases(client):
@@ -174,14 +180,17 @@ def test_evaluate_error_cases(client):
 def test_save_scenario_success(client, tmp_path):
     """Test successful scenario saving."""
     payload = {"scenario_id": "new-scen", "title": "New", "industry": "test-ind", "description": "desc"}
-    with patch("eval_runner.catalog.ScenarioCatalog.build_index") as mock_build:
-        with patch("eval_runner.console.routes.open", create=True) as mock_open:
-            with patch("eval_runner.console.routes.Path.mkdir"):
-                response = client.post("/api/scenarios", json=payload)
-                assert response.status_code == 200
-                assert response.get_json()["status"] == "success"
-                mock_build.assert_called_once()
-                mock_open.assert_called_once()
+    # Setup isolated directories
+    (tmp_path / "industries" / "test-ind" / "scenarios").mkdir(parents=True)
+    
+    with patch("eval_runner.catalog.ScenarioCatalog.build_index") as mock_build, \
+         patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):
+        response = client.post("/api/scenarios", json=payload)
+        assert response.status_code == 200
+        assert response.get_json()["status"] == "success"
+        mock_build.assert_called_once()
+        # Verify file was actually created in tmp_path
+        assert (tmp_path / "industries" / "test-ind" / "scenarios" / "new-scen.json").exists()
 
 
 def test_save_scenario_errors(client):
@@ -205,16 +214,17 @@ def test_debugger_state_post(client):
 
 def test_debugger_load_run_id(client, tmp_path):
     """Test loading historical trace for debugger."""
-    # Mock a trace file
-    runs_dir = Path("runs")
+    # Mock a trace file in isolated directory
+    runs_dir = tmp_path / "runs"
     runs_dir.mkdir(exist_ok=True)
     trace_file = runs_dir / "trace-123.jsonl"
     with open(trace_file, "w") as f:
         f.write(json.dumps({"event": "world_state_change", "state": "done"}) + "\n")
 
-    response = client.get("/api/debugger/state?run_id=trace-123")
-    assert response.status_code == 200
-    assert response.get_json()["data"]["summary"]["state"] == "done"
+    with patch("eval_runner.console.routes.config.RUN_LOG_DIR", runs_dir):
+        response = client.get("/api/debugger/state?run_id=trace-123")
+        assert response.status_code == 200
+        assert response.get_json()["data"]["summary"]["state"] == "done"
 
 
 def test_debugger_demo_trace_dynamic(client):
@@ -226,12 +236,17 @@ def test_debugger_demo_trace_dynamic(client):
         assert "Demo Narrative" in response.get_json()["data"]["summary"]["message"]
 
 
-def test_read_doc_errors(client):
+def test_read_doc_errors(client, tmp_path):
     """Test read_doc error handling."""
-    # Traversal attempt
-    assert client.get("/api/docs/%2e%2e%2fconfig.py").status_code == 403
-    # Non-existent
-    assert client.get("/api/docs/void.md").status_code == 404
+    # Setup isolated docs dir
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    
+    with patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):
+        # Traversal attempt
+        assert client.get("/api/docs/%2e%2e%2fconfig.py").status_code == 403
+        # Non-existent
+        assert client.get("/api/docs/void.md").status_code == 404
 
 
 def test_get_info(client):

@@ -19,7 +19,7 @@ def save_trajectory(scenario: dict, results: list, base_dir: Optional[Path] = No
     """
     Saves a detailed JSON trajectory of the evaluation run.
     """
-    # Systemic path resolution (Guardrail 4.7)
+    # Systemic path resolution
     if base_dir:
         report_dir = base_dir / "reports" / "trajectories"
     else:
@@ -384,3 +384,22 @@ def generate_report(
     if export_html:
         html_path = generate_html_report(scenario, results, metadata=metadata, standalone=True)
         print(f"[Reporter] HTML report generated: {html_path}")
+
+def cleanup_old_reports(days: int = 7):
+    """
+    Deletes HTML reports and trajectories older than the specified number of days.
+    """
+    import time
+    now = time.time()
+    cutoff = now - (days * 86400)
+    
+    for report_dir in [config.HTML_REPORTS_DIR, config.TRAJECTORIES_DIR]:
+        if not report_dir.exists():
+            continue
+        for f in report_dir.glob("*"):
+            if f.is_file() and f.stat().st_mtime < cutoff:
+                try:
+                    f.unlink()
+                    print(f"      [Reporter] Cleaned up old report: {f.name}")
+                except Exception:
+                    pass

@@ -30,23 +30,29 @@ def test_handle_doctor(mock_args, capsys):
         mock_run.assert_called_once()
 
 def test_handle_cleanup_runs(mock_args, tmp_path):
-    """Test 'cleanup-runs' command handler."""
+    """Test 'cleanup-runs' command handler with real filesystem operations."""
     import time
     import os
     
-    runs_dir = tmp_path / "runs_test"
+    # Setup isolated runs directory
+    runs_dir = tmp_path / "runs"
     runs_dir.mkdir()
     old_file = runs_dir / "old.jsonl"
-    old_file.write_text("old")
+    old_file.write_text("old", encoding="utf-8")
     
+    # Backdate the file
     now = time.time()
     past = now - (10 * 86400)
     os.utime(str(old_file), (past, past))
     
     mock_args.days = 5
+    mock_args.dir = str(runs_dir)
     
-    # Path inside handle_cleanup_runs is called as Path("runs")
-    with patch("eval_runner.cli.Path", return_value=runs_dir):
+    # Instead of patching Path class, we rely on the command using the path from args
+    # or we patch the config if it defaults to a global path.
+    # handle_cleanup_runs uses Path("runs") if no path in args? Let's check cli.py
+    with patch("eval_runner.cli.input", return_value="y"), \
+         patch("eval_runner.config.RUN_LOG_DIR", runs_dir):
         cli.handle_cleanup_runs(mock_args)
     
     assert not old_file.exists()
@@ -131,26 +137,28 @@ def test_handle_catalog_search(mock_args, capsys):
         assert "Search results for 'pii'" in captured.out
         assert "s1: PII Test" in captured.out
 
-def test_handle_failures_search(mock_args, capsys):
-    """Test 'failures-search' command handler."""
-    # This one searches the industries dir
-    with patch("eval_runner.cli.Path") as mock_path_class:
-        mock_path_instance = mock_path_class.return_value
-        mock_path_instance.glob.return_value = []
+def test_handle_failures_search(mock_args, capsys, tmp_path, monkeypatch):
+    """Test 'failures-search' command handler using real isolated directory."""
+    industries_dir = tmp_path / "industries"
+    industries_dir.mkdir()
+    monkeypatch.chdir(tmp_path)
+    
+    with patch("eval_runner.config.PROJECT_ROOT", tmp_path):
         cli.handle_failures_search(mock_args)
         captured = capsys.readouterr()
         assert "Searching corpus" in captured.out
 
 def test_handle_triage(mock_args, capsys, tmp_path):
-    """Test 'triage' command handler."""
+    """Test 'triage' command handler using real filesystem."""
     runs_dir = tmp_path / "runs"
     runs_dir.mkdir()
     run_file = runs_dir / "test.jsonl"
-    run_file.write_text(json.dumps({"event": "run_start", "run_id": "r1", "scenario": "s1"}))
+    run_file.write_text(json.dumps({"event": "run_start", "run_id": "r1", "scenario": "s1"}), encoding="utf-8")
     
-    with patch("eval_runner.cli.Path", return_value=runs_dir), \
-         patch("eval_runner.trace_utils.load_events", return_value=[{"event": "run_start"}]), \
-         patch("eval_runner.triage.TriageEngine.apply_triage") as mock_apply:
+    mock_args.path = str(run_file)
+    with patch("eval_runner.trace_utils.load_events", return_value=[{"event": "run_start"}]), \
+         patch("eval_runner.triage.TriageEngine.apply_triage") as mock_apply, \
+         patch("eval_runner.config.RUN_LOG_DIR", runs_dir):
         cli.handle_triage(mock_args)
         mock_apply.assert_called_once()
 

@@ -21,7 +21,7 @@ def reset_global_state():
     from eval_runner.plugins import manager
 
     EventEmitter.listeners = {}
-    manager.plugins = []
+    manager.reset()
     yield
 
 

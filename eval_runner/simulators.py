@@ -360,7 +360,7 @@ def get_simulator_registry() -> dict:
     Returns the full registry of world shims, combining internal defaults
     with external shims discovered via the Zero-Touch plugin architecture.
     """
-    from . import plugins
+    from eval_runner import plugins
 
     # Start with a copy of internal defaults
     registry = _INTERNAL_SIMULATORS.copy()

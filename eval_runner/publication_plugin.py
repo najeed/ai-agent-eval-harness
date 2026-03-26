@@ -28,9 +28,12 @@ class PublicationPlugin(BaseEvalPlugin):
         # Check both root and publication_suite folder for self-containment
         paths = [Path("config.yaml"), Path("scripts/publication_suite/config.yaml")]
         for p in paths:
-            if p.exists():
-                with open(p, "r") as f:
-                    return yaml.safe_load(f)
+            try:
+                if p.exists():
+                    with open(p, "r") as f:
+                        return yaml.safe_load(f)
+            except Exception:
+                continue
         return {"pricing": {}, "confidence_level": 0.95}
 
     def after_evaluation(self, context: EvaluationContext, results: list):

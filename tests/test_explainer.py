@@ -57,3 +57,33 @@ def test_explain_trace_no_suggestion_high_confidence(monkeypatch):
     result = explain_trace(Path("fake.jsonl"))
     # The suggestion should be overridden by explainer logic for "system" reason
     assert "Check the tool implementation" in result["suggestion"]
+
+
+def test_explain_trace_policy_suggestion(monkeypatch):
+    mock_engine = MagicMock()
+    mock_engine.identify_root_cause.return_value = {
+        "index": 2,
+        "confidence": 0.88,
+        "reason": "policy violation",
+        "suggestion": "No specific suggestion found.",
+    }
+    monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
+    monkeypatch.setattr("eval_runner.explainer.trace_utils.load_events", MagicMock(return_value=[]))
+
+    result = explain_trace(Path("fake.jsonl"))
+    assert "safety policies" in result["suggestion"]
+
+
+def test_explain_trace_low_confidence_fallback(monkeypatch):
+    mock_engine = MagicMock()
+    mock_engine.identify_root_cause.return_value = {
+        "index": 0,
+        "confidence": 0.2,
+        "reason": "something weird",
+        "suggestion": "No specific suggestion found.",
+    }
+    monkeypatch.setattr("eval_runner.explainer.triage.TriageEngine", mock_engine)
+    monkeypatch.setattr("eval_runner.explainer.trace_utils.load_events", MagicMock(return_value=[]))
+
+    result = explain_trace(Path("fake.jsonl"))
+    assert "Visual Debugger" in result["suggestion"]

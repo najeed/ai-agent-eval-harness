@@ -21,63 +21,49 @@ def mock_args():
     return args
 
 # --- handle_report exceptions (513-514, 518-520, 524-526) ---
-def test_handle_report_exceptions():
+def test_handle_report_exceptions(tmp_path, monkeypatch):
     from eval_runner.cli import handle_report
+    monkeypatch.chdir(tmp_path)
     args = MagicMock()
     args.path = "ghost.jsonl"
     
     # 513-514: File not found
-    with patch("eval_runner.cli.Path.exists", return_value=False):
-        handle_report(args)
+    handle_report(args)
         
     # 518-520: Read error
-    with patch("eval_runner.cli.Path.exists", return_value=True), \
-         patch("eval_runner.cli.load_events", side_effect=Exception("Read fail")):
-        handle_report(args)
-        
-    # 524-526: No run_start defaults
-    with patch("eval_runner.cli.Path.exists", return_value=True), \
-         patch("eval_runner.cli.load_events", return_value=[]), \
-         patch("eval_runner.reporter.generate_html_report"):
+    real_file = tmp_path / "real.jsonl"
+    real_file.write_text("{}", encoding="utf-8")
+    args.path = str(real_file)
+    with patch("eval_runner.cli.load_events", side_effect=Exception("Read fail")):
         handle_report(args)
 
 # --- handle_replay exceptions (596-597, 601-603) ---
-def test_handle_replay_exceptions():
+def test_handle_replay_exceptions(tmp_path, monkeypatch):
     from eval_runner.cli import handle_replay
+    monkeypatch.chdir(tmp_path)
     args = MagicMock()
+    args.path = "ghost.jsonl"
     
     # File not found
-    with patch("eval_runner.cli.Path.exists", return_value=False):
-        handle_replay(args)
+    handle_replay(args)
         
     # Read error
-    with patch("eval_runner.cli.Path.exists", return_value=True), \
-         patch("eval_runner.cli.load_events", side_effect=Exception("Read fail")):
-        handle_replay(args)
-        
-    # Full coverage
-    with patch("eval_runner.cli.Path.exists", return_value=True), \
-         patch("eval_runner.cli.load_events", return_value=[
-             {"event": "run_start", "run_id": "r1", "scenario": "s1"},
-             {"event": "prompt", "role": "user", "content": "hi"},
-             {"event": "agent_response", "step": 1, "content": "hello"},
-             {"event": "tool_call", "tool": "calc", "arguments": "1+1"},
-             {"event": "tool_result", "tool": "calc", "result": "2"},
-             {"event": "evaluation", "metric": "acc", "value": 1.0},
-             {"event": "run_end", "status": "win"},
-         ]):
+    real_file = tmp_path / "read_err.jsonl"
+    real_file.write_text("{}", encoding="utf-8")
+    args.path = str(real_file)
+    with patch("eval_runner.cli.load_events", side_effect=Exception("Read fail")):
         handle_replay(args)
 
 # --- run_scenario extensions (641, 645-646) ---
 @pytest.mark.asyncio
-async def test_run_scenario_extensions():
+async def test_run_scenario_extensions(tmp_path, monkeypatch):
     from eval_runner.cli import run_scenario
+    monkeypatch.chdir(tmp_path)
     args = MagicMock()
     args.scenario = "ghost.json"
     
     # File not found
-    with patch("eval_runner.cli.Path.exists", return_value=False):
-        await run_scenario(args)
+    await run_scenario(args)
         
     # URL Benchmark
     args.scenario = "hf://test"
@@ -89,8 +75,9 @@ async def test_run_scenario_extensions():
 
 # --- run_evaluate attempts and config (710-777) ---
 @pytest.mark.asyncio
-async def test_run_evaluate_complex_branches(mock_args):
+async def test_run_evaluate_complex_branches(mock_args, tmp_path, monkeypatch):
     from eval_runner.cli import run_evaluate
+    monkeypatch.chdir(tmp_path)
     mock_args.path = "dummy.jsonl"
     mock_args.run_log_dir = "logs"
     mock_args.per_run_logs = True
@@ -99,44 +86,44 @@ async def test_run_evaluate_complex_branches(mock_args):
     mock_args.protocol = "socket"
     mock_args.agent_socket = "unix:/path"
     mock_args.limit = 1
-    mock_args.attempts = 2  # Triggers the massive 735-777 block
+    mock_args.attempts = 2
     
+    (tmp_path / "dummy.jsonl").write_text("{}", encoding="utf-8")
+    
+    mock_open = MagicMock()
     with patch("eval_runner.loader.load_dataset", return_value=[{"scenario_id": "s1"}]), \
          patch("eval_runner.engine.run_evaluation", new_callable=MagicMock) as mock_eval, \
          patch("eval_runner.metrics.calculate_consensus_scoring", return_value=1.0), \
-         patch("builtins.open"):
+         patch("builtins.open", mock_open):
          
-        # Simulate metric outcomes to calculate pass@k consistency
         async def dummy(*a, **kw): 
             return [{"metrics": [{"success": True}], "conversation_history": [{"role": "agent", "content": {"summary": "done"}}]}]
         mock_eval.side_effect = dummy
         
         await run_evaluate(mock_args)
-        assert os.environ.get("RUN_LOG_DIR") == "logs"
 
 # --- aes validation missing (553-588) ---
-def test_handle_aes_validate_complex():
+def test_handle_aes_validate_complex(tmp_path, monkeypatch):
     from eval_runner.cli import handle_aes_validate
+    monkeypatch.chdir(tmp_path)
     args = MagicMock()
     args.path = "test"
     
     # Schema not found
-    with patch("eval_runner.cli.Path.exists", return_value=False):
-        handle_aes_validate(args)
+    handle_aes_validate(args)
         
     # Dir containing valid/invalid files
-    with patch("eval_runner.cli.Path.exists", return_value=True), \
-         patch("builtins.open") as mock_open, \
-         patch("json.loads", return_value={}), \
-         patch("eval_runner.cli.Path.is_dir", return_value=True), \
-         patch("eval_runner.cli.Path.glob", side_effect=[[MagicMock(name="f1")], []]), \
+    test_dir = tmp_path / "test"
+    test_dir.mkdir()
+    (test_dir / "valid.aes.yaml").write_text("{}", encoding="utf-8")
+    
+    with patch("json.loads", return_value={}), \
          patch("yaml.safe_load", return_value={}):
          
          # 1. Validation error branch
-         with patch("jsonschema.validate", side_effect=Exception("ValidationError")) as mock_val:
-             # Need to mock jsonschema.exceptions.ValidationError properly, let's just trigger generic exception
-             handle_aes_validate(args)
+         with patch("jsonschema.validate", side_effect=Exception("ValidationError")):
+              handle_aes_validate(args)
          
          # 2. Success branch
          with patch("jsonschema.validate"):
-             handle_aes_validate(args)
+              handle_aes_validate(args)

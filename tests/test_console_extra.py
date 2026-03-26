@@ -3,6 +3,7 @@ import json
 from unittest.mock import patch, MagicMock
 from eval_runner.console.app import create_app
 from eval_runner.console.routes import DebuggerStateStore
+import threading
 
 @pytest.fixture
 def client(tmp_path):
@@ -12,31 +13,36 @@ def client(tmp_path):
     with app.test_client() as client:
         yield client
 
+@pytest.fixture(autouse=True)
+def mock_background_threads(monkeypatch):
+    """Prevent actual background threads from being spawned in tests."""
+    def mock_thread_start(self):
+        pass
+    monkeypatch.setattr(threading.Thread, "start", mock_thread_start)
+    yield
+
 # --- /runs exception branch ---
 def test_list_runs_parse_exception(client, tmp_path):
-    with patch("eval_runner.console.routes.Path.exists", return_value=True), \
-         patch("eval_runner.console.routes.Path.iterdir") as mock_iter, \
-         patch("builtins.open") as mock_open:
-        
-        f = MagicMock()
-        f.suffix = ".jsonl"
-        f.name = "r1.jsonl"
-        f.stat.return_value.st_mtime = 1000
-        mock_iter.return_value = [f]
-        
-        # Make the readlines return corrupted json to trigger exception
-        mock_open.return_value.__enter__.return_value = ["{corrupt}\n"]
+    # Setup corrupted log in isolated dir
+    runs_dir = tmp_path / "runs"
+    runs_dir.mkdir()
+    run_log = runs_dir / "run.jsonl"
+    run_log.write_text("{corrupt}\n", encoding="utf-8")
+    
+    with patch("eval_runner.console.routes.config.RUN_LOG_DIR", runs_dir):
+        # The loop will hit a JSONDecodeError and continue, returning 200 with empty list (plus demos)
         res = client.get("/api/runs")
         assert res.status_code == 200
 
-# --- /evaluate inner thread ---
-def test_evaluate_background_thread(client):
-    # The actual inner function `run_in_background` is defined locally so it's tricky,
-    # but we can just DONOT mock threading.Thread, and let it run an AsyncMock.
-    with patch("eval_runner.console.routes.Path.exists", return_value=True), \
-         patch("eval_runner.loader.load_scenario", return_value={"scenario_id": "test"}), \
-         patch("eval_runner.engine.run_evaluation", new_callable=MagicMock) as mock_eval:
-         # We just let it execute threading.Thread! 
+def test_evaluate_background_thread(client, tmp_path):
+    # Setup isolated scenario
+    scenario_path = tmp_path / "test.json"
+    scenario_path.write_text(json.dumps({"scenario_id": "test"}), encoding="utf-8")
+    
+    with patch("eval_runner.loader.load_scenario", return_value={"scenario_id": "test"}), \
+         patch("eval_runner.engine.run_evaluation", new_callable=MagicMock) as mock_eval, \
+         patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):
+         
          # mock_eval needs to be an async coroutine
          async def dummy_run(*args, **kwargs): pass
          mock_eval.side_effect = dummy_run
@@ -52,8 +58,10 @@ def test_ping_route(client):
     assert res.json["status"] == "pong"
 
 # --- /scenarios exception ---
-def test_save_scenario_exception(client):
-    with patch("eval_runner.console.routes.Path.mkdir"), \
+def test_save_scenario_exception(client, tmp_path):
+    # Setup directories
+    (tmp_path / "industries" / "fin" / "scenarios").mkdir(parents=True)
+    with patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path), \
          patch("builtins.open", side_effect=Exception("Disk full")):
         res = client.post("/api/scenarios", json={"scenario_id": "test", "industry": "fin"})
         assert res.status_code == 500
@@ -90,75 +98,101 @@ def test_debugger_state_store_events():
     assert "win" in DebuggerStateStore._last_state["message"]
 
 # --- Demo trace generation ---
-def test_debugger_dynamic_demo_generation(client):
-    with patch("eval_runner.console.routes.Path.exists", side_effect=[False, False]), \
-         patch("eval_runner.console.demo_traces.get_demo_trace", return_value=[{"event": "test"}]), \
-         patch("builtins.open") as mock_open:
+def test_debugger_dynamic_demo_generation(client, tmp_path):
+    with patch("eval_runner.console.demo_traces.get_demo_trace", return_value=[{"event": "test"}]), \
+         patch("eval_runner.console.routes.config.RUN_LOG_DIR", tmp_path / "runs"):
+        # We don't create the file, so Path.exists() for historical will be False.
+        # But we need get_demo_trace to be called.
         res = client.get("/api/debugger/state?run_id=run-loan-risk-pass")
         assert res.status_code == 200
-        mock_open.assert_called()
 
-def test_debugger_missing_demo_fallback(client):
-    with patch("eval_runner.console.routes.Path.exists", return_value=False), \
+def test_debugger_missing_demo_fallback(client, tmp_path):
+    with patch("eval_runner.console.routes.config.RUN_LOG_DIR", tmp_path / "runs"), \
          patch("eval_runner.console.demo_traces.get_demo_trace", return_value=None):
         res = client.get("/api/debugger/state?run_id=unknown-id")
         assert res.status_code == 404
 
 # --- Historical trace load edge cases ---
-def test_debugger_historical_trace_parsing(client):
-    with patch("eval_runner.console.routes.Path.exists", side_effect=[True]), \
-         patch("eval_runner.console.demo_traces.get_demo_trace", return_value=[]), \
-         patch("builtins.open") as mock_open, \
+def test_debugger_historical_trace_parsing(client, tmp_path):
+    runs_dir = tmp_path / "runs"
+    runs_dir.mkdir()
+    trace_file = runs_dir / "run-loan-risk-fail.jsonl"
+    trace_file.write_text(
+        "\n" + 
+        json.dumps({"event": "world_state_change", "state": "x", "shared_state": "y"}) + "\n" +
+        json.dumps({"event": "agent_request", "content": "help"}) + "\n" +
+        json.dumps({"event": "agent_response", "response": {"action": "do"}}) + "\n",
+        encoding="utf-8"
+    )
+    
+    with patch("eval_runner.console.routes.config.RUN_LOG_DIR", runs_dir), \
          patch("eval_runner.triage.TriageEngine.identify_root_cause", return_value={}):
-         
-        # empty line test, agent request, agent response
-        mock_open.return_value.__enter__.return_value = [
-            "\n", 
-            json.dumps({"event": "world_state_change", "state": "x", "shared_state": "y"}),
-            json.dumps({"event": "agent_request", "content": "help"}),
-            json.dumps({"event": "agent_response", "response": {"action": "do"}})
-        ]
         
-        res = client.get("/api/debugger/state?run_id=run-loan-risk-fail") # specifically tests fail branch
+        res = client.get("/api/debugger/state?run_id=run-loan-risk-fail") 
         assert res.status_code == 200
 
-def test_debugger_historical_exception(client):
-    with patch("eval_runner.console.routes.Path.exists", return_value=True), \
-         patch("builtins.open", side_effect=Exception("Corrupt format")):
+def test_debugger_historical_exception(client, tmp_path):
+    runs_dir = tmp_path / "runs"
+    runs_dir.mkdir()
+    (runs_dir / "x.jsonl").write_text("bad data", encoding="utf-8")
+    
+    # Force a strange exception during open or read if needed, but normally
+    # routes.py has try-except. Let's force an actual Exception in json.loads
+    with patch("eval_runner.console.routes.config.RUN_LOG_DIR", runs_dir), \
+         patch("eval_runner.console.routes.json.loads", side_effect=Exception("Corrupt format")):
         res = client.get("/api/debugger/state?run_id=x")
         assert res.status_code == 500
 
 # --- Docs Branches ---
-def test_docs_github_ignore(client):
-    with patch("eval_runner.console.routes.Path.rglob") as mock_rglob:
-        mock_file = MagicMock()
-        mock_file.__str__.return_value = ".github/hidden.md"
-        mock_rglob.return_value = [mock_file]
+def test_docs_github_ignore(client, tmp_path):
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / ".github").mkdir()
+    (docs_dir / ".github" / "hidden.md").write_text("hidden", encoding="utf-8")
+    (docs_dir / "visible.md").write_text("visible", encoding="utf-8")
+    
+    with patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):
         res = client.get("/api/docs")
         assert res.status_code == 200
+        # Verify .github is ignored (not in results)
+        data = res.get_json()
+        docs = data["docs"]
+        assert not any(".github" in d["id"] for d in docs)
 
-def test_docs_read_success(client):
-    with patch("eval_runner.console.routes.Path.exists", return_value=True), \
-         patch("eval_runner.console.routes.Path.is_file", return_value=True), \
-         patch("builtins.open") as mock_open:
-        mock_open.return_value.__enter__.return_value.read.return_value = "hello doc"
+def test_docs_read_success(client, tmp_path):
+    # Setup isolated docs
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    target_doc = docs_dir / "some.md"
+    target_doc.write_text("hello doc", encoding="utf-8")
+    
+    with patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path):
         res = client.get("/api/docs/some.md")
         assert res.status_code == 200
         assert res.json["content"] == "hello doc"
 
 # --- Info endpoint provider branches ---
 def test_get_info_google(client):
-    with patch("eval_runner.config.GOOGLE_API_KEY", "x"):
+    with patch("eval_runner.config.GOOGLE_API_KEY", "x"), \
+         patch("eval_runner.config.ANTHROPIC_API_KEY", None), \
+         patch("eval_runner.config.OPENAI_API_KEY", None), \
+         patch("eval_runner.config.AGENT_API_URLS", ["http://google.com/ai"]):
         res = client.get("/api/info")
         assert "Gemini" in res.json["agent_endpoint"]
 
 def test_get_info_anthropic(client):
-    with patch("eval_runner.config.ANTHROPIC_API_KEY", "x"):
+    with patch("eval_runner.config.GOOGLE_API_KEY", None), \
+         patch("eval_runner.config.ANTHROPIC_API_KEY", "x"), \
+         patch("eval_runner.config.OPENAI_API_KEY", None), \
+         patch("eval_runner.config.AGENT_API_URLS", ["http://anthropic.com/api"]):
         res = client.get("/api/info")
         assert "Claude" in res.json["agent_endpoint"]
 
 def test_get_info_openai(client):
-    with patch("eval_runner.config.OPENAI_API_KEY", "x"):
+    with patch("eval_runner.config.GOOGLE_API_KEY", None), \
+         patch("eval_runner.config.ANTHROPIC_API_KEY", None), \
+         patch("eval_runner.config.OPENAI_API_KEY", "x"), \
+         patch("eval_runner.config.AGENT_API_URLS", ["http://openai.com/v1"]):
         res = client.get("/api/info")
         assert "GPT" in res.json["agent_endpoint"]
 

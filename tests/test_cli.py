@@ -109,6 +109,15 @@ def test_lint_command():
             mock_lint.assert_called_once()
 
 
+def test_handle_init_success(tmp_path, monkeypatch):
+    """Test 'init' command with real isolated directory."""
+    monkeypatch.chdir(tmp_path)
+    with patch("sys.argv", ["multiagent-eval", "init"]), \
+         patch("builtins.input", side_effect=["y", "http://localhost:5001/execute_task"]):
+        cli.main()
+        assert (tmp_path / "scenarios").exists()
+
+
 def test_calibrate_command():
     """Verify calibrate command handler uses --path."""
     with patch("eval_runner.cli.handle_calibrate") as mock_cal:

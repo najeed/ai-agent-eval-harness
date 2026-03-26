@@ -50,23 +50,29 @@ async def test_hitl_ci_auto_resume():
     """Verifies that SessionManager auto-resumes in CI mode."""
     scenario = {"scenario_id": "test_hitl_ci", "tasks": [{"task_id": "task1"}]}
 
-    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call, patch.dict(
-        os.environ, {"CI": "true"}
-    ):
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock) as mock_call, \
+         patch.dict(os.environ, {"CI": "true"}):
 
         mock_call.return_value = {"action": "hitl_pause"}
         session = SessionManager(scenario)
         session.max_turns = 1
-        results = await session.execute_tasks(1)
+        # Mocking sys.stdin.isatty to False since it's CI
+        with patch("sys.stdin.isatty", return_value=False):
+            results = await session.execute_tasks(1)
 
         history = results[0]["conversation_history"]
         human_msg = next(m for m in history if m["role"] == "human")
         assert "Auto-approved" in human_msg["content"]
 
 
-def test_exporter_hf_push():
+def test_exporter_hf_push(tmp_path, monkeypatch):
     """Verifies HFExporter.push_to_hf calls the SDK correctly (mocked)."""
-    with patch("huggingface_hub.HfApi") as MockApi, patch("pathlib.Path.exists", return_value=True):
+    # Setup working directory and real temporary file
+    monkeypatch.chdir(tmp_path)
+    dummy_file = tmp_path / "dummy.json"
+    dummy_file.write_text("{}", encoding="utf-8")
+    
+    with patch("huggingface_hub.HfApi") as MockApi:
         mock_api_instance = MockApi.return_value
 
         HFExporter.push_to_hf("dummy.json", "user/repo")
@@ -119,8 +125,13 @@ async def test_adapter_guards():
     lg_plugin = LangGraphAdapterPlugin()
     crew_plugin = CrewAIAdapterPlugin()
 
-    # Force import error for these tests
-    with patch("builtins.__import__", side_effect=ImportError):
+    # Force import error for these tests by manipulating sys.modules
+    with patch.dict("sys.modules", {
+        "langgraph": None,
+        "crewai": None,
+        "eval_runner.adapters.langgraph": None, # Ensure the adapter itself can't load its dependency
+        "eval_runner.adapters.crewai": None, # Ensure the adapter itself can't load its dependency
+    }):
         lg_res = await lg_plugin.execute_langgraph_node({"node_id": "test"})
         assert lg_res["status"] == "mock_success"
         assert "not installed" in lg_res["output"]

@@ -48,9 +48,10 @@ def test_flight_recorder_rotation_fail(tmp_path, capsys):
         recorder.log_rotate_count = 0 
         # But wait, logic is if len > rotate_count
         recorder.log_rotate_count = -1 # effectively force rotation? No, let's keep it 0 and have 1 file.
-        
+        # Patch Path.unlink since rotate_logs uses it
         with patch("eval_runner.flight_recorder.Path.unlink", side_effect=Exception("Perm denied")):
             recorder.rotate_logs()
+            # Should catch and print
             out, _ = capsys.readouterr()
             assert "Error rotating log" in out
 

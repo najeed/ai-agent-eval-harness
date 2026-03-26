@@ -40,6 +40,7 @@ def test_router_console():
 
 def test_router_quickstart():
     with patch("sys.argv", ["multiagent-eval", "quickstart"]), \
+         patch("eval_runner.quickstart.run_quickstart") as mock_qs, \
          patch("eval_runner.cli.asyncio.run") as mock_run:
         cli.main()
         mock_run.assert_called_once()
@@ -52,12 +53,14 @@ def test_router_scenario_generate():
 
 def test_router_record():
     with patch("sys.argv", ["multiagent-eval", "record"]), \
+         patch("eval_runner.trace_recorder.record_interaction") as mock_rec, \
          patch("eval_runner.cli.asyncio.run") as mock_run:
         cli.main()
         mock_run.assert_called_once()
 
 def test_router_playground():
     with patch("sys.argv", ["multiagent-eval", "playground"]), \
+         patch("eval_runner.playground.run_playground") as mock_pg, \
          patch("eval_runner.cli.asyncio.run") as mock_run:
         cli.main()
         mock_run.assert_called_once()

@@ -8,13 +8,16 @@ from pathlib import Path
 async def check_agent_reachable(url: str):
     """Checks if the agent endpoint is reachable."""
     try:
-        async with aiohttp.ClientSession() as session:
+        # In Python 3.14, aiohttp might be sensitive to the loop state.
+        # We explicitly pass the running loop.
+        loop = asyncio.get_running_loop()
+        async with aiohttp.ClientSession(loop=loop) as session:
             async with session.post(
                 url,
                 json={"task_description": "health_check"},
                 timeout=aiohttp.ClientTimeout(total=2),
             ) as response:
-                return response.status == 200 or response.status == 400  # 400 is fine if it's just missing fields
+                return response.status == 200 or response.status == 400
     except Exception:
         return False
 

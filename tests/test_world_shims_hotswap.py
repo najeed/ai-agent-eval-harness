@@ -27,9 +27,14 @@ def test_shim_hot_swapping():
         assert isinstance(registry["custom"], CustomShim)
 
         # 3. Execute via sandbox
-        scenario = {"scenario_id": "test"}
-        sandbox = ToolSandbox(scenario)
-        result = sandbox.execute("custom_action", {})
+        # Mocking admin approval for 'custom' shim as per new Master Gate architecture
+        from unittest.mock import patch
+        from eval_runner import config
+        
+        with patch.object(config, "GLOBAL_ENABLED_SHIMS", config.GLOBAL_ENABLED_SHIMS + ["custom"]):
+            scenario = {"scenario_id": "test"}
+            sandbox = ToolSandbox(scenario)
+            result = sandbox.execute("custom_action", {})
         assert result["status"] == "success"
         assert result["message"] == "Custom shim executed"
     finally:

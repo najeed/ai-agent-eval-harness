@@ -72,8 +72,8 @@ async def test_plugin_interception():
             pytest.skip("Docker not available in this environment")
         raise
 
-    # Cleanup
-    manager.plugins = [p for p in manager.plugins if not isinstance(p, BlockingPlugin)]
+    # Cleanup via slice assignment to preserve Singleton identity
+    manager.plugins[:] = [p for p in manager.plugins if not isinstance(p, BlockingPlugin)]
 
 
 @pytest.mark.asyncio

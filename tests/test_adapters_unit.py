@@ -13,6 +13,7 @@ async def test_http_adapter_success():
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_response = AsyncMock()
         mock_response.status = 200
+        mock_response.raise_for_status = MagicMock()
         mock_response.json.return_value = {
             "action": "final_answer",
             "content": "success",

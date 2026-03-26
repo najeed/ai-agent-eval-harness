@@ -56,9 +56,25 @@ class BaseEvalPlugin(ABC):
 class PluginManager:
     """Orchestrates plugin lifecycle."""
 
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(PluginManager, cls).__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+
     def __init__(self):
+        if getattr(self, "_initialized", False):
+            return
         self.plugins: List[BaseEvalPlugin] = []
         self._plugins = self.plugins  # Alias for diagnostic visibility
+        self._loaded = False
+        self._initialized = True
+
+    def reset(self):
+        """Resets the plugin manager state for tests."""
+        self.plugins.clear()
         self._loaded = False
 
     def load_plugins(self):
@@ -109,62 +125,24 @@ class PluginManager:
         except ImportError:
             pass
 
-        # Ecosystem Adapters (Zero-Touch core discovery)
-        try:
-            from .adapters.openai import OpenAIAdapterPlugin
+        # 3. Ecosystem Adapters & Internal Plugins (Zero-Touch core discovery)
+        # These are explicitly loaded to ensure a single identity in the Singleton
+        from eval_runner.adapters.openai import OpenAIAdapterPlugin
+        from eval_runner.adapters.gemini import GeminiAdapterPlugin
+        from eval_runner.adapters.claude import ClaudeAdapterPlugin
+        from eval_runner.adapters.ollama import OllamaAdapterPlugin
+        from eval_runner.adapters.grok import GrokAdapterPlugin
+        from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+        from eval_runner.adapters.crewai import CrewAIAdapterPlugin
+        from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
+        from eval_runner.adapters.langchain import LangChainAdapterPlugin
 
-            internal_plugin_classes.append(OpenAIAdapterPlugin)
-        except ImportError:
-            pass
-        try:
-            from .adapters.gemini import GeminiAdapterPlugin
-
-            internal_plugin_classes.append(GeminiAdapterPlugin)
-        except ImportError:
-            pass
-        try:
-            from .adapters.claude import ClaudeAdapterPlugin
-
-            internal_plugin_classes.append(ClaudeAdapterPlugin)
-        except ImportError:
-            pass
-        try:
-            from .adapters.ollama import OllamaAdapterPlugin
-
-            internal_plugin_classes.append(OllamaAdapterPlugin)
-        except ImportError:
-            pass
-        try:
-            from .adapters.grok import GrokAdapterPlugin
-
-            internal_plugin_classes.append(GrokAdapterPlugin)
-        except ImportError:
-            pass
-        try:
-            from .adapters.autogen import AutoGenAdapterPlugin
-
-            internal_plugin_classes.append(AutoGenAdapterPlugin)
-        except ImportError:
-            pass
-        try:
-            from .adapters.crewai import CrewAIAdapterPlugin
-
-            internal_plugin_classes.append(CrewAIAdapterPlugin)
-        except ImportError:
-            pass
-        try:
-            from .adapters.langgraph import LangGraphAdapterPlugin
-
-            internal_plugin_classes.append(LangGraphAdapterPlugin)
-        except ImportError:
-            pass
-        try:
-            from .adapters.langchain import LangChainAdapterPlugin
-
-            internal_plugin_classes.append(LangChainAdapterPlugin)
-        except ImportError:
-            pass
-
+        internal_plugin_classes += [
+            OpenAIAdapterPlugin, GeminiAdapterPlugin, ClaudeAdapterPlugin,
+            OllamaAdapterPlugin, GrokAdapterPlugin, AutoGenAdapterPlugin,
+            CrewAIAdapterPlugin, LangGraphAdapterPlugin, LangChainAdapterPlugin
+        ]
+        
         for PluginClass in internal_plugin_classes:
             if not any(isinstance(p, PluginClass) for p in self.plugins):
                 self.plugins.append(PluginClass())

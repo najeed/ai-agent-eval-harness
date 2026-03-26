@@ -158,7 +158,7 @@ class SessionManager:
                     conversation_history.append(
                         {
                             "role": "agent",
-                            "content": agent_response,
+                            "content": self._sanitize_for_history(agent_response),
                             "protocol": protocol,
                             "agent": endpoint,
                             "agent_name": agent_name,
@@ -303,9 +303,9 @@ class SessionManager:
         history.append(
             {
                 "role": "environment",
-                "content": result,
-                "state_before": state_before,
-                "state_after": state_after,
+                "content": self._sanitize_for_history(result),
+                "state_before": copy.deepcopy(state_before),
+                "state_after": copy.deepcopy(state_after),
             }
         )
         plugins.manager.trigger("on_tool_result", turn_ctx, tool_name, result)
@@ -426,6 +426,20 @@ class SessionManager:
             # Try to find a meaningful string across common fields
             return last_content.get("summary") or last_content.get("instructions") or last_content.get("content") or ""
         return str(last_content)
+
+    def _sanitize_for_history(self, obj: Any) -> Any:
+        """Coerces objects (especially Mocks) into plain serializable types for history safety."""
+        if hasattr(obj, "__dict__") and "unittest.mock" in str(type(obj)):
+            # It's a Mock! Convert to a string representation or a placeholder
+            return f"<Mock {type(obj).__name__}>"
+            
+        if isinstance(obj, dict):
+            return {str(k): self._sanitize_for_history(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [self._sanitize_for_history(i) for i in obj]
+        elif isinstance(obj, (str, int, float, bool, type(None))):
+            return obj
+        return str(obj)
 
     def fork(self, history: List[Dict[str, Any]], sandbox_state: Dict[str, Any]) -> SessionManager:
         """

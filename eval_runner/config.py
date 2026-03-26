@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 # Load environment variables from .env file if it exists
 load_dotenv()
 
+PROJECT_ROOT = Path(__file__).parent.parent
+
 # --- Engine Configuration ---
 AGENT_API_URLS = [url.strip() for url in os.getenv("AGENT_API_URLS", os.getenv("AGENT_API_URL", "http://localhost:5001/execute_task")).split(",")]
 # Legacy support for single-endpoint modules

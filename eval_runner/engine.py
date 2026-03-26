@@ -15,7 +15,7 @@ import inspect
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, List, Optional, Callable
-from . import plugins
+from eval_runner import plugins
 from . import metrics
 from .context import EvaluationContext, TurnContext
 from .tool_sandbox import ToolSandbox
@@ -37,23 +37,52 @@ class AgentAdapterRegistry:
         cls._adapters[protocol] = adapter_func
 
     @classmethod
+    def reset(cls):
+        """Resets the registry state for tests."""
+        cls._discovered = False
+        cls._adapters = {}
+
+    @classmethod
     def _discover(cls):
-        """Triggers standard discovery of core adapters."""
+        """Triggers dynamic discovery of all adapters in the adapters/ directory."""
         if cls._discovered:
             return
 
-        # Load standard adapters
-        from . import adapters
+        from eval_runner import adapters
+        import pkgutil
+        import importlib
 
+        # 1. Register Core Adapters (Hardcoded for stability)
         cls.register("http", adapters.http_adapter)
         cls.register("local", adapters.local_subprocess_adapter)
         cls.register("socket", adapters.socket_adapter)
 
-        # Register default human adapter
+        # 2. Dynamically Load Ecosystem Adapters
+        # We look for all submodules in the adapters/ package
+        package_path = adapters.__path__
+        for _, module_name, _ in pkgutil.iter_modules(package_path):
+            try:
+                # Import the module (e.g., eval_runner.adapters.openai)
+                full_module_name = f"eval_runner.adapters.{module_name}"
+                module = importlib.import_module(full_module_name)
+                
+                # If the module defines an 'adapter' attribute, we register it
+                # Convention: the main adapter function in each module is called 'adapter'
+                if hasattr(module, "adapter") and callable(module.adapter):
+                    cls.register(module_name, module.adapter)
+            except Exception:
+                # Skip broken adapters during discovery
+                pass
+
+        # 3. Register default human adapter
         if "human" not in cls._adapters:
             cls._adapters["human"] = cls._human_adapter
 
         cls._discovered = True
+        
+        # 4. Trigger plugin discovery to allow third-party protocol injections
+        from eval_runner import plugins
+        plugins.manager.trigger("on_discover_adapters", cls)
 
     @classmethod
     async def _human_adapter(cls, payload: dict):

@@ -216,6 +216,7 @@ class ToolSandbox(AbstractSandbox):
         registry = simulators.get_simulator_registry()
 
         # Layer 1: Global System Filter (from config.py / environment)
+        # This acts as the Master Administrative Gate (User's Section 9 Governance).
         global_enabled = config.GLOBAL_ENABLED_SHIMS
         if "*" not in global_enabled:
             registry = {name: sim for name, sim in registry.items() if name in global_enabled}

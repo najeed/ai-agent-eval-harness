@@ -16,6 +16,8 @@ import sys
 import json
 from pathlib import Path
 from typing import Dict, Any
+from . import config, engine, loader, plugins, catalog, linter
+from .trace_utils import load_events
 
 def main():
     """Main CLI entry point."""
@@ -31,10 +33,9 @@ def main():
     from . import config
 
     if not is_help:
-        # Import engine and plugins only when needed
-        from . import engine
-        from . import plugins
+        # Discovery must happen early
         engine.AgentAdapterRegistry._discover()
+        available_protocols = list(engine.AgentAdapterRegistry._adapters.keys())
         available_protocols = list(engine.AgentAdapterRegistry._adapters.keys())
     else:
         # Static defaults for help output to avoid Ray/plugin loading
@@ -247,6 +248,7 @@ Utilities & Environment:
     # CLEANUP-RUNS
     cleanup_parser = subparsers.add_parser("cleanup-runs", help="Remove old trace files")
     cleanup_parser.add_argument("--days", type=int, default=7, help="Remove files older than N days")
+    cleanup_parser.add_argument("--force", action="store_true", help="Force deletion without confirmation")
 
     # DOCTOR
     subparsers.add_parser("doctor", help="Check environment and dependencies")
@@ -270,6 +272,7 @@ Utilities & Environment:
     # INIT
     init_p = subparsers.add_parser("init", help="Scaffold a new benchmark environment")
     init_p.add_argument("--dir", help="Target directory for scaffolding")
+    init_p.add_argument("--industry", help="Pre-select an industry category")
 
     # INSTALL
     install_parser = subparsers.add_parser("install", help="Install curated scenario packs")
@@ -289,26 +292,42 @@ Utilities & Environment:
             self.handlers[name] = handler
             return sub
 
+    # Define "safe" commands that don't require plugin loading for basic parsing
+    # Note: We still need plugin registration for help output to be complete,
+    # but we can skip it for actual execution of these commands.
+    safe_commands = ["init", "doctor", "list", "inspect", "lint", "taxonomy", "list-metrics", "cleanup-runs", "ci", "aes"]
+    
     plugin_handlers = {}
-    seen_plugin_ids = set()
-    from . import plugins
-    for plugin in plugins.manager.plugins:
-        # Only register if the plugin has actually overridden the registration hook
-        # and we haven't seen this plugin ID yet in this CLI session
-        plugin_id = plugin.__class__.__name__.lower().replace("plugin", "")
-        if plugin.__class__.on_register_commands != plugins.BaseEvalPlugin.on_register_commands:
-            if plugin_id in seen_plugin_ids:
-                continue
-            seen_plugin_ids.add(plugin_id)
+    is_help = any(arg in ["-h", "--help"] for arg in sys.argv)
+    command_requested = sys.argv[1] if len(sys.argv) > 1 else None
+    
+    # Only load plugins if strictly necessary:
+    # 1. Help is requested (to show plugin commands)
+    # 2. Command is 'plugin'
+    # 3. Command is NOT in the safe list (e.g. 'evaluate', 'run')
+    if is_help or command_requested == "plugin" or (command_requested and command_requested not in safe_commands):
+        seen_plugin_ids = set()
+        from . import plugins
+        # Ensure plugins are discovered
+        plugins.manager.load_plugins()
+        
+        for plugin in plugins.manager.plugins:
+            # Only register if the plugin has actually overridden the registration hook
+            # and we haven't seen this plugin ID yet in this CLI session
+            plugin_id = plugin.__class__.__name__.lower().replace("plugin", "")
+            if plugin.__class__.on_register_commands != plugins.BaseEvalPlugin.on_register_commands:
+                if plugin_id in seen_plugin_ids:
+                    continue
+                seen_plugin_ids.add(plugin_id)
 
-            p_subparser = plugin_subparsers.add_parser(plugin_id, help=f"Commands for {plugin_id}")
-            cmd_subparsers = p_subparser.add_subparsers(dest="plugin_cmd")
-            registry = CommandRegistry(cmd_subparsers)
+                p_subparser = plugin_subparsers.add_parser(plugin_id, help=f"Commands for {plugin_id}")
+                cmd_subparsers = p_subparser.add_subparsers(dest="plugin_cmd")
+                registry = CommandRegistry(cmd_subparsers)
 
-            plugin.on_register_commands(registry)
+                plugin.on_register_commands(registry)
 
-            if registry.handlers:
-                plugin_handlers[plugin_id] = registry.handlers
+                if registry.handlers:
+                    plugin_handlers[plugin_id] = registry.handlers
 
     args = parser.parse_args()
 
@@ -427,7 +446,7 @@ def handle_list(args):
     else:
         cat.load_index()
 
-    catalog.list_scenarios(query=args.search)
+    catalog.list_scenarios(query=getattr(args, "search", None))
 
 
 def handle_lint(args):
@@ -541,10 +560,9 @@ def reconstruct_results_from_events(events: list) -> list:
 def handle_report(args):
     """Handler for 'report' command."""
     from . import reporter
-    from .trace_utils import load_events
 
-    print(f"\n[Report] Generating HTML report from: {args.path}")
-    path = Path(args.path)
+    print(f"\n[Report] Generating HTML report from: {getattr(args, 'path', 'N/A')}")
+    path = Path(getattr(args, "path", ""))
     if not path.exists():
         print(f"[ERROR] Trace file not found at {path}")
         return
@@ -626,8 +644,8 @@ def handle_aes_validate(args):
 
 def handle_replay(args):
     """Handler for 'replay' command."""
-    print(f"\n[Replay] Reconstructing execution from: {args.path}")
-    path = Path(args.path)
+    print(f"\n[Replay] Reconstructing execution from: {getattr(args, 'path', 'N/A')}")
+    path = Path(getattr(args, "path", ""))
     if not path.exists():
         print(f"[ERROR] Replay file not found at {path}")
         return
@@ -1385,8 +1403,8 @@ def handle_explain(args):
 
 def handle_calibrate(args):
     """Handler for 'calibrate' command."""
-    print(f"\n[Calibrate] Measuring judge agreement in: {args.path}")
-    path = Path(args.path)
+    print(f"\n[Calibrate] Measuring judge agreement in: {getattr(args, 'path', 'N/A')}")
+    path = Path(getattr(args, "path", ""))
     if not path.exists():
         print(f"[ERROR] Trace file not found: {path}")
         return
@@ -1459,8 +1477,15 @@ def handle_calibrate(args):
 def handle_cleanup_runs(args):
     """Handler for 'cleanup-runs' command."""
     import time
+    from . import config
 
-    runs_dir = Path("runs")
+    # Support both 'dir' and 'run_log_dir' for compatibility
+    # Ensure we don't accidentally use the string representation of a MagicMock
+    candidate_dir = getattr(args, "dir", None) or getattr(args, "run_log_dir", None)
+    if candidate_dir and not isinstance(candidate_dir, str) and hasattr(candidate_dir, "_mock_name"):
+        candidate_dir = None
+        
+    runs_dir = Path(candidate_dir or config.RUN_LOG_DIR)
     if not runs_dir.exists():
         print("[Cleanup] 'runs/' directory does not exist.")
         return

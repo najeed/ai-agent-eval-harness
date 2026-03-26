@@ -34,6 +34,10 @@ def create_app():
 
     # Register core routes
     register_core_routes(app, nav_registry)
+    
+    # Safely initialize debugger event subscription
+    from .routes import subscribe_debugger
+    subscribe_debugger()
 
     # Trigger plugin hook to register additional routes and nav items
     for plugin in manager.plugins:

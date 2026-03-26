@@ -67,5 +67,9 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 except Exception as e:
                     print(f"      [FlightRecorder] Error rotating log {old_file}: {e}")
 
+    def flush(self):
+        """Pass-through for API compatibility (writes are synchronous)."""
+        pass
+
     # Note: methods like before_evaluation are still available if needed
     # but handle_event covers most needs for the Flight Recorder.
